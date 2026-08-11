@@ -46,7 +46,7 @@ house.summary.json       摘要（ID 计划 / 字节数 / SHA-256 / 回读状态
 ```
 
 ```bash
-npm test                 # golden-file 测试（17 条：字节 golden + 确定性 + 回读 + 拒绝路径）
+npm test                 # golden-file 测试（29 条：字节 golden + 确定性 + 回读 + 拒绝路径 + 画线建模 + 颜色）
 ```
 
 ## 网页画线建模（二期）

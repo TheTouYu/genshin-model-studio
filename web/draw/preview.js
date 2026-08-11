@@ -366,7 +366,7 @@
     function setItems(items) {
       clearItems()
       if (!Array.isArray(items)) {
-        console.warn('[preview] setItems: 入参不是数组，已清空场景')
+        // 清空场景的正常路径（index.html applyPreview(null)），静默
         pruneUnusedMats()
         return
       }
