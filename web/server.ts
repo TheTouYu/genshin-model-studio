@@ -7,8 +7,10 @@
  * Vercel 部署版使用 api/*.ts serverless functions（同一套共享逻辑 src/web-shared.ts）。
  * 端点与 serverless 版一一对应：
  *   GET  /                       页面
+ *   GET  /draw/*                 二期静态资源（web/draw/：preview.js 等）
  *   GET  /api/examples           示例列表
  *   GET  /api/examples/<name>    单个示例
+ *   POST /api/draw-model         二期画线建模（strokes+options → items/fitted/closed）
  *   POST /api/export?format=gil|gia    导出文件
  *   GET  /docs?file=...          文档页（Markdown 渲染）
  */
@@ -24,10 +26,34 @@ import {
   toGiaInput,
   attachmentName,
   docsPage,
+  parseDrawModelRequest,
+  drawModelResult,
 } from '../src/web-shared.js'
 
 const ROOT = process.cwd()
 const PORT = Number(process.env.PORT || 8787)
+
+const MIME: Record<string, string> = {
+  '.js': 'text/javascript; charset=utf-8',
+  '.mjs': 'text/javascript; charset=utf-8',
+  '.html': 'text/html; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.jpg': 'image/jpeg',
+  '.ico': 'image/x-icon',
+  '.woff2': 'font/woff2',
+}
+
+function sendFile(res: import('node:http').ServerResponse, file: string, fallbackType: string) {
+  try {
+    const ext = file.slice(file.lastIndexOf('.')).toLowerCase()
+    send(res, 200, readFileSync(file), MIME[ext] ?? fallbackType)
+  } catch {
+    send(res, 404, 'not found')
+  }
+}
 
 function send(res: import('node:http').ServerResponse, code: number, body: string | Uint8Array, type = 'text/plain; charset=utf-8') {
   res.writeHead(code, { 'Content-Type': type })
@@ -41,7 +67,24 @@ const server = createServer((req, res) => {
     send(res, 200, readFileSync(join(ROOT, 'web', 'index.html')), 'text/html; charset=utf-8')
     return
   }
-  if (req.method === 'GET' && url.pathname === '/docs') {
+  // 二期静态资源：web/draw/*（preview.js 等；Vercel 端由 public/ 静态直达）
+  if (req.method === 'GET' && url.pathname.startsWith('/draw/')) {
+    let rel: string
+    try {
+      rel = decodeURIComponent(url.pathname.slice('/draw/'.length))
+    } catch {
+      send(res, 400, 'bad path')
+      return
+    }
+    const drawDir = join(ROOT, 'web', 'draw')
+    const file = join(drawDir, rel)
+    if (!file.startsWith(drawDir + '/') && file !== drawDir) {
+      send(res, 403, 'forbidden')
+      return
+    }
+    sendFile(res, file, 'application/octet-stream')
+    return
+  }  if (req.method === 'GET' && url.pathname === '/docs') {
     try {
       const fileKey = url.searchParams.get('file') ?? 'README.md'
       if (!(fileKey in DOCS_FILES)) {
@@ -66,6 +109,20 @@ const server = createServer((req, res) => {
       return
     }
     send(res, 200, readFileSync(file), 'application/json')
+    return
+  }
+  if (req.method === 'POST' && url.pathname === '/api/draw-model') {
+    let body = ''
+    req.on('data', (c) => (body += c))
+    req.on('end', () => {
+      try {
+        const { strokes, options } = parseDrawModelRequest(body)
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' })
+        res.end(JSON.stringify(drawModelResult(strokes, options)))
+      } catch (e) {
+        send(res, 400, (e as Error).message)
+      }
+    })
     return
   }
   if (req.method === 'POST' && url.pathname === '/api/export') {

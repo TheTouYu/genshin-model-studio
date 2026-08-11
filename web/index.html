@@ -2,18 +2,50 @@
 <html lang="zh">
 <head>
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Genshin Model Studio</title>
 <style>
-  body { font-family: system-ui, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+  body { font-family: system-ui, sans-serif; max-width: 1280px; margin: 2rem auto; padding: 0 1rem; color: #222; }
   h1 { font-size: 1.4rem; }
   .row { display: flex; gap: 1rem; align-items: center; margin: 1rem 0; flex-wrap: wrap; }
-  textarea { width: 100%; height: 420px; font-family: ui-monospace, monospace; font-size: 12px; box-sizing: border-box; }
+  textarea { width: 100%; height: 300px; font-family: ui-monospace, monospace; font-size: 12px; box-sizing: border-box; }
   button { padding: 0.5rem 1.2rem; cursor: pointer; }
   .status { color: #555; font-size: 0.9rem; margin-top: 0.5rem; white-space: pre-wrap; }
   .muted { color: #888; font-size: 0.85rem; }
   #githubLink { font-size: 0.85rem; margin-left: 1rem; color: #0a66c2; text-decoration: none; }
   #githubLink:hover { text-decoration: underline; }
   #docs { display: none; width: 100%; height: 560px; border: 1px solid #ccc; border-radius: 4px; margin: 1rem 0; background: #fff; }
+
+  /* ============ 二期：画线建模 ============ */
+  .sep { border: none; border-top: 2px solid #dfe5ec; margin: 2.4rem 0 1.4rem; }
+  #drawSection h2 { font-size: 1.15rem; margin: 0 0 0.9rem; }
+  .draw-layout { display: grid; grid-template-columns: minmax(340px, 5fr) 6fr; gap: 1rem; align-items: stretch; }
+  .draw-col { display: flex; flex-direction: column; gap: 0.6rem; min-width: 0; }
+  .controls { display: flex; flex-wrap: wrap; gap: 0.6rem 1.1rem; align-items: center; font-size: 0.9rem; padding: 0.6rem 0.8rem; background: #f6f8fa; border: 1px solid #e1e6ec; border-radius: 6px; }
+  .controls label { display: inline-flex; align-items: center; gap: 0.35rem; }
+  .controls select, .controls input[type=number] { padding: 0.2rem 0.35rem; font-size: 0.9rem; }
+  .controls input[type=range] { width: 130px; }
+  #countVal { display: inline-block; min-width: 2.6em; text-align: right; font-variant-numeric: tabular-nums; }
+  .canvas-box { position: relative; }
+  #drawCanvas { display: block; width: 100%; height: 460px; border: 1px solid #2b3542; border-radius: 8px; touch-action: none; background: #10151c; cursor: crosshair; }
+  .canvas-hint { position: absolute; right: 10px; top: 10px; color: #9fb0c2; background: rgba(16, 21, 28, 0.72); border-radius: 4px; padding: 3px 8px; font-size: 12px; pointer-events: none; }
+  .draw-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
+  .draw-actions input[type=text] { padding: 0.35rem 0.5rem; width: 170px; }
+  #drawStatus { color: #555; }
+  #drawStatus.err { color: #b23; }
+  #drawStatus.ok { color: #2a7a2a; }
+  #previewCanvas { display: block; width: 100%; height: 460px; border: 1px solid #2b3542; border-radius: 8px; background: #10151c; }
+  .preview-hint { color: #666; font-size: 0.82rem; text-align: center; }
+  @media (max-width: 900px) {
+    .draw-layout { grid-template-columns: 1fr; }
+    #drawCanvas, #previewCanvas { height: 320px; }
+    textarea { height: 240px; }
+  }
+  @media (max-width: 600px) {
+    textarea { height: 140px; }
+    .row { gap: 0.4rem; margin: 0.5rem 0; }
+    button { padding: 0.4rem 0.8rem; }
+  }
 </style>
 </head>
 <body>
@@ -40,7 +72,51 @@
 <div class="status" id="status"></div>
 <iframe id="docs" title="文档"></iframe>
 
+<hr class="sep">
+<section id="drawSection">
+  <h2>✏️ 画线建模 <span class="muted">手画线条 → 拟合 → 3D 预览 → 导出 .gil / .gia（作品自动保存在本机）</span></h2>
+  <div class="draw-layout">
+    <div class="draw-col">
+      <div class="controls">
+        <label>模式 <select id="mode">
+          <option value="extrude">挤出（extrude）</option>
+          <option value="lathe">旋转（lathe）</option>
+        </select></label>
+        <label>形状 <select id="shape">
+          <option value="cylinder">圆柱</option>
+          <option value="box">方杆</option>
+        </select></label>
+        <label>尺寸 <input type="number" id="size" min="0.05" max="5" step="0.05" value="0.4"> 米</label>
+        <label>数量 <input type="range" id="count" min="10" max="300" step="1" value="60"><span id="countVal">60</span></label>
+        <label>模型高 <input type="number" id="height" min="0.5" max="100" step="0.5" value="10"> 米</label>
+      </div>
+      <div class="canvas-box">
+        <canvas id="drawCanvas"></canvas>
+        <span class="canvas-hint" id="canvasHint">画布高 = 10 米</span>
+      </div>
+      <div class="draw-actions">
+        <button id="undo">↩ 撤销上一笔</button>
+        <button id="clear">🗑 清空</button>
+        <button id="exportWork">导出作品 JSON</button>
+        <button id="importWork">导入作品 JSON</button>
+        <input type="file" id="importFile" accept=".json,application/json" hidden>
+      </div>
+      <div class="status" id="drawStatus">在画布上画线（鼠标或手指），松手自动拟合生成</div>
+    </div>
+    <div class="draw-col">
+      <canvas id="previewCanvas"></canvas>
+      <div class="preview-hint">3D 预览：拖拽旋转 · 滚轮缩放 · 移动端单指拖拽 / 双指捏合</div>
+    </div>
+  </div>
+  <div class="draw-actions" style="margin-top: 0.8rem;">
+    <label>模型名字 <input type="text" id="modelName" value="手绘模型"></label>
+    <button id="drawExportGil">导出 .gil</button>
+    <button id="drawExportGia">导出 .gia</button>
+  </div>
+</section>
+
 <script>
+// ============ 一期：JSON 编辑 / 示例 / 导出（保持不变） ============
 const $ = (id) => document.getElementById(id)
 let examples = []
 
@@ -115,6 +191,433 @@ $('docFile').onchange = () => {
   if ($('docs').style.display !== 'none') $('docs').src = `/docs?file=${encodeURIComponent($('docFile').value)}`
 }
 loadExamples()
+</script>
+
+<script src="/draw/preview.js"></script>
+<script>
+// ============ 二期：画线建模（画布 + 拟合叠加 + 3D 预览 + localStorage + 导出） ============
+(function () {
+  'use strict'
+
+  const LS_KEY = 'gms.draw.work.v1'
+  const WORK_FORMAT = 'genshin-model-studio.draw'
+  const WORK_VERSION = 1
+  const DEBOUNCE_MS = 250
+  const SAVE_MS = 500
+  // Three.js 多源 CDN fallback（unpkg → jsdelivr；UMD 版以匹配 preview.js 的全局 THREE 用法）
+  const CDNS = [
+    'https://unpkg.com/three@0.160.0/build/three.min.js',
+    'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js',
+  ]
+
+  const el = (id) => document.getElementById(id)
+  const drawCanvas = el('drawCanvas')
+  const previewCanvas = el('previewCanvas')
+  const ctx = drawCanvas.getContext('2d')
+
+  const state = {
+    strokes: [], // { id, points: [ [x,y], ... ] } 画布 CSS 像素
+    options: { mode: 'extrude', shape: 'cylinder', size: 0.4, count: 60, heightMeters: 10 },
+    fitted: [], // 与 strokes 按序对齐：{ id, points, closed } | null（服务端返回）
+    closed: [],
+    items: [], // 拍平后的 structure items（预览/导出共用）
+    preview: null,
+    pendingItems: null, // THREE 尚未就绪时暂存
+  }
+  let activePointerId = null
+  let currentStroke = null
+  let seq = 0
+  let genTimer = null
+  let saveTimer = null
+  let genSeq = 0
+  let cdnIdx = 0
+
+  /* ---------- 画布绘制：网格 + 原始笔画（淡）+ 拟合曲线（亮） ---------- */
+
+  function renderDraw() {
+    const w = drawCanvas.clientWidth
+    const h = drawCanvas.clientHeight
+    if (!w || !h) return
+    ctx.clearRect(0, 0, w, h)
+    ctx.fillStyle = '#10151c'
+    ctx.fillRect(0, 0, w, h)
+    // 网格背景
+    ctx.strokeStyle = 'rgba(255,255,255,0.07)'
+    ctx.lineWidth = 1
+    ctx.beginPath()
+    for (let x = 0.5; x <= w; x += 25) { ctx.moveTo(x, 0); ctx.lineTo(x, h) }
+    for (let y = 0.5; y <= h; y += 25) { ctx.moveTo(0, y); ctx.lineTo(w, y) }
+    ctx.stroke()
+    // 原始笔画（淡色）
+    ctx.lineWidth = 2
+    ctx.lineCap = 'round'
+    ctx.lineJoin = 'round'
+    ctx.strokeStyle = 'rgba(255,255,255,0.38)'
+    for (const stroke of state.strokes) {
+      const pts = stroke.points
+      if (pts.length < 2) continue
+      ctx.beginPath()
+      ctx.moveTo(pts[0][0], pts[0][1])
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1])
+      ctx.stroke()
+    }
+    // 拟合曲线（亮色：封闭=青，开放=琥珀）
+    ctx.lineWidth = 3
+    for (const f of state.fitted) {
+      if (!f || f.points.length < 2) continue
+      ctx.strokeStyle = f.closed ? '#6fc3c9' : '#ffd479'
+      ctx.beginPath()
+      ctx.moveTo(f.points[0][0], f.points[0][1])
+      for (let i = 1; i < f.points.length; i++) ctx.lineTo(f.points[i][0], f.points[i][1])
+      ctx.stroke()
+    }
+  }
+
+  function resizeDraw() {
+    const dpr = window.devicePixelRatio || 1
+    const w = drawCanvas.clientWidth
+    const h = drawCanvas.clientHeight
+    if (!w || !h) return
+    drawCanvas.width = Math.round(w * dpr)
+    drawCanvas.height = Math.round(h * dpr)
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+    renderDraw()
+  }
+
+  /* ---------- 笔画输入（Pointer Events + capture，触摸可用） ---------- */
+
+  function toPoint(e) {
+    const rect = drawCanvas.getBoundingClientRect()
+    return [e.clientX - rect.left, e.clientY - rect.top]
+  }
+
+  drawCanvas.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse' && e.button !== 0) return
+    if (activePointerId !== null) return // 一次只画一笔
+    e.preventDefault()
+    try { drawCanvas.setPointerCapture(e.pointerId) } catch (err) { /* 忽略捕获失败 */ }
+    activePointerId = e.pointerId
+    currentStroke = { id: 's' + Date.now().toString(36) + '_' + seq++, points: [toPoint(e)] }
+    state.strokes.push(currentStroke)
+    state.fitted.push(null)
+    state.closed.push(false)
+    renderDraw()
+  })
+
+  drawCanvas.addEventListener('pointermove', (e) => {
+    if (e.pointerId !== activePointerId || !currentStroke) return
+    const p = toPoint(e)
+    const pts = currentStroke.points
+    const last = pts[pts.length - 1]
+    if (Math.abs(p[0] - last[0]) < 1 && Math.abs(p[1] - last[1]) < 1) return
+    pts.push(p)
+    renderDraw()
+  })
+
+  function endStroke(e) {
+    if (e.pointerId !== activePointerId) return
+    activePointerId = null
+    currentStroke = null
+    scheduleGen()
+  }
+  drawCanvas.addEventListener('pointerup', endStroke)
+  drawCanvas.addEventListener('pointercancel', endStroke)
+
+  /* ---------- 拟合生成（防抖调 /api/draw-model） ---------- */
+
+  function scheduleGen() {
+    clearTimeout(genTimer)
+    genTimer = setTimeout(regenerate, DEBOUNCE_MS)
+  }
+
+  function regenerate() {
+    clearTimeout(genTimer)
+    const mySeq = ++genSeq
+    if (state.strokes.length === 0) {
+      state.items = []
+      state.fitted = []
+      state.closed = []
+      applyPreview(null)
+      saveLocal()
+      renderDraw()
+      setStatus('画布已清空：在画布上画线开始')
+      return
+    }
+    setStatus('拟合生成中…')
+    fetch('/api/draw-model', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ strokes: state.strokes, options: state.options }),
+    })
+      .then((res) => (res.ok ? res.json() : res.text().then((t) => { throw new Error(t) })))
+      .then((data) => {
+        if (mySeq !== genSeq) return // 丢弃过期响应
+        state.items = data.items || []
+        state.fitted = data.fitted || []
+        state.closed = data.closed || []
+        renderDraw()
+        applyPreview(state.items)
+        saveLocal()
+        const closedCount = state.closed.filter(Boolean).length
+        setStatus(`✓ ${state.strokes.length} 笔 · ${closedCount} 笔封闭 · ${state.items.length} 个元件`, 'ok')
+      })
+      .catch((err) => {
+        if (mySeq !== genSeq) return
+        setStatus('生成失败：' + err.message, 'err')
+      })
+  }
+
+  function applyPreview(items) {
+    if (state.preview) state.preview.setItems(items)
+    else state.pendingItems = items
+  }
+
+  /* ---------- 控制面板 ---------- */
+
+  function updateShapeDisabled() {
+    el('shape').disabled = state.options.mode === 'lathe'
+  }
+
+  function updateHint() {
+    el('canvasHint').textContent = '画布高 = ' + state.options.heightMeters + ' 米'
+  }
+
+  function syncControls() {
+    el('mode').value = state.options.mode
+    el('shape').value = state.options.shape
+    el('size').value = state.options.size
+    el('count').value = state.options.count
+    el('countVal').textContent = state.options.count
+    el('height').value = state.options.heightMeters
+    updateShapeDisabled()
+    updateHint()
+  }
+
+  function onOptionChange() {
+    const mode = el('mode').value
+    const shape = el('shape').value
+    const size = parseFloat(el('size').value)
+    const count = parseInt(el('count').value, 10)
+    const heightMeters = parseFloat(el('height').value)
+    el('countVal').textContent = el('count').value
+    if (!Number.isFinite(size) || !Number.isFinite(count) || !Number.isFinite(heightMeters)) {
+      return // 输入未完成，等下一个事件
+    }
+    state.options = { mode, shape, size, count, heightMeters }
+    updateShapeDisabled()
+    updateHint()
+    scheduleGen()
+  }
+
+  el('mode').addEventListener('change', onOptionChange)
+  el('shape').addEventListener('change', onOptionChange)
+  el('size').addEventListener('input', onOptionChange)
+  el('count').addEventListener('input', onOptionChange)
+  el('height').addEventListener('input', onOptionChange)
+
+  /* ---------- 撤销 / 清空 ---------- */
+
+  el('undo').addEventListener('click', () => {
+    if (state.strokes.length === 0) { setStatus('没有可撤销的笔画'); return }
+    state.strokes.pop()
+    state.fitted.pop()
+    state.closed.pop()
+    renderDraw()
+    scheduleGen()
+  })
+
+  el('clear').addEventListener('click', () => {
+    if (state.strokes.length === 0) return
+    state.strokes = []
+    state.fitted = []
+    state.closed = []
+    renderDraw()
+    scheduleGen()
+  })
+
+  /* ---------- localStorage 自动保存 / 恢复 ---------- */
+
+  function saveLocal() {
+    clearTimeout(saveTimer)
+    saveTimer = setTimeout(() => {
+      try {
+        localStorage.setItem(LS_KEY, JSON.stringify({
+          format: WORK_FORMAT,
+          version: WORK_VERSION,
+          strokes: state.strokes,
+          options: state.options,
+        }))
+      } catch (e) { /* 隐私模式等场景忽略 */ }
+    }, SAVE_MS)
+  }
+
+  function sanitizePoints(points) {
+    const out = []
+    if (!Array.isArray(points)) return out
+    for (const p of points) {
+      if (Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1])) out.push([p[0], p[1]])
+    }
+    return out
+  }
+
+  /** 应用作品（本地存档或导入文件）。返回是否成功。 */
+  function applyWork(data, silent) {
+    if (!data || typeof data !== 'object') return false
+    if (data.format !== WORK_FORMAT || data.version !== WORK_VERSION) return false
+    if (!Array.isArray(data.strokes)) return false
+    const o = data.options || {}
+    const opts = {
+      mode: o.mode === 'lathe' ? 'lathe' : 'extrude',
+      shape: o.shape === 'box' ? 'box' : 'cylinder',
+      size: Number.isFinite(o.size) && o.size > 0 ? o.size : 0.4,
+      count: Number.isFinite(o.count) ? Math.min(300, Math.max(10, Math.round(o.count))) : 60,
+      heightMeters: Number.isFinite(o.heightMeters) && o.heightMeters > 0 ? o.heightMeters : 10,
+    }
+    state.strokes = data.strokes
+      .filter((s) => s && typeof s.id === 'string' && Array.isArray(s.points) && sanitizePoints(s.points).length > 0)
+      .map((s) => ({ id: s.id, points: sanitizePoints(s.points) }))
+    state.options = opts
+    syncControls()
+    if (!silent) setStatus(`已导入作品：${state.strokes.length} 笔笔画`, 'ok')
+    scheduleGen()
+    return true
+  }
+
+  function restoreLocal() {
+    let raw = null
+    try { raw = localStorage.getItem(LS_KEY) } catch (e) { return false }
+    if (!raw) return false
+    try { return applyWork(JSON.parse(raw), true) } catch (e) { return false }
+  }
+
+  /* ---------- 作品 JSON 导入 / 导出 ---------- */
+
+  function download(filename, blob) {
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = filename
+    a.click()
+    setTimeout(() => URL.revokeObjectURL(a.href), 1000)
+  }
+
+  el('exportWork').addEventListener('click', () => {
+    const work = {
+      format: WORK_FORMAT,
+      version: WORK_VERSION,
+      savedAt: new Date().toISOString(),
+      strokes: state.strokes,
+      options: state.options,
+    }
+    download('draw-work.json', new Blob([JSON.stringify(work, null, 2)], { type: 'application/json' }))
+    setStatus(`已导出作品 JSON（${state.strokes.length} 笔笔画）`, 'ok')
+  })
+
+  el('importWork').addEventListener('click', () => el('importFile').click())
+  el('importFile').addEventListener('change', () => {
+    const file = el('importFile').files && el('importFile').files[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      try {
+        const data = JSON.parse(String(reader.result))
+        if (!applyWork(data)) setStatus('导入失败：不是有效的作品 JSON（format/version 不匹配）', 'err')
+      } catch (e) {
+        setStatus('导入失败：' + e.message, 'err')
+      }
+      el('importFile').value = ''
+    }
+    reader.readAsText(file)
+  })
+
+  /* ---------- 导出 .gil / .gia（复用 /api/export，一期管线） ---------- */
+
+  function downloadNameFromCd(cd, fallback) {
+    if (!cd) return fallback
+    const mStar = cd.match(/filename\*=UTF-8''([^;]+)/i)
+    if (mStar) { try { return decodeURIComponent(mStar[1]) } catch (e) { /* 继续 */ } }
+    const m = cd.match(/filename="([^"]+)"/)
+    return m ? m[1] : fallback
+  }
+
+  function doModelExport(format) {
+    if (!state.items || state.items.length === 0) {
+      setStatus('还没有可导出的模型：请先在画布上画线生成', 'err')
+      return
+    }
+    const name = (el('modelName').value || '').trim() || '手绘模型'
+    fetch('/api/export?format=' + format, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ data: { name, items: state.items } }),
+    })
+      .then((res) => {
+        if (!res.ok) return res.text().then((t) => { throw new Error(t) })
+        return res.blob().then((blob) => ({ blob, cd: res.headers.get('Content-Disposition') || '' }))
+      })
+      .then(({ blob, cd }) => {
+        const filename = downloadNameFromCd(cd, format === 'gia' ? 'model.gia' : 'model.gil')
+        download(filename, blob)
+        setStatus(`已导出 ${filename}（${blob.size} 字节）`, 'ok')
+      })
+      .catch((err) => setStatus('导出失败：' + err.message, 'err'))
+  }
+
+  el('drawExportGil').addEventListener('click', () => doModelExport('gil'))
+  el('drawExportGia').addEventListener('click', () => doModelExport('gia'))
+
+  /* ---------- 3D 预览：Three.js CDN fallback + preview.js ---------- */
+
+  function setStatus(msg, cls) {
+    const s = el('drawStatus')
+    s.textContent = msg
+    s.className = 'status' + (cls ? ' ' + cls : '')
+  }
+
+  function bootPreview() {
+    if (typeof window.createPreview !== 'function') {
+      setStatus('preview.js 未加载（/draw/preview.js）', 'err')
+      return
+    }
+    try {
+      state.preview = window.createPreview(previewCanvas)
+      if (state.pendingItems) {
+        state.preview.setItems(state.pendingItems)
+        state.pendingItems = null
+      }
+      setStatus(`✓ Three.js r${window.THREE ? window.THREE.REVISION : '?'} 已加载，可开始画线`, 'ok')
+    } catch (err) {
+      setStatus('预览初始化失败：' + err.message, 'err')
+    }
+  }
+
+  function loadThree() {
+    if (cdnIdx >= CDNS.length) {
+      setStatus('Three.js CDN 全部加载失败：预览不可用（画线/拟合/导出仍正常）', 'err')
+      return
+    }
+    const s = document.createElement('script')
+    s.src = CDNS[cdnIdx++]
+    s.onload = bootPreview
+    s.onerror = loadThree
+    document.head.appendChild(s)
+  }
+
+  /* ---------- 启动 ---------- */
+
+  resizeDraw()
+  if (typeof ResizeObserver !== 'undefined') {
+    new ResizeObserver(resizeDraw).observe(drawCanvas)
+  }
+  window.addEventListener('resize', resizeDraw)
+
+  syncControls()
+  if (!restoreLocal()) setStatus('在画布上画线（鼠标或手指），松手自动拟合生成')
+  loadThree()
+
+  window.addEventListener('pagehide', () => {
+    if (state.preview) { try { state.preview.dispose() } catch (e) { /* 忽略 */ } }
+  })
+})()
 </script>
 </body>
 </html>

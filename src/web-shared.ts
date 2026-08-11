@@ -6,8 +6,114 @@
  */
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, extname, basename } from 'node:path'
+import { fitStroke, type FittedStroke } from './draw/fitting.js'
+import { generateModel, toStructureItems } from './draw/types.js'
+import type { ModelOptions, Stroke } from './draw/types.js'
+import type { StructureItem } from './core/structure.js'
 
 export const EXAMPLES = join(process.cwd(), 'examples')
+
+/* ==================== 二期：画线建模 /api/draw-model 共享逻辑 ==================== */
+
+/** 笔画/点数量上限（防滥用，正常手绘远达不到）。 */
+export const MAX_DRAW_STROKES = 200
+export const MAX_DRAW_POINTS = 200000
+
+/**
+ * 校验并解析 /api/draw-model 请求体；非法时抛出中文 Error（调用方转 400）。
+ * 入参契约（PRD §5.1）：{ strokes: Stroke[], options: ModelOptions }
+ */
+export function parseDrawModelRequest(body: string): { strokes: Stroke[]; options: ModelOptions } {
+  let data: unknown
+  try {
+    data = JSON.parse(body)
+  } catch {
+    throw new Error('请求体不是合法 JSON')
+  }
+  if (data === null || typeof data !== 'object' || Array.isArray(data)) {
+    throw new Error('请求体需为 { strokes, options } 对象')
+  }
+  const src = data as { strokes?: unknown; options?: unknown }
+
+  const strokes = src.strokes
+  if (!Array.isArray(strokes) || strokes.length === 0) {
+    throw new Error('笔画不能为空：请先在画布上画线')
+  }
+  if (strokes.length > MAX_DRAW_STROKES) {
+    throw new Error(`笔画数量过多（最多 ${MAX_DRAW_STROKES} 笔）`)
+  }
+  let totalPoints = 0
+  const parsed: Stroke[] = strokes.map((s: unknown, i: number) => {
+    const stroke = s as { id?: unknown; points?: unknown }
+    if (s === null || typeof s !== 'object' || typeof stroke.id !== 'string' || stroke.id === '') {
+      throw new Error(`第 ${i + 1} 笔笔画无效：缺少字符串 id`)
+    }
+    if (!Array.isArray(stroke.points)) {
+      throw new Error(`第 ${i + 1} 笔笔画无效：points 需为 [x, y] 数组`)
+    }
+    const points: [number, number][] = stroke.points.map((p: unknown, j: number) => {
+      if (!Array.isArray(p) || p.length < 2 || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) {
+        throw new Error(`第 ${i + 1} 笔第 ${j + 1} 个点无效：需为 [x, y] 有限数值`)
+      }
+      return [p[0] as number, p[1] as number]
+    })
+    totalPoints += points.length
+    if (totalPoints > MAX_DRAW_POINTS) {
+      throw new Error(`笔画点总数过多（超过 ${MAX_DRAW_POINTS} 个点）`)
+    }
+    return { id: stroke.id, points }
+  })
+
+  const o = src.options as Record<string, unknown> | null
+  if (o === null || typeof o !== 'object' || Array.isArray(o)) {
+    throw new Error('options 需为对象')
+  }
+  if (o.mode !== 'extrude' && o.mode !== 'lathe') {
+    throw new Error('options.mode 无效：需为 extrude 或 lathe')
+  }
+  if (o.shape !== 'cylinder' && o.shape !== 'box') {
+    throw new Error('options.shape 无效：需为 cylinder 或 box')
+  }
+  if (typeof o.size !== 'number' || !Number.isFinite(o.size) || o.size <= 0) {
+    throw new Error('options.size 需为正数（米）')
+  }
+  if (typeof o.count !== 'number' || !Number.isFinite(o.count) || o.count < 1 || o.count > 5000) {
+    throw new Error('options.count 需在 1 ~ 5000 之间')
+  }
+  if (typeof o.heightMeters !== 'number' || !Number.isFinite(o.heightMeters) || o.heightMeters <= 0) {
+    throw new Error('options.heightMeters 需为正数（米）')
+  }
+  return {
+    strokes: parsed,
+    options: {
+      mode: o.mode,
+      shape: o.shape,
+      size: o.size as number,
+      count: o.count as number,
+      heightMeters: o.heightMeters as number
+    }
+  }
+}
+
+/** /api/draw-model 出参：已拍平 items + 逐笔拟合曲线（画布像素）+ 封闭检测。 */
+export type DrawModelResult = {
+  items: StructureItem[]
+  /** 与入参 strokes 按序一一对应；退化笔画（<2 点）为 null。 */
+  fitted: (FittedStroke | null)[]
+  closed: boolean[]
+}
+
+/**
+ * 生成画线模型（本地 server.ts 与 Vercel api/draw.ts 共用）。
+ * 采样点数与 generateModel 内部一致：extrude=count+1（段数=count），lathe=count（盘片层数）。
+ */
+export function drawModelResult(strokes: Stroke[], options: ModelOptions): DrawModelResult {
+  const { items: tagged, closed } = generateModel(strokes, options)
+  const sampleCount =
+    options.mode === 'extrude' ? Math.max(1, Math.floor(options.count)) + 1 : Math.max(1, Math.floor(options.count))
+  const fitted: (FittedStroke | null)[] = strokes.map((s) => fitStroke(s, sampleCount))
+  return { items: toStructureItems(tagged), fitted, closed }
+}
 
 export const DOCS_FILES: Record<string, string> = {
   'README.md': join(process.cwd(), 'README.md'),

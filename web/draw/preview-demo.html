@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>实时 3D 预览 Demo — Genshin Model Studio</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #10151c; font-family: system-ui, sans-serif; }
+  #view { position: fixed; inset: 0; }
+  #view canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+  #hud {
+    position: fixed; top: 12px; left: 12px; z-index: 2; max-width: 330px;
+    color: #dfe6ee; background: rgba(16, 21, 28, 0.8); border: 1px solid #2b3542;
+    border-radius: 8px; padding: 10px 14px; font-size: 13px; line-height: 1.7;
+  }
+  #hud h1 { font-size: 14px; margin: 0 0 6px; }
+  #hud .hint { color: #93a1b0; font-size: 12px; }
+  #legend { margin-top: 6px; font-size: 12px; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+  #status { color: #ffd479; font-size: 12px; margin-top: 6px; }
+  #status.err { color: #ff7b7b; }
+</style>
+</head>
+<body>
+<div id="view"><canvas id="canvas"></canvas></div>
+<div id="hud">
+  <h1>实时 3D 预览 · preview.js 独立验证页</h1>
+  <div>🖱 左键拖拽旋转 · 滚轮缩放 · 移动端单指拖拽 / 双指捏合</div>
+  <div class="hint">地面网格：y=0 场景地面；坐标轴 x=红 / y=绿 / z=蓝（便于判断朝向）</div>
+  <div id="legend"></div>
+  <div id="status">加载 Three.js（CDN）…</div>
+</div>
+
+<script src="./preview.js"></script>
+<script>
+(function () {
+  'use strict'
+
+  var statusEl = document.getElementById('status')
+
+  // 验证用假数据：覆盖圆柱/长方体/棱柱（两类）+ 球体，含绕 Y 旋转的 item
+  var DEMO_ITEMS = [
+    { resourceId: 10009001, position: [0, 0.5, 0], rotation: [0, 0, 0], scale: [1, 1, 1] },           // 长方体（落地）
+    { resourceId: 10009008, position: [-2.0, 1.0, 0.4], rotation: [0, 0, 0], scale: [1, 2, 1] },       // 圆柱（立着，高 2）
+    { resourceId: 10009004, position: [2.0, 0.5, -0.4], rotation: [0, 90, 0], scale: [1, 1, 1] },      // 三棱柱（绕 Y 转 90°）
+    { resourceId: 10009005, position: [-0.9, 0.3, -2.2], rotation: [0, 45, 0], scale: [0.6, 0.6, 0.6] }, // 五棱柱
+    { resourceId: 10009002, position: [1.2, 0.35, 2.0], rotation: [0, 0, 0], scale: [0.7, 0.7, 0.7] },  // 球体
+  ]
+
+  // 与 preview.js COLORS 保持一致的图例
+  var LEGEND = [
+    [10009001, '长方体', '#7ea6e0'],
+    [10009008, '圆柱（立着）', '#6fc3c9'],
+    [10009004, '三棱柱（Y 旋转 90°）', '#e8a86a'],
+    [10009005, '五棱柱', '#caa8e8'],
+    [10009002, '球体', '#8fd694'],
+  ]
+  document.getElementById('legend').innerHTML = LEGEND.map(function (l) {
+    return '<div><span class="dot" style="background:' + l[2] + '"></span>' + l[1] + ' <span class="hint">(' + l[0] + ')</span></div>'
+  }).join('')
+
+  // Three.js 多源 CDN fallback（unpkg → jsdelivr）
+  var CDNS = [
+    'https://unpkg.com/three@0.160.0/build/three.min.js',
+    'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js',
+  ]
+  var cdnIdx = 0
+
+  function boot() {
+    if (typeof window.createPreview !== 'function') {
+      statusEl.className = 'err'
+      statusEl.textContent = 'preview.js 未加载（./preview.js 需与本页同目录）'
+      return
+    }
+    try {
+      var preview = window.createPreview(document.getElementById('canvas'))
+      preview.setItems(DEMO_ITEMS)
+      statusEl.textContent =
+        '✓ Three.js r' + window.THREE.REVISION + ' 已加载，' + DEMO_ITEMS.length + ' 个元件渲染中（零 console 报错 = 通过）'
+    } catch (err) {
+      statusEl.className = 'err'
+      statusEl.textContent = '初始化失败：' + err.message
+    }
+  }
+
+  function loadCdn() {
+    if (cdnIdx >= CDNS.length) {
+      statusEl.className = 'err'
+      statusEl.textContent = 'Three.js CDN 全部加载失败（当前环境可能无法访问外网）。' +
+        '请检查网络，或改用 unpkg / jsdelivr 可用的镜像地址。'
+      return
+    }
+    var s = document.createElement('script')
+    s.src = CDNS[cdnIdx++]
+    s.onload = boot
+    s.onerror = loadCdn
+    document.head.appendChild(s)
+  }
+
+  loadCdn()
+})()
+</script>
+</body>
+</html>
