@@ -9,6 +9,12 @@
  *     setItems(items)  拍平后的 structure item 数组；每次调用清空并重建场景
  *     dispose()        释放渲染器 / 几何 / 材质 / 事件监听
  *
+ * 三期颜色（docs/phase2-drawing-prd.md §9）：
+ *   item.color 可选，两种形态：
+ *     - 字符串 "0xRRGGBB"（拍平产物为对象时不会出现，但防御性兼容）
+ *     - 对象 { enabled: true, rgb: "0xRRGGBB" | 十进制整数, opacity, overlay }（F 任务拍平产物）
+ *   有 color → MeshStandardMaterial 用该色；无 color / enabled:false / 解析失败 → 该几何类的默认浅色。
+ *
  * items 字段语义（docs/input-format.md）：
  *   resourceId  官方基础元件 ID（资源速查表）
  *   position    [x, y, z]  米，相对模型原点
@@ -28,7 +34,7 @@
   var MIN_RADIUS = 0.5
   var MAX_RADIUS = 300
 
-  // 每类几何一个浅色（默认材质；本期无色，颜色二期按 group 附着）
+  // 每类几何一个浅色（默认材质；item.color 存在时覆盖为指定色）
   var COLORS = {
     box: 0x7ea6e0, // 长方体 · 蓝（已闭合）
     sphere: 0x8fd694, // 球体 · 绿（已闭合）
@@ -44,6 +50,33 @@
 
   function clamp(v, lo, hi) {
     return Math.min(Math.max(v, lo), hi)
+  }
+
+  /**
+   * 三期颜色：从 item 解析材质色（0xRRGGBB 数值）。
+   * 支持字符串 "0xRRGGBB" / "#RRGGBB"，以及拍平对象 { enabled, rgb, opacity, overlay }；
+   * rgb 可为 "0xRRGGBB" 字符串或十进制整数（docs/input-format.md §颜色）。
+   * 无 color / enabled:false / 解析失败 → null = 默认材质。
+   */
+  function itemColorHex(item) {
+    if (!item || item.color == null) return null
+    var c = item.color
+    var rgb = null
+    if (typeof c === 'string') rgb = c
+    else if (typeof c === 'object') {
+      if (c.enabled === false) return null
+      rgb = c.rgb
+    } else {
+      return null
+    }
+    if (typeof rgb === 'number') return Number.isFinite(rgb) && rgb >= 0 ? rgb : null
+    if (typeof rgb === 'string') {
+      var m = rgb.match(/^(?:0x|#)([0-9a-fA-F]{6})$/)
+      if (m) return parseInt(m[1], 16)
+      m = rgb.match(/^([0-9a-fA-F]{6})$/) // 裸 6 位 hex 兜底
+      if (m) return parseInt(m[1], 16)
+    }
+    return null
   }
 
   /**
@@ -152,22 +185,24 @@
       warnedIds[id] = true
     }
 
-    // 材质：每类几何共享一个（默认材质，本期无色）
+    // 材质：按「颜色 + 几何类」缓存共享；无 color = 该类默认浅色（三期：item.color → 指定色）
+    var colorHex = itemColorHex(item)
     var mat
     if (isLine) {
-      mat = new THREE.LineBasicMaterial({ color: COLORS.wire })
+      mat = new THREE.LineBasicMaterial({ color: colorHex != null ? colorHex : COLORS.wire })
     } else {
-      if (!mats.has(kind)) {
+      var matKey = kind + '|' + (colorHex != null ? colorHex : 'default')
+      if (!mats.has(matKey)) {
         mats.set(
-          kind,
+          matKey,
           new THREE.MeshStandardMaterial({
-            color: COLORS[kind] || COLORS.placeholder,
+            color: colorHex != null ? colorHex : COLORS[kind] || COLORS.placeholder,
             roughness: 0.85,
             metalness: 0.05,
           })
         )
       }
-      mat = mats.get(kind)
+      mat = mats.get(matKey)
     }
     var obj = isLine ? new THREE.LineSegments(geo, mat) : new THREE.Mesh(geo, mat)
 
@@ -332,8 +367,10 @@
       clearItems()
       if (!Array.isArray(items)) {
         console.warn('[preview] setItems: 入参不是数组，已清空场景')
+        pruneUnusedMats()
         return
       }
+      var used = new Set()
       for (var i = 0; i < items.length; i++) {
         var item = items[i]
         if (!item || typeof item.resourceId !== 'number') {
@@ -342,9 +379,24 @@
         }
         var obj = buildItemMesh(item, mats, warnedIds)
         if (obj.isLineSegments) lineMats.push(obj.material)
+        else used.add(obj.material)
         itemsGroup.add(obj)
       }
+      pruneUnusedMats(used)
       fitCameraToContent()
+    }
+
+    // 释放不再被场景引用的缓存材质（换色后旧材质不无限累积；lineMats 由 clearItems 处理）
+    function pruneUnusedMats(used) {
+      var keep = used || new Set()
+      var dead = []
+      mats.forEach(function (m, key) {
+        if (!keep.has(m)) dead.push(key)
+      })
+      for (var i = 0; i < dead.length; i++) {
+        mats.get(dead[i]).dispose()
+        mats.delete(dead[i])
+      }
     }
 
     // 依据内容包围盒自动取景（保留当前 yaw/pitch，仅重算中心与视距）

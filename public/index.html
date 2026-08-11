@@ -36,6 +36,30 @@
   #drawStatus.ok { color: #2a7a2a; }
   #previewCanvas { display: block; width: 100%; height: 460px; border: 1px solid #2b3542; border-radius: 8px; background: #10151c; }
   .preview-hint { color: #666; font-size: 0.82rem; text-align: center; }
+
+  /* ============ 三期：颜色（色板 / 笔画列表 / 改色弹层） ============ */
+  .color-row { display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; align-items: center; }
+  .color-label { font-weight: 600; }
+  .palette { display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: center; }
+  .swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.75); cursor: pointer; flex: none; box-sizing: border-box; }
+  .swatch.on { outline: 2px solid #111; outline-offset: 1px; box-shadow: 0 0 0 3px rgba(255,255,255,0.85); }
+  .swatch.default { background: repeating-linear-gradient(45deg, #dfe5ec 0 5px, #b9c2cc 5px 10px); }
+  .custom-color { display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.9rem; cursor: pointer; }
+  .custom-color input[type=color] { width: 30px; height: 24px; padding: 0; border: 1px solid #c3ccd6; border-radius: 4px; background: none; cursor: pointer; }
+  #currentColorText { font-variant-numeric: tabular-nums; color: #555; }
+  .stroke-list { display: flex; flex-wrap: wrap; gap: 0.45rem; padding: 0.5rem 0.7rem; background: #f6f8fa; border: 1px solid #e1e6ec; border-radius: 6px; min-height: 38px; align-items: center; }
+  .stroke-list-empty { color: #888; font-size: 0.85rem; }
+  .stroke-chip { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.22rem 0.55rem 0.22rem 0.3rem; border: 1px solid #d4dbe3; background: #fff; border-radius: 999px; cursor: pointer; font-size: 0.82rem; color: #333; user-select: none; }
+  .stroke-chip.selected { border-color: #2b6cb0; box-shadow: 0 0 0 2px rgba(43,108,176,0.28); }
+  .stroke-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.25); flex: none; box-sizing: border-box; }
+  .stroke-dot.default { background: repeating-linear-gradient(45deg, #dfe5ec 0 3px, #b9c2cc 3px 6px); }
+  #colorPopover { position: fixed; z-index: 60; background: #fff; border: 1px solid #c9d2dc; border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,0.18); padding: 0.6rem 0.7rem; display: none; min-width: 210px; }
+  #colorPopover .pop-title { font-size: 0.8rem; color: #555; margin-bottom: 0.45rem; }
+  @media (max-width: 600px) {
+    .palette { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; padding-bottom: 2px; }
+    .stroke-list { flex-wrap: nowrap; overflow-x: auto; }
+    .stroke-chip { flex: none; }
+  }
   @media (max-width: 900px) {
     .draw-layout { grid-template-columns: 1fr; }
     #drawCanvas, #previewCanvas { height: 320px; }
@@ -74,7 +98,7 @@
 
 <hr class="sep">
 <section id="drawSection">
-  <h2>✏️ 画线建模 <span class="muted">手画线条 → 拟合 → 3D 预览 → 导出 .gil / .gia（作品自动保存在本机）</span></h2>
+  <h2>✏️ 画线建模 <span class="muted">手画线条 → 上色 → 拟合 → 3D 预览 → 导出 .gil / .gia（作品自动保存在本机）</span></h2>
   <div class="draw-layout">
     <div class="draw-col">
       <div class="controls">
@@ -90,10 +114,16 @@
         <label>数量 <input type="range" id="count" min="10" max="300" step="1" value="60"><span id="countVal">60</span></label>
         <label>模型高 <input type="number" id="height" min="0.5" max="100" step="0.5" value="10"> 米</label>
       </div>
+      <div class="controls color-row">
+        <span class="color-label">新笔画颜色</span>
+        <div class="palette" id="palette"></div>
+        <label class="custom-color">自定义 <input type="color" id="customColor" value="#e5484d"><span id="currentColorText">默认材质</span></label>
+      </div>
       <div class="canvas-box">
         <canvas id="drawCanvas"></canvas>
         <span class="canvas-hint" id="canvasHint">画布高 = 10 米</span>
       </div>
+      <div class="stroke-list" id="strokeList"></div>
       <div class="draw-actions">
         <button id="undo">↩ 撤销上一笔</button>
         <button id="clear">🗑 清空</button>
@@ -101,7 +131,7 @@
         <button id="importWork">导入作品 JSON</button>
         <input type="file" id="importFile" accept=".json,application/json" hidden>
       </div>
-      <div class="status" id="drawStatus">在画布上画线（鼠标或手指），松手自动拟合生成</div>
+      <div class="status" id="drawStatus">在画布上画线（鼠标或手指），松手自动拟合生成；画完点击笔画圆点可改该笔颜色</div>
     </div>
     <div class="draw-col">
       <canvas id="previewCanvas"></canvas>
@@ -114,6 +144,12 @@
     <button id="drawExportGia">导出 .gia</button>
   </div>
 </section>
+
+<div id="colorPopover">
+  <div class="pop-title" id="popTitle"></div>
+  <div class="palette" id="popPalette"></div>
+  <label class="custom-color">自定义 <input type="color" id="popCustom" value="#e5484d"></label>
+</div>
 
 <script>
 // ============ 一期：JSON 编辑 / 示例 / 导出（保持不变） ============
@@ -199,9 +235,14 @@ loadExamples()
 (function () {
   'use strict'
 
-  const LS_KEY = 'gms.draw.work.v1'
+  const LS_KEY = 'gms.draw.work.v1' // 键名保留历史命名：读旧键即自动迁移 v1 → v2
   const WORK_FORMAT = 'genshin-model-studio.draw'
-  const WORK_VERSION = 1
+  const WORK_VERSION = 2 // 三期：strokes 带 color、options 带 currentColor；读入仍兼容 v1
+  // 三期预设色板（12 色 + 默认材质 + 自定义）
+  const PALETTE = [
+    '0xE5484D', '0xF97316', '0xFACC15', '0x46A758', '0x12A594', '0x3E63DD',
+    '0x8E4EC6', '0xE93D82', '0x8B5E3C', '0xE8D8C0', '0x9E9E9E', '0x343A40',
+  ]
   const DEBOUNCE_MS = 250
   const SAVE_MS = 500
   // Three.js 多源 CDN fallback（unpkg → jsdelivr；UMD 版以匹配 preview.js 的全局 THREE 用法）
@@ -216,8 +257,9 @@ loadExamples()
   const ctx = drawCanvas.getContext('2d')
 
   const state = {
-    strokes: [], // { id, points: [ [x,y], ... ] } 画布 CSS 像素
-    options: { mode: 'extrude', shape: 'cylinder', size: 0.4, count: 60, heightMeters: 10 },
+    strokes: [], // { id, points: [ [x,y], ... ], color? } 画布 CSS 像素；color = "0xRRGGBB"（缺省 = 默认材质）
+    options: { mode: 'extrude', shape: 'cylinder', size: 0.4, count: 60, heightMeters: 10 }, // currentColor? 新笔画默认色
+    selectedId: null, // 选中笔画 id（画布曲线高亮）
     fitted: [], // 与 strokes 按序对齐：{ id, points, closed } | null（服务端返回）
     closed: [],
     items: [], // 拍平后的 structure items（预览/导出共用）
@@ -231,6 +273,25 @@ loadExamples()
   let saveTimer = null
   let genSeq = 0
   let cdnIdx = 0
+
+  /* ---------- 三期颜色工具 ---------- */
+
+  /** 归一化颜色为 "0xRRGGBB"（大写）；非法输入返回 null。 */
+  function normalizeColor(v) {
+    if (typeof v !== 'string') return null
+    const m = v.match(/^(?:#|0x)([0-9a-fA-F]{6})$/)
+    return m ? '0x' + m[1].toUpperCase() : null
+  }
+
+  function strokeById(id) {
+    for (const s of state.strokes) if (s.id === id) return s
+    return null
+  }
+
+  function currentColor() {
+    const c = state.options.currentColor
+    return c ? normalizeColor(c) : null
+  }
 
   /* ---------- 画布绘制：网格 + 原始笔画（淡）+ 拟合曲线（亮） ---------- */
 
@@ -248,24 +309,35 @@ loadExamples()
     for (let x = 0.5; x <= w; x += 25) { ctx.moveTo(x, 0); ctx.lineTo(x, h) }
     for (let y = 0.5; y <= h; y += 25) { ctx.moveTo(0, y); ctx.lineTo(w, y) }
     ctx.stroke()
-    // 原始笔画（淡色）
+    // 原始笔画（淡色；选中笔画提亮）
     ctx.lineWidth = 2
     ctx.lineCap = 'round'
     ctx.lineJoin = 'round'
-    ctx.strokeStyle = 'rgba(255,255,255,0.38)'
     for (const stroke of state.strokes) {
       const pts = stroke.points
       if (pts.length < 2) continue
+      ctx.strokeStyle = stroke.id === state.selectedId ? 'rgba(255,255,255,0.75)' : 'rgba(255,255,255,0.38)'
       ctx.beginPath()
       ctx.moveTo(pts[0][0], pts[0][1])
       for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1])
       ctx.stroke()
     }
-    // 拟合曲线（亮色：封闭=青，开放=琥珀）
-    ctx.lineWidth = 3
+    // 拟合曲线：笔画颜色（有 color）或亮色（封闭=青，开放=琥珀）；选中笔画加白色描边高亮
     for (const f of state.fitted) {
       if (!f || f.points.length < 2) continue
-      ctx.strokeStyle = f.closed ? '#6fc3c9' : '#ffd479'
+      const stroke = strokeById(f.id)
+      const strokeColor = stroke && stroke.color ? normalizeColor(stroke.color) : null
+      const lineColor = strokeColor ? '#' + strokeColor.slice(2) : (f.closed ? '#6fc3c9' : '#ffd479')
+      if (f.id === state.selectedId) {
+        ctx.strokeStyle = 'rgba(255,255,255,0.9)'
+        ctx.lineWidth = 6
+        ctx.beginPath()
+        ctx.moveTo(f.points[0][0], f.points[0][1])
+        for (let i = 1; i < f.points.length; i++) ctx.lineTo(f.points[i][0], f.points[i][1])
+        ctx.stroke()
+      }
+      ctx.strokeStyle = lineColor
+      ctx.lineWidth = 3
       ctx.beginPath()
       ctx.moveTo(f.points[0][0], f.points[0][1])
       for (let i = 1; i < f.points.length; i++) ctx.lineTo(f.points[i][0], f.points[i][1])
@@ -298,6 +370,8 @@ loadExamples()
     try { drawCanvas.setPointerCapture(e.pointerId) } catch (err) { /* 忽略捕获失败 */ }
     activePointerId = e.pointerId
     currentStroke = { id: 's' + Date.now().toString(36) + '_' + seq++, points: [toPoint(e)] }
+    const cc = currentColor()
+    if (cc) currentStroke.color = cc // 新笔画自动用当前选中色
     state.strokes.push(currentStroke)
     state.fitted.push(null)
     state.closed.push(false)
@@ -317,6 +391,10 @@ loadExamples()
   function endStroke(e) {
     if (e.pointerId !== activePointerId) return
     activePointerId = null
+    if (currentStroke) {
+      state.selectedId = currentStroke.id // 刚画的笔画自动选中，便于立刻改色
+      renderStrokeList()
+    }
     currentStroke = null
     scheduleGen()
   }
@@ -422,6 +500,8 @@ loadExamples()
     state.strokes.pop()
     state.fitted.pop()
     state.closed.pop()
+    ensureSelection()
+    renderStrokeList()
     renderDraw()
     scheduleGen()
   })
@@ -431,9 +511,142 @@ loadExamples()
     state.strokes = []
     state.fitted = []
     state.closed = []
+    state.selectedId = null
+    renderStrokeList()
     renderDraw()
     scheduleGen()
   })
+
+  /* ---------- 三期：色板 / 笔画列表 / 改色 ---------- */
+
+  function swatchHTML(color, on, isDefault) {
+    const style = color ? `background:#${color.slice(2)}` : ''
+    return `<span class="swatch ${isDefault ? 'default ' : ''}${on ? 'on' : ''}" data-color="${color || ''}" style="${style}" title="${color || '默认材质'}"></span>`
+  }
+
+  /* ---- 主色板：设定新笔画默认色 ---- */
+
+  function renderMainPalette() {
+    const cur = currentColor()
+    el('palette').innerHTML = swatchHTML(null, !cur, true) + PALETTE.map((c) => swatchHTML(c, cur === c)).join('')
+    el('customColor').value = cur ? '#' + cur.slice(2) : '#e5484d'
+    el('currentColorText').textContent = cur ? cur : '默认材质'
+  }
+
+  function setCurrentColor(color) {
+    if (color) state.options.currentColor = color
+    else delete state.options.currentColor
+    renderMainPalette()
+  }
+
+  el('palette').addEventListener('click', (e) => {
+    const sw = e.target.closest('.swatch')
+    if (!sw) return
+    setCurrentColor(sw.dataset.color ? normalizeColor(sw.dataset.color) : null)
+  })
+
+  el('customColor').addEventListener('input', (e) => {
+    const c = normalizeColor(e.target.value)
+    if (c) setCurrentColor(c)
+  })
+
+  /* ---- 笔画列表：点圆点 = 选中该笔 + 弹色板 ---- */
+
+  function renderStrokeList() {
+    const list = el('strokeList')
+    if (state.strokes.length === 0) {
+      list.innerHTML = '<span class="stroke-list-empty">还没有笔画：画线后这里列出每一笔，点击圆点可改该笔颜色</span>'
+      return
+    }
+    list.innerHTML = state.strokes
+      .map((s, i) => {
+        const on = s.id === state.selectedId
+        const dot = s.color
+          ? `<span class="stroke-dot" data-id="${s.id}" style="background:#${s.color.slice(2)}"></span>`
+          : `<span class="stroke-dot default" data-id="${s.id}"></span>`
+        return `<span class="stroke-chip${on ? ' selected' : ''}" data-id="${s.id}">${dot}<span class="stroke-name">笔画 ${i + 1}</span></span>`
+      })
+      .join('')
+  }
+
+  function selectStroke(id) {
+    state.selectedId = id
+    renderStrokeList()
+    renderDraw()
+  }
+
+  function ensureSelection() {
+    if (state.selectedId && !strokeById(state.selectedId)) state.selectedId = null
+  }
+
+  el('strokeList').addEventListener('click', (e) => {
+    const chip = e.target.closest('.stroke-chip')
+    if (!chip) return
+    selectStroke(chip.dataset.id)
+    openPopover(chip.dataset.id, e.target.closest('.stroke-dot') || chip)
+  })
+
+  /* ---- 改色弹层（点笔画圆点弹出；选色后立即重新生成 + 预览更新） ---- */
+
+  function openPopover(strokeId, anchor) {
+    const pop = el('colorPopover')
+    const stroke = strokeById(strokeId)
+    if (!stroke) return
+    const cur = normalizeColor(stroke.color)
+    el('popTitle').textContent = '笔画 ' + (state.strokes.indexOf(stroke) + 1) + ' 颜色（点外部关闭）'
+    el('popPalette').innerHTML = swatchHTML(null, !cur, true) + PALETTE.map((c) => swatchHTML(c, cur === c)).join('')
+    el('popCustom').value = cur ? '#' + cur.slice(2) : '#e5484d'
+    pop.dataset.strokeId = strokeId
+    pop.style.display = 'block'
+    const r = anchor.getBoundingClientRect()
+    const w = pop.offsetWidth
+    let left = Math.min(Math.max(8, r.left), window.innerWidth - w - 8)
+    let top = r.bottom + 8
+    if (top + pop.offsetHeight > window.innerHeight - 8) top = Math.max(8, r.top - pop.offsetHeight - 8)
+    pop.style.left = left + 'px'
+    pop.style.top = top + 'px'
+  }
+
+  function closePopover() {
+    el('colorPopover').style.display = 'none'
+  }
+
+  function setStrokeColor(strokeId, color) {
+    const stroke = strokeById(strokeId)
+    if (!stroke) return
+    if (color) stroke.color = color
+    else delete stroke.color
+    renderStrokeList()
+    renderDraw()
+    scheduleGen() // 改色后重新生成 + 预览更新
+  }
+
+  el('popPalette').addEventListener('click', (e) => {
+    const sw = e.target.closest('.swatch')
+    if (!sw) return
+    const id = el('colorPopover').dataset.strokeId
+    setStrokeColor(id, sw.dataset.color ? normalizeColor(sw.dataset.color) : null)
+  })
+
+  el('popCustom').addEventListener('input', (e) => {
+    const c = normalizeColor(e.target.value)
+    if (!c) return
+    setStrokeColor(el('colorPopover').dataset.strokeId, c)
+  })
+
+  document.addEventListener('pointerdown', (e) => {
+    const pop = el('colorPopover')
+    if (pop.style.display === 'none') return
+    if (pop.contains(e.target)) return
+    if (e.target.closest && e.target.closest('.stroke-dot')) return // 点圆点由列表点击处理器重新打开
+    closePopover()
+  })
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closePopover()
+  })
+
+  window.addEventListener('scroll', closePopover, true)
 
   /* ---------- localStorage 自动保存 / 恢复 ---------- */
 
@@ -463,7 +676,7 @@ loadExamples()
   /** 应用作品（本地存档或导入文件）。返回是否成功。 */
   function applyWork(data, silent) {
     if (!data || typeof data !== 'object') return false
-    if (data.format !== WORK_FORMAT || data.version !== WORK_VERSION) return false
+    if (data.format !== WORK_FORMAT || (data.version !== 1 && data.version !== 2)) return false
     if (!Array.isArray(data.strokes)) return false
     const o = data.options || {}
     const opts = {
@@ -473,11 +686,21 @@ loadExamples()
       count: Number.isFinite(o.count) ? Math.min(300, Math.max(10, Math.round(o.count))) : 60,
       heightMeters: Number.isFinite(o.heightMeters) && o.heightMeters > 0 ? o.heightMeters : 10,
     }
+    const cur = normalizeColor(o.currentColor)
+    if (cur) opts.currentColor = cur // v2：无/非法 currentColor = 默认材质
     state.strokes = data.strokes
       .filter((s) => s && typeof s.id === 'string' && Array.isArray(s.points) && sanitizePoints(s.points).length > 0)
-      .map((s) => ({ id: s.id, points: sanitizePoints(s.points) }))
+      .map((s) => {
+        const out = { id: s.id, points: sanitizePoints(s.points) }
+        const color = normalizeColor(s.color) // v1 无 color 字段 = 默认材质
+        if (color) out.color = color
+        return out
+      })
     state.options = opts
+    state.selectedId = null
     syncControls()
+    renderMainPalette()
+    renderStrokeList()
     if (!silent) setStatus(`已导入作品：${state.strokes.length} 笔笔画`, 'ok')
     scheduleGen()
     return true
@@ -611,7 +834,9 @@ loadExamples()
   window.addEventListener('resize', resizeDraw)
 
   syncControls()
-  if (!restoreLocal()) setStatus('在画布上画线（鼠标或手指），松手自动拟合生成')
+  renderMainPalette()
+  renderStrokeList()
+  if (!restoreLocal()) setStatus('在画布上画线（鼠标或手指），松手自动拟合生成；画完点击笔画圆点可改颜色')
   loadThree()
 
   window.addEventListener('pagehide', () => {

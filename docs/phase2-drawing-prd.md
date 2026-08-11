@@ -131,6 +131,28 @@ createPreview(canvasEl) // → { setItems(structureItems), dispose() }
 
 ## 8. 后续迭代路线
 
-- 三期：颜色（按笔画上色，UI 色板 + 拍平写 item.color）
+- ✅ 三期（进行中）：颜色（按笔画上色，UI 色板 + 拍平写 item.color）
 - 四期：封闭填充（fill 渲染器）、更多元件样式
 - 远期：形状识别/规整、部件化编辑、分享链接
+
+## 9. 三期：颜色（2026-08-12 设计定案）
+
+契约（F/G 任务协调，实现必须遵守）：
+
+```ts
+// Stroke 加可选颜色（作品 JSON v2；无 color = 默认材质，兼容 v1）
+export type Stroke = { id: string; points: ...; color?: string }  // color = "0xRRGGBB"
+
+// ModelOptions 加当前选中色（新笔画默认色）
+export type ModelOptions = { ...; currentColor?: string }  // "0xRRGGBB"，默认缺省
+
+// TaggedItem 加可选 color（拍平透传到 StructureItem.color，一期编码管线已支持）
+export type TaggedItem = { ...; color?: { enabled: true; rgb: string; opacity: number; overlay: 'overwrite' } }
+// 拍平规则：stroke.color 存在 → 写 color 全字段（enabled:true, opacity:100, overlay:'overwrite'）；否则不写（默认材质）
+```
+
+预览：preview.js 的 setItems 支持 item.color.rgb → 材质色；无 color → 现默认浅色。
+UI：色板（8-12 色）→ 选中色 = 新笔画颜色；每笔画旁颜色点，点击可改该笔颜色（选中笔画高亮）；作品 JSON 升 v2（v1 兼容读入）。
+遗留登记：three.min.js deprecation（0.160 仍可用，ESM 迁移风险>收益，暂缓）、applyPreview(null) 警告文案（后续改 silent）、README 操作说明（任务 E）。
+
+三期状态（2026-08-12）：F（生成侧颜色）+ G（前端色板/预览）并行子任务完成，主模型验收通过（选色→新笔上色、点笔画 chip→弹层改色、v1 兼容迁移、预览材质色、导出带色、非法颜色 400）。主模型缝合：web-shared.ts 笔画解析曾剥 color（F 边界外），已加格式校验与透传。29 测试全绿（8 draw + 4 颜色 + 17 golden）。README 已加画线建模操作说明（任务 E ✅）。

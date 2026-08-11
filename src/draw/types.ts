@@ -6,8 +6,9 @@
  */
 import type { StructureItem } from '../core/structure.js'
 
-/** 笔画：原始画布点（像素，x 右 y 下），不做任何处理，原样保存。 */
-export type Stroke = { id: string; points: ReadonlyArray<readonly [number, number]> }
+/** 笔画：原始画布点（像素，x 右 y 下），不做任何处理，原样保存。
+ * color 可选：笔画颜色 "0xRRGGBB"（作品 JSON v2；无 color = 默认材质，兼容 v1）。 */
+export type Stroke = { id: string; points: ReadonlyArray<readonly [number, number]>; color?: string }
 
 /** 生成参数。 */
 export type ModelOptions = {
@@ -16,7 +17,11 @@ export type ModelOptions = {
   size: number // 米：圆柱直径 / 方杆截面边长
   count: number // 每个笔画生成的元件数（extrude=段数，lathe=盘片层数）
   heightMeters: number // 归一化后模型高度（包络盒高映射到此值）
+  currentColor?: string // 当前选中色 "0xRRGGBB"（新笔画默认色）；生成侧不消费，由前端新建笔画时落为 stroke.color
 }
+
+/** 颜色槽（PRD §9 三期）：rgb 为 "0xRRGGBB" 字符串，拍平时转数值写 StructureItem.color。 */
+export type TaggedItemColor = { enabled: true; rgb: string; opacity: number; overlay: 'overwrite' }
 
 /** 带内部标签的元件（导出前必须拍平，strip group）。 */
 export type TaggedItem = {
@@ -24,7 +29,8 @@ export type TaggedItem = {
   position: [number, number, number] // 米
   rotation: [number, number, number] // 度，编辑器 YXZ 内旋
   scale: [number, number, number]
-  group: string // 来源笔画 id（颜色二期按组附着）
+  group: string // 来源笔画 id
+  color?: TaggedItemColor // 来源笔画有 color 时透传（无 = 默认材质，不写）
 }
 
 /** 圆柱（10009008）：零旋转轴向 = 局部 Y；scale=[截面直径, 轴向长度, 截面直径]。 */

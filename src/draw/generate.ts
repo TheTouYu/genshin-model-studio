@@ -15,7 +15,7 @@
  *   按采样点高度叠放圆盘（10009008，轴向 Y 零旋转），盘厚 = 总高 / count，
  *   scale.x/z = 直径 = 2r。
  */
-import type { ModelOptions, Stroke, TaggedItem } from './types.js'
+import type { ModelOptions, Stroke, TaggedItem, TaggedItemColor } from './types.js'
 import { BOX_RESOURCE_ID, CYLINDER_RESOURCE_ID } from './types.js'
 import { fitStroke, type FittedStroke } from './fitting.js'
 import type { StructureItem } from '../core/structure.js'
@@ -71,6 +71,12 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
   }
 
   const raw = rawBounds(strokes)
+  // 笔画颜色按 id 查表（PRD §9：stroke.color 存在 → 透传到该笔所有 TaggedItem）
+  const colorById = new Map<string, string>()
+  for (const stroke of strokes) {
+    if (stroke.color !== undefined) colorById.set(stroke.id, stroke.color)
+  }
+  const colorOf = (strokeId: string): string | undefined => colorById.get(strokeId)
   const items: TaggedItem[] = []
   if (raw !== null && fitted.length > 0) {
     const bboxWidth = Math.max(raw.maxX - raw.minX, 0)
@@ -86,7 +92,9 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
     if (opts.mode === 'extrude') {
       for (const fit of fitted) {
         for (let i = 0; i + 1 < fit.points.length; i++) {
-          const rod = extrudeRod(fit.points[i], fit.points[i + 1], toWorld, size, opts.shape, fit.id)
+          const rod = extrudeRod(
+            fit.points[i], fit.points[i + 1], toWorld, size, opts.shape, fit.id, colorOf(fit.id)
+          )
           if (rod !== null) items.push(rod)
         }
       }
@@ -101,13 +109,20 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
       for (const fit of fitted) {
         const minX = rawMinX.get(fit.id) ?? raw.minX
         for (const point of fit.points) {
-          const disc = latheDisc(point, toWorld, minX, scale, heightMeters, count, fit.id)
+          const disc = latheDisc(point, toWorld, minX, scale, heightMeters, count, fit.id, colorOf(fit.id))
           if (disc !== null) items.push(disc)
         }
       }
     }
   }
   return { items, closed }
+}
+
+/** stroke.color（"0xRRGGBB"）→ TaggedItem 颜色槽；无 color → undefined（不写 = 默认材质）。 */
+function itemColor(color: string | undefined): TaggedItemColor | undefined {
+  return color === undefined
+    ? undefined
+    : { enabled: true, rgb: color, opacity: 100, overlay: 'overwrite' }
 }
 
 /** extrude 单段杆：轴向对齐线段，位置 = 段中点。 */
@@ -117,7 +132,8 @@ function extrudeRod(
   toWorld: ToWorld,
   size: number,
   shape: ModelOptions['shape'],
-  group: string
+  group: string,
+  color?: string
 ): TaggedItem | null {
   const wa = toWorld(a[0], a[1])
   const wb = toWorld(b[0], b[1])
@@ -146,7 +162,8 @@ function extrudeRod(
     position: [(wa[0] + wb[0]) / 2, (wa[1] + wb[1]) / 2, 0],
     rotation: [alphaRad * DEG, betaRad * DEG, 0],
     scale,
-    group
+    group,
+    ...(color === undefined ? {} : { color: itemColor(color) })
   }
 }
 
@@ -158,7 +175,8 @@ function latheDisc(
   scale: number,
   heightMeters: number,
   count: number,
-  group: string
+  group: string,
+  color?: string
 ): TaggedItem | null {
   const radius = (point[0] - axisMinX) * scale // 半径 = (x − minX) × 归一化比例
   if (radius <= 0) return null
@@ -169,16 +187,27 @@ function latheDisc(
     position: [toWorld(axisMinX, 0)[0], world[1], 0],
     rotation: [0, 0, 0], // 轴向 Y 零旋转
     scale: [2 * radius, heightMeters / count, 2 * radius],
-    group
+    group,
+    ...(color === undefined ? {} : { color: itemColor(color) })
   }
 }
 
-/** 拍平：strip group 等内部字段；不写 color = 默认材质（一期语义）。 */
+/** TaggedItem.color → StructureItem.color：rgb 字符串转数值，写全字段（PRD §9 拍平规则）。 */
+function structureColor(color: TaggedItemColor): NonNullable<StructureItem['color']> {
+  const rgb = /^0x[0-9a-fA-F]{1,6}$/.test(color.rgb) ? Number.parseInt(color.rgb.slice(2), 16) : NaN
+  if (Number.isNaN(rgb)) {
+    throw new Error(`[draw] invalid stroke color "${color.rgb}" (expected "0xRRGGBB")`)
+  }
+  return { enabled: true, rgb, opacity: 100, overlay: 'overwrite' }
+}
+
+/** 拍平：strip group 等内部字段；item 有 color → 写全字段，无 color → 不写（默认材质，一期语义）。 */
 export function toStructureItems(items: readonly TaggedItem[]): StructureItem[] {
-  return items.map(({ resourceId, position, rotation, scale }) => ({
+  return items.map(({ resourceId, position, rotation, scale, color }) => ({
     resourceId,
     position,
     rotation,
-    scale
+    scale,
+    ...(color === undefined ? {} : { color: structureColor(color) })
   }))
 }

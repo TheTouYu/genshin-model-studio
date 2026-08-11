@@ -61,7 +61,12 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
     if (totalPoints > MAX_DRAW_POINTS) {
       throw new Error(`笔画点总数过多（超过 ${MAX_DRAW_POINTS} 个点）`)
     }
-    return { id: stroke.id, points }
+    // 可选颜色（三期）："0xRRGGBB"，缺省 = 默认材质
+    const color = (stroke as { color?: unknown }).color
+    if (color !== undefined && (typeof color !== 'string' || !/^0x[0-9a-fA-F]{6}$/.test(color))) {
+      throw new Error(`第 ${i + 1} 笔颜色无效：需为 "0xRRGGBB" 格式（如 "0xC8A87C"）`)
+    }
+    return { id: stroke.id, points, ...(color === undefined ? {} : { color }) }
   })
 
   const o = src.options as Record<string, unknown> | null

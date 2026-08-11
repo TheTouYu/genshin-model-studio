@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "riligar-infra-cloudfare": {
+      "source": "riligar/agents-kit",
+      "sourceType": "github",
+      "skillPath": ".agent/skills/riligar-infra-cloudfare/SKILL.md",
+      "computedHash": "2a1a408b6ce7a507dbe870f68def36c3d92a2bb8e1963e410809486922f1136f"
+    }
+  }
+}

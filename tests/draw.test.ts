@@ -222,3 +222,85 @@ test('flatten: toStructureItems strips internal fields and passes resolveStructu
   assert.equal(resolved.items.length, items.length)
   assert.equal(resolved.items[0].resourceId, CYLINDER_RESOURCE_ID)
 })
+
+// —— 三期颜色（PRD §9）：Stroke.color → TaggedItem.color → 拍平写 StructureItem.color ——
+
+test('color: stroke with color → flattened item carries full color fields and resolves', () => {
+  const stroke: Stroke = { id: 'red', points: [[0, 0], [100, 0], [200, 0]], color: '0xC8A87C' }
+  const { items } = generateModel([stroke], {
+    mode: 'extrude', shape: 'cylinder', size: 0.2, count: 4, heightMeters: 2
+  })
+  assert.ok(items.length > 0)
+  // 生成侧：透传 "0xRRGGBB" 字符串到该笔所有 TaggedItem
+  for (const item of items) {
+    assert.deepEqual(item.color, { enabled: true, rgb: '0xC8A87C', opacity: 100, overlay: 'overwrite' })
+  }
+  // 拍平侧：rgb 转数值，写完整全字段
+  const flat = toStructureItems(items)
+  assert.equal(flat.length, items.length)
+  for (const item of flat) {
+    assert.ok(!('group' in item), 'group must be stripped')
+    assert.deepEqual(item.color, { enabled: true, rgb: 0xc8a87c, opacity: 100, overlay: 'overwrite' })
+  }
+  // 兜底：带 color 的拍平产物必须被一期 fail-closed 解析器接受
+  const resolved = resolveStructure({ name: 'draw-color', items: flat })
+  assert.equal(resolved.items.length, flat.length)
+  assert.deepEqual(resolved.items[0].color, { enabled: true, rgb: 0xc8a87c, opacity: 100, overlay: 'overwrite' })
+})
+
+test('color: stroke without color → no color field anywhere (default material)', () => {
+  const stroke: Stroke = { id: 'plain', points: [[0, 0], [100, 0]] }
+  const { items } = generateModel([stroke], {
+    mode: 'extrude', shape: 'cylinder', size: 0.2, count: 4, heightMeters: 2
+  })
+  assert.ok(items.length > 0)
+  for (const item of items) assert.equal(item.color, undefined)
+  const flat = toStructureItems(items)
+  for (const item of flat) assert.equal(item.color, undefined)
+  assert.equal(resolveStructure({ name: 'draw-plain', items: flat }).items.length, flat.length)
+})
+
+test('color: mixed strokes (one colored, one plain) keep colors per stroke', () => {
+  const red: Stroke = { id: 'red', points: [[0, 0], [100, 0]], color: '0xFF0000' }
+  const plain: Stroke = { id: 'plain', points: [[0, 50], [100, 50]] }
+  const { items } = generateModel([red, plain], {
+    mode: 'extrude', shape: 'cylinder', size: 0.2, count: 4, heightMeters: 2,
+    currentColor: '0x00FF00' // 生成侧不消费：无 color 的笔画仍不写 color（新笔画默认色由前端落为 stroke.color）
+  })
+  assert.ok(items.length >= 2)
+  for (const item of items) {
+    if (item.group === 'red') {
+      assert.deepEqual(item.color, { enabled: true, rgb: '0xFF0000', opacity: 100, overlay: 'overwrite' })
+    } else {
+      assert.equal(item.group, 'plain')
+      assert.equal(item.color, undefined)
+    }
+  }
+  const flat = toStructureItems(items)
+  const redFlat = flat.filter((_, i) => items[i].group === 'red')
+  const plainFlat = flat.filter((_, i) => items[i].group === 'plain')
+  assert.ok(redFlat.length > 0 && plainFlat.length > 0)
+  for (const item of redFlat) {
+    assert.deepEqual(item.color, { enabled: true, rgb: 0xff0000, opacity: 100, overlay: 'overwrite' })
+  }
+  for (const item of plainFlat) assert.equal(item.color, undefined)
+  // 兜底：混合输入同样被解析器接受
+  assert.equal(resolveStructure({ name: 'draw-mixed', items: flat }).items.length, flat.length)
+})
+
+test('color: determinism unchanged (extrude + lathe, with/without colors)', () => {
+  const strokes: Stroke[] = [
+    { id: 'a', points: [[0, 0], [100, 0], [100, 100]], color: '0x112233' },
+    { id: 'b', points: [[50, 0], [80, 60], [20, 120]] }
+  ]
+  const opts: ModelOptions = { mode: 'extrude', shape: 'box', size: 0.3, count: 10, heightMeters: 3 }
+  assert.deepEqual(generateModel(strokes, opts), generateModel(strokes, opts))
+  assert.deepEqual(
+    generateModel(strokes, { ...opts, mode: 'lathe' }),
+    generateModel(strokes, { ...opts, mode: 'lathe' })
+  )
+  // 与一期同输入同输出：无 color 字段时产物与带 color 输入去掉 color 后逐位一致
+  const plain: Stroke[] = strokes.map(({ id, points }) => ({ id, points }))
+  const coloredStripped = generateModel(strokes, opts).items.map(({ color, ...rest }) => rest)
+  assert.deepEqual(generateModel(plain, opts).items, coloredStripped)
+})
