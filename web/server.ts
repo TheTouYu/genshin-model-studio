@@ -58,8 +58,8 @@ const server = createServer((req, res) => {
     send(res, 200, JSON.stringify(exampleMeta(), null, 2), 'application/json')
     return
   }
-  if (req.method === 'GET' && url.pathname.startsWith('/api/examples/')) {
-    const name = decodeURIComponent(url.pathname.slice('/api/examples/'.length))
+  if (req.method === 'GET' && url.pathname === '/api/examples/get') {
+    const name = url.searchParams.get('name') ?? ''
     const file = join(ROOT, 'examples', name.endsWith('.json') ? name : name + '.json')
     if (!file.startsWith(join(ROOT, 'examples')) || !file.endsWith('.json')) {
       send(res, 400, 'bad example name')

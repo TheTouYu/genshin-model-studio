@@ -52,7 +52,7 @@ async function loadExamples() {
 }
 
 async function loadExample(name) {
-  const res = await fetch(`/api/examples/${encodeURIComponent(name)}`)
+  const res = await fetch(`/api/examples/get?name=${encodeURIComponent(name)}`)
   const data = await res.json()
   $('editor').value = JSON.stringify(data, null, $('compact').checked ? 0 : 2)
   setStatus(`已加载 ${name}`)
