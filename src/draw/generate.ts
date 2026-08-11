@@ -14,10 +14,18 @@
  * - lathe：旋转轴 = 归一化前笔画包围盒左边缘（raw minX），半径 = (x − minX)×scale；
  *   按采样点高度叠放圆盘（10009008，轴向 Y 零旋转），盘厚 = 总高 / count，
  *   scale.x/z = 直径 = 2r。
+ *
+ * 四期（PRD §4/§5.2）增量：
+ * - render='solid' 且封闭 → 柱体渲染器：轮廓（圆/椭圆/矩形）→ 元件（10009008 圆柱 /
+ *   10009001 长方体），位置 = 轮廓包围盒中心（画布 x→世界 x、画布 y→世界 z，全局
+ *   归一化居中），y = height/2（柱体底贴 y=0），厚度 = stroke.height（Y 向，>0）；
+ * - axis 旋转（与现有 YXZ 内旋约定一致）：up=[0,0,0]；front=[90,0,0]（局部 Y→+Z）；
+ *   side=[0,0,−90]（局部 Y→+X）；
+ * - stroke.height 对 rod/lathe 笔画：该笔所有 item 的 position.y += height（整体抬升）。
  */
 import type { ModelOptions, Stroke, TaggedItem, TaggedItemColor } from './types.js'
 import { BOX_RESOURCE_ID, CYLINDER_RESOURCE_ID } from './types.js'
-import { fitStroke, type FittedStroke } from './fitting.js'
+import { adaptiveEpsilon, fitStroke, simplifyRdp, type FittedStroke } from './fitting.js'
 import type { StructureItem } from '../core/structure.js'
 
 export type GenerateResult = { items: TaggedItem[]; closed: boolean[] }
@@ -73,10 +81,19 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
   const raw = rawBounds(strokes)
   // 笔画颜色按 id 查表（PRD §9：stroke.color 存在 → 透传到该笔所有 TaggedItem）
   const colorById = new Map<string, string>()
+  const strokeById = new Map<string, Stroke>()
   for (const stroke of strokes) {
     if (stroke.color !== undefined) colorById.set(stroke.id, stroke.color)
+    strokeById.set(stroke.id, stroke)
   }
   const colorOf = (strokeId: string): string | undefined => colorById.get(strokeId)
+  // 四期预检（PRD §5.2）：render='solid' 笔画必须封闭，否则整单 400（含退化笔画）
+  for (const stroke of strokes) {
+    if (stroke.render === 'solid') {
+      const fit = fitted.find((f) => f.id === stroke.id) ?? null
+      if (fit === null || !fit.closed) throw new Error('柱体渲染需要封闭轮廓')
+    }
+  }
   const items: TaggedItem[] = []
   if (raw !== null && fitted.length > 0) {
     const bboxWidth = Math.max(raw.maxX - raw.minX, 0)
@@ -91,11 +108,19 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
 
     if (opts.mode === 'extrude') {
       for (const fit of fitted) {
+        const stroke = strokeById.get(fit.id)
+        if (stroke?.render === 'solid') {
+          items.push(solidColumn(stroke, raw, bboxWidth, bboxHeight, scale, colorOf(fit.id)))
+          continue
+        }
         for (let i = 0; i + 1 < fit.points.length; i++) {
           const rod = extrudeRod(
             fit.points[i], fit.points[i + 1], toWorld, size, opts.shape, fit.id, colorOf(fit.id)
           )
-          if (rod !== null) items.push(rod)
+          if (rod !== null) {
+            liftByHeight(rod, stroke)
+            items.push(rod)
+          }
         }
       }
     } else {
@@ -107,10 +132,19 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
         }
       }
       for (const fit of fitted) {
+        const stroke = strokeById.get(fit.id)
+        // 四期：solid 笔画在 lathe 全局模式下独立走柱体（不绕轴），其余照旧
+        if (stroke?.render === 'solid') {
+          items.push(solidColumn(stroke, raw, bboxWidth, bboxHeight, scale, colorOf(fit.id)))
+          continue
+        }
         const minX = rawMinX.get(fit.id) ?? raw.minX
         for (const point of fit.points) {
           const disc = latheDisc(point, toWorld, minX, scale, heightMeters, count, fit.id, colorOf(fit.id))
-          if (disc !== null) items.push(disc)
+          if (disc !== null) {
+            liftByHeight(disc, stroke)
+            items.push(disc)
+          }
         }
       }
     }
@@ -123,6 +157,196 @@ function itemColor(color: string | undefined): TaggedItemColor | undefined {
   return color === undefined
     ? undefined
     : { enabled: true, rgb: color, opacity: 100, overlay: 'overwrite' }
+}
+
+/** 四期：stroke.height（米，沿模型 Y 抬升）作用于该笔所有 item 的 position.y；缺省 0 = 原样。 */
+function liftByHeight(item: TaggedItem, stroke: Stroke | undefined): void {
+  const height = stroke?.height
+  if (height !== undefined && height !== 0) item.position[1] += height
+}
+
+/** 顶点转角（度）：p[i-1]→p[i]→p[i+1] 的外转角，直行 = 0°。
+ * 矩形角 = 90°；正五/六边形 = 72°/60°；圆经 RDP 抽稀后 < 45°。 */
+function turnAngle(pts: readonly (readonly [number, number])[], i: number): number {
+  const n = pts.length
+  const [ax, ay] = pts[(i - 1 + n) % n]
+  const [bx, by] = pts[i]
+  const [cx, cy] = pts[(i + 1) % n]
+  const ux = bx - ax
+  const uy = by - ay
+  const vx = cx - bx
+  const vy = cy - by
+  const ul = Math.hypot(ux, uy)
+  const vl = Math.hypot(vx, vy)
+  if (ul === 0 || vl === 0) return 0
+  const cos = Math.max(-1, Math.min(1, (ux * vx + uy * vy) / (ul * vl)))
+  return (Math.acos(cos) * 180) / Math.PI
+}
+
+/** 转角 ≥ 该值的顶点视为“角”；圆/椭圆抽稀后转角约 20~40°，正八边形恰 45°（含浮点误差），
+ * 多边形 ≥ 60°（正六边形）——取 50° 双留余量：八边及以下归平滑曲线（圆/椭圆），六边及以上归多边形。 */
+const CORNER_TURN_DEG = 50
+/** 矩形角近似 90° 容差（度）。 */
+const RECT_ANGLE_TOL_DEG = 15
+/** 矩形对边平行容差（度）。 */
+const RECT_PARALLEL_TOL_DEG = 10
+/** 圆判定：宽高比上限。 */
+const CIRCLE_ASPECT_MAX = 1.1
+/** 圆判定：点到质心距离的相对方差上限（方差 / 平均半径²；正方形 ≈ 0.030，1.2:1 椭圆 ≈ 0.012）。 */
+const CIRCLE_RADIUS_REL_VARIANCE = 0.01
+/** 闭合轮廓首尾去重：首尾距离 < 对角线 × 该比例时视为重复闭合点（矩形工具常首尾同点）。 */
+const CLOSURE_DEDUP_RATIO = 0.01
+
+type RecognizedShape = 'circle' | 'ellipse' | 'rectangle'
+
+/**
+ * 四期柱体轮廓识别（PRD §5.2 表格）：
+ * 抽稀（RDP，保留尖角）→ 顶点转角统计：
+ * - 恰 4 角且角 ≈ 90°、对边平行 → 矩形；4 角但非矩形 → 其他形状抛错；
+ * - 3 角或 ≥ 5 角 → 多边形，一期不支持抛错；
+ * - 平滑闭合曲线 → 圆（点到质心距离相对方差 < 阈值且宽高比 < 1.1）否则椭圆。
+ */
+function recognizeShape(points: readonly (readonly [number, number])[]): RecognizedShape {
+  let pts = simplifyRdp(points, adaptiveEpsilon(points))
+  if (pts.length > 2) {
+    // 首尾重复的闭合点合并（矩形工具输出常首尾同点）
+    const first = pts[0]
+    const last = pts[pts.length - 1]
+    const dist = Math.hypot(first[0] - last[0], first[1] - last[1])
+    let minX = Infinity
+    let minY = Infinity
+    let maxX = -Infinity
+    let maxY = -Infinity
+    for (const [x, y] of pts) {
+      if (x < minX) minX = x
+      if (y < minY) minY = y
+      if (x > maxX) maxX = x
+      if (y > maxY) maxY = y
+    }
+    const diag = Math.hypot(maxX - minX, maxY - minY)
+    if (diag > 0 && dist < diag * CLOSURE_DEDUP_RATIO) pts = pts.slice(0, -1)
+  }
+  const n = pts.length
+  const corners: number[] = []
+  for (let i = 0; i < n; i++) {
+    if (turnAngle(pts, i) > CORNER_TURN_DEG) corners.push(i)
+  }
+  if (corners.length === 4) {
+    // 矩形候选：四角近似 90°、对边平行（角点顺序绕轮廓一周）
+    const side = (k: number): [number, number] => {
+      const [ax, ay] = pts[corners[k]]
+      const [bx, by] = pts[corners[(k + 1) % 4]]
+      return [bx - ax, by - ay]
+    }
+    const rightAngles = (() => {
+      for (let k = 0; k < 4; k++) {
+        const [ux, uy] = side((k + 3) % 4) // 进入该角的边（反方向）
+        const [vx, vy] = side(k) // 离开该角的边
+        const ul = Math.hypot(ux, uy)
+        const vl = Math.hypot(vx, vy)
+        if (ul === 0 || vl === 0) return false
+        const angle = (Math.acos(Math.max(-1, Math.min(1, (ux * vx + uy * vy) / (ul * vl)))) * 180) / Math.PI
+        if (Math.abs(angle - 90) > RECT_ANGLE_TOL_DEG) return false
+      }
+      return true
+    })()
+    const parallel = (() => {
+      const cosTol = Math.cos((RECT_PARALLEL_TOL_DEG * Math.PI) / 180)
+      for (const [k, l] of [[0, 2], [1, 3]] as const) {
+        const [ux, uy] = side(k)
+        const [vx, vy] = side(l)
+        const ul = Math.hypot(ux, uy)
+        const vl = Math.hypot(vx, vy)
+        if (ul === 0 || vl === 0) return false
+        if (Math.abs((ux * vx + uy * vy) / (ul * vl)) < cosTol) return false
+      }
+      return true
+    })()
+    if (rightAngles && parallel) return 'rectangle'
+    throw new Error('暂不支持该轮廓形状（支持圆/椭圆/矩形）')
+  }
+  if (corners.length !== 0) {
+    // 三角/五边及以上 → 一期不支持
+    throw new Error('暂不支持该轮廓形状（支持圆/椭圆/矩形）')
+  }
+  // 平滑闭合曲线 → 圆 / 椭圆
+  let cx = 0
+  let cy = 0
+  for (const [x, y] of pts) {
+    cx += x
+    cy += y
+  }
+  cx /= n
+  cy /= n
+  let meanR = 0
+  let varR = 0
+  let minX = Infinity
+  let minY = Infinity
+  let maxX = -Infinity
+  let maxY = -Infinity
+  for (const [x, y] of pts) {
+    const r = Math.hypot(x - cx, y - cy)
+    meanR += r
+    varR += r * r
+    if (x < minX) minX = x
+    if (y < minY) minY = y
+    if (x > maxX) maxX = x
+    if (y > maxY) maxY = y
+  }
+  meanR /= n
+  varR = varR / n - meanR * meanR
+  const w = maxX - minX
+  const h = maxY - minY
+  const aspect = Math.min(w, h) > 0 ? Math.max(w, h) / Math.min(w, h) : Infinity
+  if (meanR > 0 && aspect < CIRCLE_ASPECT_MAX && varR < CIRCLE_RADIUS_REL_VARIANCE * meanR * meanR) {
+    return 'circle'
+  }
+  return 'ellipse'
+}
+
+/**
+ * 四期柱体渲染器（PRD §5.2）：封闭轮廓 → 实体柱体。
+ * 位置 = 轮廓包围盒中心（画布 x→世界 x、画布 y→世界 z），y = 厚度/2（底贴 y=0）；
+ * 厚度 = stroke.height（>0）；scale：[圆] = [直径, 厚度, 直径]，[椭圆/矩形] = [宽, 厚度, 深]。
+ */
+function solidColumn(
+  stroke: Stroke,
+  raw: { minX: number; minY: number; maxX: number; maxY: number },
+  rawBboxWidth: number,
+  rawBboxHeight: number,
+  scale: number,
+  color?: string
+): TaggedItem {
+  const thickness = stroke.height ?? 0
+  if (!(thickness > 0)) throw new Error('柱体高度需大于 0（米）')
+  const shape = recognizeShape(stroke.points)
+  let minX = Infinity
+  let minY = Infinity
+  let maxX = -Infinity
+  let maxY = -Infinity
+  for (const [x, y] of stroke.points) {
+    if (x < minX) minX = x
+    if (y < minY) minY = y
+    if (x > maxX) maxX = x
+    if (y > maxY) maxY = y
+  }
+  const width = (maxX - minX) * scale
+  const depth = (maxY - minY) * scale
+  // 包围盒中心：x = 画布 x 中心 → 世界 x（全局居中）；z = 画布 y 中心 → 世界 z（全局居中）
+  const centerX = ((minX + maxX) / 2 - raw.minX) * scale - (rawBboxWidth * scale) / 2
+  const centerZ = ((minY + maxY) / 2 - raw.minY) * scale - (rawBboxHeight * scale) / 2
+  const axis = stroke.axis ?? 'up'
+  const rotation: Vec3 =
+    axis === 'front' ? [90, 0, 0] : axis === 'side' ? [0, 0, -90] : [0, 0, 0]
+  const scale3: Vec3 = shape === 'circle' ? [width, thickness, width] : [width, thickness, depth]
+  return {
+    resourceId: shape === 'rectangle' ? BOX_RESOURCE_ID : CYLINDER_RESOURCE_ID,
+    position: [centerX, thickness / 2, centerZ],
+    rotation,
+    scale: scale3,
+    group: stroke.id,
+    ...(color === undefined ? {} : { color: itemColor(color) })
+  }
 }
 
 /** extrude 单段杆：轴向对齐线段，位置 = 段中点。 */

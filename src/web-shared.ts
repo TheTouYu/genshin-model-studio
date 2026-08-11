@@ -66,7 +66,27 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
     if (color !== undefined && (typeof color !== 'string' || !/^0x[0-9a-fA-F]{6}$/.test(color))) {
       throw new Error(`第 ${i + 1} 笔颜色无效：需为 "0xRRGGBB" 格式（如 "0xC8A87C"）`)
     }
-    return { id: stroke.id, points, ...(color === undefined ? {} : { color }) }
+    // 四期（PRD §4）：render/height/axis 可选透传，缺省不写（v1/v2 兼容）
+    const render = (stroke as { render?: unknown }).render
+    if (render !== undefined && render !== 'rod' && render !== 'solid') {
+      throw new Error(`第 ${i + 1} 笔渲染方式无效：需为 rod 或 solid`)
+    }
+    const height = (stroke as { height?: unknown }).height
+    if (height !== undefined && (typeof height !== 'number' || !Number.isFinite(height))) {
+      throw new Error(`第 ${i + 1} 笔高度无效：需为有限数值（米）`)
+    }
+    const axis = (stroke as { axis?: unknown }).axis
+    if (axis !== undefined && axis !== 'up' && axis !== 'front' && axis !== 'side') {
+      throw new Error(`第 ${i + 1} 笔方向无效：需为 up、front 或 side`)
+    }
+    return {
+      id: stroke.id,
+      points,
+      ...(color === undefined ? {} : { color }),
+      ...(render === undefined ? {} : { render }),
+      ...(height === undefined ? {} : { height }),
+      ...(axis === undefined ? {} : { axis })
+    }
   })
 
   const o = src.options as Record<string, unknown> | null
@@ -88,16 +108,27 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
   if (typeof o.heightMeters !== 'number' || !Number.isFinite(o.heightMeters) || o.heightMeters <= 0) {
     throw new Error('options.heightMeters 需为正数（米）')
   }
-  return {
-    strokes: parsed,
-    options: {
-      mode: o.mode,
-      shape: o.shape,
-      size: o.size as number,
-      count: o.count as number,
-      heightMeters: o.heightMeters as number
-    }
+  const options: ModelOptions = {
+    mode: o.mode,
+    shape: o.shape,
+    size: o.size as number,
+    count: o.count as number,
+    heightMeters: o.heightMeters as number
   }
+  // 四期语义校验（PRD §5.2）：非封闭 solid / 高度 ≤ 0 / 不支持的轮廓 → 400。
+  // 前置到解析期：调用方（web/server.ts、api/draw-model.ts）在 writeHead(200) 之后才调
+  // drawModelResult，若让生成期抛错，catch 补 writeHead(400) 会撞 ERR_HTTP_HEADERS_SENT
+  // 使进程崩溃（现存顺序缺陷，web/** api/** 禁止改动），故此处先跑一遍纯函数生成。
+  validateDrawSemantics(parsed, options)
+  return { strokes: parsed, options }
+}
+
+/**
+ * 四期语义校验：render='solid' 非封闭轮廓 / 柱体高度 ≤ 0 / 不支持的轮廓形状。
+ * 纯函数：非法输入抛中文 Error（调用方转 400），合法输入无副作用。
+ */
+export function validateDrawSemantics(strokes: readonly Stroke[], options: ModelOptions): void {
+  generateModel(strokes as Stroke[], options)
 }
 
 /** /api/draw-model 出参：已拍平 items + 逐笔拟合曲线（画布像素）+ 封闭检测。 */

@@ -55,6 +55,29 @@
   .stroke-dot.default { background: repeating-linear-gradient(45deg, #dfe5ec 0 3px, #b9c2cc 3px 6px); }
   #colorPopover { position: fixed; z-index: 60; background: #fff; border: 1px solid #c9d2dc; border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,0.18); padding: 0.6rem 0.7rem; display: none; min-width: 210px; }
   #colorPopover .pop-title { font-size: 0.8rem; color: #555; margin-bottom: 0.45rem; }
+
+  /* ============ 四期：几何工具工具栏 / 弹层扩展 / 旋转复制 ============ */
+  .tool-row { gap: 0.45rem; }
+  .tool-label { font-weight: 600; color: #444; }
+  .tool-btn { padding: 0.28rem 0.7rem; border: 1px solid #c9d2dc; background: #fff; border-radius: 6px; font-size: 0.88rem; cursor: pointer; }
+  .tool-btn:hover { border-color: #2b6cb0; }
+  .tool-btn.on { background: #2b6cb0; border-color: #2b6cb0; color: #fff; }
+  .tool-btn.accent { border-color: #b7791f; color: #8a5a12; }
+  .tool-btn.accent:hover { background: #fdf6e3; }
+  .tool-sep { width: 1px; height: 20px; background: #d4dbe3; }
+  .tool-hint { color: #666; font-size: 0.82rem; flex: 1 1 100%; }
+  #drawCanvas.picking { cursor: crosshair; }
+  .pop-row { margin-top: 0.5rem; display: flex; align-items: center; gap: 0.4rem; font-size: 0.85rem; color: #444; }
+  .pop-row label { display: inline-flex; align-items: center; gap: 0.45rem; width: 100%; }
+  .pop-row select { padding: 0.2rem 0.35rem; font-size: 0.85rem; flex: 1; min-width: 0; }
+  .pop-row input[type=number] { padding: 0.2rem 0.35rem; font-size: 0.85rem; width: 84px; }
+  .pop-foot { margin-top: 0.5rem; font-size: 0.75rem; color: #999; }
+  #rotateModal { position: fixed; inset: 0; z-index: 80; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.35); }
+  #rotateModal .modal-box { background: #fff; border-radius: 10px; padding: 1rem 1.2rem; min-width: 270px; box-shadow: 0 10px 40px rgba(0,0,0,0.25); }
+  .modal-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 0.7rem; }
+  .modal-box label { display: flex; align-items: center; gap: 0.5rem; font-size: 0.88rem; }
+  .modal-box input[type=number] { width: 72px; padding: 0.3rem 0.4rem; font-size: 0.9rem; }
+  .modal-actions { display: flex; gap: 0.6rem; margin-top: 0.9rem; justify-content: flex-end; }
   @media (max-width: 600px) {
     .palette { flex-wrap: nowrap; overflow-x: auto; max-width: 100%; padding-bottom: 2px; }
     .stroke-list { flex-wrap: nowrap; overflow-x: auto; }
@@ -98,7 +121,7 @@
 
 <hr class="sep">
 <section id="drawSection">
-  <h2>✏️ 画线建模 <span class="muted">手画线条 → 上色 → 拟合 → 3D 预览 → 导出 .gil / .gia（作品自动保存在本机）</span></h2>
+  <h2>✏️ 画线建模 <span class="muted">5 种工具（自由/直线/曲线/圆/矩形）→ 上色/参数 → 拟合 → 3D 预览 → 导出 .gil / .gia（作品自动保存在本机）</span></h2>
   <div class="draw-layout">
     <div class="draw-col">
       <div class="controls">
@@ -119,6 +142,19 @@
         <div class="palette" id="palette"></div>
         <label class="custom-color">自定义 <input type="color" id="customColor" value="#e5484d"><span id="currentColorText">默认材质</span></label>
       </div>
+      <div class="controls tool-row" id="toolbar">
+        <span class="tool-label">工具</span>
+        <button type="button" class="tool-btn on" data-tool="pen" title="自由笔（默认）：拖拽画线，松手拟合">🖊 自由</button>
+        <button type="button" class="tool-btn" data-tool="line" title="直线：点起点 → 移动预览 → 点终点">⬜ 直线</button>
+        <button type="button" class="tool-btn" data-tool="curve" title="曲线：依次点击控制点（≥2 点实时预览样条），双击完成开放曲线，或点「闭合」封闭">🌀 曲线</button>
+        <button type="button" class="tool-btn" data-tool="circle" title="圆：点圆心 → 拖拽定半径 → 松手生成（24 点闭合）">⭕ 圆</button>
+        <button type="button" class="tool-btn" data-tool="rect" title="矩形：对角两点 → 生成 4 顶点闭合">▭ 矩形</button>
+        <span class="tool-sep"></span>
+        <button type="button" class="tool-btn" id="curveClose" hidden>🔗 闭合</button>
+        <button type="button" class="tool-btn" id="curveCancel" hidden>✕ 取消</button>
+        <button type="button" class="tool-btn accent" id="rotateCopy" hidden title="绕中心均分复制选中笔画">🔁 旋转复制</button>
+        <span class="tool-hint" id="toolHint"></span>
+      </div>
       <div class="canvas-box">
         <canvas id="drawCanvas"></canvas>
         <span class="canvas-hint" id="canvasHint">画布高 = 10 米</span>
@@ -131,7 +167,7 @@
         <button id="importWork">导入作品 JSON</button>
         <input type="file" id="importFile" accept=".json,application/json" hidden>
       </div>
-      <div class="status" id="drawStatus">在画布上画线（鼠标或手指），松手自动拟合生成；画完点击笔画圆点可改该笔颜色</div>
+      <div class="status" id="drawStatus">在画布上画线（鼠标或手指），松手自动拟合生成；画完点击笔画圆点可改颜色/渲染/高度/方向</div>
     </div>
     <div class="draw-col">
       <canvas id="previewCanvas"></canvas>
@@ -149,6 +185,29 @@
   <div class="pop-title" id="popTitle"></div>
   <div class="palette" id="popPalette"></div>
   <label class="custom-color">自定义 <input type="color" id="popCustom" value="#e5484d"></label>
+  <div class="pop-row"><label>渲染 <select id="popRender">
+    <option value="">跟随全局（缺省）</option>
+    <option value="rod">杆（线）</option>
+    <option value="solid">柱体（实体）</option>
+  </select></label></div>
+  <div class="pop-row"><label>高度（米） <input type="number" id="popHeight" min="0" step="0.01" placeholder="0 = 不抬升"></label></div>
+  <div class="pop-row" id="popAxisRow" style="display:none"><label>方向 <select id="popAxis">
+    <option value="up">竖直（Y）</option>
+    <option value="front">水平（面向观察者）</option>
+    <option value="side">侧向（X）</option>
+  </select></label></div>
+  <div class="pop-foot">改动立即生效：重新生成并更新 3D 预览</div>
+</div>
+
+<div id="rotateModal">
+  <div class="modal-box">
+    <div class="modal-title">🔁 旋转复制</div>
+    <label>份数（含原件，2-12）<input type="number" id="rotateCount" min="2" max="12" step="1" value="4"></label>
+    <div class="modal-actions">
+      <button type="button" id="rotateOk">生成</button>
+      <button type="button" id="rotateCancel">取消</button>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -237,7 +296,7 @@ loadExamples()
 
   const LS_KEY = 'gms.draw.work.v1' // 键名保留历史命名：读旧键即自动迁移 v1 → v2
   const WORK_FORMAT = 'genshin-model-studio.draw'
-  const WORK_VERSION = 2 // 三期：strokes 带 color、options 带 currentColor；读入仍兼容 v1
+  const WORK_VERSION = 3 // 四期：strokes 带 render/height/axis（v3 缺省即旧行为）；读入兼容 v1/v2
   // 三期预设色板（12 色 + 默认材质 + 自定义）
   const PALETTE = [
     '0xE5484D', '0xF97316', '0xFACC15', '0x46A758', '0x12A594', '0x3E63DD',
@@ -260,6 +319,12 @@ loadExamples()
     strokes: [], // { id, points: [ [x,y], ... ], color? } 画布 CSS 像素；color = "0xRRGGBB"（缺省 = 默认材质）
     options: { mode: 'extrude', shape: 'cylinder', size: 0.4, count: 60, heightMeters: 10 }, // currentColor? 新笔画默认色
     selectedId: null, // 选中笔画 id（画布曲线高亮）
+    tool: 'pen', // 四期：pen 自由 / line 直线 / curve 曲线 / circle 圆 / rect 矩形
+    toolPreview: null, // 四期：橡皮筋预览 { kind: 'line'|'circle'|'rect', a, b }
+    curvePts: [], // 四期：曲线工具已点控制点（画布坐标）
+    hover: null, // 最近鼠标位置（曲线预览尾线用）
+    batches: [], // 撤销批次栈 { len }：旋转复制 N-1 笔 = 一批，一次撤销整体取消
+    rotate: null, // 旋转复制进行中：{ strokeId, center: [x,y]|null }
     fitted: [], // 与 strokes 按序对齐：{ id, points, closed } | null（服务端返回）
     closed: [],
     items: [], // 拍平后的 structure items（预览/导出共用）
@@ -343,6 +408,8 @@ loadExamples()
       for (let i = 1; i < f.points.length; i++) ctx.lineTo(f.points[i][0], f.points[i][1])
       ctx.stroke()
     }
+    // 四期：几何工具橡皮筋 / 曲线预览 / 旋转中心标记（最上层）
+    drawToolPreview()
   }
 
   function resizeDraw() {
@@ -369,22 +436,40 @@ loadExamples()
     e.preventDefault()
     try { drawCanvas.setPointerCapture(e.pointerId) } catch (err) { /* 忽略捕获失败 */ }
     activePointerId = e.pointerId
-    currentStroke = { id: 's' + Date.now().toString(36) + '_' + seq++, points: [toPoint(e)] }
-    const cc = currentColor()
-    if (cc) currentStroke.color = cc // 新笔画自动用当前选中色
-    state.strokes.push(currentStroke)
-    state.fitted.push(null)
-    state.closed.push(false)
+    const p = toPoint(e)
+    // 旋转复制：点击画布拾取旋转中心
+    if (state.rotate && !state.rotate.center) {
+      if (!strokeById(state.rotate.strokeId)) { cancelRotate(); return }
+      state.rotate.center = p
+      openRotateModal()
+      return
+    }
+    if (state.tool === 'pen') {
+      startFreehand(p)
+    } else if (state.tool === 'line' || state.tool === 'circle' || state.tool === 'rect') {
+      state.toolPreview = { kind: state.tool, a: p, b: [p[0], p[1]] } // 橡皮筋起点
+    } else if (state.tool === 'curve') {
+      addCurvePoint(p)
+    }
     renderDraw()
   })
 
   drawCanvas.addEventListener('pointermove', (e) => {
-    if (e.pointerId !== activePointerId || !currentStroke) return
     const p = toPoint(e)
-    const pts = currentStroke.points
-    const last = pts[pts.length - 1]
-    if (Math.abs(p[0] - last[0]) < 1 && Math.abs(p[1] - last[1]) < 1) return
-    pts.push(p)
+    state.hover = p
+    if (e.pointerId !== activePointerId) {
+      // 未在绘制：曲线预览尾线跟随鼠标
+      if (state.tool === 'curve' && state.curvePts.length > 0) renderDraw()
+      return
+    }
+    if (currentStroke) {
+      const pts = currentStroke.points
+      const last = pts[pts.length - 1]
+      if (Math.abs(p[0] - last[0]) < 1 && Math.abs(p[1] - last[1]) < 1) return
+      pts.push(p)
+    } else if (state.toolPreview) {
+      state.toolPreview.b = [p[0], p[1]] // 橡皮筋预览
+    }
     renderDraw()
   })
 
@@ -394,12 +479,273 @@ loadExamples()
     if (currentStroke) {
       state.selectedId = currentStroke.id // 刚画的笔画自动选中，便于立刻改色
       renderStrokeList()
+      currentStroke = null
+      scheduleGen()
+    } else if (state.toolPreview) {
+      const tp = state.toolPreview
+      state.toolPreview = null
+      commitToolShape(tp) // 直线/圆/矩形：松手生成笔画
     }
-    currentStroke = null
-    scheduleGen()
+    renderDraw()
   }
   drawCanvas.addEventListener('pointerup', endStroke)
   drawCanvas.addEventListener('pointercancel', endStroke)
+
+  drawCanvas.addEventListener('dblclick', (e) => {
+    if (state.tool !== 'curve') return
+    // 双击完成：第二次点击已把光标处加为控制点，移除后按开放曲线提交
+    if (state.curvePts.length >= 2) state.curvePts.pop()
+    finishCurve(false)
+  })
+
+  function startFreehand(p) {
+    currentStroke = { id: 's' + Date.now().toString(36) + '_' + seq++, points: [p] }
+    const cc = currentColor()
+    if (cc) currentStroke.color = cc // 新笔画自动用当前选中色
+    state.strokes.push(currentStroke)
+    state.fitted.push(null)
+    state.closed.push(false)
+    state.batches.push({ len: 1 })
+  }
+
+  function addCurvePoint(p) {
+    state.curvePts.push([p[0], p[1]])
+    updateToolbar()
+  }
+
+  /* ---------- 四期：几何工具（直线/圆/矩形/曲线 + 工具栏） ---------- */
+
+  const TOOL_HINTS = {
+    pen: '自由笔：按住拖拽画线，松手自动拟合',
+    line: '直线：点击起点 → 移动预览 → 点击终点',
+    circle: '圆：点击圆心 → 拖拽预览半径 → 松手生成（24 点闭合圆）',
+    rect: '矩形：点击对角起点 → 拖拽预览 → 松手生成（4 顶点闭合）',
+    curve: '曲线：依次点击控制点（≥2 点实时预览样条）→ 双击完成开放曲线，或点「🔗 闭合」封闭',
+  }
+  const MIN_GEO_SIZE = 3 // 像素：小于此尺寸的点击按误触忽略
+
+  function updateToolbar() {
+    document.querySelectorAll('.tool-btn[data-tool]').forEach((btn) => {
+      btn.classList.toggle('on', btn.dataset.tool === state.tool)
+    })
+    el('curveClose').hidden = !(state.tool === 'curve' && state.curvePts.length >= 2)
+    el('curveCancel').hidden = !(state.tool === 'curve' && state.curvePts.length >= 1)
+    el('rotateCopy').hidden = !state.selectedId // 选中笔画（chip 高亮）时出现
+    drawCanvas.classList.toggle('picking', !!(state.rotate && !state.rotate.center))
+    if (state.rotate && !state.rotate.center) {
+      el('toolHint').textContent = '已进入旋转复制：请在画布上点击旋转中心'
+    } else if (state.tool === 'curve' && state.curvePts.length >= 1) {
+      el('toolHint').textContent = state.curvePts.length >= 2
+        ? `曲线：${state.curvePts.length} 个控制点，预览中 · 双击完成 / 点「🔗 闭合」封闭`
+        : `曲线：${state.curvePts.length} 个控制点，再点至少 1 个（≥2 点开始预览）`
+    } else {
+      el('toolHint').textContent = TOOL_HINTS[state.tool]
+    }
+  }
+
+  function setTool(tool) {
+    if (state.tool === tool) return
+    if (state.tool === 'curve' && state.curvePts.length >= 2) {
+      finishCurve(false) // 切工具时曲线 ≥2 点 → 按开放曲线提交（不丢已点控制点）
+    } else if (state.tool === 'curve') {
+      cancelCurve()
+    }
+    if (state.rotate && !state.rotate.center) cancelRotate()
+    state.tool = tool
+    state.toolPreview = null
+    updateToolbar()
+    setStatus(TOOL_HINTS[tool])
+    renderDraw()
+  }
+
+  document.querySelectorAll('.tool-btn[data-tool]').forEach((btn) => {
+    btn.addEventListener('click', () => setTool(btn.dataset.tool))
+  })
+  el('curveClose').addEventListener('click', () => finishCurve(true))
+  el('curveCancel').addEventListener('click', cancelCurve)
+
+  /** 工具生成的笔画 = 普通笔画对象（points + 颜色），走现有保存/生成/撤销全流程。 */
+  function addStroke(points) {
+    const stroke = { id: 's' + Date.now().toString(36) + '_' + seq++, points }
+    const cc = currentColor()
+    if (cc) stroke.color = cc // 新笔画自动用当前选中色
+    state.strokes.push(stroke)
+    state.fitted.push(null)
+    state.closed.push(false)
+    state.batches.push({ len: 1 })
+    state.selectedId = stroke.id // 刚生成的笔画自动选中，便于改参数/旋转复制
+    renderStrokeList()
+    renderDraw()
+    scheduleGen()
+    return stroke
+  }
+
+  /** 直线/圆/矩形松手提交：生成规则与自由笔同构（闭合标记沿用现有服务端 closed 检测）。 */
+  function commitToolShape(tp) {
+    let points = null
+    if (tp.kind === 'line') {
+      if (Math.hypot(tp.b[0] - tp.a[0], tp.b[1] - tp.a[1]) < MIN_GEO_SIZE) return
+      points = [[tp.a[0], tp.a[1]], [tp.b[0], tp.b[1]]]
+    } else if (tp.kind === 'circle') {
+      const r = Math.hypot(tp.b[0] - tp.a[0], tp.b[1] - tp.a[1])
+      if (r < MIN_GEO_SIZE) return
+      const cx = tp.a[0], cy = tp.a[1]
+      const N = 24 // 等距点圆
+      points = []
+      for (let i = 0; i < N; i++) {
+        const a = (2 * Math.PI * i) / N
+        points.push([cx + r * Math.cos(a), cy + r * Math.sin(a)])
+      }
+      points.push([points[0][0], points[0][1]]) // 闭合点：首尾重合 → 服务端 closed 检测命中
+    } else if (tp.kind === 'rect') {
+      if (Math.abs(tp.b[0] - tp.a[0]) < MIN_GEO_SIZE && Math.abs(tp.b[1] - tp.a[1]) < MIN_GEO_SIZE) return
+      const x0 = Math.min(tp.a[0], tp.b[0]), y0 = Math.min(tp.a[1], tp.b[1])
+      const x1 = Math.max(tp.a[0], tp.b[0]), y1 = Math.max(tp.a[1], tp.b[1])
+      points = [[x0, y0], [x1, y0], [x1, y1], [x0, y1], [x0, y0]] // 4 顶点 + 闭合点
+    }
+    if (points) addStroke(points)
+  }
+
+  /** 浏览器端 Catmull-Rom 点（画布预览/采样用，不上送；最终笔画 = 采样点序列，与后端算法同构）。 */
+  function catmullRomPoint(p0, p1, p2, p3, t) {
+    const t2 = t * t
+    const t3 = t2 * t
+    return [
+      0.5 * (2 * p1[0] + (-p0[0] + p2[0]) * t + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3),
+      0.5 * (2 * p1[1] + (-p0[1] + p2[1]) * t + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3),
+    ]
+  }
+
+  /**
+   * Catmull-Rom 采样：经过所有控制点、C1 连续；perSeg = 每段采样数（默认 24）。
+   * 开放曲线末点 = 末控制点；闭合曲线环绕一周且末点 = 首控制点（服务端 closed 检测直接命中）。
+   * 2 个控制点时退化为直线（重复端点参与 Catmull-Rom 会产生 S 形，必须特判）。
+   */
+  function sampleCatmullRom(controls, closed, perSeg = 24) {
+    const n = controls.length
+    if (n === 0) return []
+    if (n === 1) return [[controls[0][0], controls[0][1]]]
+    if (n === 2) {
+      const [a, b] = controls
+      if (!closed) {
+        const out = []
+        for (let j = 0; j < perSeg; j++) {
+          const t = j / perSeg
+          out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t])
+        }
+        out.push([b[0], b[1]])
+        return out
+      }
+      return [[a[0], a[1]], [b[0], b[1]], [a[0], a[1]]]
+    }
+    const out = []
+    const segs = closed ? n : n - 1
+    for (let i = 0; i < segs; i++) {
+      const p0 = controls[(i - 1 + n) % n]
+      const p1 = controls[i]
+      const p2 = controls[(i + 1) % n]
+      const p3 = controls[(i + 2) % n]
+      for (let j = 0; j < perSeg; j++) {
+        out.push(catmullRomPoint(p0, p1, p2, p3, j / perSeg))
+      }
+    }
+    const end = closed ? controls[0] : controls[n - 1]
+    out.push([end[0], end[1]])
+    return out
+  }
+
+  function finishCurve(closed) {
+    if (state.tool !== 'curve') return
+    const pts = state.curvePts
+    if (pts.length < 2) {
+      setStatus('曲线至少需要 2 个控制点', 'err')
+      return
+    }
+    const sampled = sampleCatmullRom(pts, closed) // 最终笔画 = 采样点序列
+    state.curvePts = []
+    setStatus(`✓ 曲线已完成（${pts.length} 个控制点，${closed ? '封闭' : '开放'}）`, 'ok')
+    addStroke(sampled)
+  }
+
+  function cancelCurve() {
+    if (state.tool !== 'curve' || state.curvePts.length === 0) return
+    state.curvePts = []
+    updateToolbar()
+    renderDraw()
+    setStatus('曲线已取消')
+  }
+
+  /** 画布叠加层（最上层，青色）：橡皮筋 / 曲线控制点+预览样条 / 旋转中心标记。 */
+  function drawToolPreview() {
+    ctx.save()
+    ctx.lineWidth = 2
+    ctx.lineCap = 'round'
+    const cyan = '#6fc3c9'
+    const tp = state.toolPreview
+    if (tp) {
+      ctx.strokeStyle = cyan
+      ctx.setLineDash([])
+      if (tp.kind === 'line') {
+        ctx.beginPath()
+        ctx.moveTo(tp.a[0], tp.a[1])
+        ctx.lineTo(tp.b[0], tp.b[1])
+        ctx.stroke()
+      } else if (tp.kind === 'circle') {
+        const r = Math.hypot(tp.b[0] - tp.a[0], tp.b[1] - tp.a[1])
+        ctx.beginPath()
+        ctx.arc(tp.a[0], tp.a[1], r, 0, Math.PI * 2)
+        ctx.stroke()
+        ctx.setLineDash([3, 3])
+        ctx.beginPath()
+        ctx.moveTo(tp.a[0] - 8, tp.a[1]); ctx.lineTo(tp.a[0] + 8, tp.a[1])
+        ctx.moveTo(tp.a[0], tp.a[1] - 8); ctx.lineTo(tp.a[0], tp.a[1] + 8)
+        ctx.stroke()
+      } else if (tp.kind === 'rect') {
+        const x0 = Math.min(tp.a[0], tp.b[0]), y0 = Math.min(tp.a[1], tp.b[1])
+        const x1 = Math.max(tp.a[0], tp.b[0]), y1 = Math.max(tp.a[1], tp.b[1])
+        ctx.strokeRect(x0, y0, x1 - x0, y1 - y0)
+      }
+    }
+    // 曲线工具：控制点 + 经过控制点的平滑样条预览 + 尾线
+    if (state.tool === 'curve' && state.curvePts.length > 0) {
+      ctx.strokeStyle = cyan
+      ctx.fillStyle = cyan
+      ctx.setLineDash([])
+      for (const p of state.curvePts) {
+        ctx.beginPath()
+        ctx.arc(p[0], p[1], 3.5, 0, Math.PI * 2)
+        ctx.fill()
+      }
+      if (state.curvePts.length >= 2) {
+        const spline = sampleCatmullRom(state.curvePts, false)
+        ctx.beginPath()
+        ctx.moveTo(spline[0][0], spline[0][1])
+        for (let i = 1; i < spline.length; i++) ctx.lineTo(spline[i][0], spline[i][1])
+        ctx.stroke()
+        if (state.hover) {
+          const last = state.curvePts[state.curvePts.length - 1]
+          ctx.setLineDash([5, 4])
+          ctx.strokeStyle = 'rgba(111,195,201,0.55)'
+          ctx.beginPath()
+          ctx.moveTo(last[0], last[1])
+          ctx.lineTo(state.hover[0], state.hover[1])
+          ctx.stroke()
+        }
+      }
+    }
+    // 旋转复制：已选中心标记
+    if (state.rotate && state.rotate.center) {
+      const cx = state.rotate.center[0], cy = state.rotate.center[1]
+      ctx.strokeStyle = '#ffd479'
+      ctx.setLineDash([])
+      ctx.beginPath()
+      ctx.arc(cx, cy, 7, 0, Math.PI * 2)
+      ctx.moveTo(cx - 11, cy); ctx.lineTo(cx + 11, cy)
+      ctx.moveTo(cx, cy - 11); ctx.lineTo(cx, cy + 11)
+      ctx.stroke()
+    }
+    ctx.restore()
+  }
 
   /* ---------- 拟合生成（防抖调 /api/draw-model） ---------- */
 
@@ -507,9 +853,12 @@ loadExamples()
 
   el('undo').addEventListener('click', () => {
     if (state.strokes.length === 0) { setStatus('没有可撤销的笔画'); return }
-    state.strokes.pop()
-    state.fitted.pop()
-    state.closed.pop()
+    // 撤销按批次：旋转复制 N-1 笔为一批，一次撤销整体取消
+    const batch = state.batches.pop() || { len: 1 }
+    const len = Math.min(batch.len, state.strokes.length)
+    state.strokes.splice(state.strokes.length - len, len)
+    state.fitted.splice(state.fitted.length - len, len)
+    state.closed.splice(state.closed.length - len, len)
     ensureSelection()
     renderStrokeList()
     renderDraw()
@@ -521,6 +870,7 @@ loadExamples()
     state.strokes = []
     state.fitted = []
     state.closed = []
+    state.batches = []
     state.selectedId = null
     renderStrokeList()
     renderDraw()
@@ -565,7 +915,8 @@ loadExamples()
   function renderStrokeList() {
     const list = el('strokeList')
     if (state.strokes.length === 0) {
-      list.innerHTML = '<span class="stroke-list-empty">还没有笔画：画线后这里列出每一笔，点击圆点可改该笔颜色</span>'
+      list.innerHTML = '<span class="stroke-list-empty">还没有笔画：画线后这里列出每一笔，点击圆点可改该笔颜色/渲染/高度/方向</span>'
+      updateToolbar()
       return
     }
     list.innerHTML = state.strokes
@@ -577,10 +928,12 @@ loadExamples()
         return `<span class="stroke-chip${on ? ' selected' : ''}" data-id="${s.id}">${dot}<span class="stroke-name">笔画 ${i + 1}</span></span>`
       })
       .join('')
+    updateToolbar()
   }
 
   function selectStroke(id) {
     state.selectedId = id
+    if (state.rotate && state.rotate.strokeId !== id) cancelRotate() // 换了目标则取消进行中的旋转复制
     renderStrokeList()
     renderDraw()
   }
@@ -603,9 +956,14 @@ loadExamples()
     const stroke = strokeById(strokeId)
     if (!stroke) return
     const cur = normalizeColor(stroke.color)
-    el('popTitle').textContent = '笔画 ' + (state.strokes.indexOf(stroke) + 1) + ' 颜色（点外部关闭）'
+    el('popTitle').textContent = '笔画 ' + (state.strokes.indexOf(stroke) + 1) + ' 设置（点外部关闭）'
     el('popPalette').innerHTML = swatchHTML(null, !cur, true) + PALETTE.map((c) => swatchHTML(c, cur === c)).join('')
     el('popCustom').value = cur ? '#' + cur.slice(2) : '#e5484d'
+    // 四期：渲染参数（缺省不写字段 = 跟随全局/0 抬升/竖直）
+    el('popRender').value = stroke.render || ''
+    el('popHeight').value = stroke.height !== undefined ? String(stroke.height) : ''
+    el('popAxis').value = stroke.axis || 'up'
+    updateAxisRow()
     pop.dataset.strokeId = strokeId
     pop.style.display = 'block'
     const r = anchor.getBoundingClientRect()
@@ -644,6 +1002,51 @@ loadExamples()
     setStrokeColor(el('colorPopover').dataset.strokeId, c)
   })
 
+  /* ---- 四期：渲染参数改动 → 立即重新生成 + 预览更新（与改色同流程） ---- */
+
+  function updateAxisRow() {
+    el('popAxisRow').style.display = el('popRender').value === 'solid' ? '' : 'none' // 方向仅柱体有效
+  }
+
+  el('popRender').addEventListener('change', (e) => {
+    const s = strokeById(el('colorPopover').dataset.strokeId)
+    if (!s) return
+    const v = e.target.value
+    if (v === 'rod' || v === 'solid') {
+      s.render = v
+      if (v !== 'solid' && s.axis) delete s.axis // axis 仅 render='solid' 有效
+    } else {
+      delete s.render // 跟随全局（缺省不写）
+      if (s.axis) delete s.axis
+    }
+    updateAxisRow()
+    renderStrokeList()
+    renderDraw()
+    scheduleGen()
+  })
+
+  el('popHeight').addEventListener('input', (e) => {
+    const s = strokeById(el('colorPopover').dataset.strokeId)
+    if (!s) return
+    const v = parseFloat(e.target.value)
+    if (Number.isFinite(v) && v > 0) s.height = v // 高度 > 0 才写；缺省 0（不抬升）不写字段
+    else delete s.height
+    renderStrokeList()
+    renderDraw()
+    scheduleGen()
+  })
+
+  el('popAxis').addEventListener('change', (e) => {
+    const s = strokeById(el('colorPopover').dataset.strokeId)
+    if (!s) return
+    const v = e.target.value
+    if (v === 'front' || v === 'side') s.axis = v // 'up' = 缺省（竖直），不写字段
+    else delete s.axis
+    renderStrokeList()
+    renderDraw()
+    scheduleGen()
+  })
+
   document.addEventListener('pointerdown', (e) => {
     const pop = el('colorPopover')
     if (pop.style.display === 'none') return
@@ -653,10 +1056,93 @@ loadExamples()
   })
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') closePopover()
+    if (e.key !== 'Escape') return
+    if (state.tool === 'curve' && state.curvePts.length > 0) { cancelCurve(); return }
+    if (state.rotate) { cancelRotate(); return }
+    closePopover()
   })
 
   window.addEventListener('scroll', closePopover, true)
+
+  /* ---------- 四期：旋转复制（选中笔画 → 点旋转中心 → 份数 → N-1 副本） ---------- */
+
+  el('rotateCopy').addEventListener('click', () => {
+    if (!state.selectedId) return
+    if (state.rotate) { cancelRotate(); return }
+    state.rotate = { strokeId: state.selectedId, center: null }
+    updateToolbar()
+    setStatus('旋转复制：请在画布上点击旋转中心（十字光标）')
+  })
+
+  function cancelRotate() {
+    if (el('rotateModal').style.display !== 'none') el('rotateModal').style.display = 'none'
+    state.rotate = null
+    updateToolbar()
+  }
+
+  function openRotateModal() {
+    el('rotateCount').value = '4' // 默认 4 份
+    el('rotateModal').style.display = 'flex'
+    el('rotateCount').focus()
+    el('rotateCount').select()
+  }
+
+  function closeRotateModal() {
+    el('rotateModal').style.display = 'none'
+  }
+
+  /** 副本继承源笔画全部参数（color/render/height/axis），绕 center 均分 360°/n。 */
+  function makeRotationCopies(src, center, n) {
+    const cx = center[0], cy = center[1]
+    const copies = []
+    for (let k = 1; k < n; k++) {
+      const theta = (2 * Math.PI * k) / n
+      const cos = Math.cos(theta), sin = Math.sin(theta)
+      const stroke = {
+        id: 's' + Date.now().toString(36) + '_' + seq++,
+        points: src.points.map((p) => [
+          cx + (p[0] - cx) * cos - (p[1] - cy) * sin,
+          cy + (p[0] - cx) * sin + (p[1] - cy) * cos,
+        ]),
+      }
+      if (src.color) stroke.color = src.color
+      if (src.render) stroke.render = src.render
+      if (src.height !== undefined) stroke.height = src.height
+      if (src.axis) stroke.axis = src.axis
+      copies.push(stroke)
+    }
+    return copies
+  }
+
+  function confirmRotate() {
+    const r = state.rotate
+    closeRotateModal()
+    state.rotate = null
+    if (!r || !r.center) return
+    const src = strokeById(r.strokeId)
+    if (!src) { updateToolbar(); setStatus('旋转复制取消：源笔画不存在', 'err'); return }
+    const n = Math.min(12, Math.max(2, Math.round(Number(el('rotateCount').value) || 4)))
+    const copies = makeRotationCopies(src, r.center, n)
+    if (copies.length === 0) return
+    const idx = state.strokes.indexOf(src)
+    state.strokes.splice(idx + 1, 0, ...copies) // 副本插入到源笔画之后
+    state.fitted.splice(idx + 1, 0, ...copies.map(() => null))
+    state.closed.splice(idx + 1, 0, ...copies.map(() => false))
+    state.batches.push({ len: copies.length }) // 一个批次：一次撤销整体取消
+    state.selectedId = src.id
+    renderStrokeList()
+    renderDraw()
+    scheduleGen()
+    setStatus(`✓ 旋转复制完成：绕中心均分 ${n} 份（新增 ${copies.length} 笔副本，可一次撤销）`, 'ok')
+  }
+
+  el('rotateOk').addEventListener('click', confirmRotate)
+  el('rotateCancel').addEventListener('click', cancelRotate)
+  el('rotateModal').addEventListener('click', (e) => { if (e.target === el('rotateModal')) cancelRotate() })
+  el('rotateCount').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') confirmRotate()
+    if (e.key === 'Escape') cancelRotate()
+  })
 
   /* ---------- localStorage 自动保存 / 恢复 ---------- */
 
@@ -664,8 +1150,8 @@ loadExamples()
     clearTimeout(saveTimer)
     saveTimer = setTimeout(() => {
       try {
+        // v3：{ version, strokes, options }；新字段仅在非缺省时写入（由笔画对象自身保证）
         localStorage.setItem(LS_KEY, JSON.stringify({
-          format: WORK_FORMAT,
           version: WORK_VERSION,
           strokes: state.strokes,
           options: state.options,
@@ -686,7 +1172,12 @@ loadExamples()
   /** 应用作品（本地存档或导入文件）。返回是否成功。 */
   function applyWork(data, silent) {
     if (!data || typeof data !== 'object') return false
-    if (data.format !== WORK_FORMAT || (data.version !== 1 && data.version !== 2)) return false
+    const ver = data.version
+    if (ver === 1 || ver === 2) {
+      if (data.format !== WORK_FORMAT) return false // v1/v2 带 format 标记
+    } else if (ver !== 3) {
+      return false // v3 起按 PRD §4 契约：{ version, strokes, options }
+    }
     if (!Array.isArray(data.strokes)) return false
     const o = data.options || {}
     const opts = {
@@ -704,8 +1195,13 @@ loadExamples()
         const out = { id: s.id, points: sanitizePoints(s.points) }
         const color = normalizeColor(s.color) // v1 无 color 字段 = 默认材质
         if (color) out.color = color
+        // v3 增量字段（缺省即旧行为；仅接受合法值，默认值不写字段）
+        if (s.render === 'rod' || s.render === 'solid') out.render = s.render
+        if (typeof s.height === 'number' && Number.isFinite(s.height) && s.height > 0) out.height = s.height
+        if (out.render === 'solid' && (s.axis === 'front' || s.axis === 'side')) out.axis = s.axis // 'up'=缺省不写
         return out
       })
+    state.batches = state.strokes.map(() => ({ len: 1 })) // 导入/恢复后每笔一个撤销批次
     state.options = opts
     state.selectedId = null
     syncControls()
@@ -735,14 +1231,12 @@ loadExamples()
 
   el('exportWork').addEventListener('click', () => {
     const work = {
-      format: WORK_FORMAT,
-      version: WORK_VERSION,
-      savedAt: new Date().toISOString(),
+      version: WORK_VERSION, // v3：{ version, strokes, options }（PRD §4；format 字段由 v1/v2 引入，v3 起不再写）
       strokes: state.strokes,
       options: state.options,
     }
     download('draw-work.json', new Blob([JSON.stringify(work, null, 2)], { type: 'application/json' }))
-    setStatus(`已导出作品 JSON（${state.strokes.length} 笔笔画）`, 'ok')
+    setStatus(`已导出作品 JSON v${WORK_VERSION}（${state.strokes.length} 笔笔画）`, 'ok')
   })
 
   el('importWork').addEventListener('click', () => el('importFile').click())
@@ -753,7 +1247,7 @@ loadExamples()
     reader.onload = () => {
       try {
         const data = JSON.parse(String(reader.result))
-        if (!applyWork(data)) setStatus('导入失败：不是有效的作品 JSON（format/version 不匹配）', 'err')
+        if (!applyWork(data)) setStatus('导入失败：不是有效的作品 JSON（版本/格式不匹配）', 'err')
       } catch (e) {
         setStatus('导入失败：' + e.message, 'err')
       }
@@ -846,7 +1340,8 @@ loadExamples()
   syncControls()
   renderMainPalette()
   renderStrokeList()
-  if (!restoreLocal()) setStatus('在画布上画线（鼠标或手指），松手自动拟合生成；画完点击笔画圆点可改颜色')
+  if (!restoreLocal()) setStatus('在画布上画线（鼠标或手指），松手自动拟合生成；画完点击笔画圆点可改颜色/渲染/高度/方向')
+  updateToolbar()
   loadThree()
 
   window.addEventListener('pagehide', () => {

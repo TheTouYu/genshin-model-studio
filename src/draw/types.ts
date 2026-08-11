@@ -7,8 +7,22 @@
 import type { StructureItem } from '../core/structure.js'
 
 /** 笔画：原始画布点（像素，x 右 y 下），不做任何处理，原样保存。
- * color 可选：笔画颜色 "0xRRGGBB"（作品 JSON v2；无 color = 默认材质，兼容 v1）。 */
-export type Stroke = { id: string; points: ReadonlyArray<readonly [number, number]>; color?: string }
+ * color 可选：笔画颜色 "0xRRGGBB"（作品 JSON v2；无 color = 默认材质，兼容 v1）。
+ * 四期（作品 JSON v3，PRD §4）：
+ * - render：'solid' = 柱体渲染（需封闭轮廓）；'rod' 或缺省 = 跟随全局 mode
+ *   （extrude=杆 / lathe=旋转，二者同义）；
+ * - height：米，沿模型 Y 抬升（rod 笔画所有 item 的 position.y += height）；
+ *   render='solid' 时兼作柱体厚度（Y 向，必须 > 0），柱体底贴 y=0（position.y = 厚度/2）；
+ * - axis：柱体轴向（仅 render='solid' 有效），缺省 'up'；
+ *   'up'=竖直（局部 Y，零旋转）/ 'front'=绕 X 转 90°（轴向 +Z）/ 'side'=绕 Z 转 −90°（轴向 +X）。 */
+export type Stroke = {
+  id: string
+  points: ReadonlyArray<readonly [number, number]>
+  color?: string
+  render?: 'rod' | 'solid'
+  height?: number
+  axis?: 'up' | 'front' | 'side'
+}
 
 /** 生成参数。 */
 export type ModelOptions = {
