@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>Genshin Model Studio</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; color: #222; }
+  h1 { font-size: 1.4rem; }
+  .row { display: flex; gap: 1rem; align-items: center; margin: 1rem 0; flex-wrap: wrap; }
+  textarea { width: 100%; height: 420px; font-family: ui-monospace, monospace; font-size: 12px; box-sizing: border-box; }
+  button { padding: 0.5rem 1.2rem; cursor: pointer; }
+  .status { color: #555; font-size: 0.9rem; margin-top: 0.5rem; white-space: pre-wrap; }
+  .muted { color: #888; font-size: 0.85rem; }
+  #githubLink { font-size: 0.85rem; margin-left: 1rem; color: #0a66c2; text-decoration: none; }
+  #githubLink:hover { text-decoration: underline; }
+  #docs { display: none; width: 100%; height: 560px; border: 1px solid #ccc; border-radius: 4px; margin: 1rem 0; background: #fff; }
+</style>
+</head>
+<body>
+<h1>Genshin Model Studio <span class="muted">— 示例/编辑/导出</span>
+  <a id="githubLink" href="https://github.com/TheTouYu/genshin-model-studio" target="_blank" rel="noopener">GitHub 仓库 ↗</a>
+</h1>
+<div class="row">
+  <label>示例：<select id="example"></select></label>
+  <label><input type="checkbox" id="compact"> 紧凑显示</label>
+  <button id="load">加载</button>
+  <button id="toggleDocs">📖 文档</button>
+  <select id="docFile">
+    <option value="README.md">README</option>
+    <option value="docs/input-format.md">输入格式</option>
+    <option value="docs/gia-format.md">GIA 格式</option>
+  </select>
+</div>
+<div class="row">
+  <button id="exportGil">导出 .gil 候选</button>
+  <button id="exportGia">导出 .gia</button>
+  <button id="format">格式化</button>
+</div>
+<textarea id="editor" spellcheck="false"></textarea>
+<div class="status" id="status"></div>
+<iframe id="docs" title="文档"></iframe>
+
+<script>
+const $ = (id) => document.getElementById(id)
+let examples = []
+
+async function loadExamples() {
+  const res = await fetch('/api/examples')
+  examples = await res.json()
+  $('example').innerHTML = examples.map((e) => `<option value="${e.name}">${e.name} (${e.items} 项)</option>`).join('')
+  await loadExample(examples[0].name)
+}
+
+async function loadExample(name) {
+  const res = await fetch(`/api/examples/${encodeURIComponent(name)}`)
+  const data = await res.json()
+  $('editor').value = JSON.stringify(data, null, $('compact').checked ? 0 : 2)
+  setStatus(`已加载 ${name}`)
+}
+
+async function doExport(format) {
+  let data
+  try {
+    data = JSON.parse($('editor').value)
+  } catch (e) {
+    setStatus(`JSON 解析失败: ${e.message}`)
+    return
+  }
+  const res = await fetch(`/api/export?format=${format}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ data }),
+  })
+  if (!res.ok) {
+    setStatus(await res.text())
+    return
+  }
+  const blob = await res.blob()
+  const cd = res.headers.get('Content-Disposition') || ''
+  const m = cd.match(/filename="([^"]+)"/)
+  const name = m ? m[1] : (format === 'gia' ? 'model.gia' : 'model.gil')
+  const a = document.createElement('a')
+  a.href = URL.createObjectURL(blob)
+  a.download = name
+  a.click()
+  URL.revokeObjectURL(a.href)
+  setStatus(`已导出 ${name}（${blob.size} 字节）`)
+}
+
+function setStatus(s) { $('status').textContent = s }
+function formatJson() {
+  try { $('editor').value = JSON.stringify(JSON.parse($('editor').value), null, 2); setStatus('已格式化') }
+  catch (e) { setStatus(`JSON 解析失败: ${e.message}`) }
+}
+
+function toggleDocs() {
+  const frame = $('docs')
+  if (frame.style.display === 'none' || !frame.style.display) {
+    frame.style.display = 'block'
+    frame.src = `/docs?file=${encodeURIComponent($('docFile').value)}`
+    $('toggleDocs').textContent = '✕ 关闭文档'
+  } else {
+    frame.style.display = 'none'
+    frame.src = ''
+    $('toggleDocs').textContent = '📖 文档'
+  }
+}
+
+$('load').onclick = () => loadExample($('example').value)
+$('exportGil').onclick = () => doExport('gil')
+$('exportGia').onclick = () => doExport('gia')
+$('format').onclick = formatJson
+$('toggleDocs').onclick = toggleDocs
+$('docFile').onchange = () => {
+  if ($('docs').style.display !== 'none') $('docs').src = `/docs?file=${encodeURIComponent($('docFile').value)}`
+}
+loadExamples()
+</script>
+</body>
+</html>
