@@ -156,3 +156,5 @@ UI：色板（8-12 色）→ 选中色 = 新笔画颜色；每笔画旁颜色点
 遗留登记：three.min.js deprecation（0.160 仍可用，ESM 迁移风险>收益，暂缓）、applyPreview(null) 警告文案（后续改 silent）、README 操作说明（任务 E）。
 
 三期状态（2026-08-12）：F（生成侧颜色）+ G（前端色板/预览）并行子任务完成，主模型验收通过（选色→新笔上色、点笔画 chip→弹层改色、v1 兼容迁移、预览材质色、导出带色、非法颜色 400）。主模型缝合：web-shared.ts 笔画解析曾剥 color（F 边界外），已加格式校验与透传。29 测试全绿（8 draw + 4 颜色 + 17 golden）。README 已加画线建模操作说明（任务 E ✅）。
+
+线上事故（2026-08-12，任务 H 修复中）：手机端画画后状态栏出现 "生成失败：The page could not be found / NOT_FOUND / sin1::…"。根因：api/draw.ts 缺 `export const config = { path: '/api/draw-model' }`，Vercel 按文件名挂载为 /api/draw；前端请求 /api/draw-model → 404 页 HTML → regenerate 错误处理把整段 HTML 塞进状态栏。本地 server.ts 显式注册了 /api/draw-model 所以从未暴露。教训：(1) Vercel 函数路由 = 文件名，要自定义路径必须 config.path；(2) 部署后必须实测线上 API（当时沙箱访问 vercel.app 受限，用 vercel build 产物或用户手机兜底）；(3) 错误处理按 content-type 区分，HTML 正文不进 UI。

@@ -427,7 +427,17 @@ loadExamples()
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ strokes: state.strokes, options: state.options }),
     })
-      .then((res) => (res.ok ? res.json() : res.text().then((t) => { throw new Error(t) })))
+      .then((res) => {
+        if (res.ok) return res.json()
+        const ct = (res.headers.get('content-type') || '').toLowerCase()
+        // 仅后端业务错误（400 text/plain|json，如“笔画不能为空”）展示原文；
+        // 其他（含 Vercel 404 的 text/plain 或 text/html 页面）不把正文塞进状态栏
+        const isBusinessError = res.status === 400 && (ct.includes('application/json') || ct.includes('text/plain'))
+        if (isBusinessError) {
+          return res.text().then((t) => { throw new Error(t) })
+        }
+        throw new Error(`生成接口异常（HTTP ${res.status}）`)
+      })
       .then((data) => {
         if (mySeq !== genSeq) return // 丢弃过期响应
         state.items = data.items || []
