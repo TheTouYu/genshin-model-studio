@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "name": "simple-assembly",
+  "template": "空模型",
+  "prefabId": 1077936131,
+  "position": [0, 0, 0],
+  "rotation": [0, 0, 0],
+  "scale": [1, 1, 1],
+  "items": [
+    {
+      "resourceId": 10009001,
+      "position": [0, 0.25, 0],
+      "rotation": [0, 0, 0],
+      "scale": [2, 0.5, 2],
+      "color": { "enabled": true, "rgb": "0x8B5E3C", "opacity": 100, "overlay": "overwrite" }
+    },
+    {
+      "resourceId": 10009008,
+      "position": [1.2, 0.5, 0],
+      "rotation": [0, 0, 90],
+      "scale": [0.1, 1.5, 0.1]
+    },
+    {
+      "resourceId": 10009004,
+      "position": [-1.2, 0.5, 0],
+      "rotation": [0, 30, 0],
+      "scale": [0.5, 0.5, 0.5]
+    },
+    {
+      "resourceId": 10009005,
+      "position": [0, 0.5, 1.2],
+      "rotation": [0, 0, 0],
+      "scale": [0.5, 0.5, 0.5]
+    }
+  ]
+}

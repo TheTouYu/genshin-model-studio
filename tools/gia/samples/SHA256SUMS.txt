@@ -1,0 +1,2 @@
+850eb6881cb92d20c6ecb31552694a1135af16cb10dfef75a01baf96c875fbd6  samples/equiangular-spiral.gia
+3d10e44f22705851a78accc604999d14d3d8ab7bf952a5a08048804e2883f438  samples/football.gia

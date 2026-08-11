@@ -1,0 +1,7 @@
+node_modules/
+dist/
+out/
+*.tsbuildinfo
+examples/*.gil
+examples/*.structure.json
+examples/*.summary.json
