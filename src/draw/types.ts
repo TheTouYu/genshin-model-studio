@@ -50,6 +50,8 @@ export type TaggedItem = {
 
 /** 圆柱（10009008）：零旋转轴向 = 局部 Y；scale=[截面直径, 轴向长度, 截面直径]。 */
 export const CYLINDER_RESOURCE_ID = 10009008
+/** 开口薄壁圆柱（10009012，五期旋转成型）：同圆柱语义，但空心无顶盖/底盖（openEnded，无缝闭合）。 */
+export const OPEN_CYLINDER_RESOURCE_ID = 10009012
 /** 长方体（10009001）：scale=[宽, 高, 长]，长轴 = 局部 Z。 */
 export const BOX_RESOURCE_ID = 10009001
 

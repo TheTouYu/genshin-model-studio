@@ -43,6 +43,7 @@
     prism5: 0xcaa8e8, // 五棱柱 · 紫（已闭合）
     pyramid: 0xe8d26a, // 三棱锥 · 黄（未校准）
     cylinder: 0x6fc3c9, // 圆柱 · 青（已闭合）
+    cylinderOpen: 0x6fc3c9, // 开口薄壁圆柱 · 青（五期旋转成型）
     cone: 0xe87a7a, // 圆锥 · 红（未校准）
     wire: 0x5b6672, // 线框类（未校准）
     placeholder: 0xff3d9e, // 未知资源 ID 占位 · 提示色
@@ -142,6 +143,10 @@
         geo = new THREE.CylinderGeometry(0.5, 0.5, 1, 24)
         kind = 'cylinder'
         break
+      case 10009012: // 开口薄壁圆柱（五期旋转成型）：同圆柱，但空心无顶盖/底盖（openEnded，无缝闭合，双面可见内壁）
+        geo = new THREE.CylinderGeometry(0.5, 0.5, 1, 48, 1, true)
+        kind = 'cylinderOpen'
+        break
       case 10009009: // 圆锥（未校准：速查表仅登记 ID，形状为合理猜测）
         geo = new THREE.ConeGeometry(0.5, 1, 24)
         kind = 'cone'
@@ -199,6 +204,8 @@
             color: colorHex != null ? colorHex : COLORS[kind] || COLORS.placeholder,
             roughness: 0.85,
             metalness: 0.05,
+            // 开口薄壁圆柱双面渲染：从杯口看进去能看到内壁
+            side: kind === 'cylinderOpen' ? THREE.DoubleSide : THREE.FrontSide,
           })
         )
       }
@@ -232,7 +239,7 @@
     var THREE = global.THREE
 
     // ---- 渲染器 / 场景 / 相机 ----
-    var renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true })
+    var renderer = new THREE.WebGLRenderer({ canvas: canvasEl, antialias: true, preserveDrawingBuffer: true })
     renderer.setPixelRatio(Math.min(global.devicePixelRatio || 1, 2))
 
     var scene = new THREE.Scene()
@@ -442,7 +449,26 @@
     resize()
     fitCameraToContent()
 
-    return { setItems: setItems, dispose: dispose }
+    // ---- 相机控制 API（供脚本/视觉核验评估器从任意视角观察）----
+    // setCamera({yaw, pitch, radius})：球坐标（弧度）。任一字段可省略，非法值忽略。
+    // resetView()：恢复默认方位角并重新自动取景。
+    function setCamera(opts) {
+      if (!opts || typeof opts !== 'object') return
+      if (Number.isFinite(opts.yaw)) orbit.yaw = opts.yaw
+      if (Number.isFinite(opts.pitch)) orbit.pitch = opts.pitch
+      if (Number.isFinite(opts.radius)) orbit.radius = clamp(opts.radius, MIN_RADIUS, MAX_RADIUS)
+      applyCamera()
+      renderer.render(scene, camera) // 同步渲染一帧：后台标签页 rAF 冻结时截图/核验仍可用
+    }
+    function resetView() {
+      orbit.yaw = 0.65
+      orbit.pitch = 0.85
+      orbit.radius = 6
+      fitCameraToContent()
+      renderer.render(scene, camera) // 同上：同步出帧，不依赖 rAF
+    }
+
+    return { setItems: setItems, setCamera: setCamera, resetView: resetView, dispose: dispose }
   }
 
   global.createPreview = createPreview

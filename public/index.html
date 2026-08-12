@@ -55,6 +55,9 @@
   .stroke-dot.default { background: repeating-linear-gradient(45deg, #dfe5ec 0 3px, #b9c2cc 3px 6px); }
   #colorPopover { position: fixed; z-index: 60; background: #fff; border: 1px solid #c9d2dc; border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,0.18); padding: 0.6rem 0.7rem; display: none; min-width: 210px; }
   #colorPopover .pop-title { font-size: 0.8rem; color: #555; margin-bottom: 0.45rem; }
+  #colorPopover .pop-del { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #e6ebf1; }
+  #colorPopover .pop-del button { width: 100%; padding: 0.35rem 0.6rem; font-size: 0.82rem; border: 1px solid #d4dbe3; border-radius: 6px; background: #fff; cursor: pointer; }
+  #colorPopover .pop-del button:hover { border-color: #b23; color: #b23; }
 
   /* ============ 四期：几何工具工具栏 / 弹层扩展 / 旋转复制 ============ */
   .tool-row { gap: 0.45rem; }
@@ -197,6 +200,7 @@
     <option value="side">侧向（X）</option>
   </select></label></div>
   <div class="pop-foot">改动立即生效：重新生成并更新 3D 预览</div>
+  <div class="pop-del"><button type="button" id="popDelete">🗑 删除此笔画</button></div>
 </div>
 
 <div id="rotateModal">
@@ -330,6 +334,7 @@ loadExamples()
     items: [], // 拍平后的 structure items（预览/导出共用）
     preview: null,
     pendingItems: null, // THREE 尚未就绪时暂存
+    lastGenError: null, // 五期：最近一次生成错误信息（gms.summary 状态栏文本用）
   }
   let activePointerId = null
   let currentStroke = null
@@ -779,6 +784,7 @@ loadExamples()
   function regenerate() {
     clearTimeout(genTimer)
     const mySeq = ++genSeq
+    state.lastGenError = null // 五期：新一轮生成开始，清空上次错误（gms.summary 用）
     if (state.strokes.length === 0) {
       state.items = []
       state.fitted = []
@@ -819,6 +825,7 @@ loadExamples()
       })
       .catch((err) => {
         if (mySeq !== genSeq) return
+        state.lastGenError = err.message // 五期：记录生成错误（gms.summary 用）
         setStatus('生成失败：' + err.message, 'err')
       })
   }
@@ -1067,6 +1074,14 @@ loadExamples()
     renderStrokeList()
     renderDraw()
     scheduleGen()
+  })
+
+  /* ---- 五期：弹层删除按钮（删除 dataset.strokeId 对应笔画并关弹层） ---- */
+
+  el('popDelete').addEventListener('click', () => {
+    const id = el('colorPopover').dataset.strokeId
+    closePopover()
+    if (id && deleteStrokeById(id)) setStatus('已删除该笔画', 'ok')
   })
 
   document.addEventListener('pointerdown', (e) => {
@@ -1339,6 +1354,7 @@ loadExamples()
     }
     try {
       state.preview = window.createPreview(previewCanvas)
+      window.gmsPreview = state.preview // 五期：暴露预览控制 API（setCamera/resetView），供脚本与视觉核验评估器多视角观察
       if (state.pendingItems) {
         state.preview.setItems(state.pendingItems)
         state.pendingItems = null
@@ -1359,6 +1375,418 @@ loadExamples()
     s.onload = bootPreview
     s.onerror = loadThree
     document.head.appendChild(s)
+  }
+
+  /* ---------- 五期：window.gms 程序化建模命令层（PRD §2.1，AI 逐步协作建模） ---------- */
+
+  /** 删除笔画（弹层「删除此笔画」与 gms.delete 共用）：不进撤销批次（undo 只管新增）。 */
+  function deleteStrokeById(id) {
+    const idx = state.strokes.findIndex((s) => s.id === id)
+    if (idx < 0) return false
+    state.strokes.splice(idx, 1)
+    state.fitted.splice(idx, 1)
+    state.closed.splice(idx, 1)
+    state.lastGenError = null
+    ensureSelection()
+    renderStrokeList()
+    renderDraw()
+    scheduleGen()
+    saveLocal()
+    return true
+  }
+
+  /** 解析笔画索引：负数 = 倒数（-1 = 最后一笔）；非法/越界抛中文 Error。 */
+  function resolveIndex(i) {
+    if (typeof i !== 'number' || !Number.isFinite(i) || !Number.isInteger(i)) {
+      throw new Error(`笔画索引非法：应为整数（负数 = 倒数，-1 = 最后一笔），当前值为 ${JSON.stringify(i)}`)
+    }
+    const idx = i < 0 ? state.strokes.length + i : i
+    if (idx < 0 || idx >= state.strokes.length) {
+      throw new Error(`笔画索引越界：当前共 ${state.strokes.length} 笔，索引 ${i}（解析为 ${idx}）超出范围`)
+    }
+    return idx
+  }
+
+  function assertFinite(v, name) {
+    if (typeof v !== 'number' || !Number.isFinite(v)) {
+      throw new Error(`${name}参数非法：应为有限数值，当前值为 ${JSON.stringify(v)}`)
+    }
+  }
+
+  /** 校验点数组（[x, y] 有限数值对），返回拷贝；非法抛中文 Error。 */
+  function validatePoints(pts, what) {
+    if (!Array.isArray(pts)) {
+      throw new Error(`${what}参数非法：应为 [x, y] 数组，当前值为 ${JSON.stringify(pts)}`)
+    }
+    return pts.map((p, i) => {
+      if (!Array.isArray(p) || p.length < 2 || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) {
+        throw new Error(`${what}参数非法：第 ${i + 1} 个点应为 [x, y] 有限数值，当前值为 ${JSON.stringify(p)}`)
+      }
+      return [p[0], p[1]]
+    })
+  }
+
+  /** 校验并归一化 opts（render/height/axis/color）；未知字段/非法值抛中文 Error。 */
+  function normalizeOpts(opts) {
+    if (opts === undefined) return {}
+    if (opts === null || typeof opts !== 'object' || Array.isArray(opts)) {
+      throw new Error(`opts 参数非法：应为对象 { render, height, axis, color }，当前值为 ${JSON.stringify(opts)}`)
+    }
+    for (const k of Object.keys(opts)) {
+      if (k !== 'render' && k !== 'height' && k !== 'axis' && k !== 'color') {
+        throw new Error(`opts 参数非法：未知字段 ${JSON.stringify(k)}（支持 render/height/axis/color），当前值为 ${JSON.stringify(opts)}`)
+      }
+    }
+    const o = {}
+    if (opts.render !== undefined) {
+      if (opts.render !== 'rod' && opts.render !== 'solid') {
+        throw new Error(`render 参数非法：应为 'rod'（杆，缺省）或 'solid'（柱体），当前值为 ${JSON.stringify(opts.render)}`)
+      }
+      o.render = opts.render
+    }
+    if (opts.height !== undefined) {
+      if (typeof opts.height !== 'number' || !Number.isFinite(opts.height) || opts.height <= 0) {
+        throw new Error(`height 参数非法：应为正数（米；solid = 柱体高度，rod = 抬升高度），当前值为 ${JSON.stringify(opts.height)}`)
+      }
+      o.height = opts.height
+    }
+    if (opts.axis !== undefined) {
+      if (opts.axis !== 'up' && opts.axis !== 'front' && opts.axis !== 'side') {
+        throw new Error(`axis 参数非法：应为 'up'（缺省不写）| 'front' | 'side'，当前值为 ${JSON.stringify(opts.axis)}`)
+      }
+      o.axis = opts.axis
+    }
+    if (opts.color !== undefined) {
+      const c = normalizeColor(opts.color)
+      if (!c) throw new Error(`color 参数非法：应为 '#RRGGBB' 或 '0xRRGGBB'，当前值为 ${JSON.stringify(opts.color)}`)
+      o.color = c
+    }
+    return o
+  }
+
+  /** 新建笔画 + 套用 opts（先校验，失败不产生笔画）。 */
+  function addStrokeWithOpts(points, opts) {
+    const o = normalizeOpts(opts)
+    if (o.axis !== undefined && o.axis !== 'up' && o.render !== 'solid') {
+      throw new Error(`axis 参数仅对 render='solid' 的柱体笔画有效：当前渲染为 ${o.render ? `'${o.render}'` : '缺省（杆）'}，axis=${JSON.stringify(o.axis)}`)
+    }
+    const stroke = addStroke(points) // 已 push 撤销批次 + 自动选中 + scheduleGen
+    state.lastGenError = null
+    if (o.render !== undefined) stroke.render = o.render
+    if (o.height !== undefined) stroke.height = o.height
+    if (o.axis !== undefined && o.axis !== 'up') stroke.axis = o.axis // 'up' = 缺省不写
+    if (o.color !== undefined) stroke.color = o.color
+    renderStrokeList()
+    renderDraw()
+    scheduleGen()
+    saveLocal()
+    return stroke
+  }
+
+  /** 每笔 bbox：px（画布坐标）与米（按当前标定 heightMeters / canvasHeightPx 换算）。 */
+  function strokeBBox(points) {
+    let minX = Infinity
+    let minY = Infinity
+    let maxX = -Infinity
+    let maxY = -Infinity
+    for (const [x, y] of points) {
+      if (x < minX) minX = x
+      if (y < minY) minY = y
+      if (x > maxX) maxX = x
+      if (y > maxY) maxY = y
+    }
+    const pxBox = { minX, minY, maxX, maxY, width: maxX - minX, height: maxY - minY }
+    const k = state.options.heightMeters / (state.options.canvasHeightPx > 0 ? state.options.canvasHeightPx : 1)
+    const toM = (v) => Math.round(v * k * 1e6) / 1e6
+    return {
+      px: pxBox,
+      m: { minX: toM(minX), minY: toM(minY), maxX: toM(maxX), maxY: toM(maxY), width: toM(pxBox.width), height: toM(pxBox.height) },
+    }
+  }
+
+  function gmsSummary() {
+    const n = state.strokes.length
+    const closedCount = state.closed.filter(Boolean).length
+    const itemCount = state.items ? state.items.length : 0
+    let status
+    let cls = 'ok'
+    if (state.lastGenError) {
+      status = '生成失败：' + state.lastGenError
+      cls = 'err'
+    } else if (n === 0) {
+      status = '画布已清空：在画布上画线开始'
+    } else if (state.fitted.length !== n || state.fitted.some((f) => f === null)) {
+      status = `${n} 笔 · ${closedCount} 笔封闭 · ${itemCount} 个元件（生成中…）`
+      cls = ''
+    } else {
+      status = `✓ ${n} 笔 · ${closedCount} 笔封闭 · ${itemCount} 个元件`
+    }
+    setStatus(status, cls)
+    const strokes = state.strokes.map((s, i) => ({
+      index: i,
+      id: s.id,
+      points: s.points.length,
+      closed: !!state.closed[i], // 后端封闭检测结果（solid 必须 closed）
+      render: s.render !== undefined ? s.render : null, // null = 缺省（杆）
+      height: s.height !== undefined ? s.height : null, // null = 缺省（0 抬升）
+      axis: s.axis !== undefined ? s.axis : null, // null = 缺省（up）
+      color: s.color !== undefined ? s.color : null, // null = 缺省（默认材质）
+      bbox: strokeBBox(s.points),
+    }))
+    return {
+      status,
+      strokes,
+      options: {
+        mode: state.options.mode,
+        shape: state.options.shape,
+        size: state.options.size,
+        count: state.options.count,
+        heightMeters: state.options.heightMeters,
+        canvasHeightPx: state.options.canvasHeightPx,
+        calibration: `${state.options.canvasHeightPx}px = ${state.options.heightMeters}m`,
+        currentColor: currentColor() || null,
+      },
+    }
+  }
+
+  /** 五期：切换全局生成模式 extrude（拉伸/杆）/ lathe（车削旋转体）。UI 有同款 select，命令版供 AI 协作建模用。 */
+  function gmsMode(m) {
+    if (m !== 'extrude' && m !== 'lathe') {
+      throw new Error(`mode 参数非法：应为 'extrude'（拉伸）或 'lathe'（车削），当前值为 ${JSON.stringify(m)}`)
+    }
+    state.options.mode = m
+    syncControls() // UI select 同步（lathe 时 shape 禁用）
+    renderStrokeList()
+    renderDraw()
+    scheduleGen()
+    saveLocal()
+    return gmsSummary()
+  }
+
+  /** 五期：折线细分笔画（每段 16 细分）——lathe 母线等需要精确直线段的场景用，避免 Catmull-Rom 拐角过冲导致 minX 漂移（轴偏移） */
+  function gmsPolyline(pts, opts) {
+    validatePoints(pts, '折线')
+    if (pts.length < 2) throw new Error('折线至少需要 2 个点')
+    const sampled = []
+    for (let i = 0; i + 1 < pts.length; i++) {
+      const [x0, y0] = pts[i]
+      const [x1, y1] = pts[i + 1]
+      for (let k = 0; k < 16; k++) {
+        sampled.push([x0 + ((x1 - x0) * k) / 16, y0 + ((y1 - y0) * k) / 16])
+      }
+    }
+    sampled.push([pts[pts.length - 1][0], pts[pts.length - 1][1]])
+    const s = addStrokeWithOpts(sampled, opts)
+    return gmsSummary()
+  }
+
+  function gmsClear() {
+    if (state.strokes.length > 0) {
+      state.strokes = []
+      state.fitted = []
+      state.closed = []
+      state.batches = []
+      state.selectedId = null
+      state.lastGenError = null
+      closePopover()
+      renderStrokeList()
+      renderDraw()
+      scheduleGen()
+      saveLocal()
+    }
+    return gmsSummary()
+  }
+
+  function gmsUndo() {
+    if (state.strokes.length === 0) return gmsSummary()
+    const batch = state.batches.pop() || { len: 1 }
+    const len = Math.min(batch.len, state.strokes.length)
+    state.strokes.splice(state.strokes.length - len, len)
+    state.fitted.splice(state.fitted.length - len, len)
+    state.closed.splice(state.closed.length - len, len)
+    state.lastGenError = null
+    ensureSelection()
+    renderStrokeList()
+    renderDraw()
+    scheduleGen()
+    saveLocal()
+    return gmsSummary()
+  }
+
+  function gmsCircle(cx, cy, r, opts) {
+    assertFinite(cx, 'cx（圆心 x，画布像素）')
+    assertFinite(cy, 'cy（圆心 y，画布像素）')
+    assertFinite(r, 'r（半径，画布像素）')
+    if (r <= 0) throw new Error(`r 参数非法：半径应为正数（画布像素），当前值为 ${r}`)
+    const points = []
+    for (let i = 0; i < 24; i++) { // 24 等距点 + 首尾重合闭合点（与圆工具同构）
+      const a = (2 * Math.PI * i) / 24
+      points.push([cx + r * Math.cos(a), cy + r * Math.sin(a)])
+    }
+    points.push([points[0][0], points[0][1]])
+    addStrokeWithOpts(points, opts)
+    return gmsSummary()
+  }
+
+  function gmsRect(x0, y0, x1, y1, opts) {
+    assertFinite(x0, 'x0')
+    assertFinite(y0, 'y0')
+    assertFinite(x1, 'x1')
+    assertFinite(y1, 'y1')
+    const l = Math.min(x0, x1)
+    const t = Math.min(y0, y1)
+    const w = Math.abs(x1 - x0)
+    const h = Math.abs(y1 - y0)
+    if (w === 0 || h === 0) {
+      throw new Error(`矩形参数非法：对角两点不能共线（当前宽度 ${w}px、高度 ${h}px）`)
+    }
+    const points = [[l, t], [l + w, t], [l + w, t + h], [l, t + h], [l, t]] // 4 顶点 + 闭合点（与矩形工具同构）
+    addStrokeWithOpts(points, opts)
+    return gmsSummary()
+  }
+
+  function gmsLine(x0, y0, x1, y1, opts) {
+    assertFinite(x0, 'x0')
+    assertFinite(y0, 'y0')
+    assertFinite(x1, 'x1')
+    assertFinite(y1, 'y1')
+    if (x0 === x1 && y0 === y1) {
+      throw new Error(`直线参数非法：两点重合（当前均为 (${x0}, ${y0})），零长度直线无意义`)
+    }
+    addStrokeWithOpts([[x0, y0], [x1, y1]], opts)
+    return gmsSummary()
+  }
+
+  function gmsCurve(pts, closed, opts) {
+    if (closed !== undefined && typeof closed !== 'boolean') {
+      throw new Error(`closed 参数非法：应为布尔值（缺省 false = 开放曲线），当前值为 ${JSON.stringify(closed)}`)
+    }
+    const controls = validatePoints(pts, 'curve 控制点')
+    if (controls.length < 2) throw new Error(`curve 参数非法：控制点至少 2 个，当前为 ${controls.length} 个`)
+    const sampled = sampleCatmullRom(controls, !!closed)
+    addStrokeWithOpts(sampled, opts)
+    return gmsSummary()
+  }
+
+  function gmsLoop(pts, opts) {
+    const points = validatePoints(pts, 'loop 轮廓')
+    if (points.length < 3) throw new Error(`loop 参数非法：轮廓点至少 3 个，当前为 ${points.length} 个`)
+    if (!autoClose(points)) {
+      throw new Error(`loop 参数非法：首尾距离超过包围盒对角线 20%，无法闭合；请让首尾点靠近或重合（首尾重合最稳）`)
+    }
+    addStrokeWithOpts(points, opts)
+    return gmsSummary()
+  }
+
+  function gmsProps(i, opts) {
+    const idx = resolveIndex(i)
+    const o = normalizeOpts(opts)
+    const stroke = state.strokes[idx]
+    const effRender = o.render !== undefined ? o.render : (stroke.render !== undefined ? stroke.render : null)
+    if (o.axis !== undefined && o.axis !== 'up' && effRender !== 'solid') {
+      throw new Error(`axis 参数仅对 render='solid' 的柱体笔画有效：笔画 ${i} 当前渲染为 ${effRender === null ? '缺省（杆）' : `'${effRender}'`}，axis=${JSON.stringify(o.axis)}`)
+    }
+    if (o.render !== undefined) {
+      stroke.render = o.render
+      if (o.render !== 'solid' && stroke.axis) delete stroke.axis // axis 仅柱体有效（与弹层一致）
+    }
+    if (o.height !== undefined) stroke.height = o.height
+    if (o.axis !== undefined) {
+      if (o.axis === 'up') delete stroke.axis // 'up' = 缺省不写
+      else stroke.axis = o.axis
+    }
+    if (o.color !== undefined) stroke.color = o.color
+    state.lastGenError = null
+    renderStrokeList()
+    renderDraw()
+    scheduleGen()
+    saveLocal()
+    return gmsSummary()
+  }
+
+  function gmsRotate(i, cx, cy, n) {
+    const idx = resolveIndex(i)
+    assertFinite(cx, 'cx（旋转中心 x，画布像素）')
+    assertFinite(cy, 'cy（旋转中心 y，画布像素）')
+    if (typeof n !== 'number' || !Number.isFinite(n) || !Number.isInteger(n) || n < 2 || n > 12) {
+      throw new Error(`n 参数非法：份数应为 2~12 的整数，当前值为 ${JSON.stringify(n)}`)
+    }
+    const src = state.strokes[idx]
+    const copies = makeRotationCopies(src, [cx, cy], n)
+    const pos = state.strokes.indexOf(src)
+    state.strokes.splice(pos + 1, 0, ...copies) // 副本插入源笔画之后（与 confirmRotate 同构）
+    state.fitted.splice(pos + 1, 0, ...copies.map(() => null))
+    state.closed.splice(pos + 1, 0, ...copies.map(() => false))
+    state.batches.push({ len: copies.length }) // 一个撤销批次：一次撤销整体取消
+    state.selectedId = src.id
+    state.lastGenError = null
+    renderStrokeList()
+    renderDraw()
+    scheduleGen()
+    saveLocal()
+    return gmsSummary()
+  }
+
+  function gmsDelete(i) {
+    const idx = resolveIndex(i)
+    const id = state.strokes[idx].id
+    if (el('colorPopover').dataset.strokeId === id) closePopover() // 删除弹层目标笔画时关弹层
+    deleteStrokeById(id)
+    return gmsSummary()
+  }
+
+  function gmsPx2m(px) {
+    assertFinite(px, 'px')
+    const c = state.options.canvasHeightPx > 0 ? state.options.canvasHeightPx : 1
+    return (px * state.options.heightMeters) / c
+  }
+
+  function gmsM2px(m) {
+    assertFinite(m, 'm')
+    const c = state.options.canvasHeightPx > 0 ? state.options.canvasHeightPx : 1
+    return (m * c) / state.options.heightMeters
+  }
+
+  function gmsExport() {
+    // 返回作品 JSON（{ version, strokes, options }，与「导出作品 JSON」按钮同构；可直传 gms.import）
+    return { version: WORK_VERSION, strokes: state.strokes, options: state.options }
+  }
+
+  function gmsImport(data) {
+    let parsed = data
+    if (typeof data === 'string') {
+      try {
+        parsed = JSON.parse(data)
+      } catch (e) {
+        throw new Error(`import 参数非法：JSON 解析失败（${e.message}）`)
+      }
+    }
+    if (!applyWork(parsed)) {
+      throw new Error(`import 参数非法：不是有效的作品 JSON（需为 { version: 3, strokes, options } 对象或 JSON 字符串），当前类型为 ${typeof data}`)
+    }
+    state.lastGenError = null
+    saveLocal()
+    return gmsSummary()
+  }
+
+  window.gms = {
+    clear: gmsClear,
+    undo: gmsUndo,
+    circle: gmsCircle,
+    rect: gmsRect,
+    line: gmsLine,
+    curve: gmsCurve,
+    polyline: gmsPolyline,
+    loop: gmsLoop,
+    props: gmsProps,
+    rotate: gmsRotate,
+    delete: gmsDelete,
+    summary: gmsSummary,
+    px2m: gmsPx2m,
+    m2px: gmsM2px,
+    export: gmsExport,
+    import: gmsImport,
+    mode: gmsMode,
   }
 
   /* ---------- 启动 ---------- */

@@ -24,7 +24,7 @@
  * - stroke.height 对 rod/lathe 笔画：该笔所有 item 的 position.y += height（整体抬升）。
  */
 import type { ModelOptions, Stroke, TaggedItem, TaggedItemColor } from './types.js'
-import { BOX_RESOURCE_ID, CYLINDER_RESOURCE_ID } from './types.js'
+import { BOX_RESOURCE_ID, CYLINDER_RESOURCE_ID, OPEN_CYLINDER_RESOURCE_ID } from './types.js'
 import { adaptiveEpsilon, fitStroke, simplifyRdp, type FittedStroke } from './fitting.js'
 import type { StructureItem } from '../core/structure.js'
 
@@ -36,6 +36,7 @@ type CanvasPoint = readonly [number, number]
 type ToWorld = (x: number, y: number) => Vec3
 
 const DEG = 180 / Math.PI
+
 
 function rawBounds(strokes: readonly Stroke[]): {
   minX: number
@@ -145,17 +146,61 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
       for (const fit of fitted) {
         const stroke = strokeById.get(fit.id)
         // 四期：solid 笔画在 lathe 全局模式下独立走柱体（不绕轴），其余照旧
+        // 五期：solid 用自身包围盒定位（全局 bbox 会让柱体偏离 lathe 母线轴/悬浮）
         if (stroke?.render === 'solid') {
-          items.push(solidColumn(stroke, raw, bboxWidth, bboxHeight, scale, colorOf(fit.id)))
+          const sRaw = rawBounds([stroke as Stroke])
+          const sBh = sRaw !== null ? Math.max(sRaw.maxY - sRaw.minY, 0) : bboxHeight
+          // x 用全局包围盒（对齐 lathe 母线轴），z 用自身包围盒（贴母线底）
+          items.push(solidColumn(stroke, raw, bboxWidth, bboxHeight, scale, colorOf(fit.id), sRaw ?? raw))
+          continue
+        }
+        // 五期：显式 rod 在 lathe 全局模式下走杆（不车削）——把手/辐条等非旋转体元素。
+        // 杆按 RDP 简化锚点逐段生成（保留笔画折线特征）；用重采样点会把曲线碎成 count 段小杆。
+        if (stroke?.render === 'rod') {
+          let anchors = simplifyRdp(stroke.points, adaptiveEpsilon(stroke.points))
+          // 合并过短段（段长 < 杆半径像素）——短杆端面与长杆相邻会堆叠成视觉接缝（视觉模型实测发现）
+          // 杆半径(px) = size(米) / scale(米/px) / 2；scale 来自画布标定或 bbox 标定
+          const minSegPx = Math.max(size / scale / 2, 2)
+          if (anchors.length > 2) {
+            const kept: [number, number][] = [[anchors[0][0], anchors[0][1]]]
+            for (let i = 1; i < anchors.length - 1; i++) {
+              const prev = kept[kept.length - 1]
+              const d = Math.hypot(anchors[i][0] - prev[0], anchors[i][1] - prev[1])
+              if (d >= minSegPx) kept.push([anchors[i][0], anchors[i][1]])
+            }
+            kept.push([anchors[anchors.length - 1][0], anchors[anchors.length - 1][1]])
+            anchors = kept
+          }
+          for (let i = 0; i + 1 < anchors.length; i++) {
+            const rod = extrudeRod(
+              anchors[i], anchors[i + 1], toWorld, size, opts.shape, fit.id, colorOf(fit.id)
+            )
+            if (rod !== null) {
+              liftByHeight(rod, stroke)
+              items.push(rod)
+            }
+          }
           continue
         }
         const minX = rawMinX.get(fit.id) ?? raw.minX
-        for (const point of fit.points) {
-          const disc = latheDisc(point, toWorld, minX, scale, heightMeters, count, fit.id, colorOf(fit.id))
-          if (disc !== null) {
-            liftByHeight(disc, stroke)
-            items.push(disc)
+        // 五期：等高度归并后取最宽半径 → 单个开口薄壁圆柱（无缝闭合旋转体；
+        // 48 条 BOX 壳条有棱有缝已弃用；实心盘片叠成实心柱更早弃用）
+        const layers = sampleByHeight(fit.points, count)
+        const rMax = Math.max(...layers.map((p) => (p[0] - minX) * scale))
+        if (rMax > 0) {
+          // 壳高 = 笔画自身 bbox 高（全局 maxY 会被其他笔画抬高；层心范围比全高短一个步长）
+          const sRaw = rawBounds([stroke as Stroke])
+          const shellH = sRaw !== null ? (sRaw.maxY - sRaw.minY) * scale : (raw.maxY - raw.minY) * scale
+          const wall: TaggedItem = {
+            resourceId: OPEN_CYLINDER_RESOURCE_ID,
+            position: [toWorld(minX, 0)[0], shellH / 2, 0], // 轴心居中、母线底贴 y=0
+            rotation: [0, 0, 0], // 轴向 Y 零旋转
+            scale: [2 * rMax, shellH, 2 * rMax], // 直径 = 2×最宽半径
+            group: fit.id,
+            ...(colorOf(fit.id) === undefined ? {} : { color: itemColor(colorOf(fit.id)) })
           }
+          liftByHeight(wall, stroke)
+          items.push(wall)
         }
       }
     }
@@ -333,7 +378,8 @@ function solidColumn(
   rawBboxWidth: number,
   rawBboxHeight: number,
   scale: number,
-  color?: string
+  color?: string,
+  zRaw: { minY: number; maxY: number } = raw // 五期：z 定位用的包围盒（lathe 下传自身，贴母线底/轴平面）
 ): TaggedItem {
   const thickness = stroke.height ?? 0
   if (!(thickness > 0)) throw new Error('柱体高度需大于 0（米）')
@@ -352,7 +398,8 @@ function solidColumn(
   const depth = (maxY - minY) * scale
   // 包围盒中心：x = 画布 x 中心 → 世界 x（全局居中）；z = 画布 y 中心 → 世界 z（全局居中）
   const centerX = ((minX + maxX) / 2 - raw.minX) * scale - (rawBboxWidth * scale) / 2
-  const centerZ = ((minY + maxY) / 2 - raw.minY) * scale - (rawBboxHeight * scale) / 2
+  const zBboxH = Math.max(zRaw.maxY - zRaw.minY, 0)
+  const centerZ = ((minY + maxY) / 2 - zRaw.minY) * scale - (zBboxH * scale) / 2
   const axis = stroke.axis ?? 'up'
   const rotation: Vec3 =
     axis === 'front' ? [90, 0, 0] : axis === 'side' ? [0, 0, -90] : [0, 0, 0]
@@ -409,29 +456,24 @@ function extrudeRod(
   }
 }
 
-/** lathe 单层盘片：以采样点高度叠放，scale.x/z = 直径 = 2r。 */
-function latheDisc(
-  point: CanvasPoint,
-  toWorld: ToWorld,
-  axisMinX: number,
-  scale: number,
-  heightMeters: number,
-  count: number,
-  group: string,
-  color?: string
-): TaggedItem | null {
-  const radius = (point[0] - axisMinX) * scale // 半径 = (x − minX) × 归一化比例
-  if (radius <= 0) return null
-  const world = toWorld(point[0], point[1])
-  // 盘心恒在旋转轴上（toWorld(axisMinX) 的世界 x），否则各层圆心随半径偏移、碗身歪斜
-  return {
-    resourceId: CYLINDER_RESOURCE_ID,
-    position: [toWorld(axisMinX, 0)[0], world[1], 0],
-    rotation: [0, 0, 0], // 轴向 Y 零旋转
-    scale: [2 * radius, heightMeters / count, 2 * radius],
-    group,
-    ...(color === undefined ? {} : { color: itemColor(color) })
+/**
+ * 五期：lathe 母线等高度归并——每层取该 y 邻域的最大 x。
+ * 水平渐变段（y 恒定）归并为单层，避免弧长采样把渐变段叠成底部台阶。
+ */
+function sampleByHeight(points: CanvasPoint[], count: number): CanvasPoint[] {
+  const minY = Math.min(...points.map((p) => p[1]))
+  const maxY = Math.max(...points.map((p) => p[1]))
+  const layers: CanvasPoint[] = []
+  const step = (maxY - minY) / count
+  for (let i = 0; i < count; i++) {
+    const y = maxY - step * (i + 0.5)
+    let bestX = -Infinity
+    for (const [x, py] of points) {
+      if (Math.abs(py - y) <= step / 2 + 1e-9 && x > bestX) bestX = x
+    }
+    if (bestX > -Infinity) layers.push([bestX, y])
   }
+  return layers
 }
 
 /** TaggedItem.color → StructureItem.color：rgb 字符串转数值，写全字段（PRD §9 拍平规则）。 */

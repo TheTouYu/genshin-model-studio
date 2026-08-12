@@ -6,7 +6,8 @@ import { test } from 'node:test'
 import assert from 'node:assert/strict'
 
 import { BOX_RESOURCE_ID, CYLINDER_RESOURCE_ID, generateModel, toStructureItems } from '../src/draw/types.js'
-import { detectClosed, fitStroke, resampleUniform, simplifyRdp } from '../src/draw/fitting.js'
+import { adaptiveEpsilon, detectClosed, fitStroke, resampleUniform, simplifyRdp } from '../src/draw/fitting.js'
+import { OPEN_CYLINDER_RESOURCE_ID } from '../src/draw/types.js'
 import { catmullRom } from '../src/draw/spline.js'
 import { parseDrawModelRequest } from '../src/web-shared.js'
 import type { ModelOptions, Stroke, TaggedItem } from '../src/draw/types.js'
@@ -155,43 +156,27 @@ test('extrude: count segments produce count rods aligned to the polyline', () =>
   }
 })
 
-test('lathe: count discs stacked by sample height with scale.x = 2r', () => {
-  // 倒 V 母线：最左点 (20,0) 为内部点，采样不落其上 → 全部盘片半径 > 0，恰 count 层
-  const stroke: Stroke = { id: 'v', points: [[40, 100], [20, 0], [60, 100]] }
-  const opts: ModelOptions = { mode: 'lathe', shape: 'cylinder', size: 0.2, count: 10, heightMeters: 2 }
+test('lathe: single seamless open cylinder around the widest profile radius (hollow cup)', () => {
+  // L 形母线（细分，模拟前端 polyline）：锚点 (20,0) 在底部，水平渐变后竖直向上
+  const pts: [number, number][] = []
+  for (let i = 0; i <= 30; i++) pts.push([20 + (20 * i) / 30, 0])
+  for (let i = 1; i <= 60; i++) pts.push([40, (100 * i) / 60])
+  const stroke: Stroke = { id: 'v', points: pts }
+  const opts: ModelOptions = { mode: 'lathe', shape: 'cylinder', size: 0.2, count: 60, heightMeters: 2 }
   const { items } = generateModel([stroke], opts)
-  assert.equal(items.length, 10) // count 层盘片
-  // 与拟合曲线逐点对照（母线 = 拟合后的采样曲线）：
-  // 归一化：minX=20, maxX=60, minY=0, maxY=100, s = 2/100
-  const fit = fitStroke(stroke, 10)
-  assert.ok(fit !== null)
+  assert.equal(items.length, 1) // 无缝旋转体：单个开口圆柱
+  const item = items[0]
   const s = 2 / 100
-  const axisX = -((60 - 20) * s) / 2 // 旋转轴（归一化前 minX=20）的世界 x
-  const thickness = 2 / 10 // 盘厚 = 总高 / count
-  assert.equal(items.length, fit.points.length)
-  for (let i = 0; i < items.length; i++) {
-    const item = items[i]
-    const p = fit.points[i]
-    assert.equal(item.resourceId, CYLINDER_RESOURCE_ID)
-    assert.equal(item.group, 'v')
-    assert.deepEqual(item.rotation, [0, 0, 0]) // 盘片轴向 Y 零旋转
-    assert.equal(item.position[2], 0)
-    assert.equal(item.scale[1], thickness)
-    assert.equal(item.scale[0], item.scale[2])
-    assert.ok(item.scale[0] > 0, `disc ${i} radius > 0`)
-    const r = item.scale[0] / 2 // 直径 = 2r
-    // 半径 = (x − minX) × s，盘高 = 采样点归一化高度（半径/高度与母线吻合）
-    assert.ok(Math.abs(r - (p[0] - 20) * s) < 1e-9, `disc ${i} radius matches the fitted profile`)
-    assert.ok(Math.abs(item.position[1] - (100 - p[1]) * s) < 1e-9, `disc ${i} height matches the fitted profile`)
-    // 盘心恒在旋转轴上（旋转轴 = 归一化前 minX 的世界位置）
-    assert.ok(Math.abs(item.position[0] - axisX) < 1e-9, `disc ${i} centered on the rotation axis`)   
-  }
-  // 端点 (60,100) 为采样点 → 最大半径 = (60−20)×0.02 = 0.8；两端点高度 y=0
-  const maxR = Math.max(...items.map((i) => i.scale[0] / 2))
-  assert.ok(Math.abs(maxR - 0.8) < 1e-9, 'max radius')
-  assert.equal(Math.min(...items.map((i) => i.position[1])), 0)
-  // 平滑后曲线最低点高于原始顶点（Chaikin 角切把 V 尖削平），盘片仍覆盖大半高度
-  assert.ok(Math.max(...items.map((i) => i.position[1])) > 1, 'discs span most of the height')
+  const axisX = -((40 - 20) * s) / 2 // 旋转轴（归一化前 minX=20，单笔画 bbox 宽 20）的世界 x
+  assert.equal(item.resourceId, OPEN_CYLINDER_RESOURCE_ID)
+  assert.equal(item.group, 'v')
+  assert.deepEqual(item.rotation, [0, 0, 0]) // 轴向 Y 零旋转
+  assert.equal(item.position[2], 0) // 居中在轴上
+  assert.ok(Math.abs(item.position[0] - axisX) < 0.01, 'axis centered')
+  assert.ok(Math.abs(item.scale[0] - 0.8) < 0.01, `diameter = 2r = ${item.scale[0]}`)
+  assert.ok(Math.abs(item.scale[1] - 2) < 0.01, 'wall height = profile height')
+  assert.ok(Math.abs(item.scale[2] - item.scale[0]) < 1e-9, 'circular: z diameter = x diameter')
+  assert.ok(Math.abs(item.position[1] - 1) < 0.01, 'height center')
 })
 
 test('deterministic: identical input yields deep-equal output', () => {
@@ -509,7 +494,7 @@ test('solid: coexists with global lathe mode (solid strokes stay columns, others
   const solids = items.filter((i) => i.group.startsWith('c'))
   const discs = items.filter((i) => i.group === 'v')
   assert.equal(solids.length, 2) // 两个 solid 笔画各 1 个柱体（不绕轴）
-  assert.equal(discs.length, 8) // 其余笔画照旧 lathe 盘片
+  assert.equal(discs.length, 1) // 其余笔画照旧 lathe：单个无缝开口圆柱
   assert.deepEqual(solids[0].rotation, [0, 0, 0])
   assert.deepEqual(solids[1].rotation, [90, 0, 0])
 })
@@ -531,6 +516,26 @@ test('height: rod stroke lifts all items (extrude and lathe)', () => {
   for (let i = 0; i < lathe.items.length; i++) {
     assert.equal(lathe.items[i].position[1], lathePlain.items[i].position[1] + 0.3)
   }
+})
+
+test('rod: lathe mode segments by RDP anchors, not resampled count points', () => {
+  // 圆弧把手（模拟 curve 采样 49 点）：RDP 抽稀后锚点数应远小于 count，杆数 = 锚点数-1
+  const pts: [number, number][] = []
+  for (let i = 0; i <= 48; i++) {
+    const a = (i / 48) * Math.PI
+    pts.push([50 + 30 * Math.cos(a), 50 + 30 * Math.sin(a)])
+  }
+  const opts: ModelOptions = { mode: 'lathe', shape: 'cylinder', size: 0.2, count: 60, heightMeters: 2 }
+  const { items } = generateModel([{ id: 'h', points: pts, render: 'rod' }], opts)
+  const segs = items.filter((i) => i.group === 'h')
+  assert.ok(segs.length > 1, 'rod 至少 2 段')
+  assert.ok(segs.length < 20, `RDP 锚点应远少于 count 段（实际 ${segs.length} 段）`)
+  assert.ok(segs.every((i) => i.resourceId === CYLINDER_RESOURCE_ID))
+  // 极短段合并：段长不得小于杆半径（size/2 米）对应的世界长度（避免端面堆叠视觉缝）
+  assert.ok(
+    segs.every((i) => i.scale[1] >= 0.2 / 2),
+    `无过短段（最小段长 ${Math.min(...segs.map((i) => i.scale[1])).toFixed(3)}，阈值 ${(0.2 / 2).toFixed(3)}）`
+  )
 })
 
 test('golden: render/height/axis absent → byte-identical to phase-2 extrude items', () => {
