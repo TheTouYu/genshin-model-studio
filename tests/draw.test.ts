@@ -9,7 +9,7 @@ import { BOX_RESOURCE_ID, CYLINDER_RESOURCE_ID, generateModel, toStructureItems 
 import { adaptiveEpsilon, detectClosed, fitStroke, resampleUniform, simplifyRdp } from '../src/draw/fitting.js'
 import { OPEN_CYLINDER_RESOURCE_ID } from '../src/draw/types.js'
 import { catmullRom } from '../src/draw/spline.js'
-import { parseDrawModelRequest } from '../src/web-shared.js'
+import { parseDrawModelRequest, sweepWarnings } from '../src/web-shared.js'
 import type { ModelOptions, Stroke, TaggedItem } from '../src/draw/types.js'
 import { resolveStructure } from '../src/core/structure.js'
 
@@ -1049,4 +1049,73 @@ test('fit: keepClosedDetail opt-in only (default pipeline unchanged, lathe unaff
   const openDetailed = fitStroke(open, 11, { keepClosedDetail: true })
   assert.ok(openDetailed !== null)
   assert.equal(openDetailed.points.length, 11)
+})
+
+// —— 十一期：层级组（group）与旋转扫掠冲突检测 ——
+
+function ringPoints(cx: number, cy: number, r: number, n = 12): [number, number][] {
+  const pts: [number, number][] = []
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2
+    pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)])
+  }
+  pts.push(pts[0])
+  return pts
+}
+
+const sweepOpts: ModelOptions = { mode: 'extrude', shape: 'cylinder', size: 0.05, count: 8, heightMeters: 2, canvasHeightPx: 320 }
+
+test('parse: group passes through (缺省不写) and validated (空串/非字符串 → 400)', () => {
+  const ring = ringPoints(10, 10, 5)
+  const { strokes } = parseDrawModelRequest(JSON.stringify({
+    strokes: [
+      { id: 'g', points: ring, render: 'solid', height: 0.02, group: 'fan' },
+      { id: 's', points: [[0, 0], [10, 10]] }
+    ],
+    options: sweepOpts
+  }))
+  assert.equal(strokes[0].group, 'fan')
+  assert.equal('group' in strokes[1], false) // 缺省不写（静止件）
+  for (const bad of [
+    { id: 'x', points: ring, render: 'solid', height: 0.02, group: '' },
+    { id: 'x', points: ring, render: 'solid', height: 0.02, group: '  ' },
+    { id: 'x', points: ring, render: 'solid', height: 0.02, group: 7 }
+  ] as const) {
+    assert.throws(
+      () => parseDrawModelRequest(JSON.stringify({ strokes: [bad], options: sweepOpts })),
+      /层级组无效/
+    )
+  }
+})
+
+test('warnings: 旋转组扫掠盘与同平面静止件重叠 → warning（自然发现物理冲突）', () => {
+  // 叶片：大圆 solid front，lift 抬到 0.4m；辐条：细杆从中心到环边，同平面（z=0）
+  const yPx = 0.4 / (sweepOpts.heightMeters / sweepOpts.canvasHeightPx!) // lift 0.4m → 画布 y=64
+  const strokes: Stroke[] = [
+    { id: 'blade', points: ringPoints(0, yPx, 50), render: 'solid', height: 0.002, axis: 'front', lift: 0.4, group: 'fan' },
+    { id: 'spoke', points: [[0, yPx], [50, yPx]] }
+  ]
+  const { items } = generateModel(strokes, sweepOpts)
+  const warnings = sweepWarnings(strokes, items)
+  assert.ok(warnings.some((w) => w.includes('旋转组「fan」') && w.includes('静止笔画 #1')), `应有辐条冲突警告：${warnings.join(' | ')}`)
+})
+
+test('warnings: 静止件移出旋转平面（transform.position[2] 偏移）→ 无 warning', () => {
+  const yPx = 0.4 / (sweepOpts.heightMeters / sweepOpts.canvasHeightPx!)
+  const strokes: Stroke[] = [
+    { id: 'blade', points: ringPoints(0, yPx, 50), render: 'solid', height: 0.002, axis: 'front', lift: 0.4, group: 'fan' },
+    { id: 'spoke', points: [[0, yPx], [50, yPx]], transform: { position: [0, 0, -0.08] } } // 移到电机平面
+  ]
+  const { items } = generateModel(strokes, sweepOpts)
+  assert.deepEqual(sweepWarnings(strokes, items), [])
+})
+
+test('warnings: 全部静止（无组）→ 无 warning；组内互检不误报', () => {
+  const yPx = 0.4 / (sweepOpts.heightMeters / sweepOpts.canvasHeightPx!)
+  const strokes: Stroke[] = [
+    { id: 'a', points: ringPoints(0, yPx, 50), render: 'solid', height: 0.002, axis: 'front', lift: 0.4 },
+    { id: 'b', points: [[0, yPx], [50, yPx]] }
+  ]
+  const { items } = generateModel(strokes, sweepOpts)
+  assert.deepEqual(sweepWarnings(strokes, items), [])
 })

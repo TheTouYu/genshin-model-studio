@@ -135,7 +135,8 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
         }
         for (let i = 0; i + 1 < fit.points.length; i++) {
           const rod = extrudeRod(
-            fit.points[i], fit.points[i + 1], toWorld, size, opts.shape, fit.id, colorOf(fit.id)
+            fit.points[i], fit.points[i + 1], toWorld, size, opts.shape, fit.id, colorOf(fit.id),
+            stroke?.transform?.position
           )
           if (rod !== null) {
             liftByHeight(rod, stroke)
@@ -181,7 +182,8 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
           }
           for (let i = 0; i + 1 < anchors.length; i++) {
             const rod = extrudeRod(
-              anchors[i], anchors[i + 1], toWorld, size, opts.shape, fit.id, colorOf(fit.id)
+              anchors[i], anchors[i + 1], toWorld, size, opts.shape, fit.id, colorOf(fit.id),
+              stroke?.transform?.position
             )
             if (rod !== null) {
               liftByHeight(rod, stroke)
@@ -503,7 +505,8 @@ function extrudeRod(
   size: number,
   shape: ModelOptions['shape'],
   group: string,
-  color?: string
+  color?: string,
+  tp?: [number, number, number] // 十一期：transform.position 偏移（米），叠加在段中点
 ): TaggedItem | null {
   const wa = toWorld(a[0], a[1])
   const wb = toWorld(b[0], b[1])
@@ -529,7 +532,7 @@ function extrudeRod(
   betaRad = Math.atan2(ux, uz)
   return {
     resourceId: shape === 'box' ? BOX_RESOURCE_ID : CYLINDER_RESOURCE_ID,
-    position: [(wa[0] + wb[0]) / 2, (wa[1] + wb[1]) / 2, 0],
+    position: [(wa[0] + wb[0]) / 2 + (tp?.[0] ?? 0), (wa[1] + wb[1]) / 2 + (tp?.[1] ?? 0), (tp?.[2] ?? 0)],
     rotation: [alphaRad * DEG, betaRad * DEG, 0],
     scale,
     group,

@@ -11,6 +11,8 @@
   textarea { width: 100%; height: 300px; font-family: ui-monospace, monospace; font-size: 12px; box-sizing: border-box; }
   button { padding: 0.5rem 1.2rem; cursor: pointer; }
   .status { color: #555; font-size: 0.9rem; margin-top: 0.5rem; white-space: pre-wrap; }
+  .status.warn { color: #8a6d1a; }
+  .status.err { color: #b23; }
   .muted { color: #888; font-size: 0.85rem; }
   #githubLink { font-size: 0.85rem; margin-left: 1rem; color: #0a66c2; text-decoration: none; }
   #githubLink:hover { text-decoration: underline; }
@@ -39,6 +41,16 @@
   .debug-panel { margin-top: 0.4rem; font-size: 0.78rem; color: #888; }
   .debug-panel summary { cursor: pointer; user-select: none; }
   .debug-panel pre { margin: 0.3rem 0 0; padding: 0.4rem 0.6rem; background: #10151c; border: 1px solid #2b3542; border-radius: 6px; color: #9aa7b4; font: 11px/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre-wrap; word-break: break-all; max-height: 180px; overflow: auto; }
+  .group-row { display: flex; gap: 0.4rem; align-items: center; margin-top: 0.4rem; flex-wrap: wrap; }
+  .group-row input { padding: 0.25rem 0.4rem; border: 1px solid #d4dbe3; border-radius: 6px; font-size: 0.8rem; }
+  .group-row button { padding: 0.25rem 0.6rem; border: 1px solid #d4dbe3; border-radius: 6px; background: #fff; cursor: pointer; font-size: 0.8rem; }
+  .group-row button:hover { border-color: #2b6cb0; }
+  .group-chip { display: inline-block; margin: 0.15rem 0.3rem 0.15rem 0; padding: 0.18rem 0.5rem; border: 1px solid #b8c4d2; border-radius: 6px; background: #f2f6fb; font-size: 0.78rem; color: #334; }
+  .group-chip .gname { font-weight: 600; color: #2b6cb0; }
+  .group-chip button { margin-left: 0.35rem; padding: 0 0.35rem; border: none; background: none; cursor: pointer; color: #b23; font-size: 0.78rem; }
+  .warn-box { margin-top: 0.5rem; padding: 0.45rem 0.6rem; border: 1px solid #d9a93c; border-radius: 6px; background: #fff8e6; color: #7a5b12; font-size: 0.8rem; line-height: 1.5; }
+  .warn-box .warn-title { font-weight: 600; }
+  .stroke-group-tag { margin-left: 0.25rem; font-size: 0.68rem; color: #2b6cb0; border: 1px solid #b8c4d2; border-radius: 4px; padding: 0 0.25rem; }
 
   /* ============ 三期：颜色（色板 / 笔画列表 / 改色弹层） ============ */
   .color-row { display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; align-items: center; }
@@ -177,6 +189,16 @@
       <details class="debug-panel" id="debugPanel">
         <summary>🔍 笔画调试信息（渲染/方向/抬升/3D 变换）</summary>
         <pre id="strokeDebug"></pre>
+      </details>
+      <details class="debug-panel" id="groupPanel">
+        <summary>🗂 层级（组）：旋转单元管理 · 物理冲突提示</summary>
+        <div class="group-row">
+          <input type="text" id="groupNameInput" placeholder="组名（如 fan）">
+          <button type="button" id="groupApply" title="把选中笔画设为该组（旋转单元）">设为组</button>
+          <button type="button" id="groupRemove" title="把选中笔画移出组（恢复为静止件）">移出组</button>
+        </div>
+        <div id="groupInfo"></div>
+        <div class="warn-box" id="warnBox" hidden></div>
       </details>
     </div>
     <div class="draw-col">
@@ -338,6 +360,8 @@ loadExamples()
     hover: null, // 最近鼠标位置（曲线预览尾线用）
     batches: [], // 撤销批次栈 { len }：旋转复制 N-1 笔 = 一批，一次撤销整体取消
     rotate: null, // 旋转复制进行中：{ strokeId, center: [x,y]|null }
+    pan: { x: 0, y: 0 }, // 十一期：画布视图平移（右键拖动；仅显示偏移，不改变笔画数据）
+    panning: null, // 右键平移进行中：{ startX, startY, px, py }
     fitted: [], // 与 strokes 按序对齐：{ id, points, closed } | null（服务端返回）
     closed: [],
     items: [], // 拍平后的 structure items（预览/导出共用）
@@ -382,6 +406,9 @@ loadExamples()
     ctx.clearRect(0, 0, w, h)
     ctx.fillStyle = '#10151c'
     ctx.fillRect(0, 0, w, h)
+    // 十一期：视图平移（右键拖动）——网格/笔画/预览全部随视图偏移
+    ctx.save()
+    ctx.translate(-state.pan.x, -state.pan.y)
     // 网格背景
     ctx.strokeStyle = 'rgba(255,255,255,0.07)'
     ctx.lineWidth = 1
@@ -425,6 +452,13 @@ loadExamples()
     }
     // 四期：几何工具橡皮筋 / 曲线预览 / 旋转中心标记（最上层）
     drawToolPreview()
+    ctx.restore()
+    // 平移提示（视图偏移时显示）
+    if (state.pan.x !== 0 || state.pan.y !== 0) {
+      ctx.fillStyle = 'rgba(255,255,255,0.35)'
+      ctx.font = '11px sans-serif'
+      ctx.fillText(`视图平移 ${Math.round(state.pan.x)}, ${Math.round(state.pan.y)}（右键拖动 / 双击画布复位）`, 10, h - 8)
+    }
   }
 
   function resizeDraw() {
@@ -442,10 +476,20 @@ loadExamples()
 
   function toPoint(e) {
     const rect = drawCanvas.getBoundingClientRect()
-    return [e.clientX - rect.left, e.clientY - rect.top]
+    return [e.clientX - rect.left + state.pan.x, e.clientY - rect.top + state.pan.y]
   }
 
+  drawCanvas.addEventListener('contextmenu', (e) => e.preventDefault()) // 右键用于拖动画布
+
   drawCanvas.addEventListener('pointerdown', (e) => {
+    // 右键：进入画布平移（左键保留给绘制/拾取）
+    if (e.pointerType === 'mouse' && e.button === 2) {
+      if (activePointerId !== null) return
+      e.preventDefault()
+      try { drawCanvas.setPointerCapture(e.pointerId) } catch (err) { /* 忽略捕获失败 */ }
+      state.panning = { startX: e.clientX, startY: e.clientY, px: state.pan.x, py: state.pan.y }
+      return
+    }
     if (e.pointerType === 'mouse' && e.button !== 0) return
     if (activePointerId !== null) return // 一次只画一笔
     e.preventDefault()
@@ -472,6 +516,13 @@ loadExamples()
   drawCanvas.addEventListener('pointermove', (e) => {
     const p = toPoint(e)
     state.hover = p
+    if (state.panning) {
+      // 右键平移：视图偏移跟随鼠标
+      state.pan.x = state.panning.px + (e.clientX - state.panning.startX)
+      state.pan.y = state.panning.py + (e.clientY - state.panning.startY)
+      renderDraw()
+      return
+    }
     if (e.pointerId !== activePointerId) {
       // 未在绘制：曲线预览尾线跟随鼠标
       if (state.tool === 'curve' && state.curvePts.length > 0) renderDraw()
@@ -489,6 +540,7 @@ loadExamples()
   })
 
   function endStroke(e) {
+    if (state.panning) { state.panning = null; return } // 结束右键平移（不产生笔画）
     if (e.pointerId !== activePointerId) return
     activePointerId = null
     if (currentStroke) {
@@ -508,6 +560,13 @@ loadExamples()
   drawCanvas.addEventListener('pointercancel', endStroke)
 
   drawCanvas.addEventListener('dblclick', (e) => {
+    // 视图平移后双击画布复位（优先于曲线完成）
+    if (state.pan.x !== 0 || state.pan.y !== 0) {
+      state.pan = { x: 0, y: 0 }
+      renderDraw()
+      setStatus('已复位画布视图（右键拖动可平移）', 'ok')
+      return
+    }
     if (state.tool !== 'curve') return
     // 双击完成：第二次点击已把光标处加为控制点，移除后按开放曲线提交
     if (state.curvePts.length >= 2) state.curvePts.pop()
@@ -827,11 +886,13 @@ loadExamples()
         state.items = data.items || []
         state.fitted = data.fitted || []
         state.closed = data.closed || []
+        renderGroupPanel(data.warnings || [])
         renderDraw()
         applyPreview(state.items)
         saveLocal()
         const closedCount = state.closed.filter(Boolean).length
-        setStatus(`✓ ${state.strokes.length} 笔 · ${closedCount} 笔封闭 · ${state.items.length} 个元件`, 'ok')
+        const warnSuffix = (data.warnings && data.warnings.length) ? ` · ⚠ ${data.warnings.length} 个物理冲突` : ''
+        setStatus(`✓ ${state.strokes.length} 笔 · ${closedCount} 笔封闭 · ${state.items.length} 个元件${warnSuffix}`, data.warnings && data.warnings.length ? 'warn' : 'ok')
       })
       .catch((err) => {
         if (mySeq !== genSeq) return
@@ -980,6 +1041,7 @@ loadExamples()
     const list = el('strokeList')
     if (state.strokes.length === 0) {
       list.innerHTML = '<span class="stroke-list-empty">还没有笔画：画线后这里列出每一笔，点击圆点可改该笔颜色/渲染/高度/方向</span>'
+      renderGroupPanel()
       updateToolbar()
       return
     }
@@ -989,11 +1051,92 @@ loadExamples()
         const dot = s.color
           ? `<span class="stroke-dot" data-id="${s.id}" style="background:#${s.color.slice(2)}"></span>`
           : `<span class="stroke-dot default" data-id="${s.id}"></span>`
-        return `<span class="stroke-chip${on ? ' selected' : ''}" data-id="${s.id}">${dot}<span class="stroke-name">笔画 ${i + 1}</span></span>`
+        const tag = s.group ? `<span class="stroke-group-tag">${s.group}</span>` : ''
+        return `<span class="stroke-chip${on ? ' selected' : ''}" data-id="${s.id}">${dot}<span class="stroke-name">笔画 ${i + 1}</span>${tag}</span>`
       })
       .join('')
+    renderGroupPanel()
     updateToolbar()
   }
+
+  /** 十一期：层级面板——组列表（成员/全部选中/移出）+ 物理冲突警告。warnings 由服务端生成返回。 */
+  function renderGroupPanel(warnings) {
+    const box = el('warnBox')
+    if (warnings && warnings.length) {
+      box.hidden = false
+      box.innerHTML = `<div class="warn-title">⚠ 物理冲突（旋转单元与静止件空间重叠）：</div>` + warnings.map((w) => `<div>· ${w}</div>`).join('')
+    } else {
+      box.hidden = true
+      box.innerHTML = ''
+    }
+    const info = el('groupInfo')
+    const byGroup = new Map()
+    state.strokes.forEach((s, i) => {
+      if (!s.group) return
+      const arr = byGroup.get(s.group)
+      if (arr) arr.push([i, s])
+      else byGroup.set(s.group, [[i, s]])
+    })
+    if (byGroup.size === 0) {
+      info.innerHTML = '<span style="color:#8a97a5">还没有组：选中笔画后输入组名点「设为组」（同组 = 一个旋转单元，转/复制时一起动）；不设组的笔画为静止件。</span>'
+      return
+    }
+    info.innerHTML = [...byGroup.entries()]
+      .map(([g, members]) => {
+        const idxs = members.map(([i]) => i).join('、')
+        return `<span class="group-chip"><span class="gname">${g}</span>（${members.length} 笔：#${idxs}）` +
+          `<button type="button" data-group="${g}" data-act="select">全选</button>` +
+          `<button type="button" data-group="${g}" data-act="ungroup">整组移出</button></span>`
+      })
+      .join('')
+  }
+
+  el('groupApply').addEventListener('click', () => {
+    const g = el('groupNameInput').value.trim()
+    if (!state.selectedId) { setStatus('请先点击选中一笔笔画（列表或画布）再设组', 'err'); return }
+    if (!g) { setStatus('请输入组名（如 fan）', 'err'); return }
+    strokeById(state.selectedId).group = g
+    state.lastGenError = null
+    renderStrokeList()
+    renderGroupPanel()
+    renderDraw()
+    scheduleGen()
+    saveLocal()
+    setStatus(`已把选中笔画设为组「${g}」（旋转单元）`, 'ok')
+  })
+  el('groupRemove').addEventListener('click', () => {
+    if (!state.selectedId) { setStatus('请先点击选中一笔笔画再移出组', 'err'); return }
+    delete strokeById(state.selectedId).group
+    state.lastGenError = null
+    renderStrokeList()
+    renderGroupPanel()
+    renderDraw()
+    scheduleGen()
+    saveLocal()
+    setStatus('已把选中笔画移出组（恢复为静止件）', 'ok')
+  })
+  el('groupInfo').addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-group]')
+    if (!btn) return
+    const g = btn.dataset.group
+    const act = btn.dataset.act
+    if (act === 'select') {
+      // 全选组内笔画：最后一次点击的作为当前选中（便于随后弹层改参）
+      const members = state.strokes.filter((s) => s.group === g)
+      state.selectedId = members.length ? members[members.length - 1].id : null
+      renderStrokeList()
+      renderDraw()
+    } else if (act === 'ungroup') {
+      state.strokes.forEach((s) => { if (s.group === g) delete s.group })
+      state.lastGenError = null
+      renderStrokeList()
+      renderGroupPanel()
+      renderDraw()
+      scheduleGen()
+      saveLocal()
+      setStatus(`已把组「${g}」整体移出（恢复为静止件）`, 'ok')
+    }
+  })
 
   function selectStroke(id) {
     state.selectedId = id
@@ -1193,6 +1336,7 @@ loadExamples()
       if (src.height !== undefined) stroke.height = src.height
       if (src.lift !== undefined) stroke.lift = src.lift // 离地抬升同样透传（叶片副本与源同高度）
       if (src.axis) stroke.axis = src.axis
+      if (src.group) stroke.group = src.group // 十一期：副本继承组（旋转单元成员一起动）
       const total = (src.angle ?? 0) + theta // 画布旋转角累加（弧度）
       if (src.axis === 'front' && src.render === 'solid') {
         // 绕 Z 三叶：front 基础 [90,0,0] + 绕世界 Z 转 total（画布转 θ → 世界转 -θ，长轴方向 = 位置方向）
@@ -1201,9 +1345,15 @@ loadExamples()
         stroke.transform = { rotation: [90 + deg, 90, 90] }
         const b = strokeBBox(pts)
         const dyPx = (b.px.minY + b.px.maxY) / 2 - srcCy // 副本中心画布 y 相对源（画布 y 向下）
-        if (dyPx !== 0) stroke.transform.position = [0, -dyPx * mPerPx, 0] // 世界 y 向上 → 取负
+        const srcZ = src.transform?.position?.[2] ?? 0
+        if (dyPx !== 0 || srcZ !== 0) {
+          stroke.transform.position = [0, -dyPx * mPerPx, srcZ] // 世界 y 向上 → 取负；z 保留源偏移（辐条等后移件）
+        }
       } else {
         stroke.angle = total // 老路径：旋转角记录（弧度），服务端编码进 rotation
+        // 十一期：rod 副本透传 transform.position 的 z（后移件副本保持同平面）
+        const srcZ = src.transform?.position?.[2]
+        if (srcZ !== undefined && srcZ !== 0) stroke.transform = { position: [0, 0, srcZ] }
       }
       copies.push(stroke)
     }
@@ -1317,6 +1467,8 @@ loadExamples()
           if (Array.isArray(s.transform.rotation) && s.transform.rotation.length === 3 && s.transform.rotation.every(Number.isFinite)) t.rotation = s.transform.rotation
           if (t.position || t.rotation) out.transform = t
         }
+        // v3.2：group（层级组）原样保留（非空字符串）；静止件不写字段
+        if (typeof s.group === 'string' && s.group.trim() !== '') out.group = s.group
         return out
       })
     state.batches = state.strokes.map(() => ({ len: 1 })) // 导入/恢复后每笔一个撤销批次
@@ -1501,11 +1653,11 @@ loadExamples()
   function normalizeOpts(opts) {
     if (opts === undefined) return {}
     if (opts === null || typeof opts !== 'object' || Array.isArray(opts)) {
-      throw new Error(`opts 参数非法：应为对象 { render, height, axis, lift, color }，当前值为 ${JSON.stringify(opts)}`)
+      throw new Error(`opts 参数非法：应为对象 { render, height, axis, lift, color, transform, group }，当前值为 ${JSON.stringify(opts)}`)
     }
     for (const k of Object.keys(opts)) {
-      if (k !== 'render' && k !== 'height' && k !== 'axis' && k !== 'lift' && k !== 'color' && k !== 'transform') {
-        throw new Error(`opts 参数非法：未知字段 ${JSON.stringify(k)}（支持 render/height/axis/lift/color/transform），当前值为 ${JSON.stringify(opts)}`)
+      if (k !== 'render' && k !== 'height' && k !== 'axis' && k !== 'lift' && k !== 'color' && k !== 'transform' && k !== 'group') {
+        throw new Error(`opts 参数非法：未知字段 ${JSON.stringify(k)}（支持 render/height/axis/lift/color/transform/group），当前值为 ${JSON.stringify(opts)}`)
       }
     }
     const o = {}
@@ -1558,6 +1710,17 @@ loadExamples()
       }
       if (out.position || out.rotation) o.transform = out
     }
+    if (opts.group !== undefined) {
+      // 十一期：层级组——非空字符串设组；null = 移出组（恢复为静止件）
+      if (opts.group !== null) {
+        if (typeof opts.group !== 'string' || opts.group.trim() === '') {
+          throw new Error(`group 参数非法：应为非空字符串（如 "fan"）或 null（移出组），当前值为 ${JSON.stringify(opts.group)}`)
+        }
+        o.group = opts.group.trim()
+      } else {
+        o.group = null
+      }
+    }
     return o
   }
 
@@ -1575,6 +1738,10 @@ loadExamples()
     if (o.axis !== undefined && o.axis !== 'up') stroke.axis = o.axis // 'up' = 缺省不写
     if (o.color !== undefined) stroke.color = o.color
     if (o.transform !== undefined) stroke.transform = o.transform
+    if (o.group !== undefined) {
+      if (o.group === null) delete stroke.group
+      else stroke.group = o.group
+    }
     renderStrokeList()
     renderDraw()
     scheduleGen()
@@ -1797,6 +1964,10 @@ loadExamples()
     }
     if (o.color !== undefined) stroke.color = o.color
     if (o.transform !== undefined) stroke.transform = o.transform
+    if (o.group !== undefined) {
+      if (o.group === null) delete stroke.group
+      else stroke.group = o.group
+    }
     state.lastGenError = null
     renderStrokeList()
     renderDraw()
@@ -1870,6 +2041,38 @@ loadExamples()
     return gmsSummary()
   }
 
+  /** 十一期：把若干笔画设为同一层级组（旋转单元）。ids 可为索引（支持负数）或 id 数组。 */
+  function gmsGroup(ids, name) {
+    if (typeof name !== 'string' || name.trim() === '') {
+      throw new Error(`name 参数非法：层级组名应为非空字符串（如 "fan"），当前值为 ${JSON.stringify(name)}`)
+    }
+    const g = name.trim()
+    const list = Array.isArray(ids) ? ids : [ids]
+    if (list.length === 0) throw new Error('ids 不能为空：至少指定一个笔画')
+    for (const id of list) state.strokes[resolveIndex(id)].group = g
+    state.lastGenError = null
+    renderStrokeList()
+    renderGroupPanel()
+    renderDraw()
+    scheduleGen()
+    saveLocal()
+    return gmsSummary()
+  }
+
+  /** 十一期：把笔画移出层级组（恢复为静止件）。 */
+  function gmsUngroup(ids) {
+    const list = Array.isArray(ids) ? ids : [ids]
+    if (list.length === 0) throw new Error('ids 不能为空：至少指定一个笔画')
+    for (const id of list) delete state.strokes[resolveIndex(id)].group
+    state.lastGenError = null
+    renderStrokeList()
+    renderGroupPanel()
+    renderDraw()
+    scheduleGen()
+    saveLocal()
+    return gmsSummary()
+  }
+
   window.gms = {
     clear: gmsClear,
     undo: gmsUndo,
@@ -1882,6 +2085,8 @@ loadExamples()
     props: gmsProps,
     rotate: gmsRotate,
     delete: gmsDelete,
+    group: gmsGroup,
+    ungroup: gmsUngroup,
     summary: gmsSummary,
     px2m: gmsPx2m,
     m2px: gmsM2px,

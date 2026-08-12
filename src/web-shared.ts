@@ -8,7 +8,7 @@ import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, extname, basename } from 'node:path'
 import { fitStroke, type FittedStroke } from './draw/fitting.js'
 import { generateModel, toStructureItems } from './draw/types.js'
-import type { ModelOptions, Stroke } from './draw/types.js'
+import type { ModelOptions, Stroke, TaggedItem } from './draw/types.js'
 import type { StructureItem } from './core/structure.js'
 
 export const EXAMPLES = join(process.cwd(), 'examples')
@@ -106,6 +106,11 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
         }
       }
     }
+    // 十一期：group（层级组）可选透传
+    const group = (stroke as { group?: unknown }).group
+    if (group !== undefined && (typeof group !== 'string' || group.trim() === '')) {
+      throw new Error(`第 ${i + 1} 笔层级组无效：需为非空字符串（如 "fan"），缺省 = 静止件`)
+    }
     return {
       id: stroke.id,
       points,
@@ -115,7 +120,9 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
       ...(lift === undefined ? {} : { lift }),
       ...(axis === undefined ? {} : { axis }),
       ...(angle === undefined ? {} : { angle }),
-      ...(transform === undefined ? {} : { transform: transform as Stroke['transform'] })
+      ...(transform === undefined ? {} : { transform: transform as Stroke['transform'] }),
+      // 十一期：group（层级组）可选透传——非空字符串；缺省不写（静止件）
+      ...(group === undefined ? {} : { group })
     }
   })
 
@@ -174,6 +181,8 @@ export type DrawModelResult = {
   /** 与入参 strokes 按序一一对应；退化笔画（<2 点）为 null。 */
   fitted: (FittedStroke | null)[]
   closed: boolean[]
+  /** 十一期：物理合理性提示——旋转组（group 非空）扫掠盘与静止件空间重叠等。 */
+  warnings: string[]
 }
 
 /**
@@ -188,7 +197,75 @@ export function drawModelResult(strokes: Stroke[], options: ModelOptions): DrawM
   const fitted: (FittedStroke | null)[] = strokes.map((s) =>
     fitStroke(s, sampleCount, { keepClosedDetail: options.mode === 'extrude' })
   )
-  return { items: toStructureItems(tagged), fitted, closed }
+  return { items: toStructureItems(tagged), fitted, closed, warnings: sweepWarnings(strokes, tagged) }
+}
+
+/**
+ * 十一期：旋转组 vs 静止件扫掠冲突检测（自然发现物理不合理）。
+ *
+ * 模型：组（group 非空）内取“水平半径最大”的 item 作为扫掠盘（风扇叶片）——
+ * 盘 = 圆心（组内位置平均）+ 半径 R（该 item 到圆心水平距离 + 水平半轴）；
+ * 盘厚度 = 该 item 的 z 半轴（min(scale)/2，front/side 件的厚度/细轴沿 Z）。
+ * 静止件（无组）用 AABB（position ± scale/2）近似，z 半轴同样取 min(scale)/2。
+ * 若静止件 z 范围与盘厚重叠、且其水平 AABB 与圆相交 → 旋转时会发生碰撞，报 warning。
+ * 注：近似提示器（忽略 rotation 对 AABB 的影响），只求抓住明显共面/穿插，不做裁决。
+ */
+export function sweepWarnings(strokes: Stroke[], items: TaggedItem[]): string[] {
+  const idxById = new Map<string, number>()
+  strokes.forEach((s, i) => idxById.set(s.id, i))
+  const groupOfStroke = new Map<string, string | undefined>()
+  strokes.forEach((s) => groupOfStroke.set(s.id, s.group))
+  // 组（group 非空笔画）→ 组内 items；其余为静止件
+  const groups = new Map<string, TaggedItem[]>()
+  const staticItems: TaggedItem[] = []
+  for (const it of items) {
+    const g = groupOfStroke.get(it.group)
+    if (g) {
+      const arr = groups.get(g)
+      if (arr) arr.push(it)
+      else groups.set(g, [it])
+    } else {
+      staticItems.push(it)
+    }
+  }
+  const warnings: string[] = []
+  for (const [g, members] of groups) {
+    // 组旋转中心 ≈ 组内 item 位置平均
+    let cxp = 0, cyp = 0
+    for (const it of members) { cxp += it.position[0]; cyp += it.position[1] }
+    cxp /= members.length; cyp /= members.length
+    // 扫掠盘：水平半径最大的 item（风扇叶片）
+    let diskR = 0
+    let diskZ = 0
+    let diskHalf = 0
+    for (const it of members) {
+      const hz = Math.hypot(it.position[0] - cxp, it.position[1] - cyp) + Math.max(it.scale[0], it.scale[1]) / 2
+      if (hz > diskR) {
+        diskR = hz
+        diskZ = it.position[2]
+        diskHalf = Math.min(it.scale[0], it.scale[1], it.scale[2]) / 2 // 厚度/细轴沿 Z 的近似
+      }
+    }
+    const dz0 = diskZ - diskHalf
+    const dz1 = diskZ + diskHalf
+    const seen = new Set<string>()
+    for (const it of staticItems) {
+      const s = Math.min(it.scale[0], it.scale[1], it.scale[2]) / 2
+      if (it.position[2] + s < dz0 || it.position[2] - s > dz1) continue // z 不重叠
+      // 水平 AABB（position ± scale/2，忽略 rotation 的近似）与圆的最短距离
+      const hx = it.scale[0] / 2, hy = it.scale[1] / 2
+      const dx = Math.max(0, Math.max(it.position[0] - hx - cxp, cxp - (it.position[0] + hx)))
+      const dy = Math.max(0, Math.max(it.position[1] - hy - cyp, cyp - (it.position[1] + hy)))
+      if (Math.hypot(dx, dy) >= diskR + 0.005) continue
+      if (seen.has(it.group)) continue
+      seen.add(it.group)
+      warnings.push(
+        `旋转组「${g}」的扫掠盘与静止笔画 #${idxById.get(it.group)} 空间重叠（组旋转时会碰撞）：` +
+        `把静止件移出该平面（如 transform.position[2] 前后偏移），或将其并入旋转组`
+      )
+    }
+  }
+  return warnings
 }
 
 export const DOCS_FILES: Record<string, string> = {

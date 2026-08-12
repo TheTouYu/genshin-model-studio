@@ -44,3 +44,20 @@
 - 电机柱体：z=-0.045（[0.088,0.08,0.088]）；后罩：z=-0.10（[0.125,0.015,0.125]）
 - 同步链路：重画 → localStorage 字段完整 → 刷新 → 内存与保存一致（模拟验证 ✅）
 - 测试 58/58；web/public sha256 一致
+
+## 十一期补充：层级组 + 物理冲突检测 + 画布平移（2026-08-13 晚）
+
+新增：笔画 `group`（旋转单元）；服务端 `sweepWarnings`（旋转组扫掠盘 vs 静止件 AABB 冲突检测）；层级面板（设组/移出/整组移出/警告框）；`gms.group/ungroup`；右键拖动画布平移 + 双击复位；rod 支持 transform.position；旋转副本透传组与 z 偏移。
+
+验证：62/62 测试；正/负向警告（辐条回 z=0 精确报"静止笔画 #1"，移回 -0.08 后无警告）；分组刷新持久化；合成事件验证 pan（本环境 CDP Input 到不了页面，真机右键待用户确认）。
+
+新铁律追加：
+
+| # | 规则 |
+|---|---|
+| 6 | **命令层新字段必须同时改三处**：`normalizeOpts`（校验）、`addStrokeWithOpts` + `gmsProps`（应用）、`applyWork`（恢复白名单）——本轮 group 漏了 addStrokeWithOpts，笔画命令层不生效。 |
+| 7 | **改服务端代码后必须重启服务进程**（node ESM 启动时加载 dist 模块，build 后进程仍是旧代码）——本轮 rod z 偏移"不生效"是进程未重启。 |
+| 8 | 浏览器自动化里 **CDP Input.dispatchMouseEvent 可能到不了页面**（无头环境），用合成 PointerEvent 验证事件逻辑。 |
+| 9 | 测试里 **rod 的 z 半轴 = min(scale)/2 = size/2**，z 偏移量必须大于杆半径否则检测器认为仍重叠（物理上也确实重叠）。 |
+
+冲突检测模型（sweepWarnings）：组内"水平半径最大" item 为扫掠盘（圆心 = 组位置平均，半径 = 水平距离 + 水平半轴，厚度 = min(scale)/2 沿 Z）；静止件 AABB（position ± scale/2）z 重叠 + 水平与圆相交 → 警告。近似提示器（忽略 rotation 对 AABB 的影响），只抓明显共面/穿插。

@@ -35,6 +35,8 @@ export type Stroke = {
   lift?: number
   /** 十期（ADR-0001）：整体变换——position 偏移（米，叠加在点集默认位置）；rotation 最终欧拉（度，覆盖 axis/angle 编码）。 */
   transform?: Transform
+  /** 十一期：层级组——同组笔画视为一个旋转单元（组旋转/复制时一起动）；静止件不设组。 */
+  group?: string
 }
 
 /** 笔画整体变换（ADR-0001）：形状（点集）与摆放（变换）分离。 */
