@@ -108,6 +108,12 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
   if (typeof o.heightMeters !== 'number' || !Number.isFinite(o.heightMeters) || o.heightMeters <= 0) {
     throw new Error('options.heightMeters 需为正数（米）')
   }
+  if (
+    o.canvasHeightPx !== undefined &&
+    (typeof o.canvasHeightPx !== 'number' || !Number.isFinite(o.canvasHeightPx) || o.canvasHeightPx <= 0)
+  ) {
+    throw new Error('options.canvasHeightPx 需为正数（像素）')
+  }
   const options: ModelOptions = {
     mode: o.mode,
     shape: o.shape,
@@ -115,6 +121,7 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
     count: o.count as number,
     heightMeters: o.heightMeters as number
   }
+  if (o.canvasHeightPx !== undefined) options.canvasHeightPx = o.canvasHeightPx as number
   // 四期语义校验（PRD §5.2）：非封闭 solid / 高度 ≤ 0 / 不支持的轮廓 → 400。
   // 前置到解析期：调用方（web/server.ts、api/draw-model.ts）在 writeHead(200) 之后才调
   // drawModelResult，若让生成期抛错，catch 补 writeHead(400) 会撞 ERR_HTTP_HEADERS_SENT

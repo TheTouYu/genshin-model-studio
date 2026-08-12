@@ -588,3 +588,30 @@ test('parse: render/height/axis pass through and are validated (缺省不写)', 
     /柱体渲染需要封闭轮廓/
   )
 })
+
+test('canvasHeightPx: 四期画布标定——像素→米按画布可视区高（缺省退回包络盒标定）', () => {
+  // 200px 圆（直径 200px），无 canvasHeightPx：按内容包络盒（高 200px = heightMeters）→ 直径 2 米
+  const ring: [number, number][] = []
+  for (let i = 0; i < 16; i++) {
+    const a = (i / 16) * Math.PI * 2
+    ring.push([100 + 100 * Math.cos(a), 100 + 100 * Math.sin(a)])
+  }
+  ring.push(ring[0])
+  const stroke: Stroke = { id: 'c', render: 'solid', height: 0.1, points: ring }
+  const opts: ModelOptions = { mode: 'extrude', shape: 'cylinder', size: 0.03, count: 16, heightMeters: 1 }
+  const legacy = generateModel([stroke], opts).items[0]
+  assert.ok(Math.abs(legacy.scale[0] - 1) < 1e-9, '缺省：包络盒高 200px = 1 米 → 直径 1 米')
+  // 带 canvasHeightPx（画布可视区高 500px = 1 米）→ 200px 圆 = 0.4 米直径
+  const calib = generateModel([stroke], { ...opts, canvasHeightPx: 500 }).items[0]
+  assert.ok(Math.abs(calib.scale[0] - 0.4) < 1e-9, `画布标定：200px/500px × 1 米 = 0.4 米（实际 ${calib.scale[0]}）`)
+  // 厚度（height 米）不受标定影响
+  assert.ok(Math.abs(calib.scale[1] - 0.1) < 1e-9)
+  // 非法 canvasHeightPx → 400
+  assert.throws(
+    () => parseDrawModelRequest(JSON.stringify({
+      strokes: [stroke],
+      options: { ...opts, canvasHeightPx: -3 }
+    })),
+    /canvasHeightPx 需为正数/
+  )
+})

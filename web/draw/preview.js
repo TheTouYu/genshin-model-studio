@@ -342,10 +342,16 @@
     canvasEl.addEventListener('wheel', onWheel, { passive: false })
 
     // ---- 动画循环常开（几何量小，无需按需渲染）----
-    renderer.setAnimationLoop(function render() {
+    // 注意：r160 UMD 版 three.min.js 的 setAnimationLoop 走 WebXR 路径，非 XR 环境不驱动回调，
+    // 会导致预览永远空白——这里用 rAF 自驱动（兼容所有 three 版本）
+    var rafId = 0
+    function renderFrame() {
+      if (!rafId) return // dispose 后停止
       applyCamera()
       renderer.render(scene, camera)
-    })
+      rafId = requestAnimationFrame(renderFrame)
+    }
+    rafId = requestAnimationFrame(renderFrame)
 
     // ---- 内容管理 ----
     var mats = new Map() // kind → 共享 MeshStandardMaterial
@@ -413,7 +419,7 @@
     }
 
     function dispose() {
-      renderer.setAnimationLoop(null)
+      rafId = 0 // 停止 rAF 循环
       global.removeEventListener('resize', resize)
       if (ro) ro.disconnect()
       canvasEl.removeEventListener('pointerdown', onPointerDown)

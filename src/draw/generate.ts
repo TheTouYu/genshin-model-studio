@@ -65,6 +65,11 @@ function rawBounds(strokes: readonly Stroke[]): {
 export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateResult {
   const count = Math.max(1, Math.floor(opts.count))
   const heightMeters = opts.heightMeters > 0 ? opts.heightMeters : 1
+  // 四期标定：优先按画布可视区高（canvasHeightPx 像素 = heightMeters 米）——
+  // 画布上画多大，模型就是多大；缺省退回旧行为（内容包络盒高 = heightMeters）
+  const canvasPx = opts.canvasHeightPx
+  const canvasScale =
+    Number.isFinite(canvasPx) && (canvasPx as number) > 0 ? heightMeters / (canvasPx as number) : null
   const size = opts.size > 0 ? opts.size : 0.1
 
   // 拟合（画布像素空间，阈值语义与分辨率解耦）
@@ -99,7 +104,13 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
     const bboxWidth = Math.max(raw.maxX - raw.minX, 0)
     const bboxHeight = Math.max(raw.maxY - raw.minY, 0)
     // 保持宽高比：仅按包络盒高映射到 heightMeters（高度退化为 0 时改用宽度兜底）
-    const scale = bboxHeight > 0 ? heightMeters / bboxHeight : heightMeters / Math.max(bboxWidth, 1e-9)
+    // canvasScale 非空时（四期画布标定）：每像素 = heightMeters / 画布高 米，与画布视觉一致
+    const scale =
+      canvasScale !== null
+        ? canvasScale
+        : bboxHeight > 0
+          ? heightMeters / bboxHeight
+          : heightMeters / Math.max(bboxWidth, 1e-9)
     const toWorld: ToWorld = (x, y) => [
       (x - raw.minX) * scale - (bboxWidth * scale) / 2, // 水平居中 x=0
       (raw.maxY - y) * scale, // y 上、最低点贴 y=0
@@ -194,6 +205,8 @@ const RECT_PARALLEL_TOL_DEG = 10
 const CIRCLE_ASPECT_MAX = 1.1
 /** 圆判定：点到质心距离的相对方差上限（方差 / 平均半径²；正方形 ≈ 0.030，1.2:1 椭圆 ≈ 0.012）。 */
 const CIRCLE_RADIUS_REL_VARIANCE = 0.01
+/** 椭圆判定：相对方差上限（60×42 椭圆 ≈ 0.059；三角/五角星等 > 0.1）。 */
+const ELLIPSE_RADIUS_REL_VARIANCE = 0.1
 /** 闭合轮廓首尾去重：首尾距离 < 对角线 × 该比例时视为重复闭合点（矩形工具常首尾同点）。 */
 const CLOSURE_DEDUP_RATIO = 0.01
 
@@ -229,8 +242,12 @@ function recognizeShape(points: readonly (readonly [number, number])[]): Recogni
   const n = pts.length
   const corners: number[] = []
   for (let i = 0; i < n; i++) {
-    if (turnAngle(pts, i) > CORNER_TURN_DEG) corners.push(i)
+    // 角 = 转角 50°~160°：160°+ 的近直线点（椭圆抽稀/首尾拼接的边缘效应）不算角；
+    // 圆/椭圆抽稀后转角约 20~40°，正多边形 ≥ 60°——50° 阈值区分平滑曲线与多边形
+    const t = turnAngle(pts, i)
+    if (t > CORNER_TURN_DEG && t < 160) corners.push(i)
   }
+  // 矩形优先：四角近似 90°、对边平行（角点顺序绕轮廓一周）
   if (corners.length === 4) {
     // 矩形候选：四角近似 90°、对边平行（角点顺序绕轮廓一周）
     const side = (k: number): [number, number] => {
@@ -263,13 +280,9 @@ function recognizeShape(points: readonly (readonly [number, number])[]): Recogni
       return true
     })()
     if (rightAngles && parallel) return 'rectangle'
-    throw new Error('暂不支持该轮廓形状（支持圆/椭圆/矩形）')
   }
-  if (corners.length !== 0) {
-    // 三角/五边及以上 → 一期不支持
-    throw new Error('暂不支持该轮廓形状（支持圆/椭圆/矩形）')
-  }
-  // 平滑闭合曲线 → 圆 / 椭圆
+  // 非矩形（含角数 1~3：椭圆抽稀后长轴两端常各留一个高转角点，如 109°/167°）→
+  // 用半径方差判圆/椭圆（不依赖转角；三角/五角星等半径方差大 → 拒绝）
   let cx = 0
   let cy = 0
   for (const [x, y] of pts) {
@@ -298,10 +311,15 @@ function recognizeShape(points: readonly (readonly [number, number])[]): Recogni
   const w = maxX - minX
   const h = maxY - minY
   const aspect = Math.min(w, h) > 0 ? Math.max(w, h) / Math.min(w, h) : Infinity
-  if (meanR > 0 && aspect < CIRCLE_ASPECT_MAX && varR < CIRCLE_RADIUS_REL_VARIANCE * meanR * meanR) {
+  // 圆/椭圆要求平滑（角数 ≤ 2；椭圆长轴两端各留一个高转角点）：多边形（≥ 3 角）拒绝
+  const smooth = corners.length <= 2
+  if (smooth && meanR > 0 && aspect < CIRCLE_ASPECT_MAX && varR < CIRCLE_RADIUS_REL_VARIANCE * meanR * meanR) {
     return 'circle'
   }
-  return 'ellipse'
+  if (smooth && meanR > 0 && varR < ELLIPSE_RADIUS_REL_VARIANCE * meanR * meanR) {
+    return 'ellipse'
+  }
+  throw new Error('暂不支持该轮廓形状（支持圆/椭圆/矩形）')
 }
 
 /**

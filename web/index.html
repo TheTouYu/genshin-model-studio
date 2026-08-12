@@ -157,7 +157,7 @@
       </div>
       <div class="canvas-box">
         <canvas id="drawCanvas"></canvas>
-        <span class="canvas-hint" id="canvasHint">画布高 = 10 米</span>
+        <span class="canvas-hint" id="canvasHint">画布高 = 1 米</span>
       </div>
       <div class="stroke-list" id="strokeList"></div>
       <div class="draw-actions">
@@ -317,7 +317,7 @@ loadExamples()
 
   const state = {
     strokes: [], // { id, points: [ [x,y], ... ], color? } 画布 CSS 像素；color = "0xRRGGBB"（缺省 = 默认材质）
-    options: { mode: 'extrude', shape: 'cylinder', size: 0.4, count: 60, heightMeters: 10 }, // currentColor? 新笔画默认色
+    options: { mode: 'extrude', shape: 'cylinder', size: 0.03, count: 60, heightMeters: 1, canvasHeightPx: drawCanvas.clientHeight || 462 }, // currentColor? 新笔画默认色
     selectedId: null, // 选中笔画 id（画布曲线高亮）
     tool: 'pen', // 四期：pen 自由 / line 直线 / curve 曲线 / circle 圆 / rect 矩形
     toolPreview: null, // 四期：橡皮筋预览 { kind: 'line'|'circle'|'rect', a, b }
@@ -477,6 +477,7 @@ loadExamples()
     if (e.pointerId !== activePointerId) return
     activePointerId = null
     if (currentStroke) {
+      autoClose(currentStroke.points) // 自由笔自动闭合：首尾接近 → 拉齐（用户画圈手势）
       state.selectedId = currentStroke.id // 刚画的笔画自动选中，便于立刻改色
       renderStrokeList()
       currentStroke = null
@@ -565,6 +566,27 @@ loadExamples()
   el('curveCancel').addEventListener('click', cancelCurve)
 
   /** 工具生成的笔画 = 普通笔画对象（points + 颜色），走现有保存/生成/撤销全流程。 */
+  /** 自动闭合：首尾距离 < 对角线 20%（用户画圈手势的容差）→ 末尾点拉齐到起点，
+   *  使后端封闭检测（3%）命中；几何工具（圆/矩形/闭合曲线）已首尾同点，不受影响。 */
+  function autoClose(pts) {
+    if (!pts || pts.length < 3) return false
+    const first = pts[0]
+    const last = pts[pts.length - 1]
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+    for (const [x, y] of pts) {
+      if (x < minX) minX = x
+      if (y < minY) minY = y
+      if (x > maxX) maxX = x
+      if (y > maxY) maxY = y
+    }
+    const diag = Math.hypot(maxX - minX, maxY - minY)
+    if (diag > 0 && Math.hypot(first[0] - last[0], first[1] - last[1]) < diag * 0.2) {
+      pts[pts.length - 1] = [first[0], first[1]]
+      return true
+    }
+    return false
+  }
+
   function addStroke(points) {
     const stroke = { id: 's' + Date.now().toString(36) + '_' + seq++, points }
     const cc = currentColor()
@@ -837,7 +859,7 @@ loadExamples()
     if (!Number.isFinite(size) || !Number.isFinite(count) || !Number.isFinite(heightMeters)) {
       return // 输入未完成，等下一个事件
     }
-    state.options = { mode, shape, size, count, heightMeters }
+    state.options = { mode, shape, size, count, heightMeters, canvasHeightPx: drawCanvas.clientHeight || 462 }
     updateShapeDisabled()
     updateHint()
     scheduleGen()
@@ -1105,6 +1127,7 @@ loadExamples()
           cy + (p[0] - cx) * sin + (p[1] - cy) * cos,
         ]),
       }
+      autoClose(stroke.points) // 源闭合（首尾同点）时副本旋转后首尾被拉开 → 重新拉齐
       if (src.color) stroke.color = src.color
       if (src.render) stroke.render = src.render
       if (src.height !== undefined) stroke.height = src.height
@@ -1183,10 +1206,19 @@ loadExamples()
     const opts = {
       mode: o.mode === 'lathe' ? 'lathe' : 'extrude',
       shape: o.shape === 'box' ? 'box' : 'cylinder',
-      size: Number.isFinite(o.size) && o.size > 0 ? o.size : 0.4,
+      size: Number.isFinite(o.size) && o.size > 0 ? o.size : 0.03,
       count: Number.isFinite(o.count) ? Math.min(300, Math.max(10, Math.round(o.count))) : 60,
-      heightMeters: Number.isFinite(o.heightMeters) && o.heightMeters > 0 ? o.heightMeters : 10,
+      heightMeters: Number.isFinite(o.heightMeters) && o.heightMeters > 0 ? o.heightMeters : 1,
     }
+    // 四期尺寸标定迁移：旧默认（画布高 10 米 / 杆径 0.4 米）改 1 米 / 3cm（PRD §4 标定）——
+    // 未改过参数的旧作品自动迁移，避免“画个小圆变成 10 米巨柱”
+    if (opts.heightMeters === 10) opts.heightMeters = 1
+    if (opts.size === 0.4) opts.size = 0.03
+    // 四期画布标定：读入作品统一按画布可视区标定（缺省补当前画布高；旧作品同样迁移）
+    opts.canvasHeightPx =
+      Number.isFinite(o.canvasHeightPx) && o.canvasHeightPx > 0
+        ? o.canvasHeightPx
+        : drawCanvas.clientHeight || 462
     const cur = normalizeColor(o.currentColor)
     if (cur) opts.currentColor = cur // v2：无/非法 currentColor = 默认材质
     state.strokes = data.strokes

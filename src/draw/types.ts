@@ -31,6 +31,7 @@ export type ModelOptions = {
   size: number // 米：圆柱直径 / 方杆截面边长
   count: number // 每个笔画生成的元件数（extrude=段数，lathe=盘片层数）
   heightMeters: number // 归一化后模型高度（包络盒高映射到此值）
+  canvasHeightPx?: number // 四期标定：画布可视区高（像素）。缺省 → 按内容包络盒标定（旧行为）
   currentColor?: string // 当前选中色 "0xRRGGBB"（新笔画默认色）；生成侧不消费，由前端新建笔画时落为 stroke.color
 }
 
