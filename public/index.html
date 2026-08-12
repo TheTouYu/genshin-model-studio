@@ -36,6 +36,9 @@
   #drawStatus.ok { color: #2a7a2a; }
   #previewCanvas { display: block; width: 100%; height: 460px; border: 1px solid #2b3542; border-radius: 8px; background: #10151c; }
   .preview-hint { color: #666; font-size: 0.82rem; text-align: center; }
+  .debug-panel { margin-top: 0.4rem; font-size: 0.78rem; color: #888; }
+  .debug-panel summary { cursor: pointer; user-select: none; }
+  .debug-panel pre { margin: 0.3rem 0 0; padding: 0.4rem 0.6rem; background: #10151c; border: 1px solid #2b3542; border-radius: 6px; color: #9aa7b4; font: 11px/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; white-space: pre-wrap; word-break: break-all; max-height: 180px; overflow: auto; }
 
   /* ============ 三期：颜色（色板 / 笔画列表 / 改色弹层） ============ */
   .color-row { display: flex; flex-wrap: wrap; gap: 0.5rem 0.9rem; align-items: center; }
@@ -171,10 +174,16 @@
         <input type="file" id="importFile" accept=".json,application/json" hidden>
       </div>
       <div class="status" id="drawStatus">在画布上画线（鼠标或手指），松手自动拟合生成；画完点击笔画圆点可改颜色/渲染/高度/方向</div>
+      <details class="debug-panel" id="debugPanel">
+        <summary>🔍 笔画调试信息（渲染/方向/抬升/3D 变换）</summary>
+        <pre id="strokeDebug"></pre>
+      </details>
     </div>
     <div class="draw-col">
       <canvas id="previewCanvas"></canvas>
-      <div class="preview-hint">3D 预览：拖拽旋转 · 滚轮缩放 · 移动端单指拖拽 / 双指捏合</div>
+      <div class="preview-hint">3D 预览：拖拽旋转 · 滚轮缩放 · 移动端单指拖拽 / 双指捏合
+        <button type="button" class="tool-btn" id="openPreview" title="在新页面打开独立大预览（可全屏/放大）" style="margin-left: 8px;">⛶ 独立预览</button>
+      </div>
     </div>
   </div>
   <div class="draw-actions" style="margin-top: 0.8rem;">
@@ -366,6 +375,7 @@ loadExamples()
   /* ---------- 画布绘制：网格 + 原始笔画（淡）+ 拟合曲线（亮） ---------- */
 
   function renderDraw() {
+    renderStrokeDebug()
     const w = drawCanvas.clientWidth
     const h = drawCanvas.clientHeight
     if (!w || !h) return
@@ -941,6 +951,31 @@ loadExamples()
 
   /* ---- 笔画列表：点圆点 = 选中该笔 + 弹色板 ---- */
 
+  function renderStrokeDebug() {
+    const pre = el('strokeDebug')
+    if (!pre) return
+    if (state.strokes.length === 0) {
+      pre.textContent = '（暂无笔画）'
+      return
+    }
+    const rows = state.strokes.map((s, i) => {
+      const t = s.transform
+      const parts = [`#${i}`]
+      if (s.render) parts.push(s.render)
+      if (s.axis) parts.push(s.axis)
+      if (s.height !== undefined) parts.push(`h=${s.height}`)
+      if (s.lift !== undefined) parts.push(`lift=${+s.lift.toFixed(4)}`)
+      if (t) {
+        if (t.rotation) parts.push(`rot=[${t.rotation.map((v) => +v.toFixed(1)).join(',')}]`)
+        if (t.position) parts.push(`pos=[${t.position.map((v) => +v.toFixed(4)).join(',')}]`)
+      }
+      if (s.color) parts.push(s.color)
+      parts.push(`${s.points.length}p`)
+      return parts.join('  ')
+    })
+    pre.textContent = rows.join('\n')
+  }
+
   function renderStrokeList() {
     const list = el('strokeList')
     if (state.strokes.length === 0) {
@@ -1103,6 +1138,11 @@ loadExamples()
 
   /* ---------- 四期：旋转复制（选中笔画 → 点旋转中心 → 份数 → N-1 副本） ---------- */
 
+  el('openPreview').addEventListener('click', () => {
+    saveLocal() // 独立预览页从 localStorage 读作品：点击时立即落盘
+    window.open('/draw/preview-demo.html', '_blank')
+  })
+
   el('rotateCopy').addEventListener('click', () => {
     if (!state.selectedId) return
     if (state.rotate) { cancelRotate(); return }
@@ -1133,25 +1173,38 @@ loadExamples()
    *  编码进元件 rotation 的绕 Y 分量（叶片旋转副本 0/120/240 辐向）。 */
   function makeRotationCopies(src, center, n) {
     const cx = center[0], cy = center[1]
+    // 十期（ADR-0001）：front 副本用 transform 表达 3D 语义（绕 Z 最终欧拉 + 画布 y 偏移 → 世界 y 偏移）；
+    // 其余 axis 保持 angle 老路径。mPerPx = 标定（米/像素）。
+    const mPerPx = state.options.heightMeters / (state.options.canvasHeightPx > 0 ? state.options.canvasHeightPx : 1)
+    const srcBox = strokeBBox(src.points)
+    const srcCy = (srcBox.px.minY + srcBox.px.maxY) / 2
     const copies = []
     for (let k = 1; k < n; k++) {
       const theta = (2 * Math.PI * k) / n
       const cos = Math.cos(theta), sin = Math.sin(theta)
-      const stroke = {
-        id: 's' + Date.now().toString(36) + '_' + seq++,
-        points: src.points.map((p) => [
-          cx + (p[0] - cx) * cos - (p[1] - cy) * sin,
-          cy + (p[0] - cx) * sin + (p[1] - cy) * cos,
-        ]),
-      }
-      autoClose(stroke.points) // 源闭合（首尾同点）时副本旋转后首尾被拉开 → 重新拉齐
+      const pts = src.points.map((p) => [
+        cx + (p[0] - cx) * cos - (p[1] - cy) * sin,
+        cy + (p[0] - cx) * sin + (p[1] - cy) * cos,
+      ])
+      autoClose(pts) // 源闭合（首尾同点）时副本旋转后首尾被拉开 → 重新拉齐
+      const stroke = { id: 's' + Date.now().toString(36) + '_' + seq++, points: pts }
       if (src.color) stroke.color = src.color
       if (src.render) stroke.render = src.render
       if (src.height !== undefined) stroke.height = src.height
       if (src.lift !== undefined) stroke.lift = src.lift // 离地抬升同样透传（叶片副本与源同高度）
       if (src.axis) stroke.axis = src.axis
-      // 画布旋转角累加记录（弧度）：源缺省 0，副本 = 源角 + θ；旋转椭圆主轴方向随副本转动
-      stroke.angle = (src.angle ?? 0) + theta
+      const total = (src.angle ?? 0) + theta // 画布旋转角累加（弧度）
+      if (src.axis === 'front' && src.render === 'solid') {
+        // 绕 Z 三叶：front 基础 [90,0,0] + 绕世界 Z 转 total（画布转 θ → 世界转 -θ，长轴方向 = 位置方向）
+        // YXZ 闭式 [90+θ°, 90, 90]：长轴 = (cos(-θ), sin(-θ), 0)，与副本位置方向（绕电机中心）一致 → 三叶对称辐射
+        const deg = (total * 180) / Math.PI
+        stroke.transform = { rotation: [90 + deg, 90, 90] }
+        const b = strokeBBox(pts)
+        const dyPx = (b.px.minY + b.px.maxY) / 2 - srcCy // 副本中心画布 y 相对源（画布 y 向下）
+        if (dyPx !== 0) stroke.transform.position = [0, -dyPx * mPerPx, 0] // 世界 y 向上 → 取负
+      } else {
+        stroke.angle = total // 老路径：旋转角记录（弧度），服务端编码进 rotation
+      }
       copies.push(stroke)
     }
     return copies
@@ -1189,19 +1242,24 @@ loadExamples()
 
   /* ---------- localStorage 自动保存 / 恢复 ---------- */
 
+  function writeLocal() {
+    try {
+      // v3：{ version, strokes, options }；新字段仅在非缺省时写入（由笔画对象自身保证）
+      localStorage.setItem(LS_KEY, JSON.stringify({
+        version: WORK_VERSION,
+        strokes: state.strokes,
+        options: state.options,
+      }))
+    } catch (e) { /* 隐私模式等场景忽略 */ }
+  }
+
   function saveLocal() {
     clearTimeout(saveTimer)
-    saveTimer = setTimeout(() => {
-      try {
-        // v3：{ version, strokes, options }；新字段仅在非缺省时写入（由笔画对象自身保证）
-        localStorage.setItem(LS_KEY, JSON.stringify({
-          version: WORK_VERSION,
-          strokes: state.strokes,
-          options: state.options,
-        }))
-      } catch (e) { /* 隐私模式等场景忽略 */ }
-    }, SAVE_MS)
+    saveTimer = setTimeout(writeLocal, SAVE_MS)
   }
+
+  // 刷新/关闭前同步落盘：AI 脚本改完模型后用户立刻刷新也不丢（同步链路兜底）
+  window.addEventListener('beforeunload', writeLocal)
 
   function sanitizePoints(points) {
     const out = []
@@ -1251,6 +1309,14 @@ loadExamples()
         if (s.render === 'rod' || s.render === 'solid') out.render = s.render
         if (typeof s.height === 'number' && Number.isFinite(s.height) && s.height > 0) out.height = s.height
         if (out.render === 'solid' && (s.axis === 'front' || s.axis === 'side')) out.axis = s.axis // 'up'=缺省不写
+        // v3.1：lift（solid 离地抬升）与 transform（3D 变换）必须原样保留，否则刷新/导入即丢失（ADR-0001）
+        if (typeof s.lift === 'number' && Number.isFinite(s.lift) && s.lift >= 0) out.lift = s.lift
+        if (s.transform && typeof s.transform === 'object' && !Array.isArray(s.transform)) {
+          const t = {}
+          if (Array.isArray(s.transform.position) && s.transform.position.length === 3 && s.transform.position.every(Number.isFinite)) t.position = s.transform.position
+          if (Array.isArray(s.transform.rotation) && s.transform.rotation.length === 3 && s.transform.rotation.every(Number.isFinite)) t.rotation = s.transform.rotation
+          if (t.position || t.rotation) out.transform = t
+        }
         return out
       })
     state.batches = state.strokes.map(() => ({ len: 1 })) // 导入/恢复后每笔一个撤销批次
@@ -1438,8 +1504,8 @@ loadExamples()
       throw new Error(`opts 参数非法：应为对象 { render, height, axis, lift, color }，当前值为 ${JSON.stringify(opts)}`)
     }
     for (const k of Object.keys(opts)) {
-      if (k !== 'render' && k !== 'height' && k !== 'axis' && k !== 'lift' && k !== 'color') {
-        throw new Error(`opts 参数非法：未知字段 ${JSON.stringify(k)}（支持 render/height/axis/lift/color），当前值为 ${JSON.stringify(opts)}`)
+      if (k !== 'render' && k !== 'height' && k !== 'axis' && k !== 'lift' && k !== 'color' && k !== 'transform') {
+        throw new Error(`opts 参数非法：未知字段 ${JSON.stringify(k)}（支持 render/height/axis/lift/color/transform），当前值为 ${JSON.stringify(opts)}`)
       }
     }
     const o = {}
@@ -1472,6 +1538,26 @@ loadExamples()
       if (!c) throw new Error(`color 参数非法：应为 '#RRGGBB' 或 '0xRRGGBB'，当前值为 ${JSON.stringify(opts.color)}`)
       o.color = c
     }
+    if (opts.transform !== undefined) {
+      const t = opts.transform
+      if (!t || typeof t !== 'object' || Array.isArray(t)) {
+        throw new Error(`transform 参数非法：应为 { position?, rotation? }，当前值为 ${JSON.stringify(opts.transform)}`)
+      }
+      const out = {}
+      if (t.position !== undefined) {
+        if (!Array.isArray(t.position) || t.position.length !== 3 || !t.position.every((v) => typeof v === 'number' && Number.isFinite(v))) {
+          throw new Error(`transform.position 参数非法：应为 [x,y,z] 三个有限数值，当前值为 ${JSON.stringify(t.position)}`)
+        }
+        out.position = t.position
+      }
+      if (t.rotation !== undefined) {
+        if (!Array.isArray(t.rotation) || t.rotation.length !== 3 || !t.rotation.every((v) => typeof v === 'number' && Number.isFinite(v))) {
+          throw new Error(`transform.rotation 参数非法：应为 [x,y,z] 三个有限数值（欧拉角，度），当前值为 ${JSON.stringify(t.rotation)}`)
+        }
+        out.rotation = t.rotation
+      }
+      if (out.position || out.rotation) o.transform = out
+    }
     return o
   }
 
@@ -1488,6 +1574,7 @@ loadExamples()
     if (o.lift !== undefined) stroke.lift = o.lift
     if (o.axis !== undefined && o.axis !== 'up') stroke.axis = o.axis // 'up' = 缺省不写
     if (o.color !== undefined) stroke.color = o.color
+    if (o.transform !== undefined) stroke.transform = o.transform
     renderStrokeList()
     renderDraw()
     scheduleGen()
@@ -1709,6 +1796,7 @@ loadExamples()
       else stroke.axis = o.axis
     }
     if (o.color !== undefined) stroke.color = o.color
+    if (o.transform !== undefined) stroke.transform = o.transform
     state.lastGenError = null
     renderStrokeList()
     renderDraw()

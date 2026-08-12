@@ -51,11 +51,14 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
     if (!Array.isArray(stroke.points)) {
       throw new Error(`第 ${i + 1} 笔笔画无效：points 需为 [x, y] 数组`)
     }
-    const points: [number, number][] = stroke.points.map((p: unknown, j: number) => {
+    const points: [number, number, number][] = stroke.points.map((p: unknown, j: number) => {
+      // 十期（ADR-0001）：点升级为 3D [x, y, z]；旧 [x, y] 自动补 z=0 兼容
       if (!Array.isArray(p) || p.length < 2 || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) {
-        throw new Error(`第 ${i + 1} 笔第 ${j + 1} 个点无效：需为 [x, y] 有限数值`)
+        throw new Error(`第 ${i + 1} 笔第 ${j + 1} 个点无效：需为 [x, y] 或 [x, y, z] 有限数值`)
       }
-      return [p[0] as number, p[1] as number]
+      const z = p.length > 2 ? p[2] : 0
+      if (!Number.isFinite(z)) throw new Error(`第 ${i + 1} 笔第 ${j + 1} 个点无效：z 需为有限数值`)
+      return [p[0] as number, p[1] as number, z]
     })
     totalPoints += points.length
     if (totalPoints > MAX_DRAW_POINTS) {
@@ -89,6 +92,20 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
     if (angle !== undefined && (typeof angle !== 'number' || !Number.isFinite(angle))) {
       throw new Error(`第 ${i + 1} 笔角度无效：需为有限数值（弧度）`)
     }
+    // 十期（ADR-0001）：transform 可选透传——position 偏移（米）、rotation 最终欧拉（度）
+    const transform = (stroke as { transform?: unknown }).transform
+    if (transform !== undefined) {
+      if (transform === null || typeof transform !== 'object' || Array.isArray(transform)) {
+        throw new Error(`第 ${i + 1} 笔 transform 无效：需为对象 { position?, rotation? }`)
+      }
+      const t = transform as { position?: unknown; rotation?: unknown }
+      for (const [key, val] of [['position', t.position], ['rotation', t.rotation]] as const) {
+        if (val === undefined) continue
+        if (!Array.isArray(val) || val.length !== 3 || !val.every((v) => typeof v === 'number' && Number.isFinite(v))) {
+          throw new Error(`第 ${i + 1} 笔 transform.${key} 无效：需为 [x, y, z] 有限数值`)
+        }
+      }
+    }
     return {
       id: stroke.id,
       points,
@@ -97,7 +114,8 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
       ...(height === undefined ? {} : { height }),
       ...(lift === undefined ? {} : { lift }),
       ...(axis === undefined ? {} : { axis }),
-      ...(angle === undefined ? {} : { angle })
+      ...(angle === undefined ? {} : { angle }),
+      ...(transform === undefined ? {} : { transform: transform as Stroke['transform'] })
     }
   })
 

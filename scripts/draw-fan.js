@@ -24,16 +24,19 @@ window.gms.circle(cx, cy, 80);
 // 辐条：中心到环边，旋转复制 4 份（含源）
 window.gms.line(cx, cy, cx + 80, cy);
 window.gms.rotate(1, cx, cy, 4);
-// 电机：小圆 solid 水平 0.03，lift 抬到罩子中心（0.415625 − 0.015 = 0.400625）
-window.gms.circle(cx, cy, 12, {render: 'solid', height: 0.03, axis: 'side', lift: liftToCenter(0.03)});
+// 电机主体：柱体（圆面朝前后 Z），加大到 r=14（直径 0.0875），沿 Z 长 0.08；
+// transform.position[2]=-0.045 让柱体从叶片平面（z=0）稍向后伸出（叶片/电机不再共面）
+window.gms.circle(cx, cy, 14, {render: 'solid', height: 0.08, axis: 'front', lift: liftToCenter(0.08), transform: {position: [0, 0, -0.045]}});
+// 后罩：比电机大的圆盘（r=20，直径 0.125），在电机后方（z=-0.10），模拟风扇电机后盖
+window.gms.circle(cx, cy, 20, {render: 'solid', height: 0.015, axis: 'front', lift: liftToCenter(0.015), transform: {position: [0, 0, -0.10]}});
 // 叶片：扁椭圆 loop（solid 只支持圆/椭圆/矩形）
 // axis='front'：长轴（局部 X）水平、短轴（局部 Z）竖直、厚度（局部 Y）沿前后；
-// gms.rotate 在副本上记录 angle=2π/3·k（弧度），服务端编码 rotation=[90, k·120°, 0]；
+// gms.rotate 在副本上记录 transform.rotation=[90+k·120°, 90, 90]（绕 Z 三叶，长轴=位置方向）与 position（画布旋转的 y 偏移）；
 // lift 由 makeRotationCopies 透传给副本（三片同高度）。
 const blade = [];
 for (let i = 0; i <= 24; i++) { const a = (i / 24) * 2 * Math.PI; blade.push([cx + 14 + 40 * Math.cos(a), cy + 28 * Math.sin(a)]); }
 window.gms.loop(blade, {render: 'solid', height: 0.002, axis: 'front', lift: liftToCenter(0.002)});
-window.gms.rotate(6, cx, cy, 3);
+window.gms.rotate(7, cx, cy, 3);
 // 支架：从罩子中心画到画布底部（与底座/bbox 底一致 → 底端接地 y=0，消除悬空）
 window.gms.line(cx, cy, cx, GROUND_Y);
 // 底座：扁椭圆（65x22 会被拒，60x38 可过），贴地（lift 不设）

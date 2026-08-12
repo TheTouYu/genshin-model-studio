@@ -31,7 +31,7 @@
  */
 import type { ModelOptions, Stroke, TaggedItem, TaggedItemColor } from './types.js'
 import { BOX_RESOURCE_ID, CYLINDER_RESOURCE_ID, OPEN_CYLINDER_RESOURCE_ID } from './types.js'
-import { adaptiveEpsilon, fitStroke, simplifyRdp, type FittedStroke } from './fitting.js'
+import { adaptiveEpsilon, fitStroke, simplifyRdp, type FittedStroke, type Point } from './fitting.js'
 import type { StructureItem } from '../core/structure.js'
 
 export type GenerateResult = { items: TaggedItem[]; closed: boolean[] }
@@ -42,8 +42,6 @@ type CanvasPoint = readonly [number, number]
 type ToWorld = (x: number, y: number) => Vec3
 
 const DEG = 180 / Math.PI
-
-
 function rawBounds(strokes: readonly Stroke[]): {
   minX: number
   minY: number
@@ -233,7 +231,7 @@ function liftByHeight(item: TaggedItem, stroke: Stroke | undefined): void {
 
 /** 顶点转角（度）：p[i-1]→p[i]→p[i+1] 的外转角，直行 = 0°。
  * 矩形角 = 90°；正五/六边形 = 72°/60°；圆经 RDP 抽稀后 < 45°。 */
-function turnAngle(pts: readonly (readonly [number, number])[], i: number): number {
+function turnAngle(pts: readonly Point[], i: number): number {
   const n = pts.length
   const [ax, ay] = pts[(i - 1 + n) % n]
   const [bx, by] = pts[i]
@@ -277,7 +275,7 @@ type Recognized = { shape: RecognizedShape; radii: readonly [number, number] | n
  * - 3 角或 ≥ 5 角 → 多边形，一期不支持抛错；
  * - 平滑闭合曲线 → 圆（点到质心距离相对方差 < 阈值且宽高比 < 1.1）否则椭圆。
  */
-function recognizeShape(points: readonly (readonly [number, number])[]): Recognized {
+function recognizeShape(points: readonly Point[]): Recognized {
   let pts = simplifyRdp(points, adaptiveEpsilon(points))
   if (pts.length > 2) {
     // 首尾重复的闭合点合并（矩形工具输出常首尾同点）
@@ -387,7 +385,7 @@ function recognizeShape(points: readonly (readonly [number, number])[]): Recogni
  * bbox 宽深比从 10:7 变 ≈6.6:7.9），但拟合半径不变，三片旋转叶片尺寸因此一致。
  * 数值失败（退化/不正定）时返回 null，调用方回退 bbox（旧行为）。
  */
-function principalRadii(pts: readonly (readonly [number, number])[], cx: number, cy: number): [number, number] | null {
+function principalRadii(pts: readonly Point[], cx: number, cy: number): [number, number] | null {
   // 线性方程 dx²·M11 + 2dxdy·M12 + dy²·M22 = 1 → 3×3 对称正规方程（Cramer）
   let a11 = 0, a12 = 0, a13 = 0, a22 = 0, a23 = 0, a33 = 0
   let b1 = 0, b2 = 0, b3 = 0
@@ -439,7 +437,7 @@ function solidColumn(
   rawBboxHeight: number,
   scale: number,
   color?: string,
-  zRaw: { minY: number; maxY: number } = raw // 八期：z 定位用自身包围盒（extrude/lathe 都传自身 → centerZ=0）
+  zRaw: { minY: number; maxY: number } = raw, // 八期：z 定位用自身包围盒（extrude/lathe 都传自身 → centerZ=0）
 ): TaggedItem {
   const thickness = stroke.height ?? 0
   if (!(thickness > 0)) throw new Error('柱体高度需大于 0（米）')
@@ -475,13 +473,21 @@ function solidColumn(
   // rotation[1]（绕 Y，角度制）——front+θ → [90,θ°,0]（叶片 0/120/240 辐向）；
   // up+θ → [0,θ°,0]（地面椭圆绕垂直轴）。源笔画缺省 0（原样摆放）。
   // 矩形不透写（保持轴对齐 bbox 语义）；圆各向同性，θ 无外观影响。
+  // 十期（ADR-0001）：transform.rotation 存在时直接覆盖（最终欧拉，如叶片绕 Z 三叶）；
+  // transform.position 为偏移（米），叠加在点集默认位置之上。
   const angleDeg = shape === 'rectangle' ? 0 : (stroke.angle ?? 0) * DEG
   const rotation: Vec3 =
-    axis === 'front' ? [90, angleDeg, 0] : axis === 'side' ? [0, angleDeg, -90] : [0, angleDeg, 0]
+    stroke.transform?.rotation ??
+    (axis === 'front' ? [90, angleDeg, 0] : axis === 'side' ? [0, angleDeg, -90] : [0, angleDeg, 0])
   const scale3: Vec3 = shape === 'circle' ? [width, thickness, width] : [width, thickness, depth]
+  const tp = stroke.transform?.position
   return {
     resourceId: shape === 'rectangle' ? BOX_RESOURCE_ID : CYLINDER_RESOURCE_ID,
-    position: [centerX, thickness / 2 + (stroke.lift ?? 0), centerZ],
+    position: [
+      centerX + (tp?.[0] ?? 0),
+      thickness / 2 + (stroke.lift ?? 0) + (tp?.[1] ?? 0),
+      centerZ + (tp?.[2] ?? 0)
+    ],
     rotation,
     scale: scale3,
     group: stroke.id,
@@ -491,8 +497,8 @@ function solidColumn(
 
 /** extrude 单段杆：轴向对齐线段，位置 = 段中点。 */
 function extrudeRod(
-  a: CanvasPoint,
-  b: CanvasPoint,
+  a: Point,
+  b: Point,
   toWorld: ToWorld,
   size: number,
   shape: ModelOptions['shape'],
@@ -535,7 +541,7 @@ function extrudeRod(
  * 五期：lathe 母线等高度归并——每层取该 y 邻域的最大 x。
  * 水平渐变段（y 恒定）归并为单层，避免弧长采样把渐变段叠成底部台阶。
  */
-function sampleByHeight(points: CanvasPoint[], count: number): CanvasPoint[] {
+function sampleByHeight(points: readonly Point[], count: number): CanvasPoint[] {
   const minY = Math.min(...points.map((p) => p[1]))
   const maxY = Math.max(...points.map((p) => p[1]))
   const layers: CanvasPoint[] = []

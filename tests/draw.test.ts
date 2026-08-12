@@ -571,9 +571,17 @@ test('parse: render/height/axis pass through and are validated (缺省不写)', 
     ],
     options: { mode: 'extrude', shape: 'cylinder', size: 0.2, count: 8, heightMeters: 2 }
   }))
-  assert.deepEqual(strokes[0], { id: 's1', points: [[0, 0], [10, 10]] }) // 缺省不写新字段
-  assert.deepEqual(strokes[1], { id: 's2', points: ring, render: 'solid', height: 0.08, axis: 'front' })
-  assert.deepEqual(strokes[2], { id: 's3', points: [[0, 0], [10, 10]], render: 'rod' })
+  // 十期（ADR-0001）：点统一为 3D [x,y,z]，旧 [x,y] 自动补 z=0；transform 透传
+  assert.deepEqual(strokes[0], { id: 's1', points: [[0, 0, 0], [10, 10, 0]] })
+  assert.deepEqual(strokes[1], { id: 's2', points: ring.map((p) => [p[0], p[1], 0]), render: 'solid', height: 0.08, axis: 'front' })
+  assert.deepEqual(strokes[2], { id: 's3', points: [[0, 0, 0], [10, 10, 0]], render: 'rod' })
+  // 3D 点原样保留 + transform 校验透传
+  const t3 = parseDrawModelRequest(JSON.stringify({
+    strokes: [{ id: 's4', points: [[1, 2, 3], [4, 5, 6]], transform: { position: [0, 0.1, 0], rotation: [-30, 90, 90] } }],
+    options: { mode: 'extrude', shape: 'cylinder', size: 0.2, count: 8, heightMeters: 2 }
+  })).strokes[0]
+  assert.deepEqual(t3.points, [[1, 2, 3], [4, 5, 6]])
+  assert.deepEqual(t3.transform, { position: [0, 0.1, 0], rotation: [-30, 90, 90] })
   for (const [bad, msg] of [
     [{ ...strokes[1], render: 'blob' }, /渲染方式无效/],
     [{ ...strokes[1], height: 'x' }, /高度无效/],
@@ -844,6 +852,69 @@ test('solid: angle no-op for circle/rectangle; parse passes angle through (缺�
       msg
     )
   }
+})
+
+// —— 十期（ADR-0001）：transform 表达旋转副本 3D 语义（绕 Z 三叶，不再绕 Y） ——
+
+test('solid: front rotated copies use transform (rotation around Z, y offset from canvas)', () => {
+  // 三片风扇叶片：源椭圆中心 (316,250) 绕 (302,250) 转 k·120°；画布 y 偏移 14·sin120° px = 12.124px
+  // transform.rotation = [90-θ°, 90, 90]（绕 Z 闭式）；transform.position[1] = -dyPx/320（画布 y 向下）
+  const dyM = (14 * Math.sin((2 * Math.PI) / 3)) / 320
+  const strokes: Stroke[] = [
+    { id: 'blade_src', points: fanBlade(FAN_CX, FAN_CY), render: 'solid' as const, height: 0.002, axis: 'front' as const, lift: 0.414625 },
+    ...[1, 2].map((k) => ({
+      id: 'b' + k,
+      points: rotatedBladeCopy(k, 3),
+      render: 'solid' as const,
+      height: 0.002,
+      axis: 'front' as const,
+      lift: 0.414625,
+      transform: {
+        rotation: [90 + (k * 120), 90, 90] as [number, number, number],
+        position: [0, k === 1 ? -dyM : dyM, 0] as [number, number, number]
+      }
+    }))
+  ]
+  const { items } = generateModel(strokes, fanOpts)
+  assert.equal(items.length, 3)
+  const src = items[0]
+  // 源笔画：无 transform → 老路径（rotation [90,0,0]，y = lift 中心）
+  assert.ok(src.rotation[0] === 90 && src.rotation[1] === 0 && src.rotation[2] === 0, `源 rotation=${src.rotation}`)
+  assert.ok(Math.abs(src.position[1] - 0.415625) < 1e-9 && src.position[2] === 0, `源 pos=${src.position}`)
+  // 副本1（θ=120°）：rotation 覆盖为 [210,90,90]；y = 中心 - dyM（画布向下 → 世界向下）；z 保持 0
+  const b2 = items[1]
+  assert.ok(Math.abs(b2.rotation[0] - 210) < 1e-9 && b2.rotation[1] === 90 && b2.rotation[2] === 90, `副本1 rotation=${b2.rotation}`)
+  assert.ok(Math.abs(b2.position[1] - (0.415625 - dyM)) < 1e-9, `副本1 y=${b2.position[1]} 预期=${0.415625 - dyM}`)
+  assert.ok(Math.abs(b2.position[2]) < 1e-12, `副本1 z 应保持 0（同一竖直平面，不绕 Y），实际 ${b2.position[2]}`)
+  // 副本2（θ=240°）：y 对称向上
+  const b3 = items[2]
+  assert.ok(Math.abs(b3.rotation[0] - 330) < 1e-9, `副本2 rotation=${b3.rotation}`)
+  assert.ok(Math.abs(b3.position[1] - (0.415625 + dyM)) < 1e-9, `副本2 y=${b3.position[1]}`)
+  assert.ok(Math.abs(b3.position[2]) < 1e-12, `副本2 z 应保持 0，实际 ${b3.position[2]}`)
+  // 两副本 x 对称（同一全局居中语义下位置镜像）；z 全 0 → 三片在同一竖直平面
+  assert.ok(Math.abs(b2.position[0] - b3.position[0]) < 1e-9, `副本 x 应相等：${b2.position[0]} vs ${b3.position[0]}`)
+  // 三片 y 呈 120° 环绕关系（中心片在中间，上下片对称偏移 dyM）
+  assert.ok(b2.position[1] < src.position[1] && src.position[1] < b3.position[1], `三片高度应中-低-高排列`)
+  // 长轴方向 = 位置方向（相对电机中心），三叶对称辐射：
+  // 副本1 位置 240° → 长轴 (cos240°, sin240°, 0)（X-Y 竖直平面内径向）
+  const major = apply(yxzMatrix(b2.rotation), [1, 0, 0])
+  assert.ok(
+    Math.abs(major[0] - Math.cos((4 * Math.PI) / 3)) < 1e-9 &&
+    Math.abs(major[1] - Math.sin((4 * Math.PI) / 3)) < 1e-9 &&
+    Math.abs(major[2]) < 1e-9,
+    `副本1 长轴=${major} 预期=(cos240,sin240,0)`
+  )
+  // 副本2 位置 120° → 长轴 (cos120°, sin120°, 0)
+  const major2 = apply(yxzMatrix(b3.rotation), [1, 0, 0])
+  assert.ok(
+    Math.abs(major2[0] - Math.cos((2 * Math.PI) / 3)) < 1e-9 &&
+    Math.abs(major2[1] - Math.sin((2 * Math.PI) / 3)) < 1e-9 &&
+    Math.abs(major2[2]) < 1e-9,
+    `副本2 长轴=${major2} 预期=(cos120,sin120,0)`
+  )
+  // 厚度沿 Z（面朝前后）——叶片面始终面向气流方向
+  const thick = apply(yxzMatrix(b2.rotation), [0, 1, 0])
+  assert.ok(Math.abs(thick[0]) < 1e-9 && Math.abs(thick[1]) < 1e-9 && Math.abs(Math.abs(thick[2]) - 1) < 1e-9, `副本1 厚度=${thick} 预期=沿Z`)
 })
 
 // —— 八期修复：solid 离地抬升（电机/叶片悬浮——柱体底默认贴 y=0，罩子中心在 0.416） ——

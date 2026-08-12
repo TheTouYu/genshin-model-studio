@@ -7,7 +7,7 @@
  */
 import type { Stroke } from './types.js'
 
-export type Point = readonly [number, number]
+export type Point = readonly [number, number] | readonly [number, number, number]
 export type Polyline = Point[]
 
 /** 抽稀阈值 = 笔画包围盒对角线 × 该比例（自适应：大笔画允许更大偏差）。 */

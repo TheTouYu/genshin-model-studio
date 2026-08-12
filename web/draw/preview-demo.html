@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>实时 3D 预览 Demo — Genshin Model Studio</title>
+<title>实时 3D 预览 · 当前作品独立页 — Genshin Model Studio</title>
 <style>
   html, body { margin: 0; height: 100%; overflow: hidden; background: #10151c; font-family: system-ui, sans-serif; }
   #view { position: fixed; inset: 0; }
@@ -24,9 +24,9 @@
 <body>
 <div id="view"><canvas id="canvas"></canvas></div>
 <div id="hud">
-  <h1>实时 3D 预览 · preview.js 独立验证页</h1>
+  <h1>当前作品 · 3D 预览独立页</h1>
   <div>🖱 左键拖拽旋转 · 滚轮缩放 · 移动端单指拖拽 / 双指捏合</div>
-  <div class="hint">地面网格：y=0 场景地面；坐标轴 x=红 / y=绿 / z=蓝（便于判断朝向）</div>
+  <div class="hint">与主页面（localhost:8787）共用同一份作品数据（localStorage），刷新本页即同步最新作品。地面网格：y=0 地面；坐标轴 x=红 / y=绿 / z=蓝。</div>
   <div id="legend"></div>
   <div id="status">加载 Three.js（CDN）…</div>
 </div>
@@ -37,27 +37,29 @@
   'use strict'
 
   var statusEl = document.getElementById('status')
+  var legendEl = document.getElementById('legend')
 
-  // 验证用假数据：覆盖圆柱/长方体/棱柱（两类）+ 球体，含绕 Y 旋转的 item
-  var DEMO_ITEMS = [
-    { resourceId: 10009001, position: [0, 0.5, 0], rotation: [0, 0, 0], scale: [1, 1, 1] },           // 长方体（落地）
-    { resourceId: 10009008, position: [-2.0, 1.0, 0.4], rotation: [0, 0, 0], scale: [1, 2, 1] },       // 圆柱（立着，高 2）
-    { resourceId: 10009004, position: [2.0, 0.5, -0.4], rotation: [0, 90, 0], scale: [1, 1, 1] },      // 三棱柱（绕 Y 转 90°）
-    { resourceId: 10009005, position: [-0.9, 0.3, -2.2], rotation: [0, 45, 0], scale: [0.6, 0.6, 0.6] }, // 五棱柱
-    { resourceId: 10009002, position: [1.2, 0.35, 2.0], rotation: [0, 0, 0], scale: [0.7, 0.7, 0.7] },  // 球体
-  ]
+  // 与主页面同一 localStorage 键：{ version, strokes, options }
+  var LS_KEY = 'gms.draw.work.v1'
 
-  // 与 preview.js COLORS 保持一致的图例
-  var LEGEND = [
-    [10009001, '长方体', '#7ea6e0'],
-    [10009008, '圆柱（立着）', '#6fc3c9'],
-    [10009004, '三棱柱（Y 旋转 90°）', '#e8a86a'],
-    [10009005, '五棱柱', '#caa8e8'],
-    [10009002, '球体', '#8fd694'],
-  ]
-  document.getElementById('legend').innerHTML = LEGEND.map(function (l) {
-    return '<div><span class="dot" style="background:' + l[2] + '"></span>' + l[1] + ' <span class="hint">(' + l[0] + ')</span></div>'
-  }).join('')
+  function loadWork() {
+    var raw = null
+    try { raw = localStorage.getItem(LS_KEY) } catch (e) { return null }
+    if (!raw) return null
+    try {
+      var work = JSON.parse(raw)
+      if (!work || !Array.isArray(work.strokes) || !work.options) return null
+      return work
+    } catch (e) { return null }
+  }
+
+  function renderLegend(strokes) {
+    var rows = []
+    strokes.forEach(function (s, i) {
+      if (s.color) rows.push('<div><span class="dot" style="background:#' + String(s.color).replace('0x', '') + '"></span>第 ' + i + ' 笔</div>')
+    })
+    legendEl.innerHTML = rows.length ? rows.join('') : '<div class="hint">（当前作品未使用笔画颜色）</div>'
+  }
 
   // Three.js 多源 CDN fallback（unpkg → jsdelivr）
   var CDNS = [
@@ -74,9 +76,33 @@
     }
     try {
       var preview = window.createPreview(document.getElementById('canvas'))
-      preview.setItems(DEMO_ITEMS)
-      statusEl.textContent =
-        '✓ Three.js r' + window.THREE.REVISION + ' 已加载，' + DEMO_ITEMS.length + ' 个元件渲染中（零 console 报错 = 通过）'
+      window.__preview = preview // 供脚本/调试访问
+      var work = loadWork()
+      if (!work) {
+        preview.setItems([])
+        statusEl.className = 'err'
+        statusEl.textContent = '未找到作品数据（localStorage 键 ' + LS_KEY + '）。请先在主页面作画（自动保存），再刷新本页。'
+        return
+      }
+      renderLegend(work.strokes)
+      statusEl.textContent = '正在生成模型（POST /api/draw-model）…'
+      fetch('/api/draw-model', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ strokes: work.strokes, options: work.options }),
+      })
+        .then(function (res) {
+          if (!res.ok) throw new Error('生成接口 HTTP ' + res.status)
+          return res.json()
+        })
+        .then(function (data) {
+          preview.setItems(data.items || [])
+          statusEl.textContent = '✓ 已加载当前作品：' + work.strokes.length + ' 笔笔画 · ' + (data.items || []).length + ' 个元件（与主页面一致）'
+        })
+        .catch(function (err) {
+          statusEl.className = 'err'
+          statusEl.textContent = '模型生成失败：' + err.message + '（请确认通过 localhost:8787 访问本页）'
+        })
     } catch (err) {
       statusEl.className = 'err'
       statusEl.textContent = '初始化失败：' + err.message

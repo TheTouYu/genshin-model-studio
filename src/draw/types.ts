@@ -26,15 +26,22 @@ import type { StructureItem } from '../core/structure.js'
  *   （风扇叶片旋转副本需与源同高度）。 */
 export type Stroke = {
   id: string
-  points: ReadonlyArray<readonly [number, number]>
+  points: ReadonlyArray<readonly [number, number] | readonly [number, number, number]>
   color?: string
   render?: 'rod' | 'solid'
   height?: number
   axis?: 'up' | 'front' | 'side'
   angle?: number
   lift?: number
+  /** 十期（ADR-0001）：整体变换——position 偏移（米，叠加在点集默认位置）；rotation 最终欧拉（度，覆盖 axis/angle 编码）。 */
+  transform?: Transform
 }
 
+/** 笔画整体变换（ADR-0001）：形状（点集）与摆放（变换）分离。 */
+export type Transform = {
+  position?: [number, number, number]
+  rotation?: [number, number, number]
+}
 /** 生成参数。 */
 export type ModelOptions = {
   mode: 'extrude' | 'lathe'
