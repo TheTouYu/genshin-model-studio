@@ -1128,7 +1128,9 @@ loadExamples()
     el('rotateModal').style.display = 'none'
   }
 
-  /** 副本继承源笔画全部参数（color/render/height/axis），绕 center 均分 360°/n。 */
+  /** 副本继承源笔画全部参数（color/render/height/axis），绕 center 均分 360°/n；
+   *  副本另记录画布旋转角 angle（弧度，绕旋转中心），供服务端 solidColumn 把朝向
+   *  编码进元件 rotation 的绕 Y 分量（叶片旋转副本 0/120/240 辐向）。 */
   function makeRotationCopies(src, center, n) {
     const cx = center[0], cy = center[1]
     const copies = []
@@ -1146,7 +1148,10 @@ loadExamples()
       if (src.color) stroke.color = src.color
       if (src.render) stroke.render = src.render
       if (src.height !== undefined) stroke.height = src.height
+      if (src.lift !== undefined) stroke.lift = src.lift // 离地抬升同样透传（叶片副本与源同高度）
       if (src.axis) stroke.axis = src.axis
+      // 画布旋转角累加记录（弧度）：源缺省 0，副本 = 源角 + θ；旋转椭圆主轴方向随副本转动
+      stroke.angle = (src.angle ?? 0) + theta
       copies.push(stroke)
     }
     return copies
@@ -1426,15 +1431,15 @@ loadExamples()
     })
   }
 
-  /** 校验并归一化 opts（render/height/axis/color）；未知字段/非法值抛中文 Error。 */
+  /** 校验并归一化 opts（render/height/axis/lift/color）；未知字段/非法值抛中文 Error。 */
   function normalizeOpts(opts) {
     if (opts === undefined) return {}
     if (opts === null || typeof opts !== 'object' || Array.isArray(opts)) {
-      throw new Error(`opts 参数非法：应为对象 { render, height, axis, color }，当前值为 ${JSON.stringify(opts)}`)
+      throw new Error(`opts 参数非法：应为对象 { render, height, axis, lift, color }，当前值为 ${JSON.stringify(opts)}`)
     }
     for (const k of Object.keys(opts)) {
-      if (k !== 'render' && k !== 'height' && k !== 'axis' && k !== 'color') {
-        throw new Error(`opts 参数非法：未知字段 ${JSON.stringify(k)}（支持 render/height/axis/color），当前值为 ${JSON.stringify(opts)}`)
+      if (k !== 'render' && k !== 'height' && k !== 'axis' && k !== 'lift' && k !== 'color') {
+        throw new Error(`opts 参数非法：未知字段 ${JSON.stringify(k)}（支持 render/height/axis/lift/color），当前值为 ${JSON.stringify(opts)}`)
       }
     }
     const o = {}
@@ -1449,6 +1454,12 @@ loadExamples()
         throw new Error(`height 参数非法：应为正数（米；solid = 柱体高度，rod = 抬升高度），当前值为 ${JSON.stringify(opts.height)}`)
       }
       o.height = opts.height
+    }
+    if (opts.lift !== undefined) {
+      if (typeof opts.lift !== 'number' || !Number.isFinite(opts.lift) || opts.lift < 0) {
+        throw new Error(`lift 参数非法：应为非负有限数值（米；solid = 柱体离地抬升，缺省 0 = 贴地），当前值为 ${JSON.stringify(opts.lift)}`)
+      }
+      o.lift = opts.lift
     }
     if (opts.axis !== undefined) {
       if (opts.axis !== 'up' && opts.axis !== 'front' && opts.axis !== 'side') {
@@ -1474,6 +1485,7 @@ loadExamples()
     state.lastGenError = null
     if (o.render !== undefined) stroke.render = o.render
     if (o.height !== undefined) stroke.height = o.height
+    if (o.lift !== undefined) stroke.lift = o.lift
     if (o.axis !== undefined && o.axis !== 'up') stroke.axis = o.axis // 'up' = 缺省不写
     if (o.color !== undefined) stroke.color = o.color
     renderStrokeList()
@@ -1691,6 +1703,7 @@ loadExamples()
       if (o.render !== 'solid' && stroke.axis) delete stroke.axis // axis 仅柱体有效（与弹层一致）
     }
     if (o.height !== undefined) stroke.height = o.height
+    if (o.lift !== undefined) stroke.lift = o.lift
     if (o.axis !== undefined) {
       if (o.axis === 'up') delete stroke.axis // 'up' = 缺省不写
       else stroke.axis = o.axis

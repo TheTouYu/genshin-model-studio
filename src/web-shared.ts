@@ -67,6 +67,8 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
       throw new Error(`第 ${i + 1} 笔颜色无效：需为 "0xRRGGBB" 格式（如 "0xC8A87C"）`)
     }
     // 四期（PRD §4）：render/height/axis 可选透传，缺省不写（v1/v2 兼容）
+    // 七期：angle（画布旋转角，弧度）可选透传，缺省不写（旋转副本专用）
+    // 八期：lift（米，solid 柱体离地抬升）可选透传，缺省不写（贴地 = 既有行为）
     const render = (stroke as { render?: unknown }).render
     if (render !== undefined && render !== 'rod' && render !== 'solid') {
       throw new Error(`第 ${i + 1} 笔渲染方式无效：需为 rod 或 solid`)
@@ -75,9 +77,17 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
     if (height !== undefined && (typeof height !== 'number' || !Number.isFinite(height))) {
       throw new Error(`第 ${i + 1} 笔高度无效：需为有限数值（米）`)
     }
+    const lift = (stroke as { lift?: unknown }).lift
+    if (lift !== undefined && (typeof lift !== 'number' || !Number.isFinite(lift) || lift < 0)) {
+      throw new Error(`第 ${i + 1} 笔抬升无效：需为非负有限数值（米）`)
+    }
     const axis = (stroke as { axis?: unknown }).axis
     if (axis !== undefined && axis !== 'up' && axis !== 'front' && axis !== 'side') {
       throw new Error(`第 ${i + 1} 笔方向无效：需为 up、front 或 side`)
+    }
+    const angle = (stroke as { angle?: unknown }).angle
+    if (angle !== undefined && (typeof angle !== 'number' || !Number.isFinite(angle))) {
+      throw new Error(`第 ${i + 1} 笔角度无效：需为有限数值（弧度）`)
     }
     return {
       id: stroke.id,
@@ -85,7 +95,9 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
       ...(color === undefined ? {} : { color }),
       ...(render === undefined ? {} : { render }),
       ...(height === undefined ? {} : { height }),
-      ...(axis === undefined ? {} : { axis })
+      ...(lift === undefined ? {} : { lift }),
+      ...(axis === undefined ? {} : { axis }),
+      ...(angle === undefined ? {} : { angle })
     }
   })
 
@@ -148,13 +160,16 @@ export type DrawModelResult = {
 
 /**
  * 生成画线模型（本地 server.ts 与 Vercel api/draw.ts 共用）。
- * 采样点数与 generateModel 内部一致：extrude=count+1（段数=count），lathe=count（盘片层数）。
+ * 采样点数与 generateModel 内部一致：extrude=count+1（段数=count），lathe=count（盘片层数）；
+ * extrude 封闭平滑轮廓同样保留细节（与 generateModel 的 keepClosedDetail 一致）。
  */
 export function drawModelResult(strokes: Stroke[], options: ModelOptions): DrawModelResult {
   const { items: tagged, closed } = generateModel(strokes, options)
   const sampleCount =
     options.mode === 'extrude' ? Math.max(1, Math.floor(options.count)) + 1 : Math.max(1, Math.floor(options.count))
-  const fitted: (FittedStroke | null)[] = strokes.map((s) => fitStroke(s, sampleCount))
+  const fitted: (FittedStroke | null)[] = strokes.map((s) =>
+    fitStroke(s, sampleCount, { keepClosedDetail: options.mode === 'extrude' })
+  )
   return { items: toStructureItems(tagged), fitted, closed }
 }
 

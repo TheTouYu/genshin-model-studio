@@ -164,15 +164,29 @@ export function detectClosed(points: readonly Point[], ratio = CLOSED_DISTANCE_R
   return Math.hypot(first[0] - last[0], first[1] - last[1]) < diagonal * ratio
 }
 
+/** fitStroke 可选行为开关。 */
+export type FitOptions = {
+  /**
+   * extrude 封闭平滑轮廓（圆/椭圆环）保细节：按 max(抽稀点数, count×3) 弧长重采样。
+   * 修复前一律压回 count+1 点 → 圆环只剩 count 段（12 边形感）；封闭轮廓段数不再受 count 压缩。
+   */
+  keepClosedDetail?: boolean
+}
+
 /**
  * 单笔画完整拟合管线。sampleCount 为均匀重采样的目标点数。
  * 笔画点数 < 2 时返回 null（该笔画不产生元件）。
  */
-export function fitStroke(stroke: Stroke, sampleCount: number): FittedStroke | null {
+export function fitStroke(stroke: Stroke, sampleCount: number, opts: FitOptions = {}): FittedStroke | null {
   if (stroke.points.length < 2) return null
   let poly = simplifyRdp(stroke.points, adaptiveEpsilon(stroke.points))
+  const rdpCount = poly.length // 抽稀后的细节点数（封闭轮廓的重采样下限）
   poly = smoothChaikin(poly)
   if (poly.length < 2) return null
-  poly = resampleUniform(poly, sampleCount)
-  return { id: stroke.id, points: poly, closed: detectClosed(poly) }
+  // 封闭检测前移（重采样前）：封闭与否不受重采样影响（端点恒保留），先判定再定采样目标
+  const closed = detectClosed(poly)
+  const target =
+    closed && opts.keepClosedDetail ? Math.max(rdpCount, sampleCount * 3) : sampleCount
+  poly = resampleUniform(poly, target)
+  return { id: stroke.id, points: poly, closed }
 }

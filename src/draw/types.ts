@@ -14,7 +14,16 @@ import type { StructureItem } from '../core/structure.js'
  * - height：米，沿模型 Y 抬升（rod 笔画所有 item 的 position.y += height）；
  *   render='solid' 时兼作柱体厚度（Y 向，必须 > 0），柱体底贴 y=0（position.y = 厚度/2）；
  * - axis：柱体轴向（仅 render='solid' 有效），缺省 'up'；
- *   'up'=竖直（局部 Y，零旋转）/ 'front'=绕 X 转 90°（轴向 +Z）/ 'side'=绕 Z 转 −90°（轴向 +X）。 */
+ *   'up'=竖直（局部 Y，零旋转）/ 'front'=绕 X 转 90°（轴向 +Z）/ 'side'=绕 Z 转 −90°（轴向 +X）。
+ * - angle：画布旋转角（弧度，可选）。gms.rotate / UI 旋转复制在副本笔画上记录绕
+ *   旋转中心的角度 θ（源笔画缺省不写 = 0）；solidColumn 把 θ 编码进元件 rotation[1]
+ *   （绕 Y，角度制），使椭圆/圆 solid 的朝向随旋转副本辐向展开（风扇叶片 0/120/240）。
+ *   圆各向同性无外观影响；矩形不消费（保持轴对齐 bbox 语义）。
+ * - lift：米，可选。柱体（render='solid'）离地抬升：solidColumn 的 position.y =
+ *   厚度/2 + lift（柱体底不再贴 y=0，而是抬到 lift 高度）。extrude 与 lathe 共用
+ *   solidColumn，两模式都生效；缺省不写 = 0（贴地，既有行为）。杆笔画不消费
+ *   （杆的离地抬升用 height）。gms.rotate / UI 旋转复制把 lift 透传给副本
+ *   （风扇叶片旋转副本需与源同高度）。 */
 export type Stroke = {
   id: string
   points: ReadonlyArray<readonly [number, number]>
@@ -22,6 +31,8 @@ export type Stroke = {
   render?: 'rod' | 'solid'
   height?: number
   axis?: 'up' | 'front' | 'side'
+  angle?: number
+  lift?: number
 }
 
 /** 生成参数。 */

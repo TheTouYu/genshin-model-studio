@@ -17,10 +17,16 @@
  *
  * 四期（PRD §4/§5.2）增量：
  * - render='solid' 且封闭 → 柱体渲染器：轮廓（圆/椭圆/矩形）→ 元件（10009008 圆柱 /
- *   10009001 长方体），位置 = 轮廓包围盒中心（画布 x→世界 x、画布 y→世界 z，全局
- *   归一化居中），y = height/2（柱体底贴 y=0），厚度 = stroke.height（Y 向，>0）；
+ *   10009001 长方体），位置 = 轮廓包围盒中心（画布 x→世界 x、全局归一化居中；
+ *   z 恒居中归 0——extrude/lathe 均用自身包围盒定位 z，画布 y 不映射世界 z），
+ *   y = height/2（柱体底贴 y=0），厚度 = stroke.height（Y 向，>0）；
  * - axis 旋转（与现有 YXZ 内旋约定一致）：up=[0,0,0]；front=[90,0,0]（局部 Y→+Z）；
  *   side=[0,0,−90]（局部 Y→+X）；
+ * - stroke.angle（弧度，旋转副本记录）：椭圆/圆 solid 读入并编码进 rotation[1]
+ *   （绕 Y，角度制）——front+θ 得 [90, θ°, 0]：长轴水平沿半径辐向、短轴竖直，
+ *   叶片三片呈 0/120/240；up+θ 得 [0, θ°, 0]：地面椭圆绕垂直轴转 θ；
+ * - stroke.lift（米，可选）：solid 柱体离地抬升——position.y = 厚度/2 + lift
+ *   （extrude 与 lathe 共用 solidColumn，两模式生效；缺省 0 = 柱体底贴 y=0）；
  * - stroke.height 对 rod/lathe 笔画：该笔所有 item 的 position.y += height（整体抬升）。
  */
 import type { ModelOptions, Stroke, TaggedItem, TaggedItemColor } from './types.js'
@@ -79,7 +85,8 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
   const minPoints = opts.mode === 'extrude' ? 2 : 1
   for (const stroke of strokes) {
     const sampleCount = opts.mode === 'extrude' ? count + 1 : count // 段数 → 点 = 段数+1
-    const fit = fitStroke(stroke, sampleCount)
+    // 四期修复：extrude 封闭平滑轮廓（圆/椭圆环）不压回 count+1 点（否则环只剩 count 段失圆）
+    const fit = fitStroke(stroke, sampleCount, { keepClosedDetail: opts.mode === 'extrude' })
     closed.push(fit !== null ? fit.closed : false)
     if (fit !== null && fit.points.length >= minPoints) fitted.push(fit)
   }
@@ -121,8 +128,11 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
     if (opts.mode === 'extrude') {
       for (const fit of fitted) {
         const stroke = strokeById.get(fit.id)
+        // 八期：extrude solid 与 lathe 一致，z 用自身包围盒（画布 y 不再映射世界 z →
+        // centerZ=0，与杆（z=0）同平面，消除混合语义错位；x 仍全局居中）
         if (stroke?.render === 'solid') {
-          items.push(solidColumn(stroke, raw, bboxWidth, bboxHeight, scale, colorOf(fit.id)))
+          const sRaw = rawBounds([stroke as Stroke])
+          items.push(solidColumn(stroke, raw, bboxWidth, bboxHeight, scale, colorOf(fit.id), sRaw ?? raw))
           continue
         }
         for (let i = 0; i + 1 < fit.points.length; i++) {
@@ -257,6 +267,9 @@ const CLOSURE_DEDUP_RATIO = 0.01
 
 type RecognizedShape = 'circle' | 'ellipse' | 'rectangle'
 
+/** 轮廓识别结果：shape + 圆/椭圆的旋转不变主轴半径（像素，长轴在前）；矩形为 null（bbox 语义保留）。 */
+type Recognized = { shape: RecognizedShape; radii: readonly [number, number] | null }
+
 /**
  * 四期柱体轮廓识别（PRD §5.2 表格）：
  * 抽稀（RDP，保留尖角）→ 顶点转角统计：
@@ -264,7 +277,7 @@ type RecognizedShape = 'circle' | 'ellipse' | 'rectangle'
  * - 3 角或 ≥ 5 角 → 多边形，一期不支持抛错；
  * - 平滑闭合曲线 → 圆（点到质心距离相对方差 < 阈值且宽高比 < 1.1）否则椭圆。
  */
-function recognizeShape(points: readonly (readonly [number, number])[]): RecognizedShape {
+function recognizeShape(points: readonly (readonly [number, number])[]): Recognized {
   let pts = simplifyRdp(points, adaptiveEpsilon(points))
   if (pts.length > 2) {
     // 首尾重复的闭合点合并（矩形工具输出常首尾同点）
@@ -324,7 +337,7 @@ function recognizeShape(points: readonly (readonly [number, number])[]): Recogni
       }
       return true
     })()
-    if (rightAngles && parallel) return 'rectangle'
+    if (rightAngles && parallel) return { shape: 'rectangle', radii: null }
   }
   // 非矩形（含角数 1~3：椭圆抽稀后长轴两端常各留一个高转角点，如 109°/167°）→
   // 用半径方差判圆/椭圆（不依赖转角；三角/五角星等半径方差大 → 拒绝）
@@ -359,18 +372,65 @@ function recognizeShape(points: readonly (readonly [number, number])[]): Recogni
   // 圆/椭圆要求平滑（角数 ≤ 2；椭圆长轴两端各留一个高转角点）：多边形（≥ 3 角）拒绝
   const smooth = corners.length <= 2
   if (smooth && meanR > 0 && aspect < CIRCLE_ASPECT_MAX && varR < CIRCLE_RADIUS_REL_VARIANCE * meanR * meanR) {
-    return 'circle'
+    return { shape: 'circle', radii: principalRadii(pts, cx, cy) }
   }
   if (smooth && meanR > 0 && varR < ELLIPSE_RADIUS_REL_VARIANCE * meanR * meanR) {
-    return 'ellipse'
+    return { shape: 'ellipse', radii: principalRadii(pts, cx, cy) }
   }
   throw new Error('暂不支持该轮廓形状（支持圆/椭圆/矩形）')
 }
 
 /**
+ * 圆/椭圆主轴半径（像素，长轴在前）：代数椭圆最小二乘拟合。
+ * 椭圆上采样点满足 (p−c)ᵀM(p−c)=1（M 对称半正定，主轴半径 = 1/√(M 特征值)），
+ * 对采样分布/旋转不变——旋转副本的轴对齐 bbox 会漂移（叶片绕中心转 120° 后
+ * bbox 宽深比从 10:7 变 ≈6.6:7.9），但拟合半径不变，三片旋转叶片尺寸因此一致。
+ * 数值失败（退化/不正定）时返回 null，调用方回退 bbox（旧行为）。
+ */
+function principalRadii(pts: readonly (readonly [number, number])[], cx: number, cy: number): [number, number] | null {
+  // 线性方程 dx²·M11 + 2dxdy·M12 + dy²·M22 = 1 → 3×3 对称正规方程（Cramer）
+  let a11 = 0, a12 = 0, a13 = 0, a22 = 0, a23 = 0, a33 = 0
+  let b1 = 0, b2 = 0, b3 = 0
+  for (const [x, y] of pts) {
+    const dx = x - cx
+    const dy = y - cy
+    const u = dx * dx
+    const v = 2 * dx * dy
+    const w = dy * dy
+    a11 += u * u; a12 += u * v; a13 += u * w
+    a22 += v * v; a23 += v * w
+    a33 += w * w
+    b1 += u; b2 += v; b3 += w
+  }
+  const det = a11 * (a22 * a33 - a23 * a23) - a12 * (a12 * a33 - a23 * a13) + a13 * (a12 * a23 - a22 * a13)
+  if (!(det > 0) || !Number.isFinite(det)) return null
+  const m11 = (b1 * (a22 * a33 - a23 * a23) - a12 * (b2 * a33 - a23 * b3) + a13 * (b2 * a23 - a22 * b3)) / det
+  const m12 = (a11 * (b2 * a33 - a23 * b3) - b1 * (a12 * a33 - a23 * a13) + a13 * (a12 * b3 - b2 * a13)) / det
+  const m22 = (a11 * (a22 * b3 - b2 * a23) - a12 * (a12 * b3 - b2 * a13) + b1 * (a12 * a23 - a22 * a13)) / det
+  const disc = Math.sqrt(Math.max(0, (m11 - m22) * (m11 - m22) + 4 * m12 * m12))
+  const lamMin = (m11 + m22 - disc) / 2 // 最小特征值 → 最大半径
+  const lamMax = (m11 + m22 + disc) / 2
+  if (!(lamMin > 0) || !(lamMax > 0)) return null
+  // 数值洁化：主轴半径只保留 ~1e-9 像素精度（远低于画布分辨率），保证浮点下旋转副本逐位一致
+  const snap = (v: number): number => Math.round(v * 1e9) / 1e9
+  const r1 = snap(1 / Math.sqrt(lamMin))
+  const r2 = snap(1 / Math.sqrt(lamMax))
+  return r1 >= r2 ? [r1, r2] : [r2, r1]
+}
+
+/**
  * 四期柱体渲染器（PRD §5.2）：封闭轮廓 → 实体柱体。
- * 位置 = 轮廓包围盒中心（画布 x→世界 x、画布 y→世界 z），y = 厚度/2（底贴 y=0）；
- * 厚度 = stroke.height（>0）；scale：[圆] = [直径, 厚度, 直径]，[椭圆/矩形] = [宽, 厚度, 深]。
+ * 位置 = 轮廓包围盒中心（画布 x→世界 x 全局居中；z 用自身包围盒居中归 0），y = 厚度/2 + lift
+ * （lift 缺省 0 = 柱体底贴 y=0；lift > 0 = 柱体整体离地抬升，电风扇电机/叶片抬到
+ * 罩子中心高度）；厚度 = stroke.height（>0）；scale：[圆] = [直径, 厚度, 直径]，
+ * [椭圆/矩形] = [宽, 厚度, 深]。
+ * 宽/深：矩形用轴对齐 bbox（真实轮廓）；圆/椭圆用旋转不变主轴半径——
+ * 旋转副本（gms.rotate）的 bbox 会随旋转漂移，主轴长度不变（叶片 120° 副本尺寸不漂移）。
+ * 朝向：stroke.angle（弧度，旋转副本记录画布旋转角）→ rotation[1]（绕 Y，角度制）。
+ * YXZ 内旋推演：front（Rx(90)）+θ → [90, θ°, 0]，局部 X（长轴）→ (cosθ,0,−sinθ) 水平
+ * 辐向、局部 Z（短轴）→ (0,−1,0) 竖直、局部 Y（厚度）→ (sinθ,0,cosθ) 水平——叶片朝向；
+ * up（零旋转）+θ → [0, θ°, 0]，地面椭圆绕垂直轴转 θ。圆各向同性（scale.x==scale.z）
+ * θ 无外观影响；矩形保持 bbox 语义（scale 来自轴对齐包围盒，不表达方向），不读 angle。
  */
 function solidColumn(
   stroke: Stroke,
@@ -379,11 +439,11 @@ function solidColumn(
   rawBboxHeight: number,
   scale: number,
   color?: string,
-  zRaw: { minY: number; maxY: number } = raw // 五期：z 定位用的包围盒（lathe 下传自身，贴母线底/轴平面）
+  zRaw: { minY: number; maxY: number } = raw // 八期：z 定位用自身包围盒（extrude/lathe 都传自身 → centerZ=0）
 ): TaggedItem {
   const thickness = stroke.height ?? 0
   if (!(thickness > 0)) throw new Error('柱体高度需大于 0（米）')
-  const shape = recognizeShape(stroke.points)
+  const { shape, radii } = recognizeShape(stroke.points)
   let minX = Infinity
   let minY = Infinity
   let maxX = -Infinity
@@ -394,19 +454,34 @@ function solidColumn(
     if (x > maxX) maxX = x
     if (y > maxY) maxY = y
   }
-  const width = (maxX - minX) * scale
-  const depth = (maxY - minY) * scale
-  // 包围盒中心：x = 画布 x 中心 → 世界 x（全局居中）；z = 画布 y 中心 → 世界 z（全局居中）
+  let width: number
+  let depth: number
+  if (shape === 'rectangle' || radii === null) {
+    // 矩形：轴对齐 bbox 即真实轮廓（保持原语义）；圆/椭圆兜底同样走 bbox
+    width = (maxX - minX) * scale
+    depth = (maxY - minY) * scale
+  } else {
+    // 圆/椭圆：旋转不变主轴直径（长轴 → scale[0]/局部 X，短轴 → scale[2]/局部 Z）
+    width = 2 * radii[0] * scale
+    depth = 2 * radii[1] * scale
+  }
+  // 包围盒中心：x = 画布 x 中心 → 世界 x（全局居中）；z = 画布 y 中心相对自身
+  // 包围盒 → 0（extrude/lathe 语义统一：solid 与杆同在 z=0 平面，不随画布 y 漂移）
   const centerX = ((minX + maxX) / 2 - raw.minX) * scale - (rawBboxWidth * scale) / 2
   const zBboxH = Math.max(zRaw.maxY - zRaw.minY, 0)
   const centerZ = ((minY + maxY) / 2 - zRaw.minY) * scale - (zBboxH * scale) / 2
   const axis = stroke.axis ?? 'up'
+  // 旋转副本（gms.rotate/UI）在副本笔画上记录画布旋转角 angle（弧度）：编码进
+  // rotation[1]（绕 Y，角度制）——front+θ → [90,θ°,0]（叶片 0/120/240 辐向）；
+  // up+θ → [0,θ°,0]（地面椭圆绕垂直轴）。源笔画缺省 0（原样摆放）。
+  // 矩形不透写（保持轴对齐 bbox 语义）；圆各向同性，θ 无外观影响。
+  const angleDeg = shape === 'rectangle' ? 0 : (stroke.angle ?? 0) * DEG
   const rotation: Vec3 =
-    axis === 'front' ? [90, 0, 0] : axis === 'side' ? [0, 0, -90] : [0, 0, 0]
+    axis === 'front' ? [90, angleDeg, 0] : axis === 'side' ? [0, angleDeg, -90] : [0, angleDeg, 0]
   const scale3: Vec3 = shape === 'circle' ? [width, thickness, width] : [width, thickness, depth]
   return {
     resourceId: shape === 'rectangle' ? BOX_RESOURCE_ID : CYLINDER_RESOURCE_ID,
-    position: [centerX, thickness / 2, centerZ],
+    position: [centerX, thickness / 2 + (stroke.lift ?? 0), centerZ],
     rotation,
     scale: scale3,
     group: stroke.id,
