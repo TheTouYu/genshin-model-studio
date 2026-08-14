@@ -1444,10 +1444,14 @@ loadExamples()
   window.addEventListener('beforeunload', writeLocal)
 
   function sanitizePoints(points) {
+    // 十六期：保留 z（米）——恢复/导入路径剥 z 会让弧线罩铁丝变平面并退回 60 段重采样（4695 元件）
     const out = []
     if (!Array.isArray(points)) return out
     for (const p of points) {
-      if (Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1])) out.push([p[0], p[1]])
+      if (Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1])) {
+        if (p.length > 2 && Number.isFinite(p[2])) out.push([p[0], p[1], p[2]])
+        else out.push([p[0], p[1]])
+      }
     }
     return out
   }
@@ -1490,6 +1494,8 @@ loadExamples()
         // v3 增量字段（缺省即旧行为；仅接受合法值，默认值不写字段）
         if (s.render === 'rod' || s.render === 'solid') out.render = s.render
         if (typeof s.height === 'number' && Number.isFinite(s.height) && s.height > 0) out.height = s.height
+        // v3.3：size（笔画级粗细，十六期）必须原样保留——否则刷新/导入即丢失退回全局粗细（铁律 #1 第三次违反）
+        if (typeof s.size === 'number' && Number.isFinite(s.size) && s.size > 0) out.size = s.size
         if (out.render === 'solid' && (s.axis === 'front' || s.axis === 'side')) out.axis = s.axis // 'up'=缺省不写
         // v3.1：lift（solid 离地抬升）与 transform（3D 变换）必须原样保留，否则刷新/导入即丢失（ADR-0001）
         if (typeof s.lift === 'number' && Number.isFinite(s.lift) && s.lift >= 0) out.lift = s.lift
