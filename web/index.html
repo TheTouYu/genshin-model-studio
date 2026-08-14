@@ -2135,11 +2135,11 @@ loadExamples()
       const r = num(spec.r, 'r', 0.2)
       const seg = spec.seg === undefined ? 48 : num(spec.seg, 'seg', 48)
       const [cx, cy] = toPx(x, y)
-      addStrokeWithOpts(circlePts(cx, cy, r / k, seg), { ...base, transform: z !== 0 ? { position: [0, 0, z] } : undefined })
+      addStrokeWithOpts(circlePts(cx, cy, r / k, seg), { ...base, size: spec.size !== undefined ? num(spec.size, 'size', 0.03) : 0.03, transform: z !== 0 ? { position: [0, 0, z] } : undefined })
     } else if (type === 'rod') {
       const x1 = num(spec.x1, 'x1'), y1 = num(spec.y1, 'y1'), x2 = num(spec.x2, 'x2'), y2 = num(spec.y2, 'y2')
       const [a, b] = toPx(x1, y1), [c, d] = toPx(x2, y2)
-      addStrokeWithOpts([[a, b], [c, d]], { ...base, transform: z !== 0 ? { position: [0, 0, z] } : undefined })
+      addStrokeWithOpts([[a, b], [c, d]], { ...base, size: spec.size !== undefined ? num(spec.size, 'size', 0.03) : 0.03, transform: z !== 0 ? { position: [0, 0, z] } : undefined })
     } else if (type === 'disc' || type === 'el-disc') {
       const thick = num(spec.thick, 'thick', 0.01)
       const axis = spec.axis === undefined ? 'up' : spec.axis
@@ -2160,8 +2160,9 @@ loadExamples()
       // 服务端 rod 生成读点 z（十四期 generate.ts 补）；副本经四元数通用化绕罩子轴等角分布。
       const r = num(spec.r, 'r', 0.25)
       const rise = num(spec.rise, 'rise', 0.04)
+      const y2 = spec.y2 === undefined ? y : num(spec.y2, 'y2', y) // 十六期：终点 y（斜弧线——电线下垂）
       const [sx, sy] = toPx(x, y)
-      const [ex, ey] = toPx(x + r, y)
+      const [ex, ey] = toPx(x + r, y2)
       const pts = []
       for (let i = 0; i <= 8; i++) {
         const t = i / 8

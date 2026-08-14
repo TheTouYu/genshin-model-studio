@@ -202,8 +202,14 @@ export function fitStroke(stroke: Stroke, sampleCount: number, opts: FitOptions 
   if (poly.length < 2) return null
   // 封闭检测前移（重采样前）：封闭与否不受重采样影响（端点恒保留），先判定再定采样目标
   const closed = detectClosed(poly)
+  // 十六期：3D 点集（弧线等）不细分——程序生成的稀疏点已是最终形状，
+  // 按原始点数重采样（9 点 → 8 段/根；Chaikin 后点数会膨胀，必须用原始点数）
   const target =
-    closed && opts.keepClosedDetail ? Math.max(rdpCount, sampleCount * 3) : sampleCount
+    hasZ && zScale > 0
+      ? stroke.points.length
+      : closed && opts.keepClosedDetail
+        ? Math.max(rdpCount, sampleCount * 3)
+        : sampleCount
   poly = resampleUniform(poly, target, zScale)
   // 十四期：输入无 z（旧 2D 笔画）时还原 2 元素点（兼容既有断言/消费方）
   return { id: stroke.id, points: hasZ ? poly : poly.map(([x, y]) => [x, y]), closed }
