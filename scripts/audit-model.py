@@ -20,6 +20,8 @@ def audit(data):
     返回 {"k_pxm", "base", "elements"}；elements 每项含 kind/center/z/size/
     group/n/radius/r/rx/ry/thick/len 等（按 kind 有效字段）。"""
     strokes = data["strokes"]
+    if not strokes:
+        return {"k_pxm": 0, "base": [0, 0], "elements": []}
     k = data["options"]["canvasHeightPx"] / max(data["options"]["heightMeters"], 1e-9)
     xs = [p[0] for s in strokes for p in s["points"]]
     ys = [p[1] for s in strokes for p in s["points"]]
@@ -99,6 +101,8 @@ def checks(audit_result, rules=None):
     rules: 可选规则子集（"concentric"/"coplanar"/"motion-gap"/"hub-cover"/"thickness"/"rotation"/"wire"）。"""
     elements = audit_result["elements"]
     base = audit_result["base"]
+    if not elements:
+        return []
     out = []
     want = set(rules or ["concentric", "coplanar", "motion-gap", "hub-cover", "thickness", "rotation", "wire"])
     if "concentric" in want:
