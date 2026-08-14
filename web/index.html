@@ -2114,7 +2114,9 @@ loadExamples()
       if (!['up', 'front', 'side'].includes(axis)) throw new Error(`part.axis 参数非法：应为 up/front/side，当前值为 ${JSON.stringify(spec.axis)}`)
       const [cx, cy] = toPx(x, y)
       const pts = type === 'disc' ? circlePts(cx, cy, num(spec.r, 'r', 0.05) / k, 24) : ellipsePts(cx, cy, num(spec.rx, 'rx', 0.1) / k, num(spec.ry, 'ry', 0.05) / k, 48)
-      const t = { position: [x, 0, z] }
+      // 十三期修复：transform.position.x 必须为 0——服务端 solid 的世界 x = 画布归一化 x + transform.x，
+      // 画布位置已按 spec.x 偏移（toPx），再设 transform.x 会双重生效（实测 0.15 → 0.30；v3-gpt 曾被迫 x=0.075 校正）
+      const t = { position: [0, 0, z] }
       if (spec.rotation !== undefined) {
         if (!Array.isArray(spec.rotation) || spec.rotation.length !== 3 || !spec.rotation.every(Number.isFinite)) throw new Error(`part.rotation 参数非法：应为 [α,β,γ] 度，当前值为 ${JSON.stringify(spec.rotation)}`)
         t.rotation = spec.rotation
