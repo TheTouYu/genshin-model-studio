@@ -28,6 +28,7 @@
 | G12 | loop 实体（solid）有形状限制：椭圆/矩形可能 400 或生成 10009001 盒体——确认支持的轮廓用 circle | 双模型基线都探到，改用 circle 规避 |
 | G13 | 立体感三件套：叶片桨距角（绕长轴扭转 10-15°）、前后层次（z 分层：叶片/环/电机/后罩各一平面）、分部件配色 | 基线 0/2 模型主动做；断言外不做是模型常态，目标要有断言驱动 |
 | G14 | rotate/delete/props 前先 gms.list() 核对索引（每笔 {index, points, closed, render, center}）；summary 的 render/height/axis 是归一化有效值 | 基线复盘 2b：ds 索引错位致 6 辐条+1 叶全量重画；gpt 索性规避 rotate |
+| G15 | **非对称组件的 x 偏移会在服务端归一化时漂移**（世界 x 原点 = 全图 bbox 中心，添加非对称组件会移动原点）——画完必须 inspect 核对实际位置，偏了用 delete(id)/props 校正 | v3-gpt 视觉自审实测：偏置叶片源服务端位置 0.30 vs 副本 0.15，越过外环；数据核验看不出（120° 对称仍成立），只有截图可见 |
 
 ## 2. 风扇画法（十二期实测定版）
 
@@ -69,7 +70,11 @@ gms.part('disc',    {x:0, y:0.416,  z:-0.085, r:0.0625, thick:0.015, axis:'front
 gms.part('el-disc', {x:0, y:0.416,  z:0, rx:0.125, ry:0.0875, thick:0.002, axis:'front', rotation:[102,0,0], color:'#e8c15a'})  // 叶片源（桨距 12°）→ gms.rotate(?, 中心, 3)
 ```
 
-注意：rotate 的旋转中心用**画布坐标**（gms.list() 里 center 字段；世界 (0, y) → 画布 (cxp, bottom−y·320)）。
+**v4 接口（gpt 视觉自审反馈落地）**：
+- gms.rotatem(i, x_m, y_m, n)：旋转中心用米制世界坐标（x 相对中心、y 相对地面），内部换算——不必再算画布像素
+- gms.rotate(i, cx, cy, n) 返回带 rotated: {srcIndex, srcId, copies:[{index, id}]}——复制后直接知道副本索引/id，无需 list() 反推
+- gms.delete(id) / gms.props(id, ...) / gms.rotate(id, ...)：索引与 id 都可用（id 稳定，插入/删除不漂移；id 用 gms.list() 查）
+- **G15 漂移警告**：偏置组件（x≠0 的非对称件）画完必须 inspect 核对实际 position，漂移则 delete(id) 重画校正
 
 ## 3. 水杯画法（lathe 模式，2026-08-12 实测定版）
 

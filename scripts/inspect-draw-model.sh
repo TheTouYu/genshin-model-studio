@@ -30,6 +30,7 @@ if os.environ.get("STROKE_ONLY"):
     if not (0 <= n < len(strokes)):
         raise RuntimeError("stroke out of range: " + os.environ["STROKE_ONLY"])
     strokes = [strokes[n]]
+    _ORIGINAL_STROKE = n
 payload = {key: exported[key] for key in ("version", "options")}
 payload["strokes"] = strokes
 request = Request(
@@ -78,6 +79,7 @@ print(json.dumps({
     "strokeCount": len(payload["strokes"]),
     "itemCount": len(items),
     "perStroke": per_stroke,
+    "originalStroke": os.environ.get("STROKE_ONLY") and int(os.environ["STROKE_ONLY"]),
     "items": [
         {
             "index": index,

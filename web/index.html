@@ -1632,8 +1632,14 @@ loadExamples()
 
   /** 解析笔画索引：负数 = 倒数（-1 = 最后一笔）；非法/越界抛中文 Error。 */
   function resolveIndex(i) {
+    if (typeof i === 'string') {
+      // v4（gpt 反馈 #3/#5）：支持稳定 id——rotate/delete/props 用 gms.list() 返回的 id，不受插入/删除后索引漂移影响
+      const idx = state.strokes.findIndex((st) => st.id === i)
+      if (idx < 0) throw new Error(`笔画 id 不存在：${JSON.stringify(i)}（用 gms.list() 查看当前 id）`)
+      return idx
+    }
     if (typeof i !== 'number' || !Number.isFinite(i) || !Number.isInteger(i)) {
-      throw new Error(`笔画索引非法：应为整数（负数 = 倒数，-1 = 最后一笔），当前值为 ${JSON.stringify(i)}`)
+      throw new Error(`笔画索引非法：应为整数（负数 = 倒数，-1 = 最后一笔）或 id 字符串，当前值为 ${JSON.stringify(i)}`)
     }
     const idx = i < 0 ? state.strokes.length + i : i
     if (idx < 0 || idx >= state.strokes.length) {
@@ -1780,6 +1786,23 @@ loadExamples()
       px: pxBox,
       m: { minX: toM(minX), minY: toM(minY), maxX: toM(maxX), maxY: toM(maxY), width: toM(pxBox.width), height: toM(pxBox.height) },
     }
+  }
+
+  /** v4：全笔画 bbox（无笔画时画布兜底）；gmsRotate 米制中心换算用。 */
+  function strokeBBoxAll() {
+    let b = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }
+    if (state.strokes.length === 0) {
+      return { minX: 0, minY: 0, maxX: drawCanvas.clientWidth || 640, maxY: state.options.canvasHeightPx }
+    }
+    for (const st of state.strokes) {
+      for (const [px0, py0] of st.points) {
+        if (px0 < b.minX) b.minX = px0
+        if (py0 < b.minY) b.minY = py0
+        if (px0 > b.maxX) b.maxX = px0
+        if (py0 > b.maxY) b.maxY = py0
+      }
+    }
+    return b
   }
 
   function gmsSummary() {
@@ -2008,7 +2031,21 @@ loadExamples()
     renderDraw()
     scheduleGen()
     saveLocal()
-    return gmsSummary()
+    const sum = gmsSummary()
+    // v4（gpt 反馈 #3）：返回副本信息——源 id、副本新索引与 id，rotate 后无需再 list() 反推
+    sum.rotated = { srcIndex: pos, srcId: src.id, copies: copies.map((c, k) => ({ index: pos + 1 + k, id: c.id })) }
+    return sum
+  }
+
+  /** v4（gpt 反馈 #2）：米制旋转中心版本——x 相对模型中心、y 相对地面（米）；内部换算画布像素。 */
+  function gmsRotatem(i, x, y, n) {
+    assertFinite(x, 'x（旋转中心 x，米）')
+    assertFinite(y, 'y（旋转中心 y，米）')
+    const all = strokeBBoxAll()
+    const k = state.options.heightMeters / state.options.canvasHeightPx
+    const cx = (all.minX + all.maxX) / 2 + x / k
+    const cy = all.maxY - y / k
+    return gmsRotate(i, cx, cy, n)
   }
 
   function gmsDelete(i) {
@@ -2182,6 +2219,7 @@ loadExamples()
     loop: gmsLoop,
     props: gmsProps,
     rotate: gmsRotate,
+    rotatem: gmsRotatem,
     delete: gmsDelete,
     group: gmsGroup,
     ungroup: gmsUngroup,
