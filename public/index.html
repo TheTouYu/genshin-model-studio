@@ -1333,6 +1333,8 @@ loadExamples()
       })
       autoClose(pts) // 源闭合（首尾同点）时副本旋转后首尾被拉开 → 重新拉齐
       const stroke = { id: 's' + Date.now().toString(36) + '_' + seq++, points: pts }
+      // 审计元数据：旋转组 { 中心(画布px), 份数, 第 k 份 }——audit 直接读，不再几何反推
+      stroke.rot = { cx, cy, n, k }
       if (src.color) stroke.color = src.color
       if (src.render) stroke.render = src.render
       if (src.height !== undefined) stroke.height = src.height
@@ -1507,6 +1509,11 @@ loadExamples()
         }
         // v3.2：group（层级组）原样保留（非空字符串）；静止件不写字段
         if (typeof s.group === 'string' && s.group.trim() !== '') out.group = s.group
+        // v3.4（审计）：kind（组件类型）与 rot（旋转组 {cx,cy,n,k}）原样保留——否则刷新即丢
+        if (typeof s.kind === 'string') out.kind = s.kind
+        if (s.rot && typeof s.rot === 'object' && Number.isFinite(s.rot.cx) && Number.isFinite(s.rot.cy) && Number.isFinite(s.rot.n) && Number.isFinite(s.rot.k)) {
+          out.rot = { cx: s.rot.cx, cy: s.rot.cy, n: s.rot.n, k: s.rot.k }
+        }
         return out
       })
     state.batches = state.strokes.map(() => ({ len: 1 })) // 导入/恢复后每笔一个撤销批次
@@ -2057,6 +2064,8 @@ loadExamples()
       throw new Error(`n 参数非法：份数应为 2~40 的整数（罩子铁丝可 20-30 根），当前值为 ${JSON.stringify(n)}`)
     }
     const src = state.strokes[idx]
+    // 审计元数据：源笔画记录旋转组（k=0）
+    src.rot = { cx, cy, n, k: 0 }
     const copies = makeRotationCopies(src, [cx, cy], n)
     const pos = state.strokes.indexOf(src)
     state.strokes.splice(pos + 1, 0, ...copies) // 副本插入源笔画之后（与 confirmRotate 同构）
@@ -2136,7 +2145,7 @@ loadExamples()
       pts.push([pts[0][0], pts[0][1]])
       return pts
     }
-    const base = { color }
+    const base = { color } // kind 不经过 opts（审计元数据由下方 addStrokeWithOpts 后直接写入）
     if (type === 'ring') {
       const r = num(spec.r, 'r', 0.2)
       const seg = spec.seg === undefined ? 48 : num(spec.seg, 'seg', 48)
@@ -2177,6 +2186,8 @@ loadExamples()
       // 十五期：铁丝粗细默认全局 size 的 40%（0.012m），可用 spec.size 覆盖
       addStrokeWithOpts(pts, { ...base, size: spec.size !== undefined ? num(spec.size, 'size', 0.012) : 0.012, transform: { position: [0, 0, z] } })
     }
+    // 审计元数据：组件类型（最后添加的笔画即本命令产物）
+    state.strokes[state.strokes.length - 1].kind = type
     return gmsSummary()
   }
 
