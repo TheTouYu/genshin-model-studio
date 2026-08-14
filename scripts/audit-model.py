@@ -25,8 +25,13 @@ def audit(data):
     k = data["options"]["canvasHeightPx"] / max(data["options"]["heightMeters"], 1e-9)
     xs = [p[0] for s in strokes for p in s["points"]]
     ys = [p[1] for s in strokes for p in s["points"]]
-    cxp = (min(xs) + max(xs)) / 2
-    bottom = max(ys)
+    # 十六期：固定世界原点（画布中心/底）与服务端 toWorld 一致；旧作品无 canvasWidthPx 退回 bbox 中心
+    if data["options"].get("canvasWidthPx"):
+        cxp = data["options"]["canvasWidthPx"] / 2
+        bottom = data["options"]["canvasHeightPx"]
+    else:
+        cxp = (min(xs) + max(xs)) / 2
+        bottom = max(ys)
     def W(s):
         px = s["points"]
         cx = sum(p[0] for p in px) / len(px)
@@ -49,6 +54,8 @@ def audit(data):
             out["rise"] = round((max(zs) - min(zs)), 3)
             out["len"] = round(math.hypot(w, h) / k, 3)
             out["zBase"] = round(tz, 3)
+            out["start"] = [round((px[0][0] - cxp) / k, 3), round((bottom - px[0][1]) / k, 3)]
+            out["end"] = [round((px[-1][0] - cxp) / k, 3), round((bottom - px[-1][1]) / k, 3)]
         elif kind == "disc":
             out["r"] = round(max(w, h) / 2 / k, 3)
             out["thick"] = s.get("height")
@@ -182,17 +189,20 @@ def checks(audit_result, rules=None):
                            "detail": f"{e['kind']}×{e['n']} 中心{e['center']} 旋转半径{e['radius']} z={e['z']} 单件{e.get('rx') or e.get('len')}"})
     if "wire" in want:
         wires = [e for e in elements if e["kind"] == "arc" and not e.get("group") and e.get("len", 0) > 0.05]
-        plugs = [e for e in elements if e["kind"] == "el-disc" and not e.get("group") and (e.get("rx") or 0) <= 0.03 and e["center"][1] < 0.2]
-        pins = [e for e in elements if e["kind"] == "rod" and e["center"][1] < 0.2 and (e.get("len") or 0) < 0.03]
+        plugs = [e for e in elements if not e.get("group") and e["center"][1] < 0.2 and ((e["kind"] == "el-disc" and (e.get("rx") or 0) <= 0.03) or (e["kind"] == "ring" and (e.get("r") or 0) <= 0.03))]
+        pins = [e for e in elements if e["kind"] == "rod" and e["center"][1] < 0.2 and (e.get("len") or 0) <= 0.04]
         motors = [e for e in elements if e["kind"] == "disc" and (e.get("thick") or 0) >= 0.08]
+        wire_rods = [e for e in elements if e["kind"] == "rod" and e["center"][1] > 0.2 and e["center"][0] < 0.2]
         for e in wires:
-            # 起点应贴近电机底部（同 x 域、y 在电机下方 0.06 内、z 接近电机）
-            m = min(motors, key=lambda mo: abs(mo["center"][0] - e["center"][0])) if motors else None
+            # 起点 = 电线组最高点（垂直段 rod 上端 或 弧线首点）——应贴近电机底部
+            top_y = max([e.get("start", [0, 0])[1]] + [r["center"][1] + (r.get("len") or 0) / 2 for r in wire_rods])
+            start = [min([e.get("start", [0, 0])[0]] + [r["center"][0] for r in wire_rods]), top_y]
+            m = min(motors, key=lambda mo: abs(mo["center"][0] - start[0])) if motors else None
             conn = "?"
             if m:
-                dy = abs(e["center"][1] - (m["center"][1] - (m.get("thick") or 0) / 2))
+                dy = abs(start[1] - (m["center"][1] - (m.get("thick") or 0) / 2))
                 dz = abs(e["z"] - m["z"])
-                conn = "ok" if dy < 0.12 and dz < 0.05 else "warn"
+                conn = "ok" if dy < 0.06 and dz < 0.05 else "warn"
             plug = "有" if plugs else "无(插座漂浮!)"
             pin_ok = "接" if pins and plugs and min(math.hypot(p["center"][0]-plugs[0]["center"][0], p["center"][1]-plugs[0]["center"][1]) for p in pins) < 0.05 else "分离!"
             out.append({"rule": "wire", "status": conn if conn == "ok" else "warn",

@@ -128,9 +128,12 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
         : bboxHeight > 0
           ? heightMeters / bboxHeight
           : heightMeters / Math.max(bboxWidth, 1e-9)
+    // 十六期（G15 根治）：画布标定时用固定世界原点——x 以画布中心、y 以画布底（=地面 0）。
+    // 不再以"最终 bbox 中心/底"为原点（外挂件/主体互相牵连漂移）；无标定退回 bbox 归一化（旧行为）。
+    const canvasW = Number.isFinite(opts.canvasWidthPx) && (opts.canvasWidthPx as number) > 0 ? (opts.canvasWidthPx as number) : null
     const toWorld: ToWorld = (x, y, z = 0) => [
-      (x - raw.minX) * scale - (bboxWidth * scale) / 2, // 水平居中 x=0
-      (raw.maxY - y) * scale, // y 上、最低点贴 y=0
+      canvasW !== null ? (x - canvasW / 2) * scale : (x - raw.minX) * scale - (bboxWidth * scale) / 2,
+      canvasW !== null ? ((canvasPx as number) - y) * scale : (raw.maxY - y) * scale,
       z // 十四期：点的 z（米，画布点集 [x,y,z]，正视图 z=0）——弧线罩辐条等 3D 形状依赖它
     ]
 
@@ -143,7 +146,7 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
         // centerZ=0，与杆（z=0）同平面，消除混合语义错位；x 仍全局居中）
         if (stroke?.render === 'solid') {
           const sRaw = rawBounds([stroke as Stroke])
-          pushItem(solidColumn(stroke, raw, bboxWidth, bboxHeight, scale, colorOf(fit.id), sRaw ?? raw), fit.id)
+          pushItem(solidColumn(stroke, raw, bboxWidth, bboxHeight, scale, colorOf(fit.id), sRaw ?? raw, canvasW), fit.id)
           continue
         }
         for (let i = 0; i + 1 < fit.points.length; i++) {
@@ -175,7 +178,7 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
           const sRaw = rawBounds([stroke as Stroke])
           const sBh = sRaw !== null ? Math.max(sRaw.maxY - sRaw.minY, 0) : bboxHeight
           // x 用全局包围盒（对齐 lathe 母线轴），z 用自身包围盒（贴母线底）
-          pushItem(solidColumn(stroke, raw, bboxWidth, bboxHeight, scale, colorOf(fit.id), sRaw ?? raw), fit.id)
+          pushItem(solidColumn(stroke, raw, bboxWidth, bboxHeight, scale, colorOf(fit.id), sRaw ?? raw, canvasW), fit.id)
           continue
         }
         // 五期：显式 rod 在 lathe 全局模式下走杆（不车削）——把手/辐条等非旋转体元素。
@@ -455,6 +458,7 @@ function solidColumn(
   scale: number,
   color?: string,
   zRaw: { minY: number; maxY: number } = raw, // 八期：z 定位用自身包围盒（extrude/lathe 都传自身 → centerZ=0）
+  canvasW: number | null = null, // 十六期：固定世界原点（画布中心，px）；null = 退回全图 bbox 中心
 ): TaggedItem {
   const thickness = stroke.height ?? 0
   if (!(thickness > 0)) throw new Error('柱体高度需大于 0（米）')
@@ -482,7 +486,11 @@ function solidColumn(
   }
   // 包围盒中心：x = 画布 x 中心 → 世界 x（全局居中）；z = 画布 y 中心相对自身
   // 包围盒 → 0（extrude/lathe 语义统一：solid 与杆同在 z=0 平面，不随画布 y 漂移）
-  const centerX = ((minX + maxX) / 2 - raw.minX) * scale - (rawBboxWidth * scale) / 2
+  // 十六期（G15 根治）：solid 与 rod 同基准——画布标定时 x 以画布中心为原点（否则外挂件扩展 bbox 会让主体漂移）
+  const centerX =
+    canvasW !== null
+      ? ((minX + maxX) / 2 - canvasW / 2) * scale
+      : ((minX + maxX) / 2 - raw.minX) * scale - (rawBboxWidth * scale) / 2
   const zBboxH = Math.max(zRaw.maxY - zRaw.minY, 0)
   const centerZ = ((minY + maxY) / 2 - zRaw.minY) * scale - (zBboxH * scale) / 2
   const axis = stroke.axis ?? 'up'

@@ -352,7 +352,7 @@ loadExamples()
 
   const state = {
     strokes: [], // { id, points: [ [x,y], ... ], color? } 画布 CSS 像素；color = "0xRRGGBB"（缺省 = 默认材质）
-    options: { mode: 'extrude', shape: 'cylinder', size: 0.03, count: 60, heightMeters: 1, canvasHeightPx: drawCanvas.clientHeight || 462 }, // currentColor? 新笔画默认色
+    options: { mode: 'extrude', shape: 'cylinder', size: 0.03, count: 60, heightMeters: 1, canvasHeightPx: drawCanvas.clientHeight || 462, canvasWidthPx: drawCanvas.clientWidth || 640 }, // currentColor? 新笔画默认色；十六期：canvasWidthPx 固定世界原点
     selectedId: null, // 选中笔画 id（画布曲线高亮）
     tool: 'pen', // 四期：pen 自由 / line 直线 / curve 曲线 / circle 圆 / rect 矩形
     toolPreview: null, // 四期：橡皮筋预览 { kind: 'line'|'circle'|'rect', a, b }
@@ -1485,6 +1485,11 @@ loadExamples()
       Number.isFinite(o.canvasHeightPx) && o.canvasHeightPx > 0
         ? o.canvasHeightPx
         : drawCanvas.clientHeight || 462
+    // 十六期：canvasWidthPx（固定世界原点）——旧作品无该字段时取当前画布宽
+    opts.canvasWidthPx =
+      Number.isFinite(o.canvasWidthPx) && o.canvasWidthPx > 0
+        ? o.canvasWidthPx
+        : drawCanvas.clientWidth || 640
     const cur = normalizeColor(o.currentColor)
     if (cur) opts.currentColor = cur // v2：无/非法 currentColor = 默认材质
     state.strokes = data.strokes
@@ -1889,6 +1894,7 @@ loadExamples()
         count: state.options.count,
         heightMeters: state.options.heightMeters,
         canvasHeightPx: state.options.canvasHeightPx,
+        canvasWidthPx: state.options.canvasWidthPx,
         calibration: `${state.options.canvasHeightPx}px = ${state.options.heightMeters}m`,
         currentColor: currentColor() || null,
       },
@@ -2084,14 +2090,14 @@ loadExamples()
     return sum
   }
 
-  /** v4（gpt 反馈 #2）：米制旋转中心版本——x 相对模型中心、y 相对地面（米）；内部换算画布像素。 */
+  /** v4（gpt 反馈 #2）：米制旋转中心版本——x 相对模型中心、y 相对地面（米）；内部换算画布像素。
+   * 十六期：用固定画布中心/底（与服务端 toWorld 同基准），不再用 bbox 中心（外挂件会导致漂移）。 */
   function gmsRotatem(i, x, y, n) {
     assertFinite(x, 'x（旋转中心 x，米）')
     assertFinite(y, 'y（旋转中心 y，米）')
-    const all = strokeBBoxAll()
     const k = state.options.heightMeters / state.options.canvasHeightPx
-    const cx = (all.minX + all.maxX) / 2 + x / k
-    const cy = all.maxY - y / k
+    const cx = (state.options.canvasWidthPx ? state.options.canvasWidthPx / 2 : (strokeBBoxAll().minX + strokeBBoxAll().maxX) / 2) + x / k
+    const cy = (state.options.canvasWidthPx ? state.options.canvasHeightPx : strokeBBoxAll().maxY) - y / k
     return gmsRotate(i, cx, cy, n)
   }
 
@@ -2123,8 +2129,10 @@ loadExamples()
     } else {
       bx = { minX: 0, minY: 0, maxX: drawCanvas.clientWidth || 640, maxY: state.options.canvasHeightPx }
     }
-    const cxp = (bx.minX + bx.maxX) / 2 // 画布中心 x（世界 x=0）
-    const bottom = bx.maxY // 画布底（世界 y=0）
+    // 十六期（G15 根治）：固定世界原点——x 以画布中心、y 以画布底（服务端 toWorld 同基准）。
+    // 不再用"当前 bbox 中心/底"（外挂件先画会漂移）。无 canvasWidthPx（旧作品）退回 bbox 中心。
+    const cxp = state.options.canvasWidthPx ? state.options.canvasWidthPx / 2 : (bx.minX + bx.maxX) / 2
+    const bottom = state.options.canvasWidthPx ? state.options.canvasHeightPx : bx.maxY
     const toPx = (wx, wy) => [cxp + wx / k, bottom - wy / k]
     const x = spec.x ?? 0, y = spec.y ?? 0, z = spec.z ?? 0
     const color = spec.color
