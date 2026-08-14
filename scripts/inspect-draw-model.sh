@@ -16,7 +16,12 @@ from urllib.parse import urljoin
 from urllib.request import Request, urlopen
 
 url = os.environ["URL"]
-tabs = [tab for tab in list_tabs() if url.split("//", 1)[-1].split("/", 1)[0] in tab.get("url", "")]
+host = url.split("//", 1)[-1].split("/", 1)[0]
+# 修复（2026-08-14 复现）：排除 preview-demo 等无 gms 的页面——按 host 匹配且排除独立预览页
+tabs = [tab for tab in list_tabs()
+        if host in tab.get("url", "")
+        and "preview-demo" not in tab.get("url", "")
+        and tab.get("url", "").startswith("http")]
 if not tabs:
     raise RuntimeError(f"No browser tab matches {url}")
 switch_tab(tabs[0])

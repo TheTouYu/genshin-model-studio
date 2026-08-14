@@ -104,9 +104,9 @@ def checks(audit_result, rules=None):
     if not elements:
         return []
     out = []
-    want = set(rules or ["concentric", "coplanar", "motion-gap", "hub-cover", "thickness", "rotation", "wire"])
+    want = set(rules or ["concentric", "coplanar", "motion-gap", "hub-tangent", "gap-z", "thickness", "rotation", "wire"])
     if "concentric" in want:
-        off = [e for e in elements if abs(e["center"][0] - base[0]) > 0.01 and e["kind"] in ("ring", "disc", "el-disc")]
+        off = [e for e in elements if abs(e["center"][0] - base[0]) > 0.01 and e["kind"] in ("ring", "disc", "el-disc") and abs(e["center"][1] - base[1]) < 0.12]
         if off:
             for e in off[:6]:
                 out.append({"rule": "concentric", "status": "warn",
@@ -128,8 +128,10 @@ def checks(audit_result, rules=None):
         if blades:
             outer = blades["radius"] + (blades.get("rx") or 0)
             for r in rings:
-                if abs(r["z"] - blades["z"]) > 0.06:
+                if abs(r["z"] - blades["z"]) > 0.05:
                     continue
+                if r["r"] < outer * 0.8:
+                    continue  # 中心小环（hub 件）不做运动件间隙——它被旋转件包围是正常层级
                 rin = r["r"] - (r.get("size") or 0) / 2
                 gap = rin - outer
                 same_z = abs(r["z"] - blades["z"]) < 0.02
@@ -137,17 +139,36 @@ def checks(audit_result, rules=None):
                 st = "ok" if gap >= 0.008 else ("tangent" if gap >= 0 else "overlap")
                 out.append({"rule": "motion-gap", "status": st,
                            "detail": f"叶片外缘{round(outer,3)} vs {role}内缘{round(rin,3)}：{st} {round(gap*1000,1)}mm"})
-    if "hub-cover" in want:
+    if "hub-cover" in want or "hub-tangent" in want:
+        # v6 反思：固定盘与旋转件内缘应"相切"（|盘r−内缘|<4mm ok；>5mm 覆盖=重叠过多 warn）
         blades = next((e for e in elements if e["kind"] == "el-disc" and e["group"]), None)
         if blades:
             inner = blades["radius"] - (blades.get("rx") or 0)
-            hubs = [e for e in elements if e["kind"] == "disc" and e["r"] < blades["radius"] and abs(e["center"][1] - blades["center"][1]) < 0.05]
+            hubs = [e for e in elements if e["kind"] == "disc" and e["r"] < blades["radius"] and abs(e["center"][1] - blades["center"][1]) < 0.05 and abs(e["z"] - blades["z"]) < 0.05]
             if hubs:
                 hub = max(hubs, key=lambda e: e["r"])
-                ov = hub["r"] - inner
+                d = hub["r"] - inner
                 same_z = abs(hub["z"] - blades["z"]) < 0.02
-                out.append({"rule": "hub-cover", "status": "ok" if ov >= 0.002 and same_z else "warn",
-                           "detail": f"固定盘 r={hub['r']} z={hub['z']} vs 叶片内缘{round(inner,3)} z={blades['z']}：覆盖{round(ov*1000,1)}mm{'，同面' if same_z else '，不同面!'}"})
+                st = "ok" if abs(d) < 0.004 and same_z else "warn"
+                rel = "相切" if abs(d) < 0.004 else ("覆盖(重叠)" if d > 0 else "分离(悬空)")
+                out.append({"rule": "hub-tangent", "status": st,
+                           "detail": f"固定盘 r={hub['r']} z={hub['z']} vs 叶片内缘{round(inner,3)} z={blades['z']}：{rel} {round(d*1000,1)}mm{'，同面' if same_z else '，不同面!'}"})
+    if "gap-z" in want or "coplanar" in want:
+        # v6 反思：x/y 同心查不出"透视偏中心"（z 错位）；连接件 z 间距是独立维度
+        rods = [e for e in elements if e["kind"] == "rod" and (e.get("len") or 0) > 0.2]  # 长杆（支架类）
+        discs = [e for e in elements if e["kind"] == "disc"]
+        if rods:
+            r0 = rods[0]
+            near = min(discs, key=lambda e: abs(e["center"][1] - r0["center"][1]))  # 同 y 域的盘（底座/电机）
+            if near:
+                dz = abs(r0["z"] - near["z"])
+                st = "ok" if dz <= 0.03 else "warn"
+                out.append({"rule": "gap-z", "status": st,
+                           "detail": f"支架 z={r0['z']} vs 最近盘 z={near['z']}：z 距 {round(dz*1000,1)}mm（>30mm 会透视偏移/悬空观感）"})
+        rings_z = sorted(e["z"] for e in elements if e["kind"] == "ring")
+        if len(rings_z) >= 3:
+            gaps = [round((rings_z[i+1] - rings_z[i]) * 1000, 1) for i in range(len(rings_z) - 1)]
+            out.append({"rule": "gap-z", "status": "info", "detail": f"环 z 间距 {gaps}mm（<30mm 贴合；焊接圈应与前后环贴近）"})
     if "thickness" in want:
         for kind in ("ring", "arc"):
             ss = sorted(((e.get("size") or 0), e["z"]) for e in elements if e["kind"] == kind and e.get("size") and (kind != "arc" or e.get("group")))
@@ -160,11 +181,54 @@ def checks(audit_result, rules=None):
                 out.append({"rule": "rotation", "status": "info",
                            "detail": f"{e['kind']}×{e['n']} 中心{e['center']} 旋转半径{e['radius']} z={e['z']} 单件{e.get('rx') or e.get('len')}"})
     if "wire" in want:
-        for e in elements:
-            if e["kind"] == "arc" and not e.get("group") and e.get("len", 0) > 0.05:
-                out.append({"rule": "wire", "status": "info",
-                           "detail": f"电线: 中心{e['center']} 长{e['len']} 粗{e.get('size')} z={e['z']}（需连接电机与插头）"})
+        wires = [e for e in elements if e["kind"] == "arc" and not e.get("group") and e.get("len", 0) > 0.05]
+        plugs = [e for e in elements if e["kind"] == "el-disc" and not e.get("group") and (e.get("rx") or 0) <= 0.03 and e["center"][1] < 0.2]
+        pins = [e for e in elements if e["kind"] == "rod" and e["center"][1] < 0.2 and (e.get("len") or 0) < 0.03]
+        motors = [e for e in elements if e["kind"] == "disc" and (e.get("thick") or 0) >= 0.08]
+        for e in wires:
+            # 起点应贴近电机底部（同 x 域、y 在电机下方 0.06 内、z 接近电机）
+            m = min(motors, key=lambda mo: abs(mo["center"][0] - e["center"][0])) if motors else None
+            conn = "?"
+            if m:
+                dy = abs(e["center"][1] - (m["center"][1] - (m.get("thick") or 0) / 2))
+                dz = abs(e["z"] - m["z"])
+                conn = "ok" if dy < 0.12 and dz < 0.05 else "warn"
+            plug = "有" if plugs else "无(插座漂浮!)"
+            pin_ok = "接" if pins and plugs and min(math.hypot(p["center"][0]-plugs[0]["center"][0], p["center"][1]-plugs[0]["center"][1]) for p in pins) < 0.05 else "分离!"
+            out.append({"rule": "wire", "status": conn if conn == "ok" else "warn",
+                       "detail": f"电线: 中心{e['center']} 长{e['len']} 粗{e.get('size')} z={e['z']}；起点接电机:{conn} 插头体:{plug} 插脚:{pin_ok}"})
     return out
+
+def human(audit_result):
+    """人可读中文摘要（供用户在浏览器对照模型核验）。"""
+    els = audit_result["elements"]
+    lines = ["【组件清单】"]
+    for e in els:
+        parts = [f"  {e['kind']}", f"z={e['z']}"]
+        if e.get("group"):
+            parts.append(f"旋转组×{e['n']} 旋转半径{e['radius']}")
+            if e["kind"] == "el-disc":
+                parts.append(f"单叶片 rx={e.get('rx')} ry={e.get('ry')} 桨距{e.get('pitch')}°")
+            if e["kind"] == "arc":
+                parts.append(f"弧长{e.get('len')} 凸起{e.get('rise')} 平面z={e.get('zBase')}")
+        else:
+            if e["kind"] == "ring":
+                parts.append(f"环半径={e.get('r')}")
+            if e["kind"] == "disc":
+                parts.append(f"盘半径={e.get('r')} 厚={e.get('thick')}")
+            if e["kind"] == "rod":
+                parts.append(f"杆长={e.get('len')}")
+            if e["kind"] == "arc":
+                parts.append(f"弧长={e.get('len')} 凸起={e.get('rise')}")
+        if e.get("size"):
+            parts.append(f"粗细={e['size']}")
+        parts.append(f"中心{e['center']}")
+        lines.append(" ".join(parts))
+    lines.append("")
+    lines.append("【几何检查】")
+    for c in checks(audit_result):
+        lines.append(f"  [{c['status']}] {c['rule']}: {c['detail']}")
+    return "\n".join(lines)
 
 if __name__ == "__main__":
     path = sys.argv[1] if len(sys.argv) > 1 else None
@@ -175,6 +239,8 @@ if __name__ == "__main__":
         print(json.dumps(result, ensure_ascii=False, indent=1))
     elif mode == "--checks":
         print(json.dumps(checks(result), ensure_ascii=False, indent=1))
+    elif mode == "--human":
+        print(human(result))
     else:
         result["checks"] = checks(result)
         print(json.dumps(result, ensure_ascii=False, indent=1))
