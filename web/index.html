@@ -1339,10 +1339,22 @@ loadExamples()
       if (src.group) stroke.group = src.group // 十一期：副本继承组（旋转单元成员一起动）
       const total = (src.angle ?? 0) + theta // 画布旋转角累加（弧度）
       if (src.axis === 'front' && src.render === 'solid') {
-        // 绕 Z 三叶：front 基础 [90,0,0] + 绕世界 Z 转 total（画布转 θ → 世界转 -θ，长轴方向 = 位置方向）
-        // YXZ 闭式 [90+θ°, 90, 90]：长轴 = (cos(-θ), sin(-θ), 0)，与副本位置方向（绕电机中心）一致 → 三叶对称辐射
-        const deg = (total * 180) / Math.PI
-        stroke.transform = { rotation: [90 + deg, 90, 90] }
+        // 绕 Z 等角：front 源姿态（默认 [90,0,0]） + 绕世界 Z 转 total（画布转 θ → 世界转 -θ，长轴方向 = 位置方向）
+        // 十二期：源带 transform.rotation（如叶片桨距角 [90+p,0,0]）时用 THREE 四元数通用化——闭式
+        // [90+θ°, 90, 90] 是 Rz(-θ)·Rx(90) 的特例（已验证等价），通用化让副本继承源的桨距扭转；
+        // 无 THREE 或源无 rotation 时退回闭式（行为不变）。
+        const srcRot = src.transform && src.transform.rotation
+        if (window.THREE && srcRot) {
+          const rad = (d) => d * Math.PI / 180
+          const q0 = new THREE.Quaternion().setFromEuler(new THREE.Euler(rad(srcRot[0]), rad(srcRot[1]), rad(srcRot[2]), 'YXZ'))
+          const qz = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), -total)
+          qz.multiply(q0)
+          const e = new THREE.Euler().setFromQuaternion(qz, 'YXZ')
+          stroke.transform = { rotation: [e.x * 180 / Math.PI, e.y * 180 / Math.PI, e.z * 180 / Math.PI] }
+        } else {
+          const deg = (total * 180) / Math.PI
+          stroke.transform = { rotation: [90 + deg, 90, 90] }
+        }
         const b = strokeBBox(pts)
         const dyPx = (b.px.minY + b.px.maxY) / 2 - srcCy // 副本中心画布 y 相对源（画布 y 向下）
         const srcZ = src.transform?.position?.[2] ?? 0

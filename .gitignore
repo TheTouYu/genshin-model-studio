@@ -7,3 +7,4 @@ examples/*.structure.json
 examples/*.summary.json
 .vercel
 .env*
+.bh/
