@@ -67,6 +67,10 @@ def audit(data):
             out["pitch"] = round(rot[0] - 90, 1) if rot else 0
         elif kind == "rod":
             out["len"] = round(math.hypot(w, h) / k, 3)
+        elif kind == "curve":
+            out["len"] = round(math.hypot(w, h) / k, 3)
+            out["start"] = [round((px[0][0] - cxp) / k, 3), round((bottom - px[0][1]) / k, 3)]
+            out["end"] = [round((px[-1][0] - cxp) / k, 3), round((bottom - px[-1][1]) / k, 3)]
         out["center"] = [round(wx, 3), round(wy, 3)]
         return out
 
@@ -209,6 +213,80 @@ def checks(audit_result, rules=None):
                        "detail": f"电线: 中心{e['center']} 长{e['len']} 粗{e.get('size')} z={e['z']}；起点接电机:{conn} 插头体:{plug} 插脚:{pin_ok}"})
     return out
 
+def relation(a, b):
+    """组件对几何关系查询（用户 2026-08-14 方向：让模型选择性查任意两组件关系，一眼发现问题）。
+    关系类型：center_dist 中心距 / z_gap 轴向间距 / coplanar 同面 / radial 径向(分离|相切|重叠) /
+    intersect3d 空间相交(穿模) / endpoint 端点最近距离 / axis 轴向关系。
+    简化体积模型：ring/disc/el-disc 为实心圆柱（r+size/thick、z 区间）；arc/rod 为线段（size 半径）。"""
+    import math
+    r = {}
+    dxy = math.hypot(a["center"][0] - b["center"][0], a["center"][1] - b["center"][1])
+    r["center_dist"] = round(dxy, 4)
+    dz = abs(a["z"] - b["z"])
+    r["z_gap"] = round(dz, 4)
+    r["coplanar"] = dz < 0.01
+    # 轴向关系
+    ax_a = a.get("axis") or ("up" if a["kind"] in ("disc", "el-disc", "plate") else "front")
+    ax_b = b.get("axis") or ("up" if b["kind"] in ("disc", "el-disc", "plate") else "front")
+    r["axis"] = "same" if ax_a == ax_b else "different"
+    # 径向区间（相对各自中心）：[in, out]；中心距参与判断
+    def span(e):
+        # 实心盘 [0, r]；细环 [r±size/2]；旋转组按半径±半轴；弧线/曲线/杆按中心±半长
+        if e["kind"] == "disc":
+            return 0, (e.get("r") or 0)
+        if e["kind"] == "ring":
+            r0 = e.get("r") or 0
+            half = (e.get("size") or 0) / 2
+            return r0 - half, r0 + half
+        if e["kind"] == "el-disc":
+            if e.get("group"):
+                return e["radius"] - (e.get("rx") or 0), e["radius"] + (e.get("rx") or 0)
+            return 0, (e.get("rx") or 0)
+        if e["kind"] == "arc":
+            # 弧是部分圆环：径向范围 = [min(两端点旋转半径), max(两端点旋转半径)]
+            st = e.get("start") or [0, 0]
+            en = e.get("end") or st
+            r0 = math.hypot(st[0] - e["center"][0], st[1] - e["center"][1])
+            r1 = math.hypot(en[0] - e["center"][0], en[1] - e["center"][1])
+            return min(r0, r1), max(r0, r1)
+        half = (e.get("len") or 0) / 2
+        return 0, half
+    ra, rb = span(a), span(b)
+    # 同心时直接比区间；不同心用中心距 + 半径和
+    if dxy < 0.01:
+        a_lo, a_hi = ra
+        b_lo, b_hi = rb
+        gap = max(a_lo, b_lo) - min(a_hi, b_hi)
+        if gap > 0.005:
+            r["radial"] = f"分离(间隙 {round(gap, 3)})"
+        elif gap >= -0.005:
+            r["radial"] = "相切"
+        else:
+            r["radial"] = f"重叠 {round(-gap, 3)}"
+    else:
+        gap = dxy - ra[1] - rb[1]
+        r["radial"] = ("分离" if gap > 0.005 else ("相切" if gap >= -0.005 else f"重叠 {-round(gap, 3)}"))
+    # 空间相交（穿模）：径向重叠且 z 区间重叠（用 size/thick 估计 z 半厚）
+    def z_half(e):
+        t = e.get("thick") or e.get("size") or 0.004
+        return t / 2
+    zov = max(0, (z_half(a) + z_half(b)) - dz)
+    radial_touch = "重叠" in str(r.get("radial", "")) or "相切" in str(r.get("radial", ""))
+    r["intersect3d"] = bool(radial_touch and zov > 0)
+    r["z_overlap"] = round(zov, 4)
+    # 端点最近距离（arc/rod 端点 vs 对方中心距）
+    pts = []
+    for e, other in ((a, b), (b, a)):
+        if e["kind"] in ("arc", "rod", "curve"):
+            s = e.get("start") or e["center"]
+            en = e.get("end") or e["center"]
+            pts.append(("start", s, math.hypot(s[0] - other["center"][0], s[1] - other["center"][1])))
+            pts.append(("end", en, math.hypot(en[0] - other["center"][0], en[1] - other["center"][1])))
+    if pts:
+        best = min(pts, key=lambda p: p[2])
+        r["endpoint"] = {"of": best[0], "dist_to_other_center": round(best[2], 4)}
+    return r
+
 def human(audit_result):
     """人可读中文摘要（供用户在浏览器对照模型核验）。"""
     els = audit_result["elements"]
@@ -251,6 +329,12 @@ if __name__ == "__main__":
         print(json.dumps(checks(result), ensure_ascii=False, indent=1))
     elif mode == "--human":
         print(human(result))
+    elif mode == "--rel":
+        i = int(sys.argv[3]); j = int(sys.argv[4])
+        a = result["elements"][i]; b = result["elements"][j]
+        print(json.dumps({"a": {k: a.get(k) for k in ("kind", "index", "center", "z") if k in a},
+                           "b": {k: b.get(k) for k in ("kind", "index", "center", "z") if k in b},
+                           "relation": relation(a, b)}, ensure_ascii=False, indent=1))
     else:
         result["checks"] = checks(result)
         print(json.dumps(result, ensure_ascii=False, indent=1))

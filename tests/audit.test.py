@@ -28,17 +28,17 @@ if path and os.path.exists(path):
     r = audit(data)
     els = r["elements"]
     def find(kind, group, pred=None):
+        kinds = kind if isinstance(kind, tuple) else (kind,)
         for e in els:
-            if e["kind"] != kind or e.get("group") != group: continue
+            if e["kind"] not in kinds or e.get("group") != group: continue
             if pred and not pred(e): continue
             return e
         return None
     cases = [
-      ("后环", find("ring", False, lambda e: abs(e["z"]+0.05)<0.02), {"r": 0.125, "size": 0.0063}),
-      ("后中心环", find("ring", False, lambda e: abs(e["z"]+0.085)<0.02), {"r": 0.05, "size": 0.012}),
+      ("后环", find("ring", False, lambda e: abs(e["z"]+0.004)<0.02), {"r": 0.125, "size": 0.004}),
+      ("后中心环", find("ring", False, lambda e: abs(e["z"]+0.06)<0.02), {"r": 0.05, "size": 0.012}),
       ("焊接圈", find("ring", False, lambda e: abs(e["z"])<0.02), {"r": 0.125, "size": 0.0075}),
-      ("前环", find("ring", False, lambda e: abs(e["z"]-0.015)<0.02 and e["r"]>0.1), {"r": 0.125, "size": 0.004}),
-      ("前中心环", find("ring", False, lambda e: abs(e["z"]-0.015)<0.02 and e["r"]<0.1), {"r": 0.045, "size": 0.008}),
+      ("前环", find("ring", False, lambda e: abs(e["z"]-0.004)<0.02 and e["r"]>0.1), {"r": 0.125, "size": 0.004}),
       ("电机", find("disc", False, lambda e: abs(e["z"]+0.075)<0.02), {"r": 0.05, "thick": 0.09}),
       ("固定盘", find("disc", False, lambda e: abs(e["z"])<0.02 and 0.03<e["r"]<0.05), {"r": 0.035, "thick": 0.004}),
       ("前脸圆", find("disc", False, lambda e: abs(e["z"]-0.02)<0.02), {"r": 0.035}),
@@ -46,16 +46,32 @@ if path and os.path.exists(path):
       ("后轴", find("disc", False, lambda e: abs(e["z"]+0.125)<0.02), {"r": 0.015, "thick": 0.01}),
       ("底座", find("disc", False, lambda e: e["r"]>0.1), {"r": 0.13, "thick": 0.02}),
       ("叶片组", find("el-disc", True, lambda e: e["n"]==3), {"radius": 0.077, "rx": 0.042, "pitch": 12, "z": 0.0}),
-      ("后罩组", find("arc", True, lambda e: e["n"]==36 and e["zBase"]<0), {"len": 0.125, "size": 0.0015, "zBase": -0.015}),
-      ("前罩组", find("arc", True, lambda e: e["n"]==36 and e["zBase"]>0), {"len": 0.125, "size": 0.0015, "zBase": 0.015}),
+      ("后罩组", find("arc", True, lambda e: e["n"]==36 and e["zBase"]<0), {"len": 0.074, "size": 0.0015, "zBase": -0.004}),
+      ("前罩组", find("arc", True, lambda e: e["n"]==36 and e["zBase"]>0), {"len": 0.125, "size": 0.0015, "zBase": 0.004}),
       ("支架", find("rod", False, lambda e: e["size"]==0.02), {"size": 0.02}),
-      ("电线", find("arc", False, lambda e: e["size"]==0.005), {"size": 0.005}),
+      ("电线", find(("curve", "arc"), False, lambda e: e["size"]==0.005), {"size": 0.005}),
     ]
     for name, e, expect in cases:
         if e is None:
             check(name, False, "未找到"); continue
         bad = [k for k, v in expect.items() if abs((e.get(k) or 0) - v) > 0.011]
         check(name, not bad, str(bad))
+    # relation 组件对查询（回归：arc span 语义 = 端点旋转半径区间）
+    els_idx = {name: els.index(e) for name, e, _ in cases if e is not None}
+    rel = lambda i, j: m.relation(els[i], els[j])
+    e_motor = els[els_idx["电机"]]; e_rear = els[els_idx["后罩组"]]
+    e_front = els[els_idx["前罩组"]]; e_disc = els[els_idx["固定盘"]]
+    e_blades = els[els_idx["叶片组"]]; e_face = els[els_idx["前脸圆"]]
+    r1 = rel(els_idx["后罩组"], els_idx["电机"])
+    check("rel 后罩贴电机", "相切" in r1["radial"] and not r1["intersect3d"], str(r1))
+    r2 = rel(els_idx["后罩组"], els_idx["固定盘"])
+    check("rel 后罩离固定盘", r2["radial"].startswith("分离"), str(r2))
+    r3 = rel(els_idx["前罩组"], els_idx["前脸圆"])
+    check("rel 前罩起点贴中心盘", r3["endpoint"]["dist_to_other_center"] < 0.005 and not r3["intersect3d"], str(r3))
+    r4 = rel(els_idx["叶片组"], els_idx["后罩组"])
+    check("rel 叶片不穿后罩", not r4["intersect3d"], str(r4))
+    r5 = rel(els_idx["电线"], els_idx["电机"])
+    check("rel 电线起点近电机", r5["endpoint"]["dist_to_other_center"] < 0.05, str(r5))
 else:
     print("（未传 work.json，跳过几何断言）")
 

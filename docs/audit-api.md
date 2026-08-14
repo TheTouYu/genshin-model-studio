@@ -50,10 +50,45 @@ els = r["elements"]
 | rotation | 旋转组清单（份数/中心/半径/单件） | 用户：旋转份数/最小步骤 |
 | wire | 独立弧线端点信息（起点/终点/粗/长） | 用户：电线属性 |
 
+## 组件对关系查询（relation）
+
+> 2026-08-15，用户方向："每个组件之间可能的关系，要么平行（沿某个轴平行），要么相切，
+> 或者只是简单接触……或者是某个点的起点和终点，再或者是穿过去"——让大模型对任意两组件
+> 选择性查询关系，一眼看出问题（如"后罩弧线终点和电机之间是不是接触"）。
+
+```python
+from audit_model import relation
+r = relation(els[i], els[j])   # 返回 dict，字段见下
+```
+
+CLI：`python3 scripts/audit-model.py work.json --rel <i> <j>`（i/j 为 elements 列表下标）
+
+| 字段 | 语义 |
+|---|---|
+| center_dist | 组件中心水平距（米） |
+| z_gap / coplanar | 轴向间距 / 是否同平面（<10mm） |
+| axis | 轴向关系 same/different（disc/el-disc/plate=竖直轴，其余=水平） |
+| radial | 径向关系：**分离(间隙)/相切/重叠(深度)**（容差 ±5mm） |
+| intersect3d | 是否空间相交（穿模）：径向接触 + z 区间重叠 |
+| z_overlap | z 区间重叠深度 |
+| endpoint | arc/rod/curve 端点 vs 对方中心最近距离（of=start/end） |
+
+体积模型（简化）：ring/disc/el-disc = 实心圆柱（半径 r+size/thick、z 区间）；
+arc/rod/curve = 线段（size 为半径）。**arc 的径向范围 = [min(两端点旋转半径),
+max(两端点旋转半径)]**（弧是部分圆环；端点坐标→相对旋转中心的距离），
+不是"起点半径 + 弦长"——弦长 len 只用于长度信息。
+
+典型判定（风扇 v10 实测）：
+- 后罩组 vs 电机：相切（后弧起点 0.051 ≈ 电机 0.05，间隙 1mm）、不穿模
+- 后罩组 vs 固定盘：分离 16mm（正确：后罩让出叶片位置）
+- 前罩组 vs 前脸圆：起点贴中心（endpoint 1mm）、不穿模（设计上起点贴盘是正常的）
+- 叶片组 vs 后罩组：径向重叠但 z 分离 → 不穿模（旋转时由 motion-gap 保证间隙）
+
 ## CLI
 
 ```bash
 python3 scripts/audit-model.py work.json            # 全部（elements + checks）
 python3 scripts/audit-model.py work.json --elements # 仅基础数据
 python3 scripts/audit-model.py work.json --checks   # 仅示例检查
+python3 scripts/audit-model.py work.json --rel 11 13  # 组件对关系查询
 ```

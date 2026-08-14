@@ -2017,6 +2017,8 @@ loadExamples()
     if (controls.length < 2) throw new Error(`curve 参数非法：控制点至少 2 个，当前为 ${controls.length} 个`)
     const sampled = sampleCatmullRom(controls, !!closed)
     addStrokeWithOpts(sampled, opts)
+    // 十七期：curve 打 kind 标记（audit 端点检查/关系查询可用）
+    state.strokes[state.strokes.length - 1].kind = 'curve'
     return gmsSummary()
   }
 
