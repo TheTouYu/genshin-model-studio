@@ -34,7 +34,7 @@ import { BOX_RESOURCE_ID, CYLINDER_RESOURCE_ID, OPEN_CYLINDER_RESOURCE_ID } from
 import { adaptiveEpsilon, fitStroke, simplifyRdp, type FittedStroke, type Point } from './fitting.js'
 import type { StructureItem } from '../core/structure.js'
 
-export type GenerateResult = { items: TaggedItem[]; closed: boolean[] }
+export type GenerateResult = { items: TaggedItem[]; closed: boolean[]; strokeItemCounts: number[] }
 
 type Vec3 = [number, number, number]
 type CanvasPoint = readonly [number, number]
@@ -106,6 +106,15 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
     }
   }
   const items: TaggedItem[] = []
+  // 十二期（基线复盘 1a）：每笔产生的 item 数（fitted 会跳过拟合失败的笔画，顺序不可靠，
+  // 必须按笔画 id 显式计数；供核验脚本做 stroke→items 映射，模型不再靠几何反推）
+  const indexById = new Map(strokes.map((st, i) => [st.id, i]))
+  const strokeItemCounts = new Array(strokes.length).fill(0)
+  const pushItem = (it: TaggedItem, strokeId: string): void => {
+    const si = indexById.get(strokeId)
+    if (si !== undefined) strokeItemCounts[si]++
+    items.push(it)
+  }
   if (raw !== null && fitted.length > 0) {
     const bboxWidth = Math.max(raw.maxX - raw.minX, 0)
     const bboxHeight = Math.max(raw.maxY - raw.minY, 0)
@@ -130,7 +139,7 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
         // centerZ=0，与杆（z=0）同平面，消除混合语义错位；x 仍全局居中）
         if (stroke?.render === 'solid') {
           const sRaw = rawBounds([stroke as Stroke])
-          items.push(solidColumn(stroke, raw, bboxWidth, bboxHeight, scale, colorOf(fit.id), sRaw ?? raw))
+          pushItem(solidColumn(stroke, raw, bboxWidth, bboxHeight, scale, colorOf(fit.id), sRaw ?? raw), fit.id)
           continue
         }
         for (let i = 0; i + 1 < fit.points.length; i++) {
@@ -140,7 +149,7 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
           )
           if (rod !== null) {
             liftByHeight(rod, stroke)
-            items.push(rod)
+            pushItem(rod, fit.id)
           }
         }
       }
@@ -160,7 +169,7 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
           const sRaw = rawBounds([stroke as Stroke])
           const sBh = sRaw !== null ? Math.max(sRaw.maxY - sRaw.minY, 0) : bboxHeight
           // x 用全局包围盒（对齐 lathe 母线轴），z 用自身包围盒（贴母线底）
-          items.push(solidColumn(stroke, raw, bboxWidth, bboxHeight, scale, colorOf(fit.id), sRaw ?? raw))
+          pushItem(solidColumn(stroke, raw, bboxWidth, bboxHeight, scale, colorOf(fit.id), sRaw ?? raw), fit.id)
           continue
         }
         // 五期：显式 rod 在 lathe 全局模式下走杆（不车削）——把手/辐条等非旋转体元素。
@@ -187,7 +196,7 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
             )
             if (rod !== null) {
               liftByHeight(rod, stroke)
-              items.push(rod)
+              pushItem(rod, fit.id)
             }
           }
           continue
@@ -210,12 +219,12 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
             ...(colorOf(fit.id) === undefined ? {} : { color: itemColor(colorOf(fit.id)) })
           }
           liftByHeight(wall, stroke)
-          items.push(wall)
+          pushItem(wall, fit.id)
         }
       }
     }
   }
-  return { items, closed }
+  return { items, closed, strokeItemCounts }
 }
 
 /** stroke.color（"0xRRGGBB"）→ TaggedItem 颜色槽；无 color → undefined（不写 = 默认材质）。 */

@@ -1805,9 +1805,9 @@ loadExamples()
       id: s.id,
       points: s.points.length,
       closed: !!state.closed[i], // 后端封闭检测结果（solid 必须 closed）
-      render: s.render !== undefined ? s.render : null, // null = 缺省（杆）
-      height: s.height !== undefined ? s.height : null, // null = 缺省（0 抬升）
-      axis: s.axis !== undefined ? s.axis : null, // null = 缺省（up）
+      render: s.render !== undefined ? s.render : 'rod', // 归一化有效值（缺省=杆）
+      height: s.height !== undefined ? s.height : 0, // 归一化有效值（缺省=0 抬升）
+      axis: s.axis !== undefined ? s.axis : 'up', // 归一化有效值（缺省=up）
       color: s.color !== undefined ? s.color : null, // null = 缺省（默认材质）
       bbox: strokeBBox(s.points),
     }))
@@ -2019,6 +2019,24 @@ loadExamples()
     return gmsSummary()
   }
 
+  function gmsList() {
+    // 十二期（基线复盘 2b）：紧凑列出每笔 {索引, 点数, 封闭, render, height, axis, 画布中心}——
+    // rotate/delete/props 前先 list() 核对索引，避免全局序号漂移错位。
+    return state.strokes.map((s, i) => {
+      const b = strokeBBox(s.points)
+      return {
+        index: i,
+        id: s.id,
+        points: s.points.length,
+        closed: !!state.closed[i],
+        render: s.render !== undefined ? s.render : 'rod',
+        height: s.height !== undefined ? s.height : 0,
+        axis: s.axis !== undefined ? s.axis : 'up',
+        center: [(b.px.minX + b.px.maxX) / 2, (b.px.minY + b.px.maxY) / 2],
+      }
+    })
+  }
+
   function gmsPx2m(px) {
     assertFinite(px, 'px')
     const c = state.options.canvasHeightPx > 0 ? state.options.canvasHeightPx : 1
@@ -2105,6 +2123,7 @@ loadExamples()
     export: gmsExport,
     import: gmsImport,
     mode: gmsMode,
+    list: gmsList,
   }
 
   /* ---------- 启动 ---------- */

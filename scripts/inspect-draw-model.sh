@@ -34,11 +34,38 @@ items = result.get("items")
 if not isinstance(items, list):
     raise RuntimeError(f"API response has no items array: {result!r}")
 
+# 十二期（基线复盘 1a）：按服务端 strokeItemCounts 做 stroke→items 映射——
+# items 顺序与笔画一一对应（fitted 会跳过拟合失败笔画，必须用显式计数，不能靠顺序猜）。
+# 输出每笔的 items 区间摘要，模型不再需要几何反推"哪些 items 属于哪笔"。
+counts = result.get("strokeItemCounts")
+per_stroke = []
+if isinstance(counts, list) and len(counts) == len(payload["strokes"]):
+    cursor = 0
+    for si, n in enumerate(counts):
+        group = items[cursor : cursor + n]
+        cursor += n
+        per_stroke.append({
+            "stroke": si,
+            "points": len(payload["strokes"][si].get("points", [])),
+            "itemCount": n,
+            "sample": [
+                {
+                    "index": gi + cursor - n,
+                    "resourceId": item.get("resourceId"),
+                    "position": item.get("position"),
+                    "rotation": item.get("rotation"),
+                    "scale": item.get("scale"),
+                }
+                for gi, item in enumerate(group[:3])  # 每笔最多 3 个样本，防输出截断
+            ],
+        })
+
 print(json.dumps({
     "source": "POST /api/draw-model from window.gms.export()",
     "httpStatus": status,
     "strokeCount": len(payload["strokes"]),
     "itemCount": len(items),
+    "perStroke": per_stroke,
     "items": [
         {
             "index": index,

@@ -178,6 +178,7 @@ export function validateDrawSemantics(strokes: readonly Stroke[], options: Model
 /** /api/draw-model 出参：已拍平 items + 逐笔拟合曲线（画布像素）+ 封闭检测。 */
 export type DrawModelResult = {
   items: StructureItem[]
+  strokeItemCounts: number[]
   /** 与入参 strokes 按序一一对应；退化笔画（<2 点）为 null。 */
   fitted: (FittedStroke | null)[]
   closed: boolean[]
@@ -191,13 +192,13 @@ export type DrawModelResult = {
  * extrude 封闭平滑轮廓同样保留细节（与 generateModel 的 keepClosedDetail 一致）。
  */
 export function drawModelResult(strokes: Stroke[], options: ModelOptions): DrawModelResult {
-  const { items: tagged, closed } = generateModel(strokes, options)
+  const { items: tagged, closed, strokeItemCounts } = generateModel(strokes, options)
   const sampleCount =
     options.mode === 'extrude' ? Math.max(1, Math.floor(options.count)) + 1 : Math.max(1, Math.floor(options.count))
   const fitted: (FittedStroke | null)[] = strokes.map((s) =>
     fitStroke(s, sampleCount, { keepClosedDetail: options.mode === 'extrude' })
   )
-  return { items: toStructureItems(tagged), fitted, closed, warnings: sweepWarnings(strokes, tagged) }
+  return { items: toStructureItems(tagged), fitted, closed, strokeItemCounts, warnings: sweepWarnings(strokes, tagged) }
 }
 
 /**

@@ -27,6 +27,7 @@
 | G11 | rod 的 height 是"抬升"语义（position.y += height），不是厚度！想定高就把画布像素画对 | 基线 gpt 探针实测：height:0.34 表现为 y 抬升；与 lathe 铁律 #2 一致 |
 | G12 | loop 实体（solid）有形状限制：椭圆/矩形可能 400 或生成 10009001 盒体——确认支持的轮廓用 circle | 双模型基线都探到，改用 circle 规避 |
 | G13 | 立体感三件套：叶片桨距角（绕长轴扭转 10-15°）、前后层次（z 分层：叶片/环/电机/后罩各一平面）、分部件配色 | 基线 0/2 模型主动做；断言外不做是模型常态，目标要有断言驱动 |
+| G14 | rotate/delete/props 前先 gms.list() 核对索引（每笔 {index, points, closed, render, center}）；summary 的 render/height/axis 是归一化有效值 | 基线复盘 2b：ds 索引错位致 6 辐条+1 叶全量重画；gpt 索性规避 rotate |
 
 ## 2. 风扇画法（十二期实测定版）
 
@@ -46,7 +47,7 @@
 ## 4. 核验闭环（每轮必走）
 
 1. 画完 → gms.summary() 自检（drawStatus 格式 ✓ N 笔 · M 封闭 · K 元件）
-2. scripts/inspect-draw-model.sh 取 items → 逐条断言
+2. scripts/inspect-draw-model.sh 取 items → 逐条断言（输出含 perStroke 映射：每笔 itemCount + 样本，无需几何反推）
 3. capture-views.sh 截 iso/top/front/left/back/closeup 六视角
 4. 视觉模型（gpt-5.6-sol）独立核验：审美+实现双角度，坐标化缺陷
 5. 缺陷 → 修复 → 重跑 2-4（数据核验全过 + 视觉通过才算完成）
