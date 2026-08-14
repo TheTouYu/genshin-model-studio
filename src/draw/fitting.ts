@@ -51,7 +51,9 @@ export function adaptiveEpsilon(points: readonly Point[]): number {
  * Ramer-Douglas-Peucker 抽稀：保留共线冗余点去除后、距弦超阈值的顶点。
  * 端点恒保留；epsilon 为点到弦的垂直距离阈值。
  */
-export function simplifyRdp(points: readonly Point[], epsilon: number): Polyline {
+export function simplifyRdp(points: readonly Point[], epsilon: number, zScale = 0): Polyline {
+  // 十四期：zScale（px/米）> 0 时按 3D 距离抽稀——弧线罩辐条等 xy 共线但 z 凸起的点集，
+  // 2D 距离会抽掉全部中间点（z 丢失）。z 凸起 = zScale×|dz| 参与点到弦距离。
   if (points.length <= 2) return points.map((p): Point => [p[0], p[1]])
   const keep = new Uint8Array(points.length)
   keep[0] = 1
@@ -59,21 +61,22 @@ export function simplifyRdp(points: readonly Point[], epsilon: number): Polyline
   const stack: Array<[number, number]> = [[0, points.length - 1]]
   while (stack.length > 0) {
     const [start, end] = stack.pop() as [number, number]
-    const [ax, ay] = points[start]
-    const [bx, by] = points[end]
+    const [ax, ay, az = 0] = points[start]
+    const [bx, by, bz = 0] = points[end]
     const dx = bx - ax
     const dy = by - ay
-    const lengthSq = dx * dx + dy * dy
+    const dz = (bz - az) * zScale
+    const lengthSq = dx * dx + dy * dy + dz * dz
     let maxDistance = -1
     let maxIndex = -1
     for (let i = start + 1; i < end; i++) {
-      const [px, py] = points[i]
+      const [px, py, pz = 0] = points[i]
       let distance: number
       if (lengthSq === 0) {
-        distance = Math.hypot(px - ax, py - ay)
+        distance = Math.hypot(px - ax, py - ay, (pz - az) * zScale)
       } else {
-        const t = ((px - ax) * dx + (py - ay) * dy) / lengthSq
-        distance = Math.hypot(px - (ax + t * dx), py - (ay + t * dy))
+        const t = ((px - ax) * dx + (py - ay) * dy + (pz - az) * zScale * dz) / lengthSq
+        distance = Math.hypot(px - (ax + t * dx), py - (ay + t * dy), ((pz - az) - t * dz))
       }
       if (distance > maxDistance) {
         maxDistance = distance
@@ -85,27 +88,29 @@ export function simplifyRdp(points: readonly Point[], epsilon: number): Polyline
       stack.push([start, maxIndex], [maxIndex, end])
     }
   }
+  const hasZ = points.some((p) => p.length > 2 && p[2] !== 0)
   const out: Polyline = []
   for (let i = 0; i < points.length; i++) {
-    if (keep[i]) out.push([points[i][0], points[i][1]])
+    if (keep[i]) out.push(hasZ ? [points[i][0], points[i][1], points[i][2] ?? 0] : [points[i][0], points[i][1]])
   }
   return out
 }
 
 /** Chaikin 角切平滑：每段按 1/4–3/4 切角；开曲线端点恒保留。 */
 export function smoothChaikin(points: readonly Point[], rounds = CHAIKIN_ROUNDS): Polyline {
-  let poly: Polyline = points.map((p): Point => [p[0], p[1]])
+  // 十四期：z（米）随插值线性保留（弧线罩辐条）。
+  let poly: Polyline = points.map((p): Point => [p[0], p[1], p[2] ?? 0])
   for (let round = 0; round < rounds; round++) {
     if (poly.length < 3) break
-    const next: Polyline = [[poly[0][0], poly[0][1]]]
+    const next: Polyline = [[poly[0][0], poly[0][1], poly[0][2] ?? 0]]
     for (let i = 0; i + 1 < poly.length; i++) {
-      const [ax, ay] = poly[i]
-      const [bx, by] = poly[i + 1]
-      next.push([0.75 * ax + 0.25 * bx, 0.75 * ay + 0.25 * by])
-      next.push([0.25 * ax + 0.75 * bx, 0.25 * ay + 0.75 * by])
+      const [ax, ay, az = 0] = poly[i]
+      const [bx, by, bz = 0] = poly[i + 1]
+      next.push([0.75 * ax + 0.25 * bx, 0.75 * ay + 0.25 * by, 0.75 * az + 0.25 * bz])
+      next.push([0.25 * ax + 0.75 * bx, 0.25 * ay + 0.75 * by, 0.25 * az + 0.75 * bz])
     }
     const last = poly[poly.length - 1]
-    next.push([last[0], last[1]])
+    next.push([last[0], last[1], last[2] ?? 0])
     poly = next
   }
   return poly
@@ -114,30 +119,37 @@ export function smoothChaikin(points: readonly Point[], rounds = CHAIKIN_ROUNDS)
 /**
  * 弧长均匀重采样到 count 个点（首尾恒为原曲线端点，中间点按累计弧长线性插值）。
  */
-export function resampleUniform(points: readonly Point[], count: number): Polyline {
+export function resampleUniform(points: readonly Point[], count: number, zScale = 0): Polyline {
+  // 十四期：zScale > 0 时弧长按 3D（z 折算 px）计算，z 随插值线性保留。
   const n = Math.max(1, Math.floor(count))
   if (points.length === 0) return []
-  if (n === 1) return [[points[0][0], points[0][1]]]
+  if (n === 1) return points[0].length > 2 ? [[points[0][0], points[0][1], points[0][2] ?? 0]] : [[points[0][0], points[0][1]]]
   const cumulative: number[] = [0]
   for (let i = 1; i < points.length; i++) {
     cumulative.push(
       cumulative[i - 1] +
-        Math.hypot(points[i][0] - points[i - 1][0], points[i][1] - points[i - 1][1])
+        Math.hypot(
+          points[i][0] - points[i - 1][0],
+          points[i][1] - points[i - 1][1],
+          ((points[i][2] ?? 0) - (points[i - 1][2] ?? 0)) * zScale
+        )
     )
   }
   const total = cumulative[cumulative.length - 1]
   if (total === 0) {
     // 全点重合的退化笔画：返回同一位置 count 个点（后续几何层自行丢弃零长段）。
-    const [x, y] = points[0]
-    return Array.from({ length: n }, (): Point => [x, y])
+    const [x, y, z = 0] = points[0]
+    return Array.from({ length: n }, (): Point => [x, y, z])
   }
   const out: Polyline = []
+  const hasZ = points.some((p) => p.length > 2 && p[2] !== 0)
+  const emit = (x: number, y: number, z: number): Point => (hasZ ? [x, y, z] : [x, y])
   let segment = 0
   for (let i = 0; i < n; i++) {
     if (i === n - 1) {
       // 末点 = 原曲线终点（避免 a + (b−a) 的浮点回舍引入 1ulp 偏差）
-      const [lx, ly] = points[points.length - 1]
-      out.push([lx, ly])
+      const [lx, ly, lz = 0] = points[points.length - 1]
+      out.push(emit(lx, ly, lz))
       break
     }
     const target = (total * i) / (n - 1)
@@ -145,10 +157,11 @@ export function resampleUniform(points: readonly Point[], count: number): Polyli
     const segStart = cumulative[segment]
     const segEnd = cumulative[segment + 1]
     const t = segEnd > segStart ? (target - segStart) / (segEnd - segStart) : 0
-    out.push([
+    out.push(emit(
       points[segment][0] + t * (points[segment + 1][0] - points[segment][0]),
-      points[segment][1] + t * (points[segment + 1][1] - points[segment][1])
-    ])
+      points[segment][1] + t * (points[segment + 1][1] - points[segment][1]),
+      (points[segment][2] ?? 0) + t * ((points[segment + 1][2] ?? 0) - (points[segment][2] ?? 0))
+    ))
   }
   return out
 }
@@ -177,9 +190,13 @@ export type FitOptions = {
  * 单笔画完整拟合管线。sampleCount 为均匀重采样的目标点数。
  * 笔画点数 < 2 时返回 null（该笔画不产生元件）。
  */
-export function fitStroke(stroke: Stroke, sampleCount: number, opts: FitOptions = {}): FittedStroke | null {
+export function fitStroke(stroke: Stroke, sampleCount: number, opts: FitOptions = {}, zScale = 0): FittedStroke | null {
+  // 十四期：zScale（px/米，画布标定）> 0 时拟合管线按 3D 处理点的 z（弧线罩辐条等）。
   if (stroke.points.length < 2) return null
-  let poly = simplifyRdp(stroke.points, adaptiveEpsilon(stroke.points))
+  // 十四期：3D 点集（z 凸起，如弧线罩辐条）跳过 RDP——程序生成的稀疏控制点 xy 可能共线，
+  // 2D 阈值 epsilon（~对角线 30%）会抽掉全部 z 凸起中间点；zScale>0 且有点带 z 时保留原样。
+  const hasZ = stroke.points.some((p) => p.length > 2 && p[2] !== 0)
+  let poly = zScale > 0 && hasZ ? stroke.points.map((p): Point => [p[0], p[1], p[2] ?? 0]) : simplifyRdp(stroke.points, adaptiveEpsilon(stroke.points), zScale)
   const rdpCount = poly.length // 抽稀后的细节点数（封闭轮廓的重采样下限）
   poly = smoothChaikin(poly)
   if (poly.length < 2) return null
@@ -187,6 +204,7 @@ export function fitStroke(stroke: Stroke, sampleCount: number, opts: FitOptions 
   const closed = detectClosed(poly)
   const target =
     closed && opts.keepClosedDetail ? Math.max(rdpCount, sampleCount * 3) : sampleCount
-  poly = resampleUniform(poly, target)
-  return { id: stroke.id, points: poly, closed }
+  poly = resampleUniform(poly, target, zScale)
+  // 十四期：输入无 z（旧 2D 笔画）时还原 2 元素点（兼容既有断言/消费方）
+  return { id: stroke.id, points: hasZ ? poly : poly.map(([x, y]) => [x, y]), closed }
 }

@@ -39,7 +39,7 @@ export type GenerateResult = { items: TaggedItem[]; closed: boolean[]; strokeIte
 type Vec3 = [number, number, number]
 type CanvasPoint = readonly [number, number]
 /** 画布 → 世界映射（归一化，z=0）。 */
-type ToWorld = (x: number, y: number) => Vec3
+type ToWorld = (x: number, y: number, z?: number) => Vec3
 
 const DEG = 180 / Math.PI
 function rawBounds(strokes: readonly Stroke[]): {
@@ -82,9 +82,11 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
   const fitted: FittedStroke[] = []
   const minPoints = opts.mode === 'extrude' ? 2 : 1
   for (const stroke of strokes) {
+    // 十五期：笔画级粗细（stroke.size，米）覆盖全局 size——弧线罩铁丝比结构杆细（40%）
+    const strokeSize = (stroke as { size?: number }).size != null && (stroke as { size?: number }).size! > 0 ? (stroke as { size?: number }).size! : size
     const sampleCount = opts.mode === 'extrude' ? count + 1 : count // 段数 → 点 = 段数+1
     // 四期修复：extrude 封闭平滑轮廓（圆/椭圆环）不压回 count+1 点（否则环只剩 count 段失圆）
-    const fit = fitStroke(stroke, sampleCount, { keepClosedDetail: opts.mode === 'extrude' })
+    const fit = fitStroke(stroke, sampleCount, { keepClosedDetail: opts.mode === 'extrude' }, canvasScale ? 1 / canvasScale : 0)
     closed.push(fit !== null ? fit.closed : false)
     if (fit !== null && fit.points.length >= minPoints) fitted.push(fit)
   }
@@ -126,15 +128,17 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
         : bboxHeight > 0
           ? heightMeters / bboxHeight
           : heightMeters / Math.max(bboxWidth, 1e-9)
-    const toWorld: ToWorld = (x, y) => [
+    const toWorld: ToWorld = (x, y, z = 0) => [
       (x - raw.minX) * scale - (bboxWidth * scale) / 2, // 水平居中 x=0
       (raw.maxY - y) * scale, // y 上、最低点贴 y=0
-      0
+      z // 十四期：点的 z（米，画布点集 [x,y,z]，正视图 z=0）——弧线罩辐条等 3D 形状依赖它
     ]
 
     if (opts.mode === 'extrude') {
       for (const fit of fitted) {
         const stroke = strokeById.get(fit.id)
+        // 十五期：生成循环的笔画级粗细（拟合循环的 strokeSize 作用域不达此处）
+        const strokeSize = stroke && (stroke as { size?: number }).size != null && (stroke as { size?: number }).size! > 0 ? (stroke as { size?: number }).size! : size
         // 八期：extrude solid 与 lathe 一致，z 用自身包围盒（画布 y 不再映射世界 z →
         // centerZ=0，与杆（z=0）同平面，消除混合语义错位；x 仍全局居中）
         if (stroke?.render === 'solid') {
@@ -144,9 +148,9 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
         }
         for (let i = 0; i + 1 < fit.points.length; i++) {
           const rod = extrudeRod(
-            fit.points[i], fit.points[i + 1], toWorld, size, opts.shape, fit.id, colorOf(fit.id),
+            fit.points[i], fit.points[i + 1], toWorld, strokeSize, opts.shape, fit.id, colorOf(fit.id),
             stroke?.transform?.position
-          )
+          ) // 十四期：fit.points 为 [x,y,z]，extrudeRod 读 a[2]/b[2]（弧线等 3D 点集）
           if (rod !== null) {
             liftByHeight(rod, stroke)
             pushItem(rod, fit.id)
@@ -163,6 +167,8 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
       }
       for (const fit of fitted) {
         const stroke = strokeById.get(fit.id)
+        // 十五期：lathe 循环的笔画级粗细
+        const strokeSize = stroke && (stroke as { size?: number }).size != null && (stroke as { size?: number }).size! > 0 ? (stroke as { size?: number }).size! : size
         // 四期：solid 笔画在 lathe 全局模式下独立走柱体（不绕轴），其余照旧
         // 五期：solid 用自身包围盒定位（全局 bbox 会让柱体偏离 lathe 母线轴/悬浮）
         if (stroke?.render === 'solid') {
@@ -191,9 +197,9 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
           }
           for (let i = 0; i + 1 < anchors.length; i++) {
             const rod = extrudeRod(
-              anchors[i], anchors[i + 1], toWorld, size, opts.shape, fit.id, colorOf(fit.id),
+              anchors[i], anchors[i + 1], toWorld, strokeSize, opts.shape, fit.id, colorOf(fit.id),
               stroke?.transform?.position
-            )
+            ) // 十四期：lathe rod 同样读点 z
             if (rod !== null) {
               liftByHeight(rod, stroke)
               pushItem(rod, fit.id)
@@ -517,8 +523,8 @@ function extrudeRod(
   color?: string,
   tp?: [number, number, number] // 十一期：transform.position 偏移（米），叠加在段中点
 ): TaggedItem | null {
-  const wa = toWorld(a[0], a[1])
-  const wb = toWorld(b[0], b[1])
+  const wa = toWorld(a[0], a[1], a[2])
+  const wb = toWorld(b[0], b[1], b[2])
   const dx = wb[0] - wa[0]
   const dy = wb[1] - wa[1]
   const dz = wb[2] - wa[2]
@@ -541,7 +547,7 @@ function extrudeRod(
   betaRad = Math.atan2(ux, uz)
   return {
     resourceId: shape === 'box' ? BOX_RESOURCE_ID : CYLINDER_RESOURCE_ID,
-    position: [(wa[0] + wb[0]) / 2 + (tp?.[0] ?? 0), (wa[1] + wb[1]) / 2 + (tp?.[1] ?? 0), (tp?.[2] ?? 0)],
+    position: [(wa[0] + wb[0]) / 2 + (tp?.[0] ?? 0), (wa[1] + wb[1]) / 2 + (tp?.[1] ?? 0), (wa[2] + wb[2]) / 2 + (tp?.[2] ?? 0)],
     rotation: [alphaRad * DEG, betaRad * DEG, 0],
     scale,
     group,

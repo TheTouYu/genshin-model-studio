@@ -1362,10 +1362,27 @@ loadExamples()
           stroke.transform.position = [0, -dyPx * mPerPx, srcZ] // 世界 y 向上 → 取负；z 保留源偏移（辐条等后移件）
         }
       } else {
-        stroke.angle = total // 老路径：旋转角记录（弧度），服务端编码进 rotation
-        // 十一期：rod 副本透传 transform.position 的 z（后移件副本保持同平面）
-        const srcZ = src.transform?.position?.[2]
-        if (srcZ !== undefined && srcZ !== 0) stroke.transform = { position: [0, 0, srcZ] }
+        // 十四期：rod 副本若源带 transform.rotation（如弧线罩辐条 [90,0,0] 立起），
+        // 用四元数通用化继承（绕世界 Z 转 -total × 源姿态）——与 front solid 副本同一机制；
+        // 否则老路径 angle（画布旋转角编码）
+        const srcRot = src.transform && src.transform.rotation
+        if (window.THREE && srcRot) {
+          const rad = (d) => d * Math.PI / 180
+          const q0 = new THREE.Quaternion().setFromEuler(new THREE.Euler(rad(srcRot[0]), rad(srcRot[1]), rad(srcRot[2]), 'YXZ'))
+          const qz = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), -total)
+          qz.multiply(q0)
+          const e = new THREE.Euler().setFromQuaternion(qz, 'YXZ')
+          stroke.transform = { rotation: [e.x * 180 / Math.PI, e.y * 180 / Math.PI, e.z * 180 / Math.PI] }
+          const srcZ = src.transform?.position?.[2]
+          if (srcZ !== undefined && srcZ !== 0) {
+            stroke.transform.position = [0, 0, srcZ]
+          }
+        } else {
+          stroke.angle = total // 老路径：旋转角记录（弧度），服务端编码进 rotation
+          // 十一期：rod 副本透传 transform.position 的 z（后移件副本保持同平面）
+          const srcZ = src.transform?.position?.[2]
+          if (srcZ !== undefined && srcZ !== 0) stroke.transform = { position: [0, 0, srcZ] }
+        }
       }
       copies.push(stroke)
     }
@@ -1654,7 +1671,7 @@ loadExamples()
     }
   }
 
-  /** 校验点数组（[x, y] 有限数值对），返回拷贝；非法抛中文 Error。 */
+  /** 校验点数组（[x, y, z?] 有限数值），返回拷贝（z 为米，可选；非法抛中文 Error）。 */
   function validatePoints(pts, what) {
     if (!Array.isArray(pts)) {
       throw new Error(`${what}参数非法：应为 [x, y] 数组，当前值为 ${JSON.stringify(pts)}`)
@@ -1663,7 +1680,11 @@ loadExamples()
       if (!Array.isArray(p) || p.length < 2 || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) {
         throw new Error(`${what}参数非法：第 ${i + 1} 个点应为 [x, y] 有限数值，当前值为 ${JSON.stringify(p)}`)
       }
-      return [p[0], p[1]]
+      if (p.length > 2 && !Number.isFinite(p[2])) {
+        throw new Error(`${what}参数非法：第 ${i + 1} 个点的 z 应为有限数值（米），当前值为 ${JSON.stringify(p[2])}`)
+      }
+      // 十四期：保留 z（米）——弧线罩辐条等 3D 点集（ADR-0001 笔画 3D 点集）
+      return p.length > 2 ? [p[0], p[1], p[2]] : [p[0], p[1]]
     })
   }
 
@@ -1674,8 +1695,8 @@ loadExamples()
       throw new Error(`opts 参数非法：应为对象 { render, height, axis, lift, color, transform, group }，当前值为 ${JSON.stringify(opts)}`)
     }
     for (const k of Object.keys(opts)) {
-      if (k !== 'render' && k !== 'height' && k !== 'axis' && k !== 'lift' && k !== 'color' && k !== 'transform' && k !== 'group') {
-        throw new Error(`opts 参数非法：未知字段 ${JSON.stringify(k)}（支持 render/height/axis/lift/color/transform/group），当前值为 ${JSON.stringify(opts)}`)
+      if (k !== 'render' && k !== 'height' && k !== 'axis' && k !== 'lift' && k !== 'color' && k !== 'transform' && k !== 'group' && k !== 'size') {
+        throw new Error(`opts 参数非法：未知字段 ${JSON.stringify(k)}（支持 render/height/axis/lift/color/transform/group/size），当前值为 ${JSON.stringify(opts)}`)
       }
     }
     const o = {}
@@ -1696,6 +1717,13 @@ loadExamples()
         throw new Error(`lift 参数非法：应为非负有限数值（米；solid = 柱体离地抬升，缺省 0 = 贴地），当前值为 ${JSON.stringify(opts.lift)}`)
       }
       o.lift = opts.lift
+    }
+    if (opts.size !== undefined) {
+      // 十五期：笔画级粗细（米，>0 覆盖全局 options.size）——弧线罩铁丝 40% 细杆
+      if (typeof opts.size !== 'number' || !Number.isFinite(opts.size) || opts.size <= 0) {
+        throw new Error(`size 参数非法：应为正数（米；笔画级杆径，覆盖全局 options.size），当前值为 ${JSON.stringify(opts.size)}`)
+      }
+      o.size = opts.size
     }
     if (opts.axis !== undefined) {
       if (opts.axis !== 'up' && opts.axis !== 'front' && opts.axis !== 'side') {
@@ -1756,6 +1784,7 @@ loadExamples()
     if (o.axis !== undefined && o.axis !== 'up') stroke.axis = o.axis // 'up' = 缺省不写
     if (o.color !== undefined) stroke.color = o.color
     if (o.transform !== undefined) stroke.transform = o.transform
+    if (o.size !== undefined) stroke.size = o.size // 十五期：笔画级粗细（弧线罩铁丝 40%）
     if (o.group !== undefined) {
       if (o.group === null) delete stroke.group
       else stroke.group = o.group
@@ -2015,8 +2044,8 @@ loadExamples()
     const idx = resolveIndex(i)
     assertFinite(cx, 'cx（旋转中心 x，画布像素）')
     assertFinite(cy, 'cy（旋转中心 y，画布像素）')
-    if (typeof n !== 'number' || !Number.isFinite(n) || !Number.isInteger(n) || n < 2 || n > 12) {
-      throw new Error(`n 参数非法：份数应为 2~12 的整数，当前值为 ${JSON.stringify(n)}`)
+    if (typeof n !== 'number' || !Number.isFinite(n) || !Number.isInteger(n) || n < 2 || n > 40) {
+      throw new Error(`n 参数非法：份数应为 2~40 的整数（罩子铁丝可 20-30 根），当前值为 ${JSON.stringify(n)}`)
     }
     const src = state.strokes[idx]
     const copies = makeRotationCopies(src, [cx, cy], n)
@@ -2062,7 +2091,7 @@ loadExamples()
    * solid 的世界 x/y 由 spec 决定（画布位置只影响轮廓形状）；rod 由画布换算自动得。
    * 约束：先画贴地件（y≈厚/2）稳定 bbox 底，再画其余（世界 y 以当前 bbox 底为基准）。 */
   function gmsPart(type, spec) {
-    const TYPES = ['ring', 'rod', 'disc', 'el-disc']
+    const TYPES = ['ring', 'rod', 'disc', 'el-disc', 'arc']
     if (!TYPES.includes(type)) throw new Error(`part 类型非法：应为 ${TYPES.join('/')}，当前值为 ${JSON.stringify(type)}`)
     if (typeof spec !== 'object' || spec === null) throw new Error(`part 参数非法：应为组件参数对象 {x,y,z,...}，当前值为 ${JSON.stringify(spec)}`)
     const k = state.options.heightMeters / (state.options.canvasHeightPx > 0 ? state.options.canvasHeightPx : 1) // 米/px
@@ -2122,6 +2151,21 @@ loadExamples()
         t.rotation = spec.rotation
       }
       addStrokeWithOpts(pts, { ...base, render: 'solid', height: thick, axis, lift: y - thick / 2, transform: t })
+    } else if (type === 'arc') {
+      // 十四期（用户视觉反馈）：弧线辐条——正面看是直线、侧面看带曲率（罩子母线）。
+      // 点集自带 z（米）：从中心到环的直线，z 按 sin 弧凸起（rise 正=向前 +z、负=向后 -z）。
+      // 服务端 rod 生成读点 z（十四期 generate.ts 补）；副本经四元数通用化绕罩子轴等角分布。
+      const r = num(spec.r, 'r', 0.25)
+      const rise = num(spec.rise, 'rise', 0.04)
+      const [sx, sy] = toPx(x, y)
+      const [ex, ey] = toPx(x + r, y)
+      const pts = []
+      for (let i = 0; i <= 8; i++) {
+        const t = i / 8
+        pts.push([sx + (ex - sx) * t, sy + (ey - sy) * t, rise * Math.sin(Math.PI * t)])
+      }
+      // 十五期：铁丝粗细默认全局 size 的 40%（0.012m），可用 spec.size 覆盖
+      addStrokeWithOpts(pts, { ...base, size: spec.size !== undefined ? num(spec.size, 'size', 0.012) : 0.012, transform: { position: [0, 0, z] } })
     }
     return gmsSummary()
   }

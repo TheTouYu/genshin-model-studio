@@ -64,6 +64,11 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
     if (totalPoints > MAX_DRAW_POINTS) {
       throw new Error(`笔画点总数过多（超过 ${MAX_DRAW_POINTS} 个点）`)
     }
+    // 十五期：笔画级粗细（stroke.size，米，>0 覆盖全局 options.size；弧线罩铁丝用细杆）
+    const size = (stroke as { size?: unknown }).size
+    if (size !== undefined && (typeof size !== 'number' || !Number.isFinite(size) || size <= 0)) {
+      throw new Error(`${i + 1} 笔 size 无效：需为正数米（覆盖全局杆径），当前值为 ${JSON.stringify(size)}`)
+    }
     // 可选颜色（三期）："0xRRGGBB"，缺省 = 默认材质
     const color = (stroke as { color?: unknown }).color
     if (color !== undefined && (typeof color !== 'string' || !/^0x[0-9a-fA-F]{6}$/.test(color))) {
@@ -119,6 +124,7 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
       ...(height === undefined ? {} : { height }),
       ...(lift === undefined ? {} : { lift }),
       ...(axis === undefined ? {} : { axis }),
+      ...(size === undefined ? {} : { size }),
       ...(angle === undefined ? {} : { angle }),
       ...(transform === undefined ? {} : { transform: transform as Stroke['transform'] }),
       // 十一期：group（层级组）可选透传——非空字符串；缺省不写（静止件）
