@@ -1325,10 +1325,12 @@ loadExamples()
     for (let k = 1; k < n; k++) {
       const theta = (2 * Math.PI * k) / n
       const cos = Math.cos(theta), sin = Math.sin(theta)
-      const pts = src.points.map((p) => [
-        cx + (p[0] - cx) * cos - (p[1] - cy) * sin,
-        cy + (p[0] - cx) * sin + (p[1] - cy) * cos,
-      ])
+      const pts = src.points.map((p) => {
+        const px0 = cx + (p[0] - cx) * cos - (p[1] - cy) * sin
+        const py0 = cy + (p[0] - cx) * sin + (p[1] - cy) * cos
+        // 十五期修复：保留点 z（弧线罩铁丝等 3D 点集）——此前丢 z 导致副本被 RDP 抽成直线
+        return p.length > 2 ? [px0, py0, p[2]] : [px0, py0]
+      })
       autoClose(pts) // 源闭合（首尾同点）时副本旋转后首尾被拉开 → 重新拉齐
       const stroke = { id: 's' + Date.now().toString(36) + '_' + seq++, points: pts }
       if (src.color) stroke.color = src.color
@@ -1336,6 +1338,7 @@ loadExamples()
       if (src.height !== undefined) stroke.height = src.height
       if (src.lift !== undefined) stroke.lift = src.lift // 离地抬升同样透传（叶片副本与源同高度）
       if (src.axis) stroke.axis = src.axis
+      if (src.size !== undefined) stroke.size = src.size // 十五期：副本继承笔画级粗细（罩子铁丝）
       if (src.group) stroke.group = src.group // 十一期：副本继承组（旋转单元成员一起动）
       const total = (src.angle ?? 0) + theta // 画布旋转角累加（弧度）
       if (src.axis === 'front' && src.render === 'solid') {
