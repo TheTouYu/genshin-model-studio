@@ -2019,6 +2019,74 @@ loadExamples()
     return gmsSummary()
   }
 
+  /** 十二期（基线 v3）：组件级命令——米制世界坐标声明组件，自动 px 换算 / lift / 闭合。
+   * 类型：ring（杆环 r 米）、rod（两点杆）、disc（圆盘 solid r/厚）、el-disc（椭圆盘 rx/ry/厚）。
+   * 世界语义：x 左右（米，0=中心）、y 高度（米，0=地面）、z 前后（米，0=叶片平面）。
+   * solid 的世界 x/y 由 spec 决定（画布位置只影响轮廓形状）；rod 由画布换算自动得。
+   * 约束：先画贴地件（y≈厚/2）稳定 bbox 底，再画其余（世界 y 以当前 bbox 底为基准）。 */
+  function gmsPart(type, spec) {
+    const TYPES = ['ring', 'rod', 'disc', 'el-disc']
+    if (!TYPES.includes(type)) throw new Error(`part 类型非法：应为 ${TYPES.join('/')}，当前值为 ${JSON.stringify(type)}`)
+    if (typeof spec !== 'object' || spec === null) throw new Error(`part 参数非法：应为组件参数对象 {x,y,z,...}，当前值为 ${JSON.stringify(spec)}`)
+    const k = state.options.heightMeters / (state.options.canvasHeightPx > 0 ? state.options.canvasHeightPx : 1) // 米/px
+    // 当前全笔画 bbox（无笔画时画布兜底）
+    let bx = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }
+    if (state.strokes.length > 0) {
+      for (const st of state.strokes) for (const [px0, py0] of st.points) {
+        if (px0 < bx.minX) bx.minX = px0; if (py0 < bx.minY) bx.minY = py0
+        if (px0 > bx.maxX) bx.maxX = px0; if (py0 > bx.maxY) bx.maxY = py0
+      }
+    } else {
+      bx = { minX: 0, minY: 0, maxX: drawCanvas.clientWidth || 640, maxY: state.options.canvasHeightPx }
+    }
+    const cxp = (bx.minX + bx.maxX) / 2 // 画布中心 x（世界 x=0）
+    const bottom = bx.maxY // 画布底（世界 y=0）
+    const toPx = (wx, wy) => [cxp + wx / k, bottom - wy / k]
+    const x = spec.x ?? 0, y = spec.y ?? 0, z = spec.z ?? 0
+    const color = spec.color
+    const num = (v, name, dft) => {
+      const r = v === undefined ? dft : v
+      if (typeof r !== 'number' || !Number.isFinite(r)) throw new Error(`part.${name} 参数非法：应为有限数值，当前值为 ${JSON.stringify(v)}`)
+      return r
+    }
+    const circlePts = (cx, cy, rpx, n) => {
+      const pts = []
+      for (let i = 0; i < n; i++) { const a = (i / n) * 2 * Math.PI; pts.push([cx + rpx * Math.cos(a), cy + rpx * Math.sin(a)]) }
+      pts.push([pts[0][0], pts[0][1]]) // 显式闭合点
+      return pts
+    }
+    const ellipsePts = (cx, cy, rx, ry, n) => {
+      const pts = []
+      for (let i = 0; i < n; i++) { const a = (i / n) * 2 * Math.PI; pts.push([cx + rx * Math.cos(a), cy + ry * Math.sin(a)]) }
+      pts.push([pts[0][0], pts[0][1]])
+      return pts
+    }
+    const base = { color }
+    if (type === 'ring') {
+      const r = num(spec.r, 'r', 0.2)
+      const seg = spec.seg === undefined ? 48 : num(spec.seg, 'seg', 48)
+      const [cx, cy] = toPx(x, y)
+      addStrokeWithOpts(circlePts(cx, cy, r / k, seg), { ...base, transform: z !== 0 ? { position: [0, 0, z] } : undefined })
+    } else if (type === 'rod') {
+      const x1 = num(spec.x1, 'x1'), y1 = num(spec.y1, 'y1'), x2 = num(spec.x2, 'x2'), y2 = num(spec.y2, 'y2')
+      const [a, b] = toPx(x1, y1), [c, d] = toPx(x2, y2)
+      addStrokeWithOpts([[a, b], [c, d]], { ...base, transform: z !== 0 ? { position: [0, 0, z] } : undefined })
+    } else if (type === 'disc' || type === 'el-disc') {
+      const thick = num(spec.thick, 'thick', 0.01)
+      const axis = spec.axis === undefined ? 'up' : spec.axis
+      if (!['up', 'front', 'side'].includes(axis)) throw new Error(`part.axis 参数非法：应为 up/front/side，当前值为 ${JSON.stringify(spec.axis)}`)
+      const [cx, cy] = toPx(x, y)
+      const pts = type === 'disc' ? circlePts(cx, cy, num(spec.r, 'r', 0.05) / k, 24) : ellipsePts(cx, cy, num(spec.rx, 'rx', 0.1) / k, num(spec.ry, 'ry', 0.05) / k, 48)
+      const t = { position: [x, 0, z] }
+      if (spec.rotation !== undefined) {
+        if (!Array.isArray(spec.rotation) || spec.rotation.length !== 3 || !spec.rotation.every(Number.isFinite)) throw new Error(`part.rotation 参数非法：应为 [α,β,γ] 度，当前值为 ${JSON.stringify(spec.rotation)}`)
+        t.rotation = spec.rotation
+      }
+      addStrokeWithOpts(pts, { ...base, render: 'solid', height: thick, axis, lift: y - thick / 2, transform: t })
+    }
+    return gmsSummary()
+  }
+
   function gmsList() {
     // 十二期（基线复盘 2b）：紧凑列出每笔 {索引, 点数, 封闭, render, height, axis, 画布中心}——
     // rotate/delete/props 前先 list() 核对索引，避免全局序号漂移错位。
@@ -2124,6 +2192,7 @@ loadExamples()
     import: gmsImport,
     mode: gmsMode,
     list: gmsList,
+    part: gmsPart,
   }
 
   /* ---------- 启动 ---------- */

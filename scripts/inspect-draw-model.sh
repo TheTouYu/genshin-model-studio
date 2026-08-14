@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 # Export the model from an existing browser tab and validate it through /api/draw-model.
-# Usage: scripts/inspect-draw-model.sh [url]
+# Usage: scripts/inspect-draw-model.sh [url] [--stroke N]
+#   --stroke N  单笔画核验：只测第 N 笔（自动构造合法 payload：含 options/显式闭合/0x 颜色）
 set -euo pipefail
 
 URL="${1:-http://localhost:8787/}"
-export URL
+STROKE_ONLY=""
+if [[ "${2:-}" == "--stroke" ]]; then STROKE_ONLY="${3:-}"; fi
+export URL STROKE_ONLY
 
 browser-harness <<'PY'
 import json
@@ -19,7 +22,16 @@ if not tabs:
 switch_tab(tabs[0])
 
 exported = json.loads(js("JSON.stringify(window.gms.export())"))
-payload = {key: exported[key] for key in ("version", "strokes", "options")}
+strokes = exported["strokes"]
+if os.environ.get("STROKE_ONLY"):
+    n = int(os.environ["STROKE_ONLY"])
+    if n < 0:
+        n += len(strokes)
+    if not (0 <= n < len(strokes)):
+        raise RuntimeError("stroke out of range: " + os.environ["STROKE_ONLY"])
+    strokes = [strokes[n]]
+payload = {key: exported[key] for key in ("version", "options")}
+payload["strokes"] = strokes
 request = Request(
     urljoin(url, "/api/draw-model"),
     data=json.dumps(payload).encode(),
