@@ -8,3 +8,4 @@ examples/*.summary.json
 .vercel
 .env*
 .bh/
+.dsh/
