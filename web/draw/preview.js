@@ -31,7 +31,7 @@
   'use strict'
 
   var D2R = Math.PI / 180
-  var MIN_RADIUS = 0.5
+  var MIN_RADIUS = 0.12 // 十七期：放大上限（模型半径 ~0.25，0.5 仍太远看不清插头/按钮细节）
   var MAX_RADIUS = 300
 
   // 每类几何一个浅色（默认材质；item.color 存在时覆盖为指定色）
@@ -321,7 +321,7 @@
 
     function onWheel(e) {
       e.preventDefault()
-      orbit.radius = clamp(orbit.radius * Math.exp(e.deltaY * 0.0012), MIN_RADIUS, MAX_RADIUS)
+      orbit.radius = clamp(orbit.radius * Math.exp(e.deltaY * 0.0022), MIN_RADIUS, MAX_RADIUS) // 十七期：滚轮步进加大
     }
 
     // ---- 尺寸自适应（devicePixelRatio 适配；CSS 布局决定显示尺寸，不改 style）----
