@@ -1,0 +1,10 @@
+{
+  "round": 4, "side": "B", "taskId": "T6", "rep": 1,
+  "version": "v5", "protocolFile": "benchmark/protocols/v5-force-analysis.txt",
+  "promptFile": "benchmark/tasks/T6/prompt.txt",
+  "promptSha256": "603a91ca868b86646175f04da15a23ed363c22b462a6a9773973e9e20fd447f7",
+  "scriptFile": "benchmark/runs/round4/B-T6-r1.js",
+  "itemsPath": "benchmark/runs/round4/B-T6-r1.items.json",
+  "viewsDir": "benchmark/runs/round4/B-T6-views",
+  "raw": "gms.clear(); 摩天轮组件脚本（见 scriptFile）"
+}

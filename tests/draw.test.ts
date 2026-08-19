@@ -119,12 +119,12 @@ test('fit: pipeline is deterministic and preserves stroke endpoints', () => {
 
 // —— 生成 ——
 
-test('extrude: count segments produce count rods aligned to the polyline', () => {
-  // 近似水平斜线：拟合后全部采样点共线 → 每段方向相同、可按中点连线断言
+test('extrude: straight lines stay 1 segment (17期优化), curves keep count segments', () => {
+  // 直线（RDP 抽稀后 ≤2 点）不再细分成 count 段：1 段即最优表示（元件爆炸/核验成本/编码体积）
   const stroke: Stroke = { id: 's', points: [[0, 0], [100, 0], [200, 0], [300, 1]] }
   const opts: ModelOptions = { mode: 'extrude', shape: 'cylinder', size: 0.2, count: 8, heightMeters: 2 }
   const { items } = generateModel([stroke], opts)
-  assert.equal(items.length, 8) // count 段 → count 个元件
+  assert.equal(items.length, 1) // 直线 1 段（整根杆）
   // 线段方向（世界）：画布方向 (300,1) 经 y 翻转 + 等比缩放
   const expectedDir = normalize3([300 * 2, -1 * 2, 0])
   for (const item of items) {
@@ -132,20 +132,20 @@ test('extrude: count segments produce count rods aligned to the polyline', () =>
     assert.equal(item.group, 's')
     assert.equal(item.scale[0], 0.2) // 直径 = size
     assert.equal(item.scale[2], 0.2)
-    assert.ok(item.scale[1] > 0) // 轴向长度 = 段长
+    assert.ok(item.scale[1] > 0) // 轴向长度 = 整根杆长
     const axis = apply(yxzMatrix(item.rotation), [0, 1, 0]) // 圆柱零旋转轴向 = 局部 Y
     assert.ok(dot(axis, expectedDir) > 1 - 1e-9, `rod axis aligns with segment: ${item.rotation}`)
     assert.equal(item.position[2], 0)
   }
-  // 位置 = 段中点：第一段中点 = 画布 (18.75, 0.0625) → 世界 (-262.5, 1.875)
-  assert.ok(Math.abs(items[0].position[0] + 262.5) < 0.01, 'first rod x')
-  assert.ok(Math.abs(items[0].position[1] - 1.875) < 0.01, 'first rod y')
-  // 段长 = 世界弧长 / count ≈ 75
-  assert.ok(Math.abs(items[0].scale[1] - 75) < 1, 'rod length')
+  // 位置 = 杆中点：画布 (150, 0.5) → 世界 (0, 1)（整根杆中点；scale = 2/bbox高1）
+  assert.ok(Math.abs(items[0].position[0]) < 0.01, 'rod x')
+  assert.ok(Math.abs(items[0].position[1] - 1) < 0.01, 'rod y')
+  // 杆长 = 世界总长 ≈ hypot(300,1)×2 ≈ 600
+  assert.ok(Math.abs(items[0].scale[1] - 600) < 2, 'rod length')
 
   // 方杆：长轴 = 局部 Z 对齐
   const box = generateModel([stroke], { ...opts, shape: 'box' })
-  assert.equal(box.items.length, 8)
+  assert.equal(box.items.length, 1)
   for (const item of box.items) {
     assert.equal(item.resourceId, BOX_RESOURCE_ID)
     assert.equal(item.scale[0], 0.2)
@@ -1020,18 +1020,22 @@ test('extrude: closed smooth ring keeps ≥20 uniform segments (guard ring not s
   assert.deepEqual(again.items, items)
 })
 
-test('extrude: open strokes (spokes/stand) keep count segments, closed polyline detail preserved', () => {
-  // 开放笔画（辐条/支架 line）行为不变：仍恰好 count 段
+test('extrude: straight spokes stay 1 segment (17期优化), curved polylines keep count segments, closed detail preserved', () => {
+  // 开放直线笔画（辐条/支架 line，2 点）→ 1 段整根杆（原为 count 段）
   const line: Stroke = { id: 'spoke', points: [[FAN_CX, FAN_CY], [FAN_CX + 80, FAN_CY]] }
   const { items } = generateModel([line], fanOpts)
-  assert.equal(items.length, 10)
+  assert.equal(items.length, 1)
+  // 开放折线（3+ 点非共线，抽稀后保留）→ 仍恰好 count 段
+  const poly: Stroke = { id: 'poly', points: [[FAN_CX, FAN_CY], [FAN_CX + 40, FAN_CY + 10], [FAN_CX + 80, FAN_CY]] }
+  const { items: polyItems } = generateModel([poly], fanOpts)
+  assert.equal(polyItems.length, 10)
   // 封闭折线轮廓（矩形工具 5 点）不丢尖角：细节点数下限 = count×3
   const rect: Stroke = { id: 'rect', points: [[0, 0], [100, 0], [100, 60], [0, 60], [0, 0]] }
   const { items: rectItems } = generateModel([rect], { ...fanOpts, count: 4 })
   assert.ok(rectItems.length >= 12, `封闭折线 ≥ count×3 段（实际 ${rectItems.length}）`)
 })
 
-test('fit: keepClosedDetail opt-in only (default pipeline unchanged, lathe unaffected)', () => {
+test('fit: keepClosedDetail opt-in only (straight open strokes stay 2 points, lathe unaffected)', () => {
   const ring = closedRing(40, 40)
   const stroke: Stroke = { id: 'c', points: ring }
   // 缺省（web-shared 预览、lathe）：仍压回 sampleCount 点
@@ -1044,11 +1048,14 @@ test('fit: keepClosedDetail opt-in only (default pipeline unchanged, lathe unaff
   assert.ok(detailed !== null)
   assert.ok(detailed.points.length >= 33, `封闭轮廓点数 ≥ count×3（实际 ${detailed.points.length}）`)
   assert.equal(detailed.closed, true)
-  // 开放笔画不受 keepClosedDetail 影响
+  // 开放直线笔画（2 点）不细分：无论 keepClosedDetail 与否都保持 2 点（17期优化）
   const open: Stroke = { id: 'o', points: [[0, 0], [100, 0]] }
   const openDetailed = fitStroke(open, 11, { keepClosedDetail: true })
   assert.ok(openDetailed !== null)
-  assert.equal(openDetailed.points.length, 11)
+  assert.equal(openDetailed.points.length, 2)
+  const openPlain = fitStroke(open, 11)
+  assert.ok(openPlain !== null)
+  assert.equal(openPlain.points.length, 2)
 })
 
 // —— 十一期：层级组（group）与旋转扫掠冲突检测 ——

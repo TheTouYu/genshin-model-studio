@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "frozenAt": "2026-08-15T18:48:57.716Z",
+  "errata": [
+    {
+      "at": "2026-08-15T17:38:45.872Z",
+      "taskId": "T6",
+      "field": "validator",
+      "oldHash": "ea21cfd61a7e9d4c87c57a0eb25778c28fdaaceeb45eb82293c4eb16ada5c42b",
+      "newHash": "7b53bfdc0be92b62ef4c6fb2404dff28697c110139f1438ad9838561bb1d8fa0",
+      "reason": "勘误（任务文件变更，须全量重算历史轮次）"
+    },
+    {
+      "at": "2026-08-15T17:58:26.721Z",
+      "taskId": "T6",
+      "field": "prompt",
+      "oldHash": "141563286403c5713a4c9b78bd349d3dc4f8cd8b58b4cefbeeb1c830dddc215a",
+      "newHash": "abc327262ae164e62c6142ac4fa5c8168fb34b6d254ebfe24d9f823f58c4f4f5",
+      "reason": "勘误（任务文件变更，须全量重算历史轮次）"
+    },
+    {
+      "at": "2026-08-15T17:58:26.721Z",
+      "taskId": "T6",
+      "field": "validator",
+      "oldHash": "7b53bfdc0be92b62ef4c6fb2404dff28697c110139f1438ad9838561bb1d8fa0",
+      "newHash": "cac851fbcbefa67669d7c8eb90931bfb29cde590fb84414515ea5db7bc3370fb",
+      "reason": "勘误（任务文件变更，须全量重算历史轮次）"
+    },
+    {
+      "at": "2026-08-15T18:08:57.323Z",
+      "taskId": "T6",
+      "field": "validator",
+      "oldHash": "cac851fbcbefa67669d7c8eb90931bfb29cde590fb84414515ea5db7bc3370fb",
+      "newHash": "e3891f7f4b0eb46f2891c18dcdaccceb75c8afc09855a9bd9c45a1214641768d",
+      "reason": "勘误（任务文件变更，须全量重算历史轮次）"
+    },
+    {
+      "at": "2026-08-15T18:29:39.088Z",
+      "taskId": "T6",
+      "field": "prompt",
+      "oldHash": "abc327262ae164e62c6142ac4fa5c8168fb34b6d254ebfe24d9f823f58c4f4f5",
+      "newHash": "2604d28adfbb436a38391e3cea8611420b2313f6b04ff288d9dce76634ba10c9",
+      "reason": "勘误（任务文件变更，须全量重算历史轮次）"
+    },
+    {
+      "at": "2026-08-15T18:29:39.088Z",
+      "taskId": "T6",
+      "field": "validator",
+      "oldHash": "e3891f7f4b0eb46f2891c18dcdaccceb75c8afc09855a9bd9c45a1214641768d",
+      "newHash": "face61309b266da352248fefa1270c18f7379b048a9ca341d620d9dcd5198c28",
+      "reason": "勘误（任务文件变更，须全量重算历史轮次）"
+    },
+    {
+      "at": "2026-08-15T18:48:57.716Z",
+      "taskId": "T6",
+      "field": "prompt",
+      "oldHash": "2604d28adfbb436a38391e3cea8611420b2313f6b04ff288d9dce76634ba10c9",
+      "newHash": "603a91ca868b86646175f04da15a23ed363c22b462a6a9773973e9e20fd447f7",
+      "reason": "勘误（任务文件变更，须全量重算历史轮次）"
+    },
+    {
+      "at": "2026-08-15T18:48:57.716Z",
+      "taskId": "T6",
+      "field": "validator",
+      "oldHash": "face61309b266da352248fefa1270c18f7379b048a9ca341d620d9dcd5198c28",
+      "newHash": "17bff760b04839b3d9f8d33b0e6c7dd237c292cd98b8cd5cfae56b21f47151a9",
+      "reason": "勘误（任务文件变更，须全量重算历史轮次）"
+    }
+  ],
+  "tasks": {
+    "T1": {
+      "prompt": "7c0c47c40b279a09169ee12da78e1b2255453591ef7e8c2b2e8827ebc932b8c9",
+      "spec": "a8cc36069562b5a0018bfc010f63be818dc670db01dcb5827efcfe3cde47693e",
+      "validator": "cafc211a0d357f5bda017b0099a8465c2ceb9de0ef2f142269f8f0bbaaf1a8d2"
+    },
+    "T2": {
+      "prompt": "ffe3c77c7171cb40a137cc236f89eb3c64d38bfc39a06a1a6c7d3f1c0c8eca7c",
+      "spec": "621179a59cb2356808b623225b91caba2ab4df87d68bf5dc97eb1fba6c2541f2",
+      "validator": "2030e3807e8f7ab2f121b3a0e61f8c1437795de2ee17e2a0529c6514a5a90996"
+    },
+    "T3": {
+      "prompt": "c009ab6143eb7d4b11cdac3b2ee0514979e765502813a7c1eaa0755059804ba1",
+      "spec": "3516f35b92707e2878e678d0fc0dade19abd30a51e4d4c7952a58b72e682fa64",
+      "validator": "ba41f544a122119a19d313de04503c2b2422edc6ed94244872ced641569e3571"
+    },
+    "T4": {
+      "prompt": "0762167918b3e90cf413cccfe68f9a048904848e7dfcbbc0e979d7119129cde9",
+      "spec": "abcaaba757ad455ada4811452293bbaf4befbb800fd63f4e08fff41c3f27b408",
+      "validator": "8d6d1c7b732341fdbe219487fb09b2561f424693496ce7edbe30ad41636ecc16"
+    },
+    "T5": {
+      "prompt": "1fe2bf2b5da8868166ef42a0c2f481d32102d419322d53ce011e837f8ccf241e",
+      "spec": "3cf1b3d5c25235a3dfd0e9d9c4a4a15b6ab909635a68c5bd3df5e1cb1df51dca",
+      "validator": "af9fc5a51a61cf20e092f9f42916e7deb428f16d7eaf55372231c79b9044b6aa"
+    },
+    "T6": {
+      "prompt": "603a91ca868b86646175f04da15a23ed363c22b462a6a9773973e9e20fd447f7",
+      "spec": "68433aa768f0e8866d00b583d369fdd27f1902d39fd9ef010decc7056d07758a",
+      "validator": "17bff760b04839b3d9f8d33b0e6c7dd237c292cd98b8cd5cfae56b21f47151a9"
+    }
+  }
+}

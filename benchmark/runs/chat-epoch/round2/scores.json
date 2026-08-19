@@ -1,0 +1,361 @@
+{
+  "round": 2,
+  "versionA": "v1",
+  "versionB": "v2",
+  "scores": [
+    {
+      "round": 2,
+      "side": "A",
+      "taskId": "T1",
+      "rep": 1,
+      "version": "v1",
+      "promptSha256": "7c0c47c40b279a09169ee12da78e1b2255453591ef7e8c2b2e8827ebc932b8c9",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round2/A-T1-r1.json",
+      "result": {
+        "taskId": "T1",
+        "parseOk": true,
+        "score": 1,
+        "breakdown": {
+          "地板": 1,
+          "立柱1": 1,
+          "立柱2": 1,
+          "立柱3": 1,
+          "立柱4": 1,
+          "屋顶": 1,
+          "立柱合计": 4,
+          "iou": 1,
+          "预测元件数": 6,
+          "多余元件": 0,
+          "匹配数": 6
+        },
+        "violations": []
+      },
+      "rawScore": 1,
+      "fixes": [],
+      "unresolved": []
+    },
+    {
+      "round": 2,
+      "side": "A",
+      "taskId": "T2",
+      "rep": 1,
+      "version": "v1",
+      "promptSha256": "ffe3c77c7171cb40a137cc236f89eb3c64d38bfc39a06a1a6c7d3f1c0c8eca7c",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round2/A-T2-r1.json",
+      "result": {
+        "taskId": "T2",
+        "parseOk": true,
+        "score": 1,
+        "breakdown": {
+          "变换命中": 1,
+          "maxPosErr": 0,
+          "meanPosErr": 0,
+          "预测元件数": 3,
+          "多余元件": 0,
+          "iou": 1
+        },
+        "violations": []
+      },
+      "rawScore": 1,
+      "fixes": [],
+      "unresolved": []
+    },
+    {
+      "round": 2,
+      "side": "A",
+      "taskId": "T3",
+      "rep": 1,
+      "version": "v1",
+      "promptSha256": "c009ab6143eb7d4b11cdac3b2ee0514979e765502813a7c1eaa0755059804ba1",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round2/A-T3-r1.json",
+      "result": {
+        "taskId": "T3",
+        "parseOk": true,
+        "score": 1,
+        "breakdown": {
+          "桥面板规则命中": 6,
+          "期望板数": 6,
+          "实际板数": 6,
+          "覆盖率": 1,
+          "立柱规则命中": 6,
+          "实际柱数": 6,
+          "支撑比例": 1,
+          "多余元件": 0,
+          "空隙总和": 0,
+          "score": 1
+        },
+        "violations": []
+      },
+      "rawScore": 1,
+      "fixes": [],
+      "unresolved": []
+    },
+    {
+      "round": 2,
+      "side": "A",
+      "taskId": "T4",
+      "rep": 1,
+      "version": "v1",
+      "promptSha256": "0762167918b3e90cf413cccfe68f9a048904848e7dfcbbc0e979d7119129cde9",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round2/A-T4-r1.json",
+      "result": {
+        "taskId": "T4",
+        "parseOk": true,
+        "score": 1,
+        "breakdown": {
+          "腿数量": 4,
+          "桌面": 1,
+          "净空": 1,
+          "四象限支撑": 1,
+          "对称": 1,
+          "比例": 1,
+          "贴地": 1,
+          "无穿模": 1,
+          "健康": 1,
+          "多余元件": 0,
+          "score": 1
+        },
+        "violations": []
+      },
+      "rawScore": 1,
+      "fixes": [],
+      "unresolved": []
+    },
+    {
+      "round": 2,
+      "side": "A",
+      "taskId": "T4",
+      "rep": 2,
+      "version": "v1",
+      "promptSha256": "0762167918b3e90cf413cccfe68f9a048904848e7dfcbbc0e979d7119129cde9",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round2/A-T4-r2.json",
+      "result": {
+        "taskId": "T4",
+        "parseOk": true,
+        "score": 1,
+        "breakdown": {
+          "腿数量": 4,
+          "桌面": 1,
+          "净空": 1,
+          "四象限支撑": 1,
+          "对称": 1,
+          "比例": 1,
+          "贴地": 1,
+          "无穿模": 1,
+          "健康": 1,
+          "多余元件": 0,
+          "score": 1
+        },
+        "violations": []
+      },
+      "rawScore": 1,
+      "fixes": [],
+      "unresolved": []
+    },
+    {
+      "round": 2,
+      "side": "A",
+      "taskId": "T5",
+      "rep": 1,
+      "version": "v1",
+      "promptSha256": "1fe2bf2b5da8868166ef42a0c2f481d32102d419322d53ce011e837f8ccf241e",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round2/A-T5-r1.json",
+      "result": {
+        "taskId": "T5",
+        "parseOk": true,
+        "score": 1,
+        "breakdown": {
+          "A": 1,
+          "B": 1,
+          "C": 1,
+          "D": 1,
+          "支撑不变量": 1,
+          "预测元件数": 4,
+          "多余元件": 0,
+          "iou": 1
+        },
+        "violations": []
+      },
+      "rawScore": 1,
+      "fixes": [],
+      "unresolved": []
+    },
+    {
+      "round": 2,
+      "side": "B",
+      "taskId": "T1",
+      "rep": 1,
+      "version": "v2",
+      "promptSha256": "7c0c47c40b279a09169ee12da78e1b2255453591ef7e8c2b2e8827ebc932b8c9",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round2/B-T1-r1.json",
+      "result": {
+        "taskId": "T1",
+        "parseOk": true,
+        "score": 1,
+        "breakdown": {
+          "地板": 1,
+          "立柱1": 1,
+          "立柱2": 1,
+          "立柱3": 1,
+          "立柱4": 1,
+          "屋顶": 1,
+          "立柱合计": 4,
+          "iou": 1,
+          "预测元件数": 6,
+          "多余元件": 0,
+          "匹配数": 6
+        },
+        "violations": []
+      },
+      "rawScore": 1,
+      "fixes": [],
+      "unresolved": []
+    },
+    {
+      "round": 2,
+      "side": "B",
+      "taskId": "T2",
+      "rep": 1,
+      "version": "v2",
+      "promptSha256": "ffe3c77c7171cb40a137cc236f89eb3c64d38bfc39a06a1a6c7d3f1c0c8eca7c",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round2/B-T2-r1.json",
+      "result": {
+        "taskId": "T2",
+        "parseOk": true,
+        "score": 1,
+        "breakdown": {
+          "变换命中": 1,
+          "maxPosErr": 0,
+          "meanPosErr": 0,
+          "预测元件数": 3,
+          "多余元件": 0,
+          "iou": 1
+        },
+        "violations": []
+      },
+      "rawScore": 1,
+      "fixes": [],
+      "unresolved": []
+    },
+    {
+      "round": 2,
+      "side": "B",
+      "taskId": "T3",
+      "rep": 1,
+      "version": "v2",
+      "promptSha256": "c009ab6143eb7d4b11cdac3b2ee0514979e765502813a7c1eaa0755059804ba1",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round2/B-T3-r1.json",
+      "result": {
+        "taskId": "T3",
+        "parseOk": true,
+        "score": 1,
+        "breakdown": {
+          "桥面板规则命中": 6,
+          "期望板数": 6,
+          "实际板数": 6,
+          "覆盖率": 1,
+          "立柱规则命中": 6,
+          "实际柱数": 6,
+          "支撑比例": 1,
+          "多余元件": 0,
+          "空隙总和": 0,
+          "score": 1
+        },
+        "violations": []
+      },
+      "rawScore": 1,
+      "fixes": [],
+      "unresolved": []
+    },
+    {
+      "round": 2,
+      "side": "B",
+      "taskId": "T4",
+      "rep": 1,
+      "version": "v2",
+      "promptSha256": "0762167918b3e90cf413cccfe68f9a048904848e7dfcbbc0e979d7119129cde9",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round2/B-T4-r1.json",
+      "result": {
+        "taskId": "T4",
+        "parseOk": true,
+        "score": 1,
+        "breakdown": {
+          "腿数量": 4,
+          "桌面": 1,
+          "净空": 1,
+          "四象限支撑": 1,
+          "对称": 1,
+          "比例": 1,
+          "贴地": 1,
+          "无穿模": 1,
+          "健康": 1,
+          "多余元件": 0,
+          "score": 1
+        },
+        "violations": []
+      },
+      "rawScore": 1,
+      "fixes": [],
+      "unresolved": []
+    },
+    {
+      "round": 2,
+      "side": "B",
+      "taskId": "T4",
+      "rep": 2,
+      "version": "v2",
+      "promptSha256": "0762167918b3e90cf413cccfe68f9a048904848e7dfcbbc0e979d7119129cde9",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round2/B-T4-r2.json",
+      "result": {
+        "taskId": "T4",
+        "parseOk": true,
+        "score": 1,
+        "breakdown": {
+          "腿数量": 4,
+          "桌面": 1,
+          "净空": 1,
+          "四象限支撑": 1,
+          "对称": 1,
+          "比例": 1,
+          "贴地": 1,
+          "无穿模": 1,
+          "健康": 1,
+          "多余元件": 0,
+          "score": 1
+        },
+        "violations": []
+      },
+      "rawScore": 1,
+      "fixes": [],
+      "unresolved": []
+    },
+    {
+      "round": 2,
+      "side": "B",
+      "taskId": "T5",
+      "rep": 1,
+      "version": "v2",
+      "promptSha256": "1fe2bf2b5da8868166ef42a0c2f481d32102d419322d53ce011e837f8ccf241e",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round2/B-T5-r1.json",
+      "result": {
+        "taskId": "T5",
+        "parseOk": true,
+        "score": 1,
+        "breakdown": {
+          "A": 1,
+          "B": 1,
+          "C": 1,
+          "D": 1,
+          "支撑不变量": 1,
+          "预测元件数": 4,
+          "多余元件": 0,
+          "iou": 1
+        },
+        "violations": []
+      },
+      "rawScore": 1,
+      "fixes": [],
+      "unresolved": []
+    }
+  ]
+}

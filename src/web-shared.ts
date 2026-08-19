@@ -10,6 +10,8 @@ import { fitStroke, type FittedStroke } from './draw/fitting.js'
 import { generateModel, toStructureItems } from './draw/types.js'
 import type { ModelOptions, Stroke, TaggedItem } from './draw/types.js'
 import type { StructureItem } from './core/structure.js'
+import { resolveStructure } from './core/structure.js'
+import { checkStructure, type HealthReport } from './core/invariants.js'
 
 export const EXAMPLES = join(process.cwd(), 'examples')
 
@@ -514,4 +516,30 @@ export function exampleMeta(): { name: string; file: string; size: number; items
     const data = JSON.parse(readFileSync(p, 'utf8')) as any
     return { name: basename(f, '.json'), file: f, size, items: countItems(data) }
   })
+}
+
+/* ==================== 三期：结构健康校验 /api/validate-model 共享逻辑 ==================== */
+
+/**
+ * 校验并解析 /api/validate-model 请求体；非法时抛出中文 Error（调用方转 400）。
+ * 入参契约：{ structure: <structure.json 超集>, repair?: boolean }
+ * 输出：{ ok, violations[], fixes[], unresolved[], items }——确定性诊断，模型不可见。
+ * 论文范式（ADR-0003 提案 b）：生成后跑不变量校验并自动修复，修复不了的如实报告。
+ */
+export function validateModelResult(body: string): HealthReport & { parseOk: true } {
+  let data: unknown
+  try {
+    data = JSON.parse(body)
+  } catch {
+    throw new Error('请求体不是合法 JSON')
+  }
+  if (data === null || typeof data !== 'object' || Array.isArray(data)) {
+    throw new Error('请求体需为 { structure, repair } 对象')
+  }
+  const src = data as { structure?: unknown; repair?: unknown }
+  if (src.structure === undefined) throw new Error('缺少 structure 字段（structure.json 超集）')
+  const structure = resolveStructure(src.structure)
+  const repair = src.repair === true
+  const report = checkStructure(structure.items, repair)
+  return { ...report, parseOk: true }
 }

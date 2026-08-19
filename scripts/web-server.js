@@ -20,7 +20,7 @@ import { join } from 'node:path';
 import { resolveStructure } from '../dist/src/core/structure.js';
 import { encodeStructure } from '../dist/src/core/encoder.js';
 import { encodeGia } from '../dist/src/gia/gia-encoder.js';
-import { DOCS_FILES, exampleMeta, toGiaInput, attachmentName, docsPage, parseDrawModelRequest, drawModelResult, } from '../dist/src/web-shared.js';
+import { DOCS_FILES, exampleMeta, toGiaInput, attachmentName, docsPage, parseDrawModelRequest, drawModelResult, validateModelResult, } from '../dist/src/web-shared.js';
 const ROOT = process.cwd();
 const PORT = Number(process.env.PORT || 8787);
 const MIME = {
@@ -45,8 +45,7 @@ function sendFile(res, file, fallbackType) {
     }
 }
 function send(res, code, body, type = 'text/plain; charset=utf-8') {
-    // 开发期一律 no-cache：本地页面每次刷新都拿最新（否则浏览器启发式缓存会让用户/脚本看到旧版）
-    res.writeHead(code, { 'Content-Type': type, 'Cache-Control': 'no-cache, no-store, must-revalidate' });
+    res.writeHead(code, { 'Content-Type': type });
     res.end(body);
 }
 const server = createServer((req, res) => {
@@ -110,6 +109,21 @@ const server = createServer((req, res) => {
                 const { strokes, options } = parseDrawModelRequest(body);
                 res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
                 res.end(JSON.stringify(drawModelResult(strokes, options)));
+            }
+            catch (e) {
+                send(res, 400, e.message);
+            }
+        });
+        return;
+    }
+    if (req.method === 'POST' && url.pathname === '/api/validate-model') {
+        let body = '';
+        req.on('data', (c) => (body += c));
+        req.on('end', () => {
+            try {
+                const result = validateModelResult(body); // 先校验（可能抛错），再写响应头
+                res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' });
+                res.end(JSON.stringify(result));
             }
             catch (e) {
                 send(res, 400, e.message);

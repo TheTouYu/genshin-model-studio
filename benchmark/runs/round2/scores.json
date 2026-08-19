@@ -1,0 +1,88 @@
+{
+  "round": 2,
+  "versionA": "v2",
+  "versionB": "v3",
+  "scores": [
+    {
+      "round": 2,
+      "side": "A",
+      "taskId": "T6",
+      "rep": 1,
+      "version": "v2",
+      "promptSha256": "abc327262ae164e62c6142ac4fa5c8168fb34b6d254ebfe24d9f823f58c4f4f5",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round2/A-T6-r1.json",
+      "result": {
+        "taskId": "T6",
+        "parseOk": true,
+        "score": 0.9000000000000001,
+        "breakdown": {
+          "元件数": 383,
+          "支架杆": 4,
+          "轮半径": 0.8,
+          "环段数": 370,
+          "环覆盖": 1,
+          "吊舱数": 6,
+          "吊舱均布": 1,
+          "吊舱在轮缘": 1,
+          "支架": 1,
+          "轮心支撑": 0,
+          "吊舱在两环间": 1,
+          "吊舱竖直": 0,
+          "杆平面分离": 1,
+          "轴": 1,
+          "比例": 1,
+          "无穿模": 1,
+          "健康": 1,
+          "score": 0.9
+        },
+        "violations": [
+          "轮心无支架支撑（杆顶距轮心 > 0.2，轮心悬空）",
+          "有吊舱姿态不竖直（6 个，主轴未沿重力方向）"
+        ]
+      },
+      "rawScore": 0.9000000000000001,
+      "fixes": [],
+      "unresolved": []
+    },
+    {
+      "round": 2,
+      "side": "B",
+      "taskId": "T6",
+      "rep": 1,
+      "version": "v3",
+      "promptSha256": "abc327262ae164e62c6142ac4fa5c8168fb34b6d254ebfe24d9f823f58c4f4f5",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round2/B-T6-r1.json",
+      "result": {
+        "taskId": "T6",
+        "parseOk": true,
+        "score": 0.9500000000000002,
+        "breakdown": {
+          "元件数": 381,
+          "支架杆": 4,
+          "轮半径": 0.7,
+          "环段数": 364,
+          "环覆盖": 1,
+          "吊舱数": 6,
+          "吊舱均布": 1,
+          "吊舱在轮缘": 1,
+          "支架": 1,
+          "轮心支撑": 1,
+          "吊舱在两环间": 1,
+          "吊舱竖直": 0,
+          "杆平面分离": 1,
+          "轴": 1,
+          "比例": 1,
+          "无穿模": 1,
+          "健康": 1,
+          "score": 0.95
+        },
+        "violations": [
+          "有吊舱姿态不竖直（6 个，主轴未沿重力方向）"
+        ]
+      },
+      "rawScore": 0.9500000000000002,
+      "fixes": [],
+      "unresolved": []
+    }
+  ]
+}

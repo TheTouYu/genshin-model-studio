@@ -1,0 +1,11 @@
+{
+  "round": 1,
+  "side": "B",
+  "taskId": "T3",
+  "rep": 1,
+  "version": "v1",
+  "protocolFile": "benchmark/protocols/v0-baseline.txt",
+  "promptFile": "benchmark/tasks/T3/prompt.txt",
+  "promptSha256": "c009ab6143eb7d4b11cdac3b2ee0514979e765502813a7c1eaa0755059804ba1",
+  "raw": "（模型输出仅为推理过程文字，未输出 JSON：桥面 6 块板+6 根柱的推理正确，但最终 JSON 未落地。）\n"
+}

@@ -1,0 +1,93 @@
+{
+  "round": 3,
+  "versionA": "v3",
+  "versionB": "v4",
+  "scores": [
+    {
+      "round": 3,
+      "side": "A",
+      "taskId": "T6",
+      "rep": 1,
+      "version": "v3",
+      "promptSha256": "2604d28adfbb436a38391e3cea8611420b2313f6b04ff288d9dce76634ba10c9",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round3/A-T6-r1.json",
+      "result": {
+        "taskId": "T6",
+        "parseOk": true,
+        "score": 0.8429512391195666,
+        "breakdown": {
+          "元件数": 382,
+          "支架杆": 4,
+          "轮半径": 0.8,
+          "环段数": 370,
+          "环覆盖": 1,
+          "吊舱数": 6,
+          "吊舱均布": 0.93,
+          "吊舱在轮缘": 1,
+          "支架": 1,
+          "轮心支撑": 0,
+          "吊舱在中心平面": 1,
+          "吊舱竖直": 0,
+          "吊舱尺寸": 0,
+          "绳索挂点": 1,
+          "轮毂横撑": 1,
+          "杆平面分离": 1,
+          "轴": 1,
+          "比例": 1,
+          "无穿模": 1,
+          "健康": 1,
+          "score": 0.843
+        },
+        "violations": [
+          "轮心无支架支撑（杆顶距轮心 > 0.2，轮心悬空）",
+          "有吊舱姿态不竖直（6 个，主轴未沿重力方向）",
+          "有吊舱 z 向尺寸超过环间距 0.18（6 个）"
+        ]
+      },
+      "rawScore": 0.8429512391195666,
+      "fixes": [],
+      "unresolved": []
+    },
+    {
+      "round": 3,
+      "side": "B",
+      "taskId": "T6",
+      "rep": 1,
+      "version": "v4",
+      "promptSha256": "2604d28adfbb436a38391e3cea8611420b2313f6b04ff288d9dce76634ba10c9",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round3/B-T6-r1.json",
+      "result": {
+        "taskId": "T6",
+        "parseOk": true,
+        "score": 1,
+        "breakdown": {
+          "元件数": 387,
+          "支架杆": 4,
+          "轮半径": 0.75,
+          "环段数": 370,
+          "环覆盖": 1,
+          "吊舱数": 6,
+          "吊舱均布": 1,
+          "吊舱在轮缘": 1,
+          "支架": 1,
+          "轮心支撑": 1,
+          "吊舱在中心平面": 1,
+          "吊舱竖直": 1,
+          "吊舱尺寸": 1,
+          "绳索挂点": 1,
+          "轮毂横撑": 1,
+          "杆平面分离": 1,
+          "轴": 1,
+          "比例": 1,
+          "无穿模": 1,
+          "健康": 1,
+          "score": 1
+        },
+        "violations": []
+      },
+      "rawScore": 1,
+      "fixes": [],
+      "unresolved": []
+    }
+  ]
+}

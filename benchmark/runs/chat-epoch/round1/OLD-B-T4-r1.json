@@ -1,0 +1,11 @@
+{
+  "round": 1,
+  "side": "B",
+  "taskId": "T4",
+  "rep": 1,
+  "version": "v1",
+  "protocolFile": "benchmark/protocols/v0-baseline.txt",
+  "promptFile": "benchmark/tasks/T4/prompt.txt",
+  "promptSha256": "0762167918b3e90cf413cccfe68f9a048904848e7dfcbbc0e979d7119129cde9",
+  "raw": "（模型输出仅为推理过程文字，未输出 JSON：桌面 [1.2,0.1,0.8]@y0.55 + 四腿 0.5m@±0.5/±0.3 的设计正确，但最终 JSON 未落地。）\n"
+}

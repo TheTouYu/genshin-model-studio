@@ -122,6 +122,7 @@
   <label><input type="checkbox" id="compact"> 紧凑显示</label>
   <button id="load">加载</button>
   <button id="toggleDocs">📖 文档</button>
+  <button id="btnHistory">🕘 历史</button>
   <select id="docFile">
     <option value="README.md">README</option>
     <option value="docs/input-format.md">输入格式</option>
@@ -234,6 +235,18 @@
   <div class="pop-del"><button type="button" id="popDelete">🗑 删除此笔画</button></div>
 </div>
 
+<div id="historyPanel" style="display:none;position:fixed;top:60px;right:16px;z-index:70;width:340px;max-height:70vh;overflow:auto;background:#fff;border:1px solid #c9d2dc;border-radius:8px;box-shadow:0 6px 24px rgba(0,0,0,.18);padding:10px 12px;font-size:.82rem">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <b>历史版本（benchmark/history/）</b>
+    <span><button id="histRefresh">⟳</button> <button id="histClose">✕</button></span>
+  </div>
+  <div style="margin-bottom:8px;display:flex;gap:4px">
+    <input id="histName" placeholder="保存当前作品为版本名…" style="flex:1;padding:3px 6px;border:1px solid #c3ccd6;border-radius:4px">
+    <button id="histSave">保存</button>
+  </div>
+  <div id="histList" style="display:flex;flex-direction:column;gap:4px"></div>
+</div>
+
 <div id="rotateModal">
   <div class="modal-box">
     <div class="modal-title">🔁 旋转复制</div>
@@ -312,6 +325,77 @@ function toggleDocs() {
   }
 }
 
+// ============ 十八期：历史版本管理（benchmark/history/，网页查看 + 比对） ============
+let histPanelOpen = false
+function histRenderList() {
+  fetch('/api/history')
+    .then((r) => r.json())
+    .then((list) => {
+      const box = $('histList')
+      box.innerHTML = ''
+      if (!list.length) {
+        box.innerHTML = '<div style="color:#888">暂无历史版本（点"保存"创建第一个）</div>'
+        return
+      }
+      for (const h of list) {
+        const row = document.createElement('div')
+        row.style.cssText = 'display:flex;align-items:center;gap:6px;padding:5px 6px;border:1px solid #e1e6ec;border-radius:6px;background:#f8fafc'
+        const info = document.createElement('div')
+        info.style.flex = '1'
+        info.innerHTML = `<b>${h.name.replace(/</g, '&lt;')}</b> <span style="color:#888">${(h.time || '').slice(0, 16).replace('T', ' ')} · ${h.strokes} 笔 · ${h.items} 元件</span><br><span style="color:#a06">${h.tags.replace(/</g, '&lt;')}</span>`
+        const btnLoad = document.createElement('button')
+        btnLoad.textContent = '加载'
+        btnLoad.onclick = () => {
+          fetch(`/api/history/get?id=${encodeURIComponent(h.id)}`)
+            .then((r) => r.json())
+            .then((work) => {
+              if (window.gms && typeof window.gms.import === 'function') {
+                window.gms.import(work)
+                setStatus(`已加载历史版本：${h.name}`)
+              } else {
+                // 回退：applyWork 直载
+                if (!applyWork(work)) setStatus('历史版本加载失败', 'err')
+              }
+            })
+            .catch((e) => setStatus('历史加载失败：' + e.message, 'err'))
+        }
+        const btnDel = document.createElement('button')
+        btnDel.textContent = '🗑'
+        btnDel.onclick = () => {
+          if (!confirm(`删除历史版本「${h.name}」？`)) return
+          fetch('/api/history/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: h.id }) })
+            .then(() => histRenderList())
+        }
+        row.appendChild(info)
+        row.appendChild(btnLoad)
+        row.appendChild(btnDel)
+        box.appendChild(row)
+      }
+    })
+    .catch((e) => setStatus('历史列表失败：' + e.message, 'err'))
+}
+$('btnHistory').onclick = () => {
+  histPanelOpen = !histPanelOpen
+  $('historyPanel').style.display = histPanelOpen ? '' : 'none'
+  if (histPanelOpen) histRenderList()
+}
+$('histClose').onclick = () => { histPanelOpen = false; $('historyPanel').style.display = 'none' }
+$('histRefresh').onclick = histRenderList
+$('histSave').onclick = () => {
+  const name = ($('histName').value || '').trim() || '未命名'
+  if (!window.gms || typeof window.gms.export !== 'function') { setStatus('gms 未就绪', 'err'); return }
+  const work = window.gms.export()
+  const items = (window.gms.summary && window.gms.summary().itemCount) || 0
+  fetch('/api/history/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, tags: '手动保存', work, items }),
+  })
+    .then((r) => r.json())
+    .then((m) => { setStatus(`已保存历史版本：${m.name} (${m.id})`); $('histName').value = ''; histRenderList() })
+    .catch((e) => setStatus('保存失败：' + e.message, 'err'))
+}
+
 $('load').onclick = () => loadExample($('example').value)
 $('exportGil').onclick = () => doExport('gil')
 $('exportGia').onclick = () => doExport('gia')
@@ -367,6 +451,8 @@ loadExamples()
     items: [], // 拍平后的 structure items（预览/导出共用）
     preview: null,
     pendingItems: null, // THREE 尚未就绪时暂存
+    gmsNamed: {}, // 十八期：方法论 API——命名组件世界几何表（name → {name, type, world}）
+    gmsLinks: [], // 十八期：gms.link 声明的受力连接（{a, b, support, gap, contact}）
     lastGenError: null, // 五期：最近一次生成错误信息（gms.summary 状态栏文本用）
   }
   let activePointerId = null
@@ -1940,6 +2026,8 @@ loadExamples()
       state.batches = []
       state.selectedId = null
       state.lastGenError = null
+      state.gmsNamed = {}
+      state.gmsLinks = []
       closePopover()
       renderStrokeList()
       renderDraw()
@@ -2214,7 +2302,271 @@ loadExamples()
     }
     // 审计元数据：组件类型（最后添加的笔画即本命令产物）
     state.strokes[state.strokes.length - 1].kind = type
+    gmsPartRegister(type, spec) // 十八期：命名组件登记（方法论 API）
     return gmsSummary()
+  }
+
+  /* ---------- 十八期：方法论 API 化（命名组件 + 锚点 + 连接声明 + 受力校验） ----------
+   * 落实 METHODOLOGY.md 连接图分析三步为真实 API 能力（模型不再靠坐标心算）：
+   *   第 1 步 受力关系 → gms.link(a, b, {support}) 声明连接并强制校验实体接触
+   *   第 2 步 逐对核验 → gms.touches(a, b) 实体距离；gms.floating() 悬空清单
+   *   第 3 步 重叠分析 → gms.collides() 未声明重叠对；gms.verify() 一键汇总
+   * 锚点 gms.point(name, slot) 返回组件表面世界坐标（center/top/bottom/front/back/end1/end2）。
+   * 约束是硬性的：link 未接触直接抛错（间隙值给模型），比文档约束可靠。 */
+  function gmsPartRegister(type, spec) {
+    if (spec.name === undefined) return null
+    if (typeof spec.name !== 'string' || !spec.name) throw new Error(`part.name 参数非法：应为非空字符串，当前值为 ${JSON.stringify(spec.name)}`)
+    if (state.gmsNamed[spec.name]) throw new Error(`part.name 重复：${spec.name} 已存在（同名组件只能登记一次）`)
+    const x = spec.x ?? 0, y = spec.y ?? 0, z = spec.z ?? 0
+    let world = null
+    if (type === 'rod') {
+      world = { kind: 'rod', a: [spec.x1, spec.y1, z], b: [spec.x2, spec.y2, z], rad: (spec.size ?? 0.03) / 2 }
+    } else if (type === 'ring') {
+      world = { kind: 'ring', c: [x, y, z], r: spec.r, tube: (spec.size ?? 0.03) / 2 }
+    } else if (type === 'disc' || type === 'el-disc') {
+      const rr = type === 'disc' ? (spec.r ?? 0.05) : Math.max(spec.rx ?? 0.1, spec.ry ?? 0.05)
+      const half = (spec.thick ?? 0.01) / 2
+      const axis = spec.axis === undefined ? 'up' : spec.axis
+      const base = { up: [0, 1, 0], front: [0, 0, 1], side: [1, 0, 0] }[axis]
+      let dir = base
+      const rot = spec.rotation
+      if (rot !== undefined) {
+        // 实测导出语义：el-disc axis=front + rotation=[0,0,0] → 轴向 Y（rotation 覆盖 axis 默认朝向）
+        if (rot[0] === 0 && rot[1] === 0 && rot[2] === 0 && axis === 'front') dir = [0, 1, 0]
+        else dir = base
+      }
+      world = { kind: 'cyl', c: [x, y, z], dir, rad: rr, half }
+    } else if (type === 'plate') {
+      world = { kind: 'box', c: [x, y, z], half: [(spec.len ?? 0.03) / 2, (spec.wid ?? 0.004) / 2, (spec.thick ?? 0.0015) / 2] }
+    }
+    if (!world) return null
+    state.gmsNamed[spec.name] = { name: spec.name, type, world }
+    return { name: spec.name, world }
+  }
+
+  function gmsWorldBBox(w) {
+    if (w.kind === 'rod') {
+      const xs = [w.a[0], w.b[0]], ys = [w.a[1], w.b[1]], zs = [w.a[2], w.b[2]]
+      return { minX: Math.min(...xs) - w.rad, maxX: Math.max(...xs) + w.rad, minY: Math.min(...ys) - w.rad, maxY: Math.max(...ys) + w.rad, minZ: Math.min(...zs) - w.rad, maxZ: Math.max(...zs) + w.rad }
+    }
+    if (w.kind === 'cyl') {
+      const [cx, cy, cz] = w.c, [dx, dy, dz] = w.dir
+      const hx = Math.abs(dx) * w.half + w.rad, hy = Math.abs(dy) * w.half + w.rad, hz = Math.abs(dz) * w.half + w.rad
+      return { minX: cx - hx, maxX: cx + hx, minY: cy - hy, maxY: cy + hy, minZ: cz - hz, maxZ: cz + hz }
+    }
+    if (w.kind === 'ring') {
+      const rr = w.r + w.tube
+      return { minX: w.c[0] - rr, maxX: w.c[0] + rr, minY: w.c[1] - rr, maxY: w.c[1] + rr, minZ: w.c[2] - w.tube, maxZ: w.c[2] + w.tube }
+    }
+    if (w.kind === 'box') {
+      return { minX: w.c[0] - w.half[0], maxX: w.c[0] + w.half[0], minY: w.c[1] - w.half[1], maxY: w.c[1] + w.half[1], minZ: w.c[2] - w.half[2], maxZ: w.c[2] + w.half[2] }
+    }
+    return { minX: 0, maxX: 0, minY: 0, maxY: 0, minZ: 0, maxZ: 0 }
+  }
+
+  // 线段-线段最近距离（3D 标准算法，返回 {d, s1, s2} 最近点参数）
+  function segSegDist(p, q, r, s) {
+    const d1 = [q[0]-p[0], q[1]-p[1], q[2]-p[2]]
+    const d2 = [s[0]-r[0], s[1]-r[1], s[2]-r[2]]
+    const rp = [r[0]-p[0], r[1]-p[1], r[2]-p[2]]
+    const a = d1[0]*d1[0]+d1[1]*d1[1]+d1[2]*d1[2]
+    const e = d2[0]*d2[0]+d2[1]*d2[1]+d2[2]*d2[2]
+    const f = d2[0]*rp[0]+d2[1]*rp[1]+d2[2]*rp[2]
+    const EPS = 1e-9
+    let s1 = 0, s2 = 0
+    if (a <= EPS && e <= EPS) return { d: Math.hypot(rp[0], rp[1], rp[2]), s1: 0, s2: 0 }
+    if (a <= EPS) {
+      s2 = Math.max(0, Math.min(1, f/e))
+      const qx = r[0]+d2[0]*s2, qy = r[1]+d2[1]*s2, qz = r[2]+d2[2]*s2
+      return { d: Math.hypot(p[0]-qx, p[1]-qy, p[2]-qz), s1: 0, s2 }
+    }
+    const c = d1[0]*rp[0]+d1[1]*rp[1]+d1[2]*rp[2]
+    const b = d1[0]*d2[0]+d1[1]*d2[1]+d1[2]*d2[2]
+    const denom = a*e-b*b
+    // 符号约定：f = d2·(r-p)（r=线段2起点）。无约束解 s*=(c*e-b*f)/denom（2026-08-16 实测修正：
+    // 原 +b*f 在斜杆共端点场景双向不对称——水平垂直时 b=0 掩盖，斜杆时暴露）；
+    // 边界修正（固定 t 后求 s 的最优）顶点在 s=c/a（t=0）或 s=(c+b)/a（t=1）。
+    if (denom > EPS) {
+      s1 = Math.max(0, Math.min(1, (c*e-b*f)/denom))
+    }
+    s2 = (b*s1-f)/e
+    if (s2 < 0) { s2 = 0; s1 = Math.max(0, Math.min(1, c/a)) }
+    else if (s2 > 1) { s2 = 1; s1 = Math.max(0, Math.min(1, (c+b)/a)) }
+    const px = p[0]+d1[0]*s1, py = p[1]+d1[1]*s1, pz = p[2]+d1[2]*s1
+    const qx = r[0]+d2[0]*s2, qy = r[1]+d2[1]*s2, qz = r[2]+d2[2]*s2
+    return { d: Math.hypot(px-qx, py-qy, pz-qz), s1, s2 }
+  }
+
+  // 点到环管距离（返回 {gap, pt}：pt = 环管上最近点）
+  function pointRingGap(pt, w) {
+    const dx = pt[0]-w.c[0], dy = pt[1]-w.c[1]
+    const rr = Math.hypot(dx, dy)
+    const radial = rr - w.r
+    const dz = pt[2]-w.c[2]
+    const nr = rr > 1e-9 ? w.r / rr : 1
+    return { gap: Math.hypot(radial, dz) - w.tube, pt: [w.c[0]+dx*nr, w.c[1]+dy*nr, pt[2]] }
+  }
+
+  // 组件实体最近间隙（负 = 相交），返回 {gap, pa, pb} 最近点对；ring 用组件中心线采样近似
+  function gmsGeomGap(w1, w2) {
+    const seg = (w) => w.kind === 'rod' ? [w.a, w.b] : (w.kind === 'cyl' ? [w.c.map((v,i)=>v-w.dir[i]*w.half), w.c.map((v,i)=>v+w.dir[i]*w.half)] : null)
+    const s1 = seg(w1), s2 = seg(w2)
+    if (s1 && s2) {
+      const r = segSegDist(s1[0], s1[1], s2[0], s2[1])
+      const pa = [s1[0][0]+(s1[1][0]-s1[0][0])*r.s1, s1[0][1]+(s1[1][1]-s1[0][1])*r.s1, s1[0][2]+(s1[1][2]-s1[0][2])*r.s1]
+      const pb = [s2[0][0]+(s2[1][0]-s2[0][0])*r.s2, s2[0][1]+(s2[1][1]-s2[0][1])*r.s2, s2[0][2]+(s2[1][2]-s2[0][2])*r.s2]
+      return { gap: r.d - w1.rad - w2.rad, pa, pb }
+    }
+    if (w1.kind === 'ring' && s2) {
+      let best = null
+      for (const pt of [s2[0], s2[1], s2[0].map((v,i)=>(v+s2[1][i])/2)]) {
+        const g = pointRingGap(pt, w1)
+        if (!best || g.gap < best.gap) best = { gap: g.gap, pa: g.pt, pb: pt }
+      }
+      return best
+    }
+    if (w2.kind === 'ring' && s1) {
+      let best = null
+      for (const pt of [s1[0], s1[1], s1[0].map((v,i)=>(v+s1[1][i])/2)]) {
+        const g = pointRingGap(pt, w2)
+        if (!best || g.gap < best.gap) best = { gap: g.gap, pa: pt, pb: g.pt }
+      }
+      return best
+    }
+    if (w1.kind === 'box' || w2.kind === 'box') {
+      // 简化：中心距 - 包围盒半尺寸和
+      const b1 = gmsWorldBBox(w1), b2 = gmsWorldBBox(w2)
+      const dx = Math.max(0, Math.max(b1.minX-b2.maxX, b2.minX-b1.maxX))
+      const dy = Math.max(0, Math.max(b1.minY-b2.maxY, b2.minY-b1.maxY))
+      const dz = Math.max(0, Math.max(b1.minZ-b2.maxZ, b2.minZ-b1.maxZ))
+      const c1 = [(b1.minX+b1.maxX)/2, (b1.minY+b1.maxY)/2, (b1.minZ+b1.maxZ)/2]
+      const c2 = [(b2.minX+b2.maxX)/2, (b2.minY+b2.maxY)/2, (b2.minZ+b2.maxZ)/2]
+      return { gap: Math.hypot(dx, dy, dz), pa: c1, pb: c2 }
+    }
+    return { gap: 0, pa: [0,0,0], pb: [0,0,0] } // 兜底（不出现）
+  }
+
+  function gmsTouches(a, b) {
+    const A = state.gmsNamed[a], B = state.gmsNamed[b]
+    if (!A) throw new Error(`touches：未命名组件 ${JSON.stringify(a)}（先给 part 加 name）`)
+    if (!B) throw new Error(`touches：未命名组件 ${JSON.stringify(b)}（先给 part 加 name）`)
+    const gap = gmsGeomGap(A.world, B.world).gap
+    return { contact: gap <= 0.001, gap: Math.round(gap * 1000) / 1000 }
+  }
+
+  // 第 1 步落地：声明受力连接（硬校验——未接触直接抛错，带间隙值）
+  function gmsLink(a, b, opts) {
+    const t = gmsTouches(a, b)
+    const support = opts && opts.support // 'a' = a 支撑 b；'b' = b 支撑 a
+    if (support && support !== 'a' && support !== 'b') throw new Error(`link.support 参数非法：应为 'a'（${a} 支撑 ${b}）或 'b'（${b} 支撑 ${a}），当前值为 ${JSON.stringify(support)}`)
+    // 支撑方向 = 语义声明（承压=支撑者在下方 / 悬挂=支撑者在上方，如绳索吊座舱）；
+    // v1 只做硬校验接触，方向合理性由 gms.verify() 报告供模型复核。
+    const rec = { a, b, support: support || null, gap: t.gap, contact: t.contact }
+    state.gmsLinks.push(rec)
+    if (!t.contact) throw new Error(`link 失败：${a} 与 ${b} 未实体接触（间隙 ${t.gap} m，应 ≤ 0.001）——请用 gms.point 锚点贴合或调整坐标`)
+    return { ok: true, gap: t.gap }
+  }
+
+  // 第 2 步落地：悬空清单（无支撑链到地面）
+  function gmsFloating() {
+    const names = Object.keys(state.gmsNamed)
+    const ground = names.filter((n) => gmsWorldBBox(state.gmsNamed[n].world).minY <= 0.001)
+    const isSupportedBy = (x, y) => {
+      const g = gmsGeomGap(state.gmsNamed[x].world, state.gmsNamed[y].world)
+      if (g.gap > 0.001) return false
+      // 支撑方向按接触点局部 y 判定（斜撑/大环/悬挂均正确）：
+      // y 的接触点不高于 x 的接触点（y 在下方或同高承托）
+      if (g.pb[1] > g.pa[1] + 0.02) return false
+      const bx = gmsWorldBBox(state.gmsNamed[x].world), by = gmsWorldBBox(state.gmsNamed[y].world)
+      return bx.minX <= by.maxX && bx.maxX >= by.minX && bx.minZ <= by.maxZ && bx.maxZ >= by.minZ
+    }
+    const reachable = (start) => {
+      const seen = new Set([start])
+      const q = [start]
+      while (q.length) {
+        const x = q.shift()
+        for (const y of names) {
+          if (seen.has(y)) continue
+          if (!isSupportedBy(x, y)) continue
+          if (ground.includes(y)) return true
+          seen.add(y); q.push(y)
+        }
+      }
+      return false
+    }
+    return names.filter((n) => !ground.includes(n) && !reachable(n))
+  }
+
+  // 第 3 步落地：未声明重叠对（实体相交 > 5mm 且非 link 连接）
+  function gmsCollides() {
+    const names = Object.keys(state.gmsNamed)
+    const linked = new Set(state.gmsLinks.map((l) => [l.a, l.b].sort().join('|')))
+    const res = []
+    for (let i = 0; i < names.length; i++) {
+      for (let j = i + 1; j < names.length; j++) {
+        const a = names[i], b = names[j]
+        if (linked.has([a, b].sort().join('|'))) continue
+        const gap = gmsGeomGap(state.gmsNamed[a].world, state.gmsNamed[b].world)
+        if (gap < -0.005) res.push({ a, b, gap: Math.round(gap * 1000) / 1000 })
+      }
+    }
+    return res
+  }
+
+  // 锚点：组件表面世界坐标（模型不再心算端点/表面）
+  function gmsPoint(name, slot) {
+    const G = state.gmsNamed[name]
+    if (!G) throw new Error(`point：未命名组件 ${JSON.stringify(name)}（先给 part 加 name）`)
+    const w = G.world
+    const s = slot || 'center'
+    if (w.kind === 'rod') {
+      if (s === 'end1') return w.a.slice()
+      if (s === 'end2') return w.b.slice()
+      if (s === 'mid') return [(w.a[0]+w.b[0])/2, (w.a[1]+w.b[1])/2, (w.a[2]+w.b[2])/2]
+      if (s === 'top') return w.a[1] >= w.b[1] ? w.a.slice() : w.b.slice()
+      if (s === 'bottom') return w.a[1] <= w.b[1] ? w.a.slice() : w.b.slice()
+      throw new Error(`point 槽位非法（rod）：${JSON.stringify(s)}（可用 end1/end2/mid/top/bottom）`)
+    }
+    if (w.kind === 'cyl') {
+      const [cx, cy, cz] = w.c, [dx, dy, dz] = w.dir
+      if (s === 'center') return w.c.slice()
+      if (s === 'front') return [cx+dx*w.half, cy+dy*w.half, cz+dz*w.half]
+      if (s === 'back') return [cx-dx*w.half, cy-dy*w.half, cz-dz*w.half]
+      if (s === 'top' || s === 'bottom') {
+        const b = gmsWorldBBox(w)
+        return s === 'top' ? [(b.minX+b.maxX)/2, b.maxY, (b.minZ+b.maxZ)/2] : [(b.minX+b.maxX)/2, b.minY, (b.minZ+b.maxZ)/2]
+      }
+      throw new Error(`point 槽位非法（cyl）：${JSON.stringify(s)}（可用 center/front/back/top/bottom）`)
+    }
+    if (w.kind === 'ring') {
+      const [cx, cy, cz] = w.c
+      if (s === 'center') return w.c.slice()
+      if (s === 'top') return [cx, cy+w.r, cz]
+      if (s === 'bottom') return [cx, cy-w.r, cz]
+      if (s === 'left') return [cx-w.r, cy, cz]
+      if (s === 'right') return [cx+w.r, cy, cz]
+      throw new Error(`point 槽位非法（ring）：${JSON.stringify(s)}（可用 center/top/bottom/left/right）`)
+    }
+    throw new Error(`point：组件 ${name} 类型 ${G.type} 不支持锚点`)
+  }
+
+  function gmsVerify() {
+    const badLinks = state.gmsLinks.filter((l) => !l.contact)
+    const floating = gmsFloating()
+    const collides = gmsCollides()
+    return {
+      ok: badLinks.length === 0 && floating.length === 0 && collides.length === 0,
+      links: state.gmsLinks.map((l) => ({ a: l.a, b: l.b, support: l.support, gap: l.gap, contact: l.contact })),
+      floating,
+      collides,
+    }
+  }
+
+  function gmsParts() {
+    return Object.keys(state.gmsNamed).map((n) => {
+      const b = gmsWorldBBox(state.gmsNamed[n].world)
+      return { name: n, type: state.gmsNamed[n].type, bbox: { minX: Math.round(b.minX*1000)/1000, minY: Math.round(b.minY*1000)/1000, maxX: Math.round(b.maxX*1000)/1000, maxY: Math.round(b.maxY*1000)/1000 } }
+    })
   }
 
   function gmsList() {
@@ -2324,6 +2676,14 @@ loadExamples()
     mode: gmsMode,
     list: gmsList,
     part: gmsPart,
+    // 十八期：方法论 API（命名组件/锚点/连接声明/受力校验）
+    point: gmsPoint,
+    touches: gmsTouches,
+    link: gmsLink,
+    floating: gmsFloating,
+    collides: gmsCollides,
+    verify: gmsVerify,
+    parts: gmsParts,
   }
 
   /* ---------- 启动 ---------- */

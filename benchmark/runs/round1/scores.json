@@ -1,0 +1,80 @@
+{
+  "round": 1,
+  "versionA": "v0",
+  "versionB": "v2",
+  "scores": [
+    {
+      "round": 1,
+      "side": "A",
+      "taskId": "T6",
+      "rep": 1,
+      "version": "v0",
+      "promptSha256": "141563286403c5713a4c9b78bd349d3dc4f8cd8b58b4cefbeeb1c830dddc215a",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round1/A-T6-r1.json",
+      "result": {
+        "taskId": "T6",
+        "parseOk": true,
+        "score": 0.9500000000000001,
+        "breakdown": {
+          "元件数": 375,
+          "支架杆": 2,
+          "轮半径": 0.8,
+          "环段数": 364,
+          "环覆盖": 1,
+          "吊舱数": 6,
+          "吊舱均布": 1,
+          "吊舱在轮缘": 1,
+          "支架": 1,
+          "轴": 1,
+          "比例": 1,
+          "无穿模": 0,
+          "健康": 1,
+          "score": 0.95
+        },
+        "violations": [
+          "支架杆与轮环穿模",
+          "支架杆与吊舱穿模",
+          "支架杆与轮环穿模",
+          "支架杆与吊舱穿模"
+        ]
+      },
+      "rawScore": 0.9500000000000001,
+      "fixes": [],
+      "unresolved": []
+    },
+    {
+      "round": 1,
+      "side": "B",
+      "taskId": "T6",
+      "rep": 1,
+      "version": "v2",
+      "promptSha256": "141563286403c5713a4c9b78bd349d3dc4f8cd8b58b4cefbeeb1c830dddc215a",
+      "rawFile": "/home/h/genshin-model-studio/benchmark/runs/round1/B-T6-r1.json",
+      "result": {
+        "taskId": "T6",
+        "parseOk": true,
+        "score": 1,
+        "breakdown": {
+          "元件数": 373,
+          "支架杆": 2,
+          "轮半径": 0.6,
+          "环段数": 364,
+          "环覆盖": 1,
+          "吊舱数": 6,
+          "吊舱均布": 1,
+          "吊舱在轮缘": 1,
+          "支架": 1,
+          "轴": 1,
+          "比例": 1,
+          "无穿模": 1,
+          "健康": 1,
+          "score": 1
+        },
+        "violations": []
+      },
+      "rawScore": 1,
+      "fixes": [],
+      "unresolved": []
+    }
+  ]
+}

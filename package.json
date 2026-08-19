@@ -15,6 +15,7 @@
     "gen-model": "npm run build --silent && node dist/src/cli/gen-model.js",
     "gen-gia": "npm run build --silent && node dist/src/gia/gia-encoder.js",
     "test": "npm run build --silent && node --test \"dist/tests/*.test.js\"",
+    "benchmark": "npm run build --silent && node dist/src/benchmark/runner.js",
     "web": "npm run build --silent && node scripts/web-server.js"
   },
   "devDependencies": {

@@ -1,0 +1,11 @@
+{
+  "round": 2,
+  "side": "A",
+  "taskId": "T3",
+  "rep": 1,
+  "version": "v1",
+  "protocolFile": "benchmark/protocols/v0-baseline.txt",
+  "promptFile": "benchmark/tasks/T3/prompt.txt",
+  "promptSha256": "c009ab6143eb7d4b11cdac3b2ee0514979e765502813a7c1eaa0755059804ba1",
+  "raw": "{\"name\": \"拱桥\", \"items\": [{\"resourceId\": 10009001, \"position\": [-1.25, 0.85, 0], \"rotation\": [0, 0, 0], \"scale\": [0.5, 0.1, 1.6]}, {\"resourceId\": 10009001, \"position\": [-1.25, 0.4, 0], \"rotation\": [0, 0, 0], \"scale\": [0.12, 0.8, 0.12]}, {\"resourceId\": 10009001, \"position\": [-0.75, 0.85, 0], \"rotation\": [0, 0, 0], \"scale\": [0.5, 0.1, 1.6]}, {\"resourceId\": 10009001, \"position\": [-0.75, 0.4, 0], \"rotation\": [0, 0, 0], \"scale\": [0.12, 0.8, 0.12]}, {\"resourceId\": 10009001, \"position\": [-0.25, 0.85, 0], \"rotation\": [0, 0, 0], \"scale\": [0.5, 0.1, 1.6]}, {\"resourceId\": 10009001, \"position\": [-0.25, 0.4, 0], \"rotation\": [0, 0, 0], \"scale\": [0.12, 0.8, 0.12]}, {\"resourceId\": 10009001, \"position\": [0.25, 0.85, 0], \"rotation\": [0, 0, 0], \"scale\": [0.5, 0.1, 1.6]}, {\"resourceId\": 10009001, \"position\": [0.25, 0.4, 0], \"rotation\": [0, 0, 0], \"scale\": [0.12, 0.8, 0.12]}, {\"resourceId\": 10009001, \"position\": [0.75, 0.85, 0], \"rotation\": [0, 0, 0], \"scale\": [0.5, 0.1, 1.6]}, {\"resourceId\": 10009001, \"position\": [0.75, 0.4, 0], \"rotation\": [0, 0, 0], \"scale\": [0.12, 0.8, 0.12]}, {\"resourceId\": 10009001, \"position\": [1.25, 0.85, 0], \"rotation\": [0, 0, 0], \"scale\": [0.5, 0.1, 1.6]}, {\"resourceId\": 10009001, \"position\": [1.25, 0.4, 0], \"rotation\": [0, 0, 0], \"scale\": [0.12, 0.8, 0.12]}]}\n"
+}

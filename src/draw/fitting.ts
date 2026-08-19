@@ -204,12 +204,16 @@ export function fitStroke(stroke: Stroke, sampleCount: number, opts: FitOptions 
   const closed = detectClosed(poly)
   // 十六期：3D 点集（弧线等）不细分——程序生成的稀疏点已是最终形状，
   // 按原始点数重采样（9 点 → 8 段/根；Chaikin 后点数会膨胀，必须用原始点数）
+  // 十七期（benchmark T6 发现）：直线（RDP 抽稀后 ≤2 点）不细分——直线 1 段即最优表示，
+  // 重采样成 count 段只会把一根杆拆成 60 个元件（元件爆炸/核验困难/编码体积），视觉完全相同。
   const target =
     hasZ && zScale > 0
       ? stroke.points.length
       : closed && opts.keepClosedDetail
         ? Math.max(rdpCount, sampleCount * 3)
-        : sampleCount
+        : poly.length <= 2
+          ? poly.length
+          : sampleCount
   poly = resampleUniform(poly, target, zScale)
   // 十四期：输入无 z（旧 2D 笔画）时还原 2 元素点（兼容既有断言/消费方）
   return { id: stroke.id, points: hasZ ? poly : poly.map(([x, y]) => [x, y]), closed }

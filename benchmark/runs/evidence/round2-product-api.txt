@@ -1,0 +1,9 @@
+== npm test (86 tests, 含 29 golden) ==
+ℹ tests 86
+ℹ pass 86
+ℹ fail 0
+
+== /api/validate-model 本地冒烟（PORT=8797）==
+合法结构 → ok:true, violations:[]
+悬空块+repair → violations 检出 + unresolved 如实报告
+非法请求 → HTTP 400 中文诊断

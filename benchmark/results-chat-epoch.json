@@ -1,0 +1,186 @@
+{
+  "rounds": [
+    {
+      "round": 1,
+      "versionA": "v0",
+      "versionB": "v1",
+      "adopted": true,
+      "adoptReason": "5/5 任务 B≥A，采纳候选版本",
+      "tasks": {
+        "T1": {
+          "A": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "B": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "aRaw": 1,
+          "bRaw": 1
+        },
+        "T2": {
+          "A": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "B": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "aRaw": 1,
+          "bRaw": 1
+        },
+        "T3": {
+          "A": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "B": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "aRaw": 1,
+          "bRaw": 1
+        },
+        "T4": {
+          "A": {
+            "score": 1,
+            "reps": [
+              1,
+              1
+            ]
+          },
+          "B": {
+            "score": 1,
+            "reps": [
+              1,
+              1
+            ]
+          },
+          "aRaw": 1,
+          "bRaw": 1
+        },
+        "T5": {
+          "A": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "B": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "aRaw": 1,
+          "bRaw": 1
+        }
+      }
+    },
+    {
+      "round": 2,
+      "versionA": "v1",
+      "versionB": "v2",
+      "adopted": true,
+      "adoptReason": "5/5 任务 B≥A，采纳候选版本",
+      "tasks": {
+        "T1": {
+          "A": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "B": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "aRaw": 1,
+          "bRaw": 1
+        },
+        "T2": {
+          "A": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "B": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "aRaw": 1,
+          "bRaw": 1
+        },
+        "T3": {
+          "A": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "B": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "aRaw": 1,
+          "bRaw": 1
+        },
+        "T4": {
+          "A": {
+            "score": 1,
+            "reps": [
+              1,
+              1
+            ]
+          },
+          "B": {
+            "score": 1,
+            "reps": [
+              1,
+              1
+            ]
+          },
+          "aRaw": 1,
+          "bRaw": 1
+        },
+        "T5": {
+          "A": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "B": {
+            "score": 1,
+            "reps": [
+              1
+            ]
+          },
+          "aRaw": 1,
+          "bRaw": 1
+        }
+      }
+    }
+  ]
+}

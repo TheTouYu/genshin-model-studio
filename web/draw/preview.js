@@ -268,6 +268,27 @@
     // ---- 轨道状态（球坐标：yaw=绕 Y 方位角 theta，pitch=极角 phi，radius=视距）----
     var orbit = { yaw: 0.65, pitch: 0.85, radius: 6, target: new THREE.Vector3(0, 0, 0) }
 
+    // ---- 键盘 WASD+EQ 平移（十八期 v2）：W/S 前后(z)、A/D 左右(x)、E/Q 高度(y) ----
+    // 用户要求：WASD 只做平面移动（不含高度变化），E/Q 单独控制高度。
+    var keysDown = {}
+    function onKeyDown(e) {
+      if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return
+      keysDown[e.code] = true
+    }
+    function onKeyUp(e) { keysDown[e.code] = false }
+    function onKeyTick() {
+      if (!keysDown.KeyW && !keysDown.KeyS && !keysDown.KeyA && !keysDown.KeyD && !keysDown.KeyE && !keysDown.KeyQ) return
+      var step = orbit.radius * 0.012
+      if (keysDown.KeyW) orbit.target.z -= step
+      if (keysDown.KeyS) orbit.target.z += step
+      if (keysDown.KeyA) orbit.target.x -= step
+      if (keysDown.KeyD) orbit.target.x += step
+      if (keysDown.KeyE) orbit.target.y += step
+      if (keysDown.KeyQ) orbit.target.y -= step
+      applyCamera()
+      renderer.render(scene, camera)
+    }
+
     function applyCamera() {
       var phi = clamp(orbit.pitch, 0.05, Math.PI - 0.05) // 防止越过天顶/地底导致翻转
       var offset = new THREE.Vector3().setFromSpherical(new THREE.Spherical(orbit.radius, phi, orbit.yaw))
@@ -347,6 +368,8 @@
     canvasEl.addEventListener('pointerup', onPointerUp)
     canvasEl.addEventListener('pointercancel', onPointerUp)
     canvasEl.addEventListener('wheel', onWheel, { passive: false })
+    global.addEventListener('keydown', onKeyDown)
+    global.addEventListener('keyup', onKeyUp)
 
     // ---- 动画循环常开（几何量小，无需按需渲染）----
     // 注意：r160 UMD 版 three.min.js 的 setAnimationLoop 走 WebXR 路径，非 XR 环境不驱动回调，
@@ -355,6 +378,7 @@
     function renderFrame() {
       if (!rafId) return // dispose 后停止
       applyCamera()
+      onKeyTick()
       renderer.render(scene, camera)
       rafId = requestAnimationFrame(renderFrame)
     }
@@ -428,6 +452,8 @@
     function dispose() {
       rafId = 0 // 停止 rAF 循环
       global.removeEventListener('resize', resize)
+      global.removeEventListener('keydown', onKeyDown)
+      global.removeEventListener('keyup', onKeyUp)
       if (ro) ro.disconnect()
       canvasEl.removeEventListener('pointerdown', onPointerDown)
       canvasEl.removeEventListener('pointermove', onPointerMove)

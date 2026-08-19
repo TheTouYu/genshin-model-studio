@@ -1,0 +1,11 @@
+{
+  "round": 1,
+  "side": "B",
+  "taskId": "T2",
+  "rep": 1,
+  "version": "v1",
+  "protocolFile": "benchmark/protocols/v0-baseline.txt",
+  "promptFile": "benchmark/tasks/T2/prompt.txt",
+  "promptSha256": "ffe3c77c7171cb40a137cc236f89eb3c64d38bfc39a06a1a6c7d3f1c0c8eca7c",
+  "raw": "（模型输出仅为推理过程文字，未输出 JSON：长凳变换推理正确但最终 JSON 未落地。）\n"
+}

@@ -13,9 +13,13 @@
  *   POST /api/draw-model         二期画线建模（strokes+options → items/fitted/closed）
  *   POST /api/export?format=gil|gia    导出文件
  *   GET  /docs?file=...          文档页（Markdown 渲染）
+ *   GET  /api/history            历史版本列表（benchmark/history/）
+ *   GET  /api/history/get?id=    取历史版本 work.json
+ *   POST /api/history/save       保存当前作品为新版本
+ *   POST /api/history/delete     删除历史版本
  */
 import { createServer } from 'node:http'
-import { readFileSync } from 'node:fs'
+import { readFileSync, writeFileSync, mkdirSync, readdirSync, statSync, existsSync, rmSync } from 'node:fs'
 import { join } from 'node:path'
 import { resolveStructure } from '../src/core/structure.js'
 import { encodeStructure } from '../src/core/encoder.js'
@@ -28,9 +32,11 @@ import {
   docsPage,
   parseDrawModelRequest,
   drawModelResult,
+  validateModelResult,
 } from '../src/web-shared.js'
 
 const ROOT = process.cwd()
+const HISTORY_DIR = join(ROOT, 'benchmark', 'history')
 const PORT = Number(process.env.PORT || 8787)
 
 const MIME: Record<string, string> = {
@@ -97,6 +103,82 @@ const server = createServer((req, res) => {
     }
     return
   }
+  const histIdOk = (id: string): boolean => id.length >= 1 && id.length <= 80 && !id.includes('/') && !id.includes('\\') && !id.includes('..')
+  const historyList = (): { id: string; name: string; time: string; strokes: number; items: number; tags: string }[] => {
+    if (!existsSync(HISTORY_DIR)) return []
+    const out: { id: string; name: string; time: string; strokes: number; items: number; tags: string }[] = []
+    for (const id of readdirSync(HISTORY_DIR)) {
+      if (!histIdOk(id)) continue
+      const metaFile = join(HISTORY_DIR, id, 'meta.json')
+      if (!existsSync(metaFile)) continue
+      try {
+        const m = JSON.parse(readFileSync(metaFile, 'utf8'))
+        out.push({ id, name: m.name || id, time: m.time || '', strokes: m.strokes || 0, items: m.items || 0, tags: m.tags || '' })
+      } catch {
+        /* 跳过损坏 meta */
+      }
+    }
+    out.sort((a, b) => (a.time < b.time ? 1 : -1))
+    return out
+  }
+  if (req.method === 'GET' && url.pathname === '/api/history') {
+    send(res, 200, JSON.stringify(historyList()), 'application/json')
+    return
+  }
+  if (req.method === 'GET' && url.pathname === '/api/history/get') {
+    const id = url.searchParams.get('id') ?? ''
+    const file = join(HISTORY_DIR, id, 'work.json')
+    if (!histIdOk(id) || !file.startsWith(HISTORY_DIR) || !existsSync(file)) {
+      send(res, 404, 'history not found')
+      return
+    }
+    send(res, 200, readFileSync(file), 'application/json')
+    return
+  }
+  if (req.method === 'POST' && url.pathname === '/api/history/save') {
+    let body = ''
+    req.on('data', (c) => (body += c))
+    req.on('end', () => {
+      try {
+        const reqBody = JSON.parse(body)
+        const work = reqBody.work
+        if (!work || typeof work !== 'object' || !Array.isArray(work.strokes)) throw new Error('work 非法（需 {strokes, options}）')
+        const name = String(reqBody.name || '未命名').slice(0, 40)
+        const tags = String(reqBody.tags || '').slice(0, 60)
+        const id = 'v' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
+        mkdirSync(join(HISTORY_DIR, id), { recursive: true })
+        writeFileSync(join(HISTORY_DIR, id, 'work.json'), JSON.stringify(work))
+        const meta = {
+          id, name, tags,
+          time: new Date().toISOString(),
+          strokes: work.strokes.length,
+          items: Number(reqBody.items) || 0,
+        }
+        writeFileSync(join(HISTORY_DIR, id, 'meta.json'), JSON.stringify(meta, null, 1))
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' })
+        res.end(JSON.stringify(meta))
+      } catch (e) {
+        send(res, 400, (e as Error).message)
+      }
+    })
+    return
+  }
+  if (req.method === 'POST' && url.pathname === '/api/history/delete') {
+    let body = ''
+    req.on('data', (c) => (body += c))
+    req.on('end', () => {
+      try {
+        const { id } = JSON.parse(body)
+        if (!histIdOk(id)) throw new Error('id 非法')
+        rmSync(join(HISTORY_DIR, id), { recursive: true, force: true })
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' })
+        res.end(JSON.stringify({ ok: true }))
+      } catch (e) {
+        send(res, 400, (e as Error).message)
+      }
+    })
+    return
+  }
   if (req.method === 'GET' && url.pathname === '/api/examples') {
     send(res, 200, JSON.stringify(exampleMeta(), null, 2), 'application/json')
     return
@@ -119,6 +201,20 @@ const server = createServer((req, res) => {
         const { strokes, options } = parseDrawModelRequest(body)
         res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' })
         res.end(JSON.stringify(drawModelResult(strokes, options)))
+      } catch (e) {
+        send(res, 400, (e as Error).message)
+      }
+    })
+    return
+  }
+  if (req.method === 'POST' && url.pathname === '/api/validate-model') {
+    let body = ''
+    req.on('data', (c) => (body += c))
+    req.on('end', () => {
+      try {
+        const result = validateModelResult(body) // 先校验（可能抛错），再写响应头
+        res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8' })
+        res.end(JSON.stringify(result))
       } catch (e) {
         send(res, 400, (e as Error).message)
       }

@@ -9,3 +9,4 @@ examples/*.summary.json
 .env*
 .bh/
 .dsh/
+voxel-3d-to-2d/
