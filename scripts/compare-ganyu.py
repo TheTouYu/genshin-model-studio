@@ -34,7 +34,7 @@ def clean(m):
 
 def bbox(m):
     colcnt = m.sum(axis=0); rowcnt = m.sum(axis=1)
-    xs = np.where(colcnt > 40)[0]; ys = np.where(rowcnt > 5)[0]
+    xs = np.where(colcnt > 12)[0]; ys = np.where(rowcnt > 4)[0]
     return xs.min(), ys.min(), xs.max(), ys.max()
 
 def norm_mask(m, H=640):
@@ -62,7 +62,7 @@ def center_pad(m, W, H=640):
 
 def main():
     ref = Image.open('reference/ganyu-front.png')
-    model = Image.open('/tmp/ganyu-v13/view-front-clean.png')
+    model = Image.open('/tmp/ganyu-v18/view-front-clean.png')
     nr = norm_mask(mask_ref(ref))
     nm = norm_mask(mask_model(model))
     W = max(nr.shape[1], nm.shape[1])

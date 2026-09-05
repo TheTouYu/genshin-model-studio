@@ -131,61 +131,24 @@ function ringsBetween(rings, y0, y1, n) {
 }
 
 
-/* ---------- 头发：头皮壳（包住后脑）+ 刘海/侧发/长马尾飘带 ---------- */
-var headC = [0, 1.06, -0.02];
-// 发体球：顶部/后脑圆润发壳（避免面板法线/剔除导致剪影黑洞）
-window.gms.part('sphere', { x: 0, y: 1.13, z: -0.02, r: 0.088, color: HAIR3 });
-window.gms.part('sphere', { x: 0, y: 1.05, z: -0.05, r: 0.075, color: HAIR2 });
-surface([
-  { y: 0.96, cx: 0, cz: -0.03, rx: 0.055, ry: 0.055 },
-  { y: 0.985, cx: 0, cz: -0.012, rx: 0.086, ry: 0.086 },
-  { y: 1.04, cx: 0, cz: -0.02, rx: 0.090, ry: 0.090 },
-  { y: 1.10, cx: 0, cz: -0.022, rx: 0.091, ry: 0.092 },
-  { y: 1.15, cx: 0, cz: -0.012, rx: 0.070, ry: 0.072 },
-], Math.round(U * 0.9), function (i, j, tm) {
-  // 前脸区域（tm≈π/2 且 i 上下边缘）露出皮肤：只包住正面外圈，脸中间露脸
-  var face = Math.abs(tm - Math.PI / 2) < Math.PI / 5 && i >= 1 && i <= 2;
-  return face ? SKIN : HAIR;
-}, 0.0015);
-for (var bi = 0; bi < 34; bi++) {
-  var hx = -0.078 + (bi / 33) * 0.156;
-  var hEnd = 1.068 - (bi % 4) * 0.008;
-  var fx = hx + ((bi % 5) - 2) * 0.004;
-  ribbon([[hx, 1.11, 0.052], [hx + (fx - hx) * 0.3, 1.09, 0.066], [hx + (fx - hx) * 0.62, 1.075, 0.073], [fx, hEnd, 0.077]],
-    [0.011, 0.010, 0.009], bi % 2 ? HAIR : HAIR2, headC);
+/* ---------- 臂（皮肤 + 白袖壳层/蓝袖口 + 黑手套） ---------- */
+function arm(side) {
+  surface([
+    { y: 0.93, cx: side * 1.0, rx: 0.024, ry: 0.024, cz: 0.0 },
+    { y: 0.86, cx: side * 1.02, rx: 0.026, ry: 0.026, cz: 0.01 },
+    { y: 0.79, cx: side * 0.90, rx: 0.024, ry: 0.024, cz: 0.02 },
+    { y: 0.74, cx: side * 1.20, rx: 0.022, ry: 0.022, cz: 0.03 },
+    { y: 0.63, cx: side * 1.58, rx: 0.020, ry: 0.020, cz: 0.04 },
+  ], Math.round(U * 0.7), function (i) { return SKIN; }, 0.0012);
+  surface(offsetRings([
+    { y: 0.93, cx: side * 1.0, rx: 0.024, ry: 0.024, cz: 0.0 },
+    { y: 0.88, cx: side * 1.05, rx: 0.026, ry: 0.026, cz: 0.005 },
+    { y: 0.80, cx: side * 1.16, rx: 0.024, ry: 0.024, cz: 0.02 },
+  ], 0.006), Math.round(U * 0.7), function () { return WHITE; }, 0.0014);
+  window.gms.part('disc', { x: side * 1.16, y: 0.80, z: 0.02, r: 0.027, thick: 0.009, axis: 'up', color: BLUE });
+  window.gms.part('disc', { x: side * 2.00, y: 0.56, z: 0.04, r: 0.024, thick: 0.016, axis: 'front', color: GLOVE });
 }
-for (var li = 0; li < 14; li++) {
-  var sx = li < 7 ? -0.078 - li * 0.003 : 0.078 + (li - 7) * 0.003;
-  var di = sx < 0 ? -1 : 1;
-  var sy = 1.10 - li * 0.008;
-  ribbon([[sx, sy, -0.012], [sx + di * 0.010, sy - 0.06, 0.03], [sx + di * 0.007, sy - 0.13, 0.03], [sx + di * 0.014, sy - 0.14, 0.02]],
-    [0.012, 0.011, 0.010], li % 2 ? HAIR : HAIR2, headC);
-}
-var tailC = [0, 0.85, -0.10];
-for (var si = 0; si < 150; si++) {
-  var ang = (si / 150) * Math.PI * 2;
-  var ox = Math.cos(ang) * 0.058, oz = -0.095 + Math.sin(ang) * 0.045;
-  var kk = si % 9;
-  ribbon([
-    [ox, 1.02, oz],
-    [ox * 0.92 + Math.sin(si * 1.7) * 0.006, 0.90, oz + 0.002],
-    [ox * 0.82 + Math.sin(si * 2.3) * 0.010, 0.76, oz + 0.004],
-    [ox * 0.72 + Math.sin(si * 1.9) * 0.012, 0.62, oz + 0.003],
-    [ox * 0.62 + Math.sin(si * 2.6) * 0.014, 0.50, oz + 0.002],
-    [ox * 0.52 + Math.sin(si * 2.1) * 0.016, 0.40, -0.082],
-    [ox * 0.42 + Math.sin(si * 2.9) * 0.018, 0.30 + (si % 4) * 0.010, -0.074],
-    [ox * 0.34 + Math.sin(si * 2.4) * 0.018, 0.26, -0.070]
-  ], [0.011, 0.011, 0.010, 0.010, 0.009, 0.008, 0.007], si % 2 ? HAIR : HAIR2, tailC);
-}
-function horn(sd) {
-  var bx = 0.062 * sd;
-  ribbon([[bx, 1.07, 0.01], [bx + 0.022 * sd, 1.13, -0.03], [bx + 0.046 * sd, 1.19, -0.09], [bx + 0.014 * sd, 1.20, -0.15]],
-    [0.022, 0.020, 0.015], HORN, headC);
-  // 内缘黑红渐变层（更暗，呼应原图红黑角）
-  ribbon([[bx + 0.004 * sd, 1.075, 0.012], [bx + 0.018 * sd, 1.14, -0.028], [bx + 0.036 * sd, 1.20, -0.088], [bx + 0.030 * sd, 1.235, -0.148]],
-    [0.012, 0.011, 0.008], '#241a20', headC);
-  window.gms.part('cone', { x: bx + 0.014 * sd, y: 1.215, z: -0.155, r: 0.009, h: 0.04, axis: 'up', color: HORN_TIP });
-}
-horn(-1); horn(1);
-window.gms.part('disc', { x: 0, y: 1.0, z: -0.09, r: 0.038, thick: 0.012, axis: 'up', color: RED });
+arm(-0.105);
+arm(0.105);
+window.gms.part('rod', { x1: 0, y1: 0.935, z: 0, x2: 0, y2: 0.985, size: 0.032, color: SKIN });
 window.__gmsBatchEnd && window.__gmsBatchEnd();

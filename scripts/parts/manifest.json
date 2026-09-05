@@ -28,7 +28,7 @@
    "id": "arms",
    "file": "ganyu-arms.js",
    "status": "done",
-   "note": "",
+   "note": "0.90/1.20/1.85/2.00 手位对齐参考张开手",
    "view": "front/side/back",
    "crop": ""
   },
@@ -44,7 +44,7 @@
    "id": "hair",
    "file": "ganyu-hair.js",
    "status": "done",
-   "note": "高位大波浪马尾150丝+波摆（对照11）；角红黑渐变内层（01）",
+   "note": "侧发贴头/马尾大波浪；角红黑渐变",
    "view": "front/side/back",
    "crop": ""
   },

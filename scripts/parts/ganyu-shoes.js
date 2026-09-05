@@ -134,8 +134,8 @@ function ringsBetween(rings, y0, y1, n) {
 /* ---------- 球鞋（对齐测得脚位 cx=±0.09） ---------- */
 window.gms.part('el-disc', { x: -0.09, y: 0.006, z: 0, rx: 0.048, ry: 0.036, thick: 0.012, axis: 'up', rotation: [0, -6, 0], color: SOLE });
 window.gms.part('el-disc', { x: 0.09, y: 0.006, z: 0, rx: 0.048, ry: 0.036, thick: 0.012, axis: 'up', rotation: [0, 6, 0], color: SOLE });
-window.gms.part('el-disc', { x: -0.09, y: 0.026, z: 0, rx: 0.044, ry: 0.032, thick: 0.028, axis: 'up', rotation: [0, -6, 0], color: BOOT });
-window.gms.part('el-disc', { x: 0.09, y: 0.026, z: 0, rx: 0.044, ry: 0.032, thick: 0.028, axis: 'up', rotation: [0, 6, 0], color: BOOT });
+window.gms.part('el-disc', { x: -0.09, y: 0.026, z: 0, rx: 0.060, ry: 0.040, thick: 0.028, axis: 'up', rotation: [0, -6, 0], color: BOOT });
+window.gms.part('el-disc', { x: 0.09, y: 0.026, z: 0, rx: 0.060, ry: 0.040, thick: 0.028, axis: 'up', rotation: [0, 6, 0], color: BOOT });
 window.gms.part('tri', { x: -0.104, y: 0.032, z: 0.026, w: 0.028, h: 0.016, thick: 0.003, axis: 'side', color: BLUE });
 window.gms.part('tri', { x: 0.104, y: 0.032, z: 0.026, w: 0.028, h: 0.016, thick: 0.003, axis: 'side', color: BLUE });
 // 鞋带（白色细杆 ×3 每只）+ 蓝鞋头三棱
