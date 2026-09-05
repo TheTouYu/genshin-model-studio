@@ -147,3 +147,64 @@ state.options = { mode, shape, size, count, heightMeters,
 - 独立预览页 `preview-demo.html` 截图 `delivery/soccer-player/after-refresh-fixed-demo.png`：头/躯干/四肢/球全部连接，不再解散
 - 交付截图更新为修复后版本（`view-*.png` 重新生成）
 
+---
+
+## 9. 附录：UI 新增能力与真人操作验证证据（2026-09-05 · 二十一期）
+
+**目标**：`window.gms.*` 程序化 API 能做的（本波足球运动员用到的）全部补齐为网页真人
+（鼠标/键盘、不写 JS）可操作的入口，保持 API ↔ UI 双向一致；既有 API 行为不变。
+
+### 9.1 新增/扩展 UI
+
+**笔画弹层（#colorPopover）**：
+- 「元件类型」下拉：默认圆柱/长方体、**球体 10009002**（选球体强制 solid，自动按轮廓直径填
+  `height=2r`、按圆心高填 `lift`，轮廓需圆/椭圆——矩形被后端中文拒绝；预览即 10009002 几何）
+- 「粗细 size（米）」：写 `stroke.size`（足球环线 0.006 vs 全局 0.03）
+- 「抬升 lift（米，≥0，仅柱体）」：写 `stroke.lift`
+- 「3D 变换」：z 偏移 → `stroke.transform.position[2]`；旋转 α/β/γ（度）→
+  `stroke.transform.rotation`；保留旋转副本 position 的 x/y，避免与 gms.rotate 副本逻辑双重生效
+
+**「组件/连接」面板（画布区左栏，等价方法论 API）**：
+- 选中笔画 → 命名：按轮廓自动识别 `disc`（圆 solid）/`el-disc`（椭圆 solid）/`plate`（矩形 solid）/
+  `rod`（开放线）/`ring`（闭合圆默认杆）/`sphere`（resourceId 球体），画布像素 + 米制标定反推
+  gmsPartRegister 的 (type, spec)
+- 两个命名组件 → 声明连接（`gms.link`，可选 support: a/b）；查询接触（`gms.touches`）；
+  查锚点（`gms.point`，center/top/bottom/front/back/end1/end2/mid/left/right）
+- 「一键总检」→ 页面显示 `gms.verify()` 的 `{ok, links, floating, collides}`（显示未接触 badLinks）
+- 命名/连接以 localStorage 可选侧边字段 `components` / `links` 持久化（不污染 strokes 语义字段），
+  刷新后自动重建注册表；删除/撤销/清空同步清理
+
+### 9.2 真人操作验证（仅页面 UI + PointerEvent，无任何 gms.* 命令）
+
+脚本：`scripts/verify-ui-soccer-player.py`（`browser-harness < scripts/verify-ui-soccer-player.py`）。
+输入为 `delivery/soccer-player/work.json` 的坐标/参数，模拟真人按图操作。
+
+| 证据 | 结果 |
+|---|---|
+| 状态栏 | `✓ 23 笔 · 15 笔封闭 · 54 个元件` |
+| 作品数据 | `delivery/ui-soccer/ui-work.json`：v3、23 笔、options={extrude, cylinder, 0.03, count 10, 460px=1m, 575px 固定原点} |
+| 语义对照 | 与 `scripts/draw-soccer-player.js` 产物 `delivery/soccer-player/work.json` 的 render/height/axis/size/lift/transform/resourceId **逐字段相等（0 mismatch）**，球体×3、size 字段×9、lift×14、transform×20 |
+| API 契约 | 直接 `POST /api/draw-model`（读 ui-work.json，不调用 gms export）：httpStatus=200；itemCount=54；resourceIds = 10009002×3 / 10009008×50 / 10009001×1；strokeItemCounts 与脚本一致 |
+| 一键总检 | `gms.verify()`（经面板按钮）：`✓ 24 条连接全接触 · 无悬空 · 无重叠`；floating=[]、collides=[]；ball-ballRing gap=-0.003 与脚本一致 |
+| 刷新稳定性 | 主页面 reload 后仍 `✓ 23 笔 · 15 笔封闭 · 54 个元件`；独立预览 `preview-demo.html` 显示 `✓ 已加载当前作品：23 笔笔画 · 54 个元件`，无解散 |
+| 截图复核 | `delivery/ui-soccer/{main-page,view-iso,view-front,view-left,preview-demo}.png`，read_image 逐张复核：球员完整（头/头发/五官、红衣白徽、蓝短裤、白袜、黑靴、足球+环线/黑块）、球体贴合右脚、草皮承托、无悬空/穿模/解散 |
+
+### 9.3 环境坑（已记入技能 §5 坑 #18-20）
+
+- Edge 152 CDP：`mousePressed` 后 `mouseMoved` 事件已派发但 ack 永不返回 → 拖画超时；
+  验证脚本改用 `PointerEvent` 合成（真实 UI 事件流），未调用任何 gms API。
+- 主页面窄视口（<900px）画布变 769×320，脚本标定是 575×460 → 验证前用
+  `Emulation.setDeviceMetricsOverride(width=1400, height=900)` 固定画布。
+- `openPreview` 弹窗可能被拦截时，用 `new_tab('/draw/preview-demo.html')` 验证同一 localStorage。
+
+### 9.4 自动化与同步
+
+- `npm run build --silent`：exit 0
+- `node --test dist/tests/*.test.js`：94/94 pass（本主题基线；工作区另含并行会话 cone 测试时为 95/95，均全绿）
+- `web/index.html` 内联 JS `node --check`：script[0]/script[1] 均 OK
+- `web/index.html` ↔ `public/index.html`、`web/draw/preview.js` ↔ `public/draw/preview.js`：哈希一致
+- 本主题未改 `window.gms.*` 签名/行为，作品 JSON 仍 v3；新增 `components`/`links` 为可选侧边字段，旧作品兼容。
+- **提交说明（用户 2026-09-06 确认）**：按用户决定，本次提交连同并行会话遗留的 `cone 10009009`
+  基础元件改动（`src/draw/generate.ts`、`src/draw/types.ts`、`src/web-shared.ts` 白名单扩展、
+  `tests/draw.test.ts` 及 `web/index.html` 中的圆锥 UI/预览）一并纳入，保证客户端/服务端一致。
+

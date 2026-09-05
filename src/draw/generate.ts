@@ -30,7 +30,7 @@
  * - stroke.height 对 rod/lathe 笔画：该笔所有 item 的 position.y += height（整体抬升）。
  */
 import type { ModelOptions, Stroke, TaggedItem, TaggedItemColor } from './types.js'
-import { BOX_RESOURCE_ID, CYLINDER_RESOURCE_ID, OPEN_CYLINDER_RESOURCE_ID, SPHERE_RESOURCE_ID } from './types.js'
+import { BOX_RESOURCE_ID, CONE_RESOURCE_ID, CYLINDER_RESOURCE_ID, OPEN_CYLINDER_RESOURCE_ID, SPHERE_RESOURCE_ID } from './types.js'
 import { adaptiveEpsilon, fitStroke, simplifyRdp, type FittedStroke, type Point } from './fitting.js'
 import type { StructureItem } from '../core/structure.js'
 
@@ -506,22 +506,41 @@ function solidColumn(
     (axis === 'front' ? [90, angleDeg, 0] : axis === 'side' ? [0, angleDeg, -90] : [0, angleDeg, 0])
   const scale3: Vec3 = shape === 'circle' ? [width, thickness, width] : [width, thickness, depth]
   const tp = stroke.transform?.position
-  // 基础元件覆盖（底层拼装）：球体 10009002——轮廓主轴直径 → 等比 scale=[D,D,D]，
-  // 位置/颜色/组语义与柱体一致（position.y = 厚度/2 + lift，gms.part('sphere') 用 lift 让中心落在 spec.y）。
-  if (stroke.resourceId === SPHERE_RESOURCE_ID) {
+  // 基础元件覆盖（底层拼装）：球体 10009002／圆锥 10009009——圆/椭圆轮廓主轴直径 → 尺寸，
+  // 位置/颜色/组语义与柱体一致（position.y = 厚度/2 + lift，gms.part 用 lift 让中心落在 spec.y）。
+  if (stroke.resourceId === SPHERE_RESOURCE_ID || stroke.resourceId === CONE_RESOURCE_ID) {
     if (shape === 'rectangle' || radii === null) {
-      throw new Error('球体渲染需要圆/椭圆轮廓（不支持矩形轮廓）')
+      throw new Error('球体/圆锥渲染需要圆/椭圆轮廓（不支持矩形轮廓）')
     }
     const d = Math.max(width, depth)
+    if (stroke.resourceId === SPHERE_RESOURCE_ID) {
+      return {
+        resourceId: SPHERE_RESOURCE_ID,
+        position: [
+          centerX + (tp?.[0] ?? 0),
+          thickness / 2 + (stroke.lift ?? 0) + (tp?.[1] ?? 0),
+          centerZ + (tp?.[2] ?? 0)
+        ],
+        rotation: [0, 0, 0],
+        scale: [d, d, d],
+        group: stroke.id,
+        ...(color === undefined ? {} : { color: itemColor(color) })
+      }
+    }
+    // 圆锥：截面直径 d、轴向长度 = thickness（高），尖端沿局部 +Y；rotation 与圆柱同规则
+    const angleDeg = (stroke.angle ?? 0) * DEG
+    const coneRotation: Vec3 =
+      stroke.transform?.rotation ??
+      (axis === 'front' ? [90, angleDeg, 0] : axis === 'side' ? [0, angleDeg, -90] : [0, angleDeg, 0])
     return {
-      resourceId: SPHERE_RESOURCE_ID,
+      resourceId: CONE_RESOURCE_ID,
       position: [
         centerX + (tp?.[0] ?? 0),
         thickness / 2 + (stroke.lift ?? 0) + (tp?.[1] ?? 0),
         centerZ + (tp?.[2] ?? 0)
       ],
-      rotation: [0, 0, 0],
-      scale: [d, d, d],
+      rotation: coneRotation,
+      scale: [d, thickness, d],
       group: stroke.id,
       ...(color === undefined ? {} : { color: itemColor(color) })
     }

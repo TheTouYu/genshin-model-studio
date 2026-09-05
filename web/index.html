@@ -68,8 +68,11 @@
   .stroke-chip.selected { border-color: #2b6cb0; box-shadow: 0 0 0 2px rgba(43,108,176,0.28); }
   .stroke-dot { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(0,0,0,0.25); flex: none; box-sizing: border-box; }
   .stroke-dot.default { background: repeating-linear-gradient(45deg, #dfe5ec 0 3px, #b9c2cc 3px 6px); }
-  #colorPopover { position: fixed; z-index: 60; background: #fff; border: 1px solid #c9d2dc; border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,0.18); padding: 0.6rem 0.7rem; display: none; min-width: 210px; }
+  #colorPopover { position: fixed; z-index: 60; background: #fff; border: 1px solid #c9d2dc; border-radius: 8px; box-shadow: 0 6px 24px rgba(0,0,0,0.18); padding: 0.6rem 0.7rem; display: none; min-width: 286px; }
   #colorPopover .pop-title { font-size: 0.8rem; color: #555; margin-bottom: 0.45rem; }
+  #colorPopover .pop-hint { margin-top: 0.15rem; font-size: 0.72rem; color: #8a5a12; line-height: 1.45; }
+  #colorPopover .pop-section { margin-top: 0.4rem; padding-top: 0.35rem; border-top: 1px dashed #e6ebf1; font-size: 0.72rem; font-weight: 600; color: #667; }
+  #colorPopover .pop-row input[type=number].rot { width: 54px; }
   #colorPopover .pop-del { margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid #e6ebf1; }
   #colorPopover .pop-del button { width: 100%; padding: 0.35rem 0.6rem; font-size: 0.82rem; border: 1px solid #d4dbe3; border-radius: 6px; background: #fff; cursor: pointer; }
   #colorPopover .pop-del button:hover { border-color: #b23; color: #b23; }
@@ -186,7 +189,7 @@
         <button id="importWork">导入作品 JSON</button>
         <input type="file" id="importFile" accept=".json,application/json" hidden>
       </div>
-      <div class="status" id="drawStatus">在画布上画线（鼠标或手指），松手自动拟合生成；画完点击笔画圆点可改颜色/渲染/高度/方向</div>
+      <div class="status" id="drawStatus">在画布上画线（鼠标或手指），松手自动拟合生成；画完点击笔画圆点可改颜色/渲染/元件类型/粗细/高度/抬升/方向/3D 变换</div>
       <details class="debug-panel" id="debugPanel">
         <summary>🔍 笔画调试信息（渲染/方向/抬升/3D 变换）</summary>
         <pre id="strokeDebug"></pre>
@@ -200,6 +203,44 @@
         </div>
         <div id="groupInfo"></div>
         <div class="warn-box" id="warnBox" hidden></div>
+      </details>
+      <details class="debug-panel" id="componentPanel">
+        <summary>🔗 组件/连接：命名 · 连接声明 · 一键总检（gms 方法论 API 的真人入口）</summary>
+        <div class="group-row">
+          <input type="text" id="compNameInput" placeholder="组件名（如 head）">
+          <button type="button" id="compNameApply" title="按轮廓自动识别组件类型并登记（disc/el-disc/plate/rod/ring/sphere）">命名选中笔画</button>
+          <button type="button" id="compNameRemove" title="取消选中笔画的命名">取消命名</button>
+        </div>
+        <div id="compList"></div>
+        <div class="group-row" style="margin-top:0.55rem">
+          <select id="compLinkA"></select><span class="muted">↔</span>
+          <select id="compLinkB"></select>
+          <select id="compSupport">
+            <option value="">无支撑方向</option>
+            <option value="a">A 支撑 B</option>
+            <option value="b">B 支撑 A</option>
+          </select>
+          <button type="button" id="compLinkApply" title="声明受力连接（gms.link）：未接触会中文报错同时记录到 badLinks">声明连接</button>
+          <button type="button" id="compTouchApply" title="查询两组件实体最近间隙（gms.touches）">查询接触</button>
+        </div>
+        <div class="group-row" style="margin-top:0.35rem">
+          <select id="compPointName"></select>
+          <select id="compPointSlot">
+            <option value="center">center</option>
+            <option value="top">top</option>
+            <option value="bottom">bottom</option>
+            <option value="front">front</option>
+            <option value="back">back</option>
+            <option value="end1">end1</option>
+            <option value="end2">end2</option>
+            <option value="mid">mid</option>
+            <option value="left">left</option>
+            <option value="right">right</option>
+          </select>
+          <button type="button" id="compPointApply" title="查询组件表面锚点世界坐标（gms.point）">查锚点</button>
+          <button type="button" id="compVerifyApply" title="一键总检：links 接触/floating/collides/badLinks（gms.verify）">一键总检</button>
+        </div>
+        <pre id="compOutput" style="margin-top:0.4rem"></pre>
       </details>
     </div>
     <div class="draw-col">
@@ -220,17 +261,27 @@
   <div class="pop-title" id="popTitle"></div>
   <div class="palette" id="popPalette"></div>
   <label class="custom-color">自定义 <input type="color" id="popCustom" value="#e5484d"></label>
+  <div class="pop-row"><label>元件类型 <select id="popResource">
+    <option value="">默认（圆柱/长方体）</option>
+    <option value="10009002">球体 10009002</option>
+  </select></label></div>
+  <div class="pop-hint" id="popResourceHint"></div>
   <div class="pop-row"><label>渲染 <select id="popRender">
     <option value="">跟随全局（缺省）</option>
     <option value="rod">杆（线）</option>
     <option value="solid">柱体（实体）</option>
   </select></label></div>
+  <div class="pop-row"><label>粗细 size（米） <input type="number" id="popSize" min="0" step="0.001" placeholder="跟随全局"></label></div>
   <div class="pop-row"><label>高度（米） <input type="number" id="popHeight" min="0" step="0.01" placeholder="0 = 不抬升"></label></div>
+  <div class="pop-row" id="popLiftRow" style="display:none"><label>抬升 lift（米，≥0） <input type="number" id="popLift" min="0" step="0.01" placeholder="0 = 贴地"></label></div>
   <div class="pop-row" id="popAxisRow" style="display:none"><label>方向 <select id="popAxis">
     <option value="up">竖直（Y）</option>
     <option value="front">水平（面向观察者）</option>
     <option value="side">侧向（X）</option>
   </select></label></div>
+  <div class="pop-section">3D 变换（z 偏移 + 最终欧拉旋转）</div>
+  <div class="pop-row"><label>z 偏移（米） <input type="number" id="popZ" step="0.001" placeholder="0"></label></div>
+  <div class="pop-row"><label>旋转 α β γ（度） <input type="number" id="popRotX" class="rot" step="1" placeholder="0"><input type="number" id="popRotY" class="rot" step="1" placeholder="0"><input type="number" id="popRotZ" class="rot" step="1" placeholder="0"></label></div>
   <div class="pop-foot">改动立即生效：重新生成并更新 3D 预览</div>
   <div class="pop-del"><button type="button" id="popDelete">🗑 删除此笔画</button></div>
 </div>
@@ -452,6 +503,7 @@ loadExamples()
     preview: null,
     pendingItems: null, // THREE 尚未就绪时暂存
     gmsNamed: {}, // 十八期：方法论 API——命名组件世界几何表（name → {name, type, world}）
+    componentNames: {}, // 二十一期：UI 命名（strokeId → 组件名；持久化，不写入 strokes 语义字段）
     gmsLinks: [], // 十八期：gms.link 声明的受力连接（{a, b, support, gap, contact}）
     lastGenError: null, // 五期：最近一次生成错误信息（gms.summary 状态栏文本用）
   }
@@ -1042,6 +1094,15 @@ loadExamples()
     // 撤销按批次：旋转复制 N-1 笔为一批，一次撤销整体取消
     const batch = state.batches.pop() || { len: 1 }
     const len = Math.min(batch.len, state.strokes.length)
+    const removed = state.strokes.slice(state.strokes.length - len)
+    for (const s of removed) {
+      const n = state.componentNames[s.id]
+      if (n) {
+        delete state.gmsNamed[n]
+        delete state.componentNames[s.id]
+        state.gmsLinks = state.gmsLinks.filter((l) => l.a !== n && l.b !== n)
+      }
+    }
     state.strokes.splice(state.strokes.length - len, len)
     state.fitted.splice(state.fitted.length - len, len)
     state.closed.splice(state.closed.length - len, len)
@@ -1058,6 +1119,9 @@ loadExamples()
     state.closed = []
     state.batches = []
     state.selectedId = null
+    state.gmsNamed = {}
+    state.componentNames = {}
+    state.gmsLinks = []
     renderStrokeList()
     renderDraw()
     scheduleGen()
@@ -1110,6 +1174,8 @@ loadExamples()
       const parts = [`#${i}`]
       if (s.render) parts.push(s.render)
       if (s.axis) parts.push(s.axis)
+      if (s.size !== undefined) parts.push(`size=${s.size}`)
+      if (s.resourceId !== undefined) parts.push(`rid=${s.resourceId}`)
       if (s.height !== undefined) parts.push(`h=${s.height}`)
       if (s.lift !== undefined) parts.push(`lift=${+s.lift.toFixed(4)}`)
       if (t) {
@@ -1126,8 +1192,9 @@ loadExamples()
   function renderStrokeList() {
     const list = el('strokeList')
     if (state.strokes.length === 0) {
-      list.innerHTML = '<span class="stroke-list-empty">还没有笔画：画线后这里列出每一笔，点击圆点可改该笔颜色/渲染/高度/方向</span>'
+      list.innerHTML = '<span class="stroke-list-empty">还没有笔画：画线后这里列出每一笔，点击圆点可改该笔颜色/渲染/元件类型/粗细/高度/抬升/方向/3D 变换</span>'
       renderGroupPanel()
+      renderComponentPanel()
       updateToolbar()
       return
     }
@@ -1142,6 +1209,7 @@ loadExamples()
       })
       .join('')
     renderGroupPanel()
+    renderComponentPanel()
     updateToolbar()
   }
 
@@ -1224,6 +1292,247 @@ loadExamples()
     }
   })
 
+  /* ---------- 二十一期：组件/连接面板（gms 方法论 API 的真人入口） ---------- */
+
+  function escHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+  }
+
+  function uiIsClosed(points) {
+    if (!points || points.length < 3) return false
+    const a = points[0]
+    const b = points[points.length - 1]
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+    for (const p of points) {
+      if (p[0] < minX) minX = p[0]
+      if (p[1] < minY) minY = p[1]
+      if (p[0] > maxX) maxX = p[0]
+      if (p[1] > maxY) maxY = p[1]
+    }
+    const diag = Math.hypot(maxX - minX, maxY - minY)
+    return diag > 0 && Math.hypot(a[0] - b[0], a[1] - b[1]) < Math.max(diag * 0.02, 1e-6)
+  }
+
+  function uiDedupeClosed(points) {
+    const out = []
+    for (const p of points) out.push([p[0], p[1], p.length > 2 ? p[2] : 0])
+    if (out.length >= 2) {
+      const a = out[0]
+      const b = out[out.length - 1]
+      if (Math.hypot(a[0] - b[0], a[1] - b[1]) < 1e-6) out.pop()
+    }
+    return out
+  }
+
+  /** 轮廓形状（前端近似）：矩形工具 4 顶点；圆/椭圆按半径方差与宽高比。 */
+  function uiShapeName(points) {
+    const p = uiDedupeClosed(points)
+    const n = p.length
+    if (n <= 5) return 'rectangle' // 矩形工具：4 顶点 + 闭合点（自由笔密点 > 5）
+    let cx = 0, cy = 0
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity
+    for (const [x, y] of p) {
+      cx += x
+      cy += y
+      if (x < minX) minX = x
+      if (y < minY) minY = y
+      if (x > maxX) maxX = x
+      if (y > maxY) maxY = y
+    }
+    cx /= n
+    cy /= n
+    let meanR = 0
+    let varR = 0
+    for (const [x, y] of p) {
+      const r = Math.hypot(x - cx, y - cy)
+      meanR += r
+      varR += r * r
+    }
+    meanR /= n
+    varR = varR / n - meanR * meanR
+    const w = maxX - minX
+    const h = maxY - minY
+    const aspect = Math.min(w, h) > 0 ? Math.max(w, h) / Math.min(w, h) : Infinity
+    if (meanR > 0 && aspect < 1.1 && varR < 0.01 * meanR * meanR) return 'circle'
+    return 'ellipse'
+  }
+
+  /** 从笔画反推 gmsPartRegister 的 (type, spec)：按轮廓识别，solid 圆→disc、椭圆→el-disc、
+   *  矩形→plate、开放线→rod、闭合圆+默认杆→ring、resourceId 球体→sphere。 */
+  function uiStrokePartInfo(stroke) {
+    const k = state.options.heightMeters / (state.options.canvasHeightPx > 0 ? state.options.canvasHeightPx : 1)
+    const cw = state.options.canvasWidthPx || drawCanvas.clientWidth || 640
+    const ch = state.options.canvasHeightPx || drawCanvas.clientHeight || 462
+    const b = strokeBBox(stroke.points)
+    const centerX = ((b.px.minX + b.px.maxX) / 2 - cw / 2) * k
+    const z = stroke.transform?.position?.[2] ?? 0
+    const thick = typeof stroke.height === 'number' && stroke.height > 0 ? stroke.height : 0.01
+    const effY = thick / 2 + (typeof stroke.lift === 'number' && stroke.lift >= 0 ? stroke.lift : 0)
+    const widthM = b.m.width
+    const heightM = b.m.height
+    const axis = stroke.axis ?? 'up'
+    const rotation = stroke.transform ? stroke.transform.rotation : undefined
+    const size = typeof stroke.size === 'number' && stroke.size > 0 ? stroke.size : state.options.size
+    const rodSpec = () => {
+      const lift = typeof stroke.height === 'number' && stroke.height > 0 ? stroke.height : 0
+      const p0 = stroke.points[0]
+      const p1 = stroke.points[stroke.points.length - 1]
+      return {
+        x1: (p0[0] - cw / 2) * k, y1: (ch - p0[1]) * k + lift, z,
+        x2: (p1[0] - cw / 2) * k, y2: (ch - p1[1]) * k + lift, size, color: stroke.color,
+      }
+    }
+    if (stroke.kind === 'rod') return { type: 'rod', spec: rodSpec() }
+    const closed = uiIsClosed(stroke.points)
+    const shape = closed ? uiShapeName(stroke.points) : null
+    if (stroke.kind === 'ring' || (stroke.render !== 'solid' && closed && shape === 'circle')) {
+      return {
+        type: 'ring',
+        spec: { x: centerX, y: (ch - (b.px.minY + b.px.maxY) / 2) * k, z, r: Math.max(widthM, heightM) / 2, size, color: stroke.color },
+      }
+    }
+    if (stroke.kind === 'sphere' || stroke.resourceId === 10009002) {
+      return { type: 'sphere', spec: { x: centerX, y: effY, z, r: Math.max(widthM, heightM) / 2, color: stroke.color } }
+    }
+    if (stroke.render === 'solid' || stroke.kind === 'disc' || stroke.kind === 'el-disc' || stroke.kind === 'plate') {
+      const common = { x: centerX, y: effY, z, color: stroke.color, axis, ...(rotation ? { rotation } : {}) }
+      if (stroke.kind === 'plate' || (!stroke.kind && shape === 'rectangle')) {
+        return { type: 'plate', spec: { ...common, len: widthM, wid: heightM, thick } }
+      }
+      if (stroke.kind === 'disc' || (!stroke.kind && shape === 'circle')) {
+        return { type: 'disc', spec: { ...common, r: widthM / 2, thick } }
+      }
+      if (stroke.kind === 'el-disc' || (!stroke.kind && shape === 'ellipse')) {
+        return { type: 'el-disc', spec: { ...common, rx: widthM / 2, ry: heightM / 2, thick } }
+      }
+    }
+    return { type: 'rod', spec: rodSpec() }
+  }
+
+  function renderComponentPanel() {
+    const box = el('compList')
+    const names = Object.keys(state.gmsNamed)
+    box.innerHTML = names.length === 0
+      ? '<span style="color:#8a97a5">还没有命名组件：选中笔画 → 输入名称 → 点「命名选中笔画」（按轮廓自动识别 disc/el-disc/plate/rod/ring/sphere）</span>'
+      : names.map((n) => {
+        const rec = state.gmsNamed[n]
+        return `<span class="group-chip" title="stroke ${escHtml(rec && rec.strokeId ? rec.strokeId : '')}"><span class="gname">${escHtml(n)}</span> · ${escHtml(rec ? rec.type : '?')}</span>`
+      }).join('')
+    const opts = names.map((n) => `<option value="${escHtml(n)}">${escHtml(n)}</option>`).join('')
+    el('compLinkA').innerHTML = opts
+    el('compLinkB').innerHTML = opts
+    el('compPointName').innerHTML = opts
+  }
+
+  function uiNameStroke() {
+    const id = state.selectedId
+    const name = el('compNameInput').value.trim()
+    if (!id) { setStatus('请先点击选中一笔笔画（列表或画布）再命名', 'err'); return }
+    if (!name) { setStatus('请输入组件名（如 head）', 'err'); return }
+    const stroke = strokeById(id)
+    if (!stroke) return
+    const info = uiStrokePartInfo(stroke)
+    if (!info || !info.spec) { setStatus('无法识别该笔画的组件类型（轮廓/渲染参数无效）', 'err'); return }
+    const oldName = state.componentNames[id]
+    if (state.gmsNamed[name] && state.gmsNamed[name].strokeId !== id) {
+      setStatus(`组件名「${name}」已被其他笔画占用：请换一个名字或先取消原命名`, 'err')
+      return
+    }
+    if (oldName && state.gmsNamed[oldName]) delete state.gmsNamed[oldName]
+    try {
+      const reg = gmsPartRegister(info.type, { ...info.spec, name })
+      if (!reg) throw new Error(`类型 ${info.type} 不支持命名登记`)
+      reg.strokeId = id
+      state.componentNames[id] = name
+    } catch (err) {
+      setStatus('命名失败：' + err.message, 'err')
+      return
+    }
+    renderStrokeList()
+    renderComponentPanel()
+    saveLocal()
+    setStatus(`✓ 已命名组件「${name}」（${info.type}）：可声明连接 / 查锚点 / 一键总检`, 'ok')
+  }
+
+  function uiUnnameStroke() {
+    const id = state.selectedId
+    if (!id) { setStatus('请先点击选中一笔笔画再取消命名', 'err'); return }
+    const name = state.componentNames[id]
+    if (!name) { setStatus('选中笔画尚未命名', 'err'); return }
+    delete state.gmsNamed[name]
+    delete state.componentNames[id]
+    state.gmsLinks = state.gmsLinks.filter((l) => l.a !== name && l.b !== name)
+    renderStrokeList()
+    renderComponentPanel()
+    saveLocal()
+    setStatus(`已取消命名「${name}」`, 'ok')
+  }
+
+  el('compNameApply').addEventListener('click', uiNameStroke)
+  el('compNameRemove').addEventListener('click', uiUnnameStroke)
+
+  el('compLinkApply').addEventListener('click', () => {
+    const a = el('compLinkA').value
+    const b = el('compLinkB').value
+    if (!a || !b) { setStatus('请先命名两个组件（至少 2 个命名组件才能声明连接）', 'err'); return }
+    if (a === b) { setStatus('连接双方不能是同一组件', 'err'); return }
+    const support = el('compSupport').value || undefined
+    try {
+      const r = gmsLink(a, b, { support })
+      el('compOutput').textContent = `link(${a}, ${b}, support=${support || '无'})\nok=true · 间隙 ${r.gap} m`
+      setStatus(`✓ 已声明连接 ${a} ↔ ${b}（接触间隙 ${r.gap} m）`, 'ok')
+    } catch (err) {
+      el('compOutput').textContent = `link(${a}, ${b}) 失败：${err.message}`
+      setStatus('连接声明失败：' + err.message, 'err')
+    }
+    renderComponentPanel()
+  })
+
+  el('compTouchApply').addEventListener('click', () => {
+    const a = el('compLinkA').value
+    const b = el('compLinkB').value
+    if (!a || !b) { setStatus('请先选择两个命名组件', 'err'); return }
+    try {
+      const r = gmsTouches(a, b)
+      el('compOutput').textContent = `touches(${a}, ${b}) = ${JSON.stringify(r)}`
+      setStatus(`touches(${a}, ${b})：contact=${r.contact} · gap=${r.gap} m`, r.contact ? 'ok' : 'err')
+    } catch (err) {
+      el('compOutput').textContent = 'touches 失败：' + err.message
+      setStatus('touches 失败：' + err.message, 'err')
+    }
+  })
+
+  el('compPointApply').addEventListener('click', () => {
+    const name = el('compPointName').value
+    const slot = el('compPointSlot').value
+    if (!name) { setStatus('请先选择命名组件', 'err'); return }
+    try {
+      const p = gmsPoint(name, slot)
+      el('compOutput').textContent = `point(${name}, ${slot}) = ${JSON.stringify(p)}`
+      setStatus(`锚点 ${name}.${slot} = [${p.map((v) => +v.toFixed(4)).join(', ')}]`, 'ok')
+    } catch (err) {
+      el('compOutput').textContent = 'point 失败：' + err.message
+      setStatus('point 失败：' + err.message, 'err')
+    }
+  })
+
+  el('compVerifyApply').addEventListener('click', () => {
+    try {
+      const v = gmsVerify()
+      el('compOutput').textContent = 'gms.verify() = ' + JSON.stringify(v, null, 2)
+      const badLinks = v.links.filter((l) => !l.contact)
+      setStatus(
+        v.ok
+          ? `✓ 一键总检通过：${v.links.length} 条连接全接触 · 无悬空 · 无重叠`
+          : `⚠ 一键总检：${v.links.length} 条连接（${badLinks.length} 条未接触）· floating ${v.floating.length} · collides ${v.collides.length}`,
+        v.ok ? 'ok' : 'err'
+      )
+    } catch (err) {
+      el('compOutput').textContent = 'verify 失败：' + err.message
+      setStatus('verify 失败：' + err.message, 'err')
+    }
+  })
+
   function selectStroke(id) {
     state.selectedId = id
     if (state.rotate && state.rotate.strokeId !== id) cancelRotate() // 换了目标则取消进行中的旋转复制
@@ -1252,10 +1561,19 @@ loadExamples()
     el('popTitle').textContent = '笔画 ' + (state.strokes.indexOf(stroke) + 1) + ' 设置（点外部关闭）'
     el('popPalette').innerHTML = swatchHTML(null, !cur, true) + PALETTE.map((c) => swatchHTML(c, cur === c)).join('')
     el('popCustom').value = cur ? '#' + cur.slice(2) : '#e5484d'
-    // 四期：渲染参数（缺省不写字段 = 跟随全局/0 抬升/竖直）
+    // 四期：渲染参数（缺省不写字段 = 跟随全局/0 抬升/竖直）；二十一期：元件类型/粗细/抬升/3D 变换
     el('popRender').value = stroke.render || ''
+    el('popResource').value = stroke.resourceId === 10009002 ? '10009002' : ''
+    el('popSize').value = stroke.size !== undefined ? String(stroke.size) : ''
     el('popHeight').value = stroke.height !== undefined ? String(stroke.height) : ''
+    el('popLift').value = stroke.lift !== undefined ? String(stroke.lift) : ''
     el('popAxis').value = stroke.axis || 'up'
+    const t0 = stroke.transform || {}
+    el('popZ').value = t0.position ? String(t0.position[2] ?? 0) : '0'
+    const r0 = t0.rotation || []
+    el('popRotX').value = r0.length ? String(r0[0]) : ''
+    el('popRotY').value = r0.length ? String(r0[1]) : ''
+    el('popRotZ').value = r0.length ? String(r0[2]) : ''
     updateAxisRow()
     pop.dataset.strokeId = strokeId
     pop.style.display = 'block'
@@ -1298,24 +1616,131 @@ loadExamples()
   /* ---- 四期：渲染参数改动 → 立即重新生成 + 预览更新（与改色同流程） ---- */
 
   function updateAxisRow() {
-    el('popAxisRow').style.display = el('popRender').value === 'solid' ? '' : 'none' // 方向仅柱体有效
+    const solid = el('popRender').value === 'solid'
+    const isSphere = el('popResource').value === '10009002'
+    el('popAxisRow').style.display = solid && !isSphere ? '' : 'none' // 方向仅柱体有效；球体忽略方向
+    el('popLiftRow').style.display = solid ? '' : 'none' // lift 仅柱体有效
+    el('popResourceHint').textContent = isSphere
+      ? '球体 10009002：仅支持柱体渲染；轮廓需为圆/椭圆（矩形会中文报错）。已按轮廓直径与圆心自动填高度/抬升，可改。'
+      : ''
   }
 
-  el('popRender').addEventListener('change', (e) => {
+  /** 弹层 3D 变换：写 stroke.transform = { position:[保留x/y, 0, z], rotation:[α,β,γ] }；
+   *  保留旋转副本 transform.position 的 x/y（不覆盖副本高度偏移），避免双重生效。 */
+  function applyPopoverTransform(s) {
+    const t = s.transform ? Object.assign({}, s.transform) : {}
+    const z = parseFloat(el('popZ').value)
+    const newZ = Number.isFinite(z) ? z : 0
+    let pos = Array.isArray(t.position) ? t.position.slice() : [0, 0, 0]
+    pos[2] = newZ
+    const needPos = newZ !== 0 || pos[0] !== 0 || pos[1] !== 0 || s.render === 'solid' || t.rotation
+    if (needPos) t.position = pos
+    else delete t.position
+    const rx = parseFloat(el('popRotX').value)
+    const ry = parseFloat(el('popRotY').value)
+    const rz = parseFloat(el('popRotZ').value)
+    const hasRot = Number.isFinite(rx) || Number.isFinite(ry) || Number.isFinite(rz)
+    if (hasRot) t.rotation = [Number.isFinite(rx) ? rx : 0, Number.isFinite(ry) ? ry : 0, Number.isFinite(rz) ? rz : 0]
+    else delete t.rotation
+    if (t.position || t.rotation) s.transform = t
+    else delete s.transform
+  }
+
+  el('popResource').addEventListener('change', (e) => {
     const s = strokeById(el('colorPopover').dataset.strokeId)
     if (!s) return
     const v = e.target.value
-    if (v === 'rod' || v === 'solid') {
-      s.render = v
-      if (v !== 'solid' && s.axis) delete s.axis // axis 仅 render='solid' 有效
+    if (v === '10009002') {
+      s.resourceId = 10009002
+      if (s.render !== 'solid') s.render = 'solid' // 球体仅柱体渲染
+      el('popRender').value = 'solid'
+      // 自动按轮廓直径/圆心推算：height=2r、lift=圆心高−r（与 gms.part('sphere') 同构）
+      const b = strokeBBox(s.points)
+      const k = state.options.heightMeters / (state.options.canvasHeightPx > 0 ? state.options.canvasHeightPx : 1)
+      const rM = Math.max(b.m.width, b.m.height) / 2
+      const centerYM = (state.options.canvasHeightPx || drawCanvas.clientHeight || 462) * k
+        - (b.px.minY + b.px.maxY) / 2 * k
+      s.height = Math.max(2 * rM, 0.001)
+      s.lift = Math.max(0, centerYM - rM)
+      el('popHeight').value = String(s.height)
+      el('popLift').value = String(s.lift)
     } else {
-      delete s.render // 跟随全局（缺省不写）
-      if (s.axis) delete s.axis
+      delete s.resourceId
     }
     updateAxisRow()
     renderStrokeList()
     renderDraw()
     scheduleGen()
+  })
+
+  el('popRender').addEventListener('change', (e) => {
+    const s = strokeById(el('colorPopover').dataset.strokeId)
+    if (!s) return
+    const v = e.target.value
+    if (s.resourceId === 10009002 && v !== 'solid') {
+      e.target.value = 'solid'
+      setStatus('球体类型仅支持柱体渲染（solid）', 'err')
+      return
+    }
+    if (v === 'rod' || v === 'solid') {
+      s.render = v
+      if (v !== 'solid') {
+        if (s.axis) delete s.axis // axis 仅 render='solid' 有效
+        if (s.resourceId) delete s.resourceId // 球体仅 solid
+        if (s.lift !== undefined) delete s.lift // lift 仅 solid
+      }
+    } else {
+      delete s.render // 跟随全局（缺省不写）
+      if (s.axis) delete s.axis
+      if (s.resourceId) delete s.resourceId
+      if (s.lift !== undefined) delete s.lift
+    }
+    updateAxisRow()
+    renderStrokeList()
+    renderDraw()
+    scheduleGen()
+  })
+
+  el('popSize').addEventListener('input', (e) => {
+    const s = strokeById(el('colorPopover').dataset.strokeId)
+    if (!s) return
+    const v = parseFloat(e.target.value)
+    if (Number.isFinite(v) && v > 0) s.size = v // 笔画级粗细 > 0 才写；缺省跟随全局
+    else delete s.size
+    renderStrokeList()
+    renderDraw()
+    scheduleGen()
+  })
+
+  el('popLift').addEventListener('input', (e) => {
+    const s = strokeById(el('colorPopover').dataset.strokeId)
+    if (!s) return
+    const v = parseFloat(e.target.value)
+    if (Number.isFinite(v) && v >= 0 && s.render === 'solid') s.lift = v
+    else delete s.lift
+    renderStrokeList()
+    renderDraw()
+    scheduleGen()
+  })
+
+  el('popZ').addEventListener('input', (e) => {
+    const s = strokeById(el('colorPopover').dataset.strokeId)
+    if (!s) return
+    applyPopoverTransform(s)
+    renderStrokeList()
+    renderDraw()
+    scheduleGen()
+  })
+
+  ;['popRotX', 'popRotY', 'popRotZ'].forEach((id) => {
+    el(id).addEventListener('input', () => {
+      const s = strokeById(el('colorPopover').dataset.strokeId)
+      if (!s) return
+      applyPopoverTransform(s)
+      renderStrokeList()
+      renderDraw()
+      scheduleGen()
+    })
   })
 
   el('popHeight').addEventListener('input', (e) => {
@@ -1514,11 +1939,14 @@ loadExamples()
 
   function writeLocal() {
     try {
-      // v3：{ version, strokes, options }；新字段仅在非缺省时写入（由笔画对象自身保证）
+      // v3：{ version, strokes, options }；新字段仅在非缺省时写入（由笔画对象自身保证）。
+      // 二十一期：components（命名注册表）/ links（受力连接）为可选侧边字段，不进入 strokes 语义字段。
       localStorage.setItem(LS_KEY, JSON.stringify({
         version: WORK_VERSION,
         strokes: state.strokes,
         options: state.options,
+        ...(Object.keys(state.componentNames).length ? { components: state.componentNames } : {}),
+        ...(state.gmsLinks.length ? { links: state.gmsLinks } : {}),
       }))
     } catch (e) { /* 隐私模式等场景忽略 */ }
   }
@@ -1589,8 +2017,8 @@ loadExamples()
         if (typeof s.height === 'number' && Number.isFinite(s.height) && s.height > 0) out.height = s.height
         // v3.3：size（笔画级粗细，十六期）必须原样保留——否则刷新/导入即丢失退回全局粗细（铁律 #1 第三次违反）
         if (typeof s.size === 'number' && Number.isFinite(s.size) && s.size > 0) out.size = s.size
-        // v3.5：resourceId（基础元件覆盖，球体 10009002）原样保留——否则刷新/导入丢失退回圆柱
-        if (s.resourceId === 10009002) out.resourceId = s.resourceId
+        // v3.5：resourceId（基础元件覆盖，球体 10009002 / 圆锥 10009009）原样保留——否则刷新/导入丢失退回圆柱
+        if (s.resourceId === 10009002 || s.resourceId === 10009009) out.resourceId = s.resourceId
         if (out.render === 'solid' && (s.axis === 'front' || s.axis === 'side')) out.axis = s.axis // 'up'=缺省不写
         // v3.1：lift（solid 离地抬升）与 transform（3D 变换）必须原样保留，否则刷新/导入即丢失（ADR-0001）
         if (typeof s.lift === 'number' && Number.isFinite(s.lift) && s.lift >= 0) out.lift = s.lift
@@ -1611,6 +2039,30 @@ loadExamples()
       })
     state.batches = state.strokes.map(() => ({ len: 1 })) // 导入/恢复后每笔一个撤销批次
     state.options = opts
+    // 二十一期：恢复组件命名注册表 + 受力连接（可选侧边字段；读取失败仅跳过该命名，不影响作品）
+    state.componentNames = {}
+    state.gmsNamed = {}
+    const compData = data.components && typeof data.components === 'object' && !Array.isArray(data.components) ? data.components : {}
+    for (const sid of Object.keys(compData)) {
+      const nm = compData[sid]
+      const stroke = state.strokes.find((st) => st.id === sid)
+      if (typeof nm !== 'string' || !nm.trim() || !stroke) continue
+      try {
+        const info = uiStrokePartInfo(stroke)
+        if (info && info.spec) {
+          const reg = gmsPartRegister(info.type, { ...info.spec, name: nm.trim() })
+          if (reg) {
+            reg.strokeId = sid
+            state.componentNames[sid] = nm.trim()
+          }
+        }
+      } catch (e) { /* 形状/参数已变化时跳过，命名面板仍可用 */ }
+    }
+    state.gmsLinks = Array.isArray(data.links)
+      ? data.links
+        .filter((l) => l && typeof l.a === 'string' && typeof l.b === 'string' && state.gmsNamed[l.a] && state.gmsNamed[l.b])
+        .map((l) => ({ a: l.a, b: l.b, support: l.support || null, gap: l.gap, contact: !!l.contact }))
+      : []
     state.selectedId = null
     syncControls()
     renderMainPalette()
@@ -1744,6 +2196,12 @@ loadExamples()
   function deleteStrokeById(id) {
     const idx = state.strokes.findIndex((s) => s.id === id)
     if (idx < 0) return false
+    const name = state.componentNames[id]
+    if (name) {
+      delete state.gmsNamed[name]
+      delete state.componentNames[id]
+      state.gmsLinks = state.gmsLinks.filter((l) => l.a !== name && l.b !== name)
+    }
     state.strokes.splice(idx, 1)
     state.fitted.splice(idx, 1)
     state.closed.splice(idx, 1)
@@ -1835,9 +2293,9 @@ loadExamples()
       o.size = opts.size
     }
     if (opts.resourceId !== undefined) {
-      // 基础元件覆盖：底层拼装基础元件统一走笔画管线（当前只支持球体 10009002）
-      if (opts.resourceId !== 10009002) {
-        throw new Error(`resourceId 参数非法：当前仅支持球体 10009002，收到 ${JSON.stringify(opts.resourceId)}`)
+      // 基础元件覆盖：底层拼装基础元件统一走笔画管线（球体 10009002 / 圆锥 10009009）
+      if (opts.resourceId !== 10009002 && opts.resourceId !== 10009009) {
+        throw new Error(`resourceId 参数非法：当前仅支持球体 10009002 / 圆锥 10009009，收到 ${JSON.stringify(opts.resourceId)}`)
       }
       o.resourceId = opts.resourceId
     }
@@ -2037,6 +2495,7 @@ loadExamples()
       state.selectedId = null
       state.lastGenError = null
       state.gmsNamed = {}
+      state.componentNames = {}
       state.gmsLinks = []
       closePopover()
       renderStrokeList()
@@ -2051,6 +2510,15 @@ loadExamples()
     if (state.strokes.length === 0) return gmsSummary()
     const batch = state.batches.pop() || { len: 1 }
     const len = Math.min(batch.len, state.strokes.length)
+    const removed = state.strokes.slice(state.strokes.length - len)
+    for (const s of removed) {
+      const n = state.componentNames[s.id]
+      if (n) {
+        delete state.gmsNamed[n]
+        delete state.componentNames[s.id]
+        state.gmsLinks = state.gmsLinks.filter((l) => l.a !== n && l.b !== n)
+      }
+    }
     state.strokes.splice(state.strokes.length - len, len)
     state.fitted.splice(state.fitted.length - len, len)
     state.closed.splice(state.closed.length - len, len)
@@ -2215,7 +2683,7 @@ loadExamples()
    * solid 的世界 x/y 由 spec 决定（画布位置只影响轮廓形状）；rod 由画布换算自动得。
    * 约束：先画贴地件（y≈厚/2）稳定 bbox 底，再画其余（世界 y 以当前 bbox 底为基准）。 */
   function gmsPart(type, spec) {
-    const TYPES = ['ring', 'rod', 'sphere', 'disc', 'el-disc', 'arc', 'plate']
+    const TYPES = ['ring', 'rod', 'poly', 'sphere', 'cone', 'disc', 'el-disc', 'arc', 'plate']
     if (!TYPES.includes(type)) throw new Error(`part 类型非法：应为 ${TYPES.join('/')}，当前值为 ${JSON.stringify(type)}`)
     if (typeof spec !== 'object' || spec === null) throw new Error(`part 参数非法：应为组件参数对象 {x,y,z,...}，当前值为 ${JSON.stringify(spec)}`)
     // 十九期同族加固（2026-09-05 刷新解散）：gms.part 的像素坐标依赖固定原点标定
@@ -2275,10 +2743,37 @@ loadExamples()
         ...base, render: 'solid', height: 2 * r, lift: y - r,
         resourceId: 10009002, transform: { position: [0, 0, z] }
       })
+    } else if (type === 'cone') {
+      // 基础元件覆盖：圆锥（10009009）——世界中心 (x,y,z)，底面半径 r（米）、高 h（米）。
+      // 尖端沿 +Y；轮廓画圆（直径 2r），height=h、lift=y−h/2 → position.y = h/2 + (y−h/2) = y。
+      const r = num(spec.r, 'r', 0.05)
+      const h = num(spec.h, 'h', 0.1)
+      if (r <= 0 || h <= 0) throw new Error(`part.r/h 参数非法：应为正数（米），当前值为 r=${JSON.stringify(spec.r)} h=${JSON.stringify(spec.h)}`)
+      const [cx, cy] = toPx(x, y)
+      addStrokeWithOpts(circlePts(cx, cy, r / k, 24), {
+        ...base, render: 'solid', height: h, lift: y - h / 2,
+        axis: spec.axis === undefined ? 'up' : spec.axis,
+        resourceId: 10009009, transform: { position: [0, 0, z] }
+      })
     } else if (type === 'rod') {
       const x1 = num(spec.x1, 'x1'), y1 = num(spec.y1, 'y1'), x2 = num(spec.x2, 'x2'), y2 = num(spec.y2, 'y2')
       const [a, b] = toPx(x1, y1), [c, d] = toPx(x2, y2)
       addStrokeWithOpts([[a, b], [c, d]], { ...base, size: spec.size !== undefined ? num(spec.size, 'size', 0.03) : 0.03, transform: z !== 0 ? { position: [0, 0, z] } : undefined })
+    } else if (type === 'poly') {
+      // 世界坐标 3D 折线（如发丝/马尾/腰带曲线）：点集 [x,y,z]（米，z 前后），
+      // 每个相邻点生成一根杆；有 z 时不细分（保持程序给定曲线形状），细节密度由点数决定。
+      if (!Array.isArray(spec.points) || spec.points.length < 2) {
+        throw new Error(`part.points 参数非法：应为世界坐标数组 [[x,y,z],...] ≥2 点，当前值为 ${JSON.stringify(spec.points)}`)
+      }
+      const out = []
+      for (const p of spec.points) {
+        if (!Array.isArray(p) || p.length < 2 || !Number.isFinite(p[0]) || !Number.isFinite(p[1])) {
+          throw new Error(`part.points 参数非法：第 ${out.length} 点应为 [x,y,z] 有限数值，当前值为 ${JSON.stringify(p)}`)
+        }
+        const [cx0, cy0] = toPx(p[0], p[1])
+        out.push(p.length > 2 && Number.isFinite(p[2]) ? [cx0, cy0, p[2]] : [cx0, cy0])
+      }
+      addStrokeWithOpts(out, { ...base, size: spec.size !== undefined ? num(spec.size, 'size', 0.012) : 0.012 })
     } else if (type === 'disc' || type === 'el-disc') {
       const thick = num(spec.thick, 'thick', 0.01)
       const axis = spec.axis === undefined ? 'up' : spec.axis
@@ -2327,8 +2822,14 @@ loadExamples()
       addStrokeWithOpts(pts, { ...base, size: spec.size !== undefined ? num(spec.size, 'size', 0.012) : 0.012, transform: { position: [0, 0, z] } })
     }
     // 审计元数据：组件类型（最后添加的笔画即本命令产物）
-    state.strokes[state.strokes.length - 1].kind = type
-    gmsPartRegister(type, spec) // 十八期：命名组件登记（方法论 API）
+    const lastStroke = state.strokes[state.strokes.length - 1]
+    lastStroke.kind = type
+    const reg = gmsPartRegister(type, spec) // 十八期：命名组件登记（方法论 API）
+    if (reg && spec.name) {
+      reg.strokeId = lastStroke.id
+      state.componentNames[lastStroke.id] = spec.name // 二十一期：持久化命名（sketch 侧边字段）
+    }
+    renderComponentPanel()
     return gmsSummary()
   }
 
@@ -2347,10 +2848,18 @@ loadExamples()
     let world = null
     if (type === 'rod') {
       world = { kind: 'rod', a: [spec.x1, spec.y1, z], b: [spec.x2, spec.y2, z], rad: (spec.size ?? 0.03) / 2 }
+    } else if (type === 'poly') {
+      // 3D 折线：接触校验近似为首尾杆（细节件一般不命名；命名时仅作粗略登记）
+      const p0 = spec.points[0], p1 = spec.points[spec.points.length - 1]
+      world = { kind: 'rod', a: [p0[0], p0[1], p0[2] ?? 0], b: [p1[0], p1[1], p1[2] ?? 0], rad: (spec.size ?? 0.012) / 2 }
     } else if (type === 'sphere') {
       // 球体接触校验近似为等高圆柱（同一中心/包络盒），供 touches/link/floating 使用
       const r = spec.r ?? 0.1
       world = { kind: 'cyl', c: [x, y, z], dir: [0, 1, 0], rad: r, half: r }
+    } else if (type === 'cone') {
+      const r = spec.r ?? 0.05
+      const half = (spec.h ?? 0.1) / 2
+      world = { kind: 'cyl', c: [x, y, z], dir: [0, 1, 0], rad: r, half }
     } else if (type === 'ring') {
       world = { kind: 'ring', c: [x, y, z], r: spec.r, tube: (spec.size ?? 0.03) / 2 }
     } else if (type === 'disc' || type === 'el-disc') {
@@ -2727,7 +3236,7 @@ loadExamples()
   syncControls()
   renderMainPalette()
   renderStrokeList()
-  if (!restoreLocal()) setStatus('在画布上画线（鼠标或手指），松手自动拟合生成；画完点击笔画圆点可改颜色/渲染/高度/方向')
+  if (!restoreLocal()) setStatus('在画布上画线（鼠标或手指），松手自动拟合生成；画完点击笔画圆点可改颜色/渲染/元件类型/粗细/高度/抬升/方向/3D 变换')
   updateToolbar()
   loadThree()
 

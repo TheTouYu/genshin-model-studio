@@ -5,7 +5,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { BOX_RESOURCE_ID, CYLINDER_RESOURCE_ID, SPHERE_RESOURCE_ID, generateModel, toStructureItems } from '../src/draw/types.js'
+import { BOX_RESOURCE_ID, CONE_RESOURCE_ID, CYLINDER_RESOURCE_ID, SPHERE_RESOURCE_ID, generateModel, toStructureItems } from '../src/draw/types.js'
 import { adaptiveEpsilon, detectClosed, fitStroke, resampleUniform, simplifyRdp } from '../src/draw/fitting.js'
 import { OPEN_CYLINDER_RESOURCE_ID } from '../src/draw/types.js'
 import { catmullRom } from '../src/draw/spline.js'
@@ -760,8 +760,22 @@ test('solid: sphere resourceId override → 10009002 ball with uniform diameter 
   const rect: [number, number][] = [[0, 0], [100, 0], [100, 60], [0, 60], [0, 0]]
   assert.throws(
     () => generateModel([{ id: 'r', points: rect, render: 'solid', height: 0.1, resourceId: SPHERE_RESOURCE_ID }], solidOpts),
-    /球体渲染需要圆\/椭圆轮廓/
+    /圆\/椭圆轮廓/
   )
+})
+
+test('solid: cone resourceId override → 10009009 with height along axis (tip +Y)', () => {
+  const { items } = generateModel(
+    [{ id: 'cn', points: toolCircle(100, 100, 30), render: 'solid', height: 0.2, resourceId: CONE_RESOURCE_ID }],
+    solidOpts
+  )
+  assert.equal(items.length, 1)
+  const item = items[0]
+  assert.equal(item.resourceId, CONE_RESOURCE_ID)
+  // 60px 圆、包络高 60px = 2 米 → 截面直径 2；scale.y = 高（0.2）；未校准预览按 ConeGeometry 渲染
+  assert.deepEqual(item.scale, [2, 0.2, 2])
+  assert.deepEqual(item.rotation, [0, 0, 0])
+  assert.equal(item.position[1], 0.1) // y = 高度/2 + lift(0)
 })
 
 test('parse: sphere resourceId passes through, unknown base element rejected', () => {

@@ -25,8 +25,8 @@ import type { StructureItem } from '../core/structure.js'
  *   （杆的离地抬升用 height）。gms.rotate / UI 旋转复制把 lift 透传给副本
  *   （风扇叶片旋转副本需与源同高度）。
  * - resourceId：可选，仅对 render='solid' 的圆轮廓有效——覆盖默认圆柱/长方体，
- *   目前支持 10009002（球体）：scale=[直径, 直径, 直径]，旋转零、位置仍 = 中心。
- *   底层拼装基础元件（球体/圆柱/长方体等）统一走同一笔画管线。 */
+ *   目前支持 10009002（球体，scale=[D,D,D]）与 10009009（圆锥，scale=[D,H,D]）。
+ *   底层拼装基础元件（球体/圆锥/圆柱/长方体等）统一走同一笔画管线。 */
 export type Stroke = {
   id: string
   points: ReadonlyArray<readonly [number, number] | readonly [number, number, number]>
@@ -80,6 +80,8 @@ export const CYLINDER_RESOURCE_ID = 10009008
 export const OPEN_CYLINDER_RESOURCE_ID = 10009012
 /** 球体（10009002）：直径 1（统一设计语言），scale=1 = 外接圆直径 1。 */
 export const SPHERE_RESOURCE_ID = 10009002
+/** 圆锥（10009009）：截面直径 1、高 1（预览几何合理猜测，未校准；尖端 +Y）。 */
+export const CONE_RESOURCE_ID = 10009009
 /** 长方体（10009001）：scale=[宽, 高, 长]，长轴 = 局部 Z。 */
 export const BOX_RESOURCE_ID = 10009001
 
