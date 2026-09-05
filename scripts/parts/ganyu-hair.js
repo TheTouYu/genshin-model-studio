@@ -147,20 +147,53 @@ surface([
   var face = Math.abs(tm - Math.PI / 2) < Math.PI / 5 && i >= 1 && i <= 2;
   return face ? SKIN : HAIR;
 }, 0.0015);
-for (var bi = 0; bi < 34; bi++) {
-  var hx = -0.078 + (bi / 33) * 0.156;
-  var hEnd = 1.068 - (bi % 4) * 0.008;
-  var fx = hx + ((bi % 5) - 2) * 0.004;
-  ribbon([[hx, 1.11, 0.052], [hx + (fx - hx) * 0.3, 1.09, 0.066], [hx + (fx - hx) * 0.62, 1.075, 0.073], [fx, hEnd, 0.077]],
-    [0.011, 0.010, 0.009], bi % 2 ? HAIR : HAIR2, headC);
+/* ---- 弯曲发丝（P0: hair-waves）：Catmull-Rom 采样 ribbon，天然波浪/卷 ---- */
+function crPt(p0, p1, p2, p3, t) {
+  var t2 = t * t, t3 = t2 * t;
+  return [0.5 * (2 * p1[0] + (-p0[0] + p2[0]) * t + (2 * p0[0] - 5 * p1[0] + 4 * p2[0] - p3[0]) * t2 + (-p0[0] + 3 * p1[0] - 3 * p2[0] + p3[0]) * t3),
+          0.5 * (2 * p1[1] + (-p0[1] + p2[1]) * t + (2 * p0[1] - 5 * p1[1] + 4 * p2[1] - p3[1]) * t2 + (-p0[1] + 3 * p1[1] - 3 * p2[1] + p3[1]) * t3),
+          0.5 * (2 * p1[2] + (-p0[2] + p2[2]) * t + (2 * p0[2] - 5 * p1[2] + 4 * p2[2] - p3[2]) * t2 + (-p0[2] + 3 * p1[2] - 3 * p2[2] + p3[2]) * t3)];
 }
-for (var li = 0; li < 14; li++) {
-  var sx = li < 7 ? -0.078 - li * 0.003 : 0.078 + (li - 7) * 0.003;
-  var di = sx < 0 ? -1 : 1;
-  var sy = 1.10 - li * 0.008;
-  ribbon([[sx, sy, -0.012], [sx + di * 0.010, sy - 0.06, 0.03], [sx + di * 0.007, sy - 0.13, 0.03], [sx + di * 0.014, sy - 0.21, 0.03]],
-    [0.012, 0.011, 0.010], li % 2 ? HAIR : HAIR2, headC);
+function curvedRibbon(ctrl, widths, color, axis, segs) {
+  segs = segs || 8; var pts = [], wds = [], n = ctrl.length;
+  for (var k = 0; k <= segs; k++) {
+    var t = (k / segs) * (n - 1), i = Math.min(n - 2, Math.floor(t)), f = t - i;
+    pts.push(crPt(ctrl[Math.max(0, i - 1)], ctrl[i], ctrl[i + 1], ctrl[Math.min(n - 1, i + 2)], f));
+    var w0 = widths[Math.min(widths.length - 1, i)], w1 = widths[Math.min(widths.length - 1, i + 1)];
+    wds.push(w0 + (w1 - w0) * f);
+  }
+  ribbon(pts, wds, color, axis);
 }
+// 刘海：从左往右 12 束，每束沿额头弧形扫过、发梢外翘/内卷
+for (var bi = 0; bi < 12; bi++) {
+  var hx = -0.085 + (bi / 11) * 0.17;
+  var sw = Math.sin(bi * 1.1) * 0.006;
+  var midx = hx * 0.75 + sw, tipx = hx * 0.55 + sw * 1.4, curlx = tipx + (bi % 2 ? 0.010 : -0.010);
+  curvedRibbon([[hx, 1.115, 0.045], [midx, 1.095, 0.062], [tipx, 1.068, 0.075], [curlx, 1.082, 0.078]],
+    [0.013, 0.011, 0.008], bi % 2 ? HAIR : HAIR2, headC, 6);
+}
+// 侧发：每侧 6 束，中段波浪、末端内勾卷（还原原图卷尾）
+for (var li = 0; li < 12; li++) {
+  var sd = li < 6 ? -1 : 1;
+  var sx0 = sd * (0.070 + (li % 6) * 0.006);
+  var sy0 = 1.10 - (li % 6) * 0.010;
+  var wv = Math.sin(li * 1.7) * 0.008;
+  curvedRibbon([[sx0, sy0, 0.01],
+    [sx0 + sd * 0.010 + wv, sy0 - 0.06, 0.030],
+    [sx0 + sd * 0.006 + wv * 1.6, sy0 - 0.14, 0.030],
+    [sx0 + sd * 0.016 + wv * 0.6, sy0 - 0.20, 0.028],
+    [sx0 + sd * 0.000 + wv * 0.3, sy0 - 0.205, 0.026]],
+    [0.013, 0.012, 0.010, 0.007], li % 2 ? HAIR : HAIR2, headC, 7);
+}
+// 呆毛：螺旋卷（顶端小环 + 上挑弯）
+(function () {
+  var sp = [];
+  for (var k = 0; k <= 14; k++) {
+    var a = (k / 14) * Math.PI * 2.3 - 0.5, r = 0.010 + (k / 14) * 0.006;
+    sp.push([Math.cos(a) * r, 1.185 + Math.sin(a) * r * 0.8, 0.028]);
+  }
+  curvedRibbon(sp, [0.007, 0.006, 0.005], HAIR3, headC, 10);
+})();
 var tailC = [0, 0.85, -0.10];
 for (var si = 0; si < 150; si++) {
   var ang = (si / 150) * Math.PI * 2;
@@ -178,13 +211,23 @@ for (var si = 0; si < 150; si++) {
   ], [0.011, 0.011, 0.010, 0.010, 0.009, 0.008, 0.007], si % 2 ? HAIR : HAIR2, tailC);
 }
 function horn(sd) {
-  var bx = 0.062 * sd;
-  ribbon([[bx, 1.07, 0.01], [bx + 0.022 * sd, 1.13, -0.03], [bx + 0.046 * sd, 1.19, -0.09], [bx + 0.014 * sd, 1.20, -0.15]],
-    [0.022, 0.020, 0.015], HORN, headC);
-  // 内缘黑红渐变层（更暗，呼应原图红黑角）
-  ribbon([[bx + 0.004 * sd, 1.075, 0.012], [bx + 0.018 * sd, 1.14, -0.028], [bx + 0.036 * sd, 1.20, -0.088], [bx + 0.030 * sd, 1.235, -0.148]],
-    [0.012, 0.011, 0.008], '#241a20', headC);
-  window.gms.part('cone', { x: bx + 0.014 * sd, y: 1.215, z: -0.155, r: 0.009, h: 0.04, axis: 'up', color: HORN_TIP });
+  // 还原 01：大弯月角——从头顶向外-上-后弯曲；黑外层+暗红内层+近基灰带+尖细
+  var bx = 0.048 * sd;
+  var arc = [[bx, 1.095, 0.005],
+             [bx + 0.026 * sd, 1.155, -0.045],
+             [bx + 0.048 * sd, 1.205, -0.105],
+             [bx + 0.055 * sd, 1.235, -0.165],
+             [bx + 0.048 * sd, 1.245, -0.190]];
+  // 外主：黑
+  curvedRibbon(arc, [0.026, 0.022, 0.016, 0.008], '#20242c', headC, 8);
+  // 内层：暗红（贴内侧略后）
+  curvedRibbon([[bx - 0.002 * sd, 1.105, -0.008], [bx + 0.020 * sd, 1.16, -0.055], [bx + 0.038 * sd, 1.20, -0.112], [bx + 0.042 * sd, 1.225, -0.162]],
+    [0.016, 0.013, 0.008], '#7a2a30', headC, 7);
+  // 近基灰带
+  curvedRibbon([[bx, 1.095, 0.005], [bx + 0.012 * sd, 1.125, -0.018], [bx + 0.022 * sd, 1.15, -0.042]],
+    [0.027, 0.020], '#8a8f98', headC, 4);
+  // 尖
+  window.gms.part('cone', { x: bx + 0.048 * sd, y: 1.252, z: -0.19, r: 0.012, h: 0.045, axis: 'up', color: '#20242c' });
 }
 horn(-1); horn(1);
 window.gms.part('disc', { x: 0, y: 1.0, z: -0.09, r: 0.038, thick: 0.012, axis: 'up', color: RED });

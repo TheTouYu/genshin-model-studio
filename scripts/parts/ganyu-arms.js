@@ -135,10 +135,10 @@ function ringsBetween(rings, y0, y1, n) {
 function arm(side) {
   surface([
     { y: 0.93, cx: side * 1.0, rx: 0.024, ry: 0.024, cz: 0.0 },
-    { y: 0.86, cx: side * 1.02, rx: 0.026, ry: 0.026, cz: 0.01 },
-    { y: 0.79, cx: side * 0.90, rx: 0.024, ry: 0.024, cz: 0.02 },
-    { y: 0.74, cx: side * 1.20, rx: 0.022, ry: 0.022, cz: 0.03 },
-    { y: 0.63, cx: side * 1.58, rx: 0.020, ry: 0.020, cz: 0.04 },
+    { y: 0.86, cx: side * 1.18, rx: 0.026, ry: 0.026, cz: 0.01 },
+    { y: 0.79, cx: side * 1.32, rx: 0.024, ry: 0.024, cz: 0.02 },
+    { y: 0.74, cx: side * 1.42, rx: 0.022, ry: 0.022, cz: 0.03 },
+    { y: 0.62, cx: side * 1.52, rx: 0.020, ry: 0.020, cz: 0.04 },
   ], Math.round(U * 0.7), function (i) { return SKIN; }, 0.0012);
   surface(offsetRings([
     { y: 0.93, cx: side * 1.0, rx: 0.024, ry: 0.024, cz: 0.0 },
@@ -146,7 +146,17 @@ function arm(side) {
     { y: 0.80, cx: side * 1.16, rx: 0.024, ry: 0.024, cz: 0.02 },
   ], 0.006), Math.round(U * 0.7), function () { return WHITE; }, 0.0014);
   window.gms.part('disc', { x: side * 1.16, y: 0.80, z: 0.02, r: 0.027, thick: 0.009, axis: 'up', color: BLUE });
-  window.gms.part('disc', { x: side * 1.62, y: 0.665, z: 0.04, r: 0.024, thick: 0.016, axis: 'front', color: GLOVE });
+  var gx = side * 1.62, gy = 0.59, gz = 0.04;
+  window.gms.part('disc', { x: gx, y: gy, z: gz, r: 0.020, thick: 0.013, axis: 'front', color: GLOVE });
+  // 露指手套：掌根黑盖 + 4 指（肤色指尖）+ 拇指 + 蓝指节边（对照 09）
+  window.gms.part('disc', { x: gx, y: gy - 0.012, z: gz, r: 0.020, thick: 0.010, axis: 'front', color: GLOVE });
+  for (var fi = 0; fi < 4; fi++) {
+    var fxx = gx + (fi - 1.5) * 0.0095;
+    window.gms.part('rod', { x1: fxx, y1: gy - 0.020, z: gz, x2: fxx + side * 0.002, y2: gy - 0.046, size: 0.0038, color: SKIN });
+    window.gms.part('disc', { x: fxx + side * 0.002, y: gy - 0.048, z: gz, r: 0.0052, thick: 0.004, axis: 'front', color: SKIN });
+  }
+  window.gms.part('rod', { x1: gx - side * 0.014, y1: gy - 0.014, z: gz - 0.016, x2: gx - side * 0.022, y2: gy - 0.036, size: 0.0044, color: SKIN });
+  window.gms.part('rod', { x1: gx - side * 0.016, y1: gy - 0.016, z: gz + 0.015, x2: gx + side * 0.016, y2: gy - 0.016, size: 0.0028, color: BLUE });
 }
 arm(-0.105);
 arm(0.105);

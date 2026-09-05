@@ -497,6 +497,7 @@
 
     return {
       setItems: setItems, setCamera: setCamera, resetView: resetView, dispose: dispose,
+      setTarget: function (x, y, z) { orbit.target.set(x, y, z); applyCamera(); renderer.render(scene, camera) },
       // 2026-09-06 剪影量化：隐藏网格/坐标轴 + 纯色背景，供 readPixels 分割（避免网格线干扰 IoU）
       setGridVisible: function (v) { grid.visible = !!v; axes.visible = !v; renderer.render(scene, camera) },
       setBackground: function (hex) { scene.background = new THREE.Color(hex); renderer.render(scene, camera) },
