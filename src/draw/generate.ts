@@ -30,7 +30,7 @@
  * - stroke.height 对 rod/lathe 笔画：该笔所有 item 的 position.y += height（整体抬升）。
  */
 import type { ModelOptions, Stroke, TaggedItem, TaggedItemColor } from './types.js'
-import { BOX_RESOURCE_ID, CYLINDER_RESOURCE_ID, OPEN_CYLINDER_RESOURCE_ID } from './types.js'
+import { BOX_RESOURCE_ID, CYLINDER_RESOURCE_ID, OPEN_CYLINDER_RESOURCE_ID, SPHERE_RESOURCE_ID } from './types.js'
 import { adaptiveEpsilon, fitStroke, simplifyRdp, type FittedStroke, type Point } from './fitting.js'
 import type { StructureItem } from '../core/structure.js'
 
@@ -506,6 +506,26 @@ function solidColumn(
     (axis === 'front' ? [90, angleDeg, 0] : axis === 'side' ? [0, angleDeg, -90] : [0, angleDeg, 0])
   const scale3: Vec3 = shape === 'circle' ? [width, thickness, width] : [width, thickness, depth]
   const tp = stroke.transform?.position
+  // 基础元件覆盖（底层拼装）：球体 10009002——轮廓主轴直径 → 等比 scale=[D,D,D]，
+  // 位置/颜色/组语义与柱体一致（position.y = 厚度/2 + lift，gms.part('sphere') 用 lift 让中心落在 spec.y）。
+  if (stroke.resourceId === SPHERE_RESOURCE_ID) {
+    if (shape === 'rectangle' || radii === null) {
+      throw new Error('球体渲染需要圆/椭圆轮廓（不支持矩形轮廓）')
+    }
+    const d = Math.max(width, depth)
+    return {
+      resourceId: SPHERE_RESOURCE_ID,
+      position: [
+        centerX + (tp?.[0] ?? 0),
+        thickness / 2 + (stroke.lift ?? 0) + (tp?.[1] ?? 0),
+        centerZ + (tp?.[2] ?? 0)
+      ],
+      rotation: [0, 0, 0],
+      scale: [d, d, d],
+      group: stroke.id,
+      ...(color === undefined ? {} : { color: itemColor(color) })
+    }
+  }
   return {
     resourceId: shape === 'rectangle' ? BOX_RESOURCE_ID : CYLINDER_RESOURCE_ID,
     position: [

@@ -23,7 +23,10 @@ import type { StructureItem } from '../core/structure.js'
  *   厚度/2 + lift（柱体底不再贴 y=0，而是抬到 lift 高度）。extrude 与 lathe 共用
  *   solidColumn，两模式都生效；缺省不写 = 0（贴地，既有行为）。杆笔画不消费
  *   （杆的离地抬升用 height）。gms.rotate / UI 旋转复制把 lift 透传给副本
- *   （风扇叶片旋转副本需与源同高度）。 */
+ *   （风扇叶片旋转副本需与源同高度）。
+ * - resourceId：可选，仅对 render='solid' 的圆轮廓有效——覆盖默认圆柱/长方体，
+ *   目前支持 10009002（球体）：scale=[直径, 直径, 直径]，旋转零、位置仍 = 中心。
+ *   底层拼装基础元件（球体/圆柱/长方体等）统一走同一笔画管线。 */
 export type Stroke = {
   id: string
   points: ReadonlyArray<readonly [number, number] | readonly [number, number, number]>
@@ -37,6 +40,8 @@ export type Stroke = {
   transform?: Transform
   /** 十一期：层级组——同组笔画视为一个旋转单元（组旋转/复制时一起动）；静止件不设组。 */
   group?: string
+  /** 基础元件覆盖（可选）：10009002 = 球体（仅 solid 圆轮廓）。 */
+  resourceId?: number
 }
 
 /** 笔画整体变换（ADR-0001）：形状（点集）与摆放（变换）分离。 */
@@ -73,6 +78,8 @@ export type TaggedItem = {
 export const CYLINDER_RESOURCE_ID = 10009008
 /** 开口薄壁圆柱（10009012，五期旋转成型）：同圆柱语义，但空心无顶盖/底盖（openEnded，无缝闭合）。 */
 export const OPEN_CYLINDER_RESOURCE_ID = 10009012
+/** 球体（10009002）：直径 1（统一设计语言），scale=1 = 外接圆直径 1。 */
+export const SPHERE_RESOURCE_ID = 10009002
 /** 长方体（10009001）：scale=[宽, 高, 长]，长轴 = 局部 Z。 */
 export const BOX_RESOURCE_ID = 10009001
 

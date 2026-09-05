@@ -1023,7 +1023,7 @@ loadExamples()
     if (!Number.isFinite(size) || !Number.isFinite(count) || !Number.isFinite(heightMeters)) {
       return // 输入未完成，等下一个事件
     }
-    state.options = { mode, shape, size, count, heightMeters, canvasHeightPx: drawCanvas.clientHeight || 462 }
+    state.options = { mode, shape, size, count, heightMeters, canvasHeightPx: drawCanvas.clientHeight || 462, canvasWidthPx: drawCanvas.clientWidth || 640 }
     updateShapeDisabled()
     updateHint()
     scheduleGen()
@@ -1589,6 +1589,8 @@ loadExamples()
         if (typeof s.height === 'number' && Number.isFinite(s.height) && s.height > 0) out.height = s.height
         // v3.3：size（笔画级粗细，十六期）必须原样保留——否则刷新/导入即丢失退回全局粗细（铁律 #1 第三次违反）
         if (typeof s.size === 'number' && Number.isFinite(s.size) && s.size > 0) out.size = s.size
+        // v3.5：resourceId（基础元件覆盖，球体 10009002）原样保留——否则刷新/导入丢失退回圆柱
+        if (s.resourceId === 10009002) out.resourceId = s.resourceId
         if (out.render === 'solid' && (s.axis === 'front' || s.axis === 'side')) out.axis = s.axis // 'up'=缺省不写
         // v3.1：lift（solid 离地抬升）与 transform（3D 变换）必须原样保留，否则刷新/导入即丢失（ADR-0001）
         if (typeof s.lift === 'number' && Number.isFinite(s.lift) && s.lift >= 0) out.lift = s.lift
@@ -1802,8 +1804,8 @@ loadExamples()
       throw new Error(`opts 参数非法：应为对象 { render, height, axis, lift, color, transform, group }，当前值为 ${JSON.stringify(opts)}`)
     }
     for (const k of Object.keys(opts)) {
-      if (k !== 'render' && k !== 'height' && k !== 'axis' && k !== 'lift' && k !== 'color' && k !== 'transform' && k !== 'group' && k !== 'size') {
-        throw new Error(`opts 参数非法：未知字段 ${JSON.stringify(k)}（支持 render/height/axis/lift/color/transform/group/size），当前值为 ${JSON.stringify(opts)}`)
+      if (k !== 'render' && k !== 'height' && k !== 'axis' && k !== 'lift' && k !== 'color' && k !== 'transform' && k !== 'group' && k !== 'size' && k !== 'resourceId') {
+        throw new Error(`opts 参数非法：未知字段 ${JSON.stringify(k)}（支持 render/height/axis/lift/color/transform/group/size/resourceId），当前值为 ${JSON.stringify(opts)}`)
       }
     }
     const o = {}
@@ -1831,6 +1833,13 @@ loadExamples()
         throw new Error(`size 参数非法：应为正数（米；笔画级杆径，覆盖全局 options.size），当前值为 ${JSON.stringify(opts.size)}`)
       }
       o.size = opts.size
+    }
+    if (opts.resourceId !== undefined) {
+      // 基础元件覆盖：底层拼装基础元件统一走笔画管线（当前只支持球体 10009002）
+      if (opts.resourceId !== 10009002) {
+        throw new Error(`resourceId 参数非法：当前仅支持球体 10009002，收到 ${JSON.stringify(opts.resourceId)}`)
+      }
+      o.resourceId = opts.resourceId
     }
     if (opts.axis !== undefined) {
       if (opts.axis !== 'up' && opts.axis !== 'front' && opts.axis !== 'side') {
@@ -1892,6 +1901,7 @@ loadExamples()
     if (o.color !== undefined) stroke.color = o.color
     if (o.transform !== undefined) stroke.transform = o.transform
     if (o.size !== undefined) stroke.size = o.size // 十五期：笔画级粗细（弧线罩铁丝 40%）
+    if (o.resourceId !== undefined) stroke.resourceId = o.resourceId // 基础元件覆盖（球体 10009002）
     if (o.group !== undefined) {
       if (o.group === null) delete stroke.group
       else stroke.group = o.group
@@ -2205,9 +2215,15 @@ loadExamples()
    * solid 的世界 x/y 由 spec 决定（画布位置只影响轮廓形状）；rod 由画布换算自动得。
    * 约束：先画贴地件（y≈厚/2）稳定 bbox 底，再画其余（世界 y 以当前 bbox 底为基准）。 */
   function gmsPart(type, spec) {
-    const TYPES = ['ring', 'rod', 'disc', 'el-disc', 'arc', 'plate']
+    const TYPES = ['ring', 'rod', 'sphere', 'disc', 'el-disc', 'arc', 'plate']
     if (!TYPES.includes(type)) throw new Error(`part 类型非法：应为 ${TYPES.join('/')}，当前值为 ${JSON.stringify(type)}`)
     if (typeof spec !== 'object' || spec === null) throw new Error(`part 参数非法：应为组件参数对象 {x,y,z,...}，当前值为 ${JSON.stringify(spec)}`)
+    // 十九期同族加固（2026-09-05 刷新解散）：gms.part 的像素坐标依赖固定原点标定
+    // （canvasWidthPx/canvasHeightPx）；任何路径缺标定都先自愈，绝不允许退回漂移 bbox 原点写笔画。
+    if (!(state.options.canvasWidthPx > 0) || !(state.options.canvasHeightPx > 0)) {
+      state.options.canvasWidthPx = drawCanvas.clientWidth || 640
+      state.options.canvasHeightPx = drawCanvas.clientHeight || 462
+    }
     const k = state.options.heightMeters / (state.options.canvasHeightPx > 0 ? state.options.canvasHeightPx : 1) // 米/px
     // 当前全笔画 bbox（无笔画时画布兜底）
     let bx = { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }
@@ -2249,6 +2265,16 @@ loadExamples()
       const seg = spec.seg === undefined ? 48 : num(spec.seg, 'seg', 48)
       const [cx, cy] = toPx(x, y)
       addStrokeWithOpts(circlePts(cx, cy, r / k, seg), { ...base, size: spec.size !== undefined ? num(spec.size, 'size', 0.03) : 0.03, transform: z !== 0 ? { position: [0, 0, z] } : undefined })
+    } else if (type === 'sphere') {
+      // 基础元件覆盖：球体（10009002）——世界中心 (x,y,z)，半径 r（米）。
+      // 轮廓画圆（直径 2r），height=2r、lift=y−r → position.y = r + (y−r) = y（中心落在 spec.y）。
+      const r = num(spec.r, 'r', 0.1)
+      if (r <= 0) throw new Error(`part.r 参数非法：应为正数（米），当前值为 ${JSON.stringify(spec.r)}`)
+      const [cx, cy] = toPx(x, y)
+      addStrokeWithOpts(circlePts(cx, cy, r / k, 32), {
+        ...base, render: 'solid', height: 2 * r, lift: y - r,
+        resourceId: 10009002, transform: { position: [0, 0, z] }
+      })
     } else if (type === 'rod') {
       const x1 = num(spec.x1, 'x1'), y1 = num(spec.y1, 'y1'), x2 = num(spec.x2, 'x2'), y2 = num(spec.y2, 'y2')
       const [a, b] = toPx(x1, y1), [c, d] = toPx(x2, y2)
@@ -2321,6 +2347,10 @@ loadExamples()
     let world = null
     if (type === 'rod') {
       world = { kind: 'rod', a: [spec.x1, spec.y1, z], b: [spec.x2, spec.y2, z], rad: (spec.size ?? 0.03) / 2 }
+    } else if (type === 'sphere') {
+      // 球体接触校验近似为等高圆柱（同一中心/包络盒），供 touches/link/floating 使用
+      const r = spec.r ?? 0.1
+      world = { kind: 'cyl', c: [x, y, z], dir: [0, 1, 0], rad: r, half: r }
     } else if (type === 'ring') {
       world = { kind: 'ring', c: [x, y, z], r: spec.r, tube: (spec.size ?? 0.03) / 2 }
     } else if (type === 'disc' || type === 'el-disc') {

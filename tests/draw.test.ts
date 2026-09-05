@@ -5,7 +5,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { BOX_RESOURCE_ID, CYLINDER_RESOURCE_ID, generateModel, toStructureItems } from '../src/draw/types.js'
+import { BOX_RESOURCE_ID, CYLINDER_RESOURCE_ID, SPHERE_RESOURCE_ID, generateModel, toStructureItems } from '../src/draw/types.js'
 import { adaptiveEpsilon, detectClosed, fitStroke, resampleUniform, simplifyRdp } from '../src/draw/fitting.js'
 import { OPEN_CYLINDER_RESOURCE_ID } from '../src/draw/types.js'
 import { catmullRom } from '../src/draw/spline.js'
@@ -741,6 +741,44 @@ test('solid: rectangle keeps axis-aligned bbox scale (unchanged semantics)', () 
   const y1 = Math.max(...rotated.map((p) => p[1]))
   const scale2 = 2 / (y1 - y0)
   assert.deepEqual(tilted.scale, [(x1 - x0) * scale2, 0.08, (y1 - y0) * scale2])
+})
+
+test('solid: sphere resourceId override → 10009002 ball with uniform diameter scale', () => {
+  const { items } = generateModel(
+    [{ id: 'sp', points: toolCircle(100, 100, 30), render: 'solid', height: 0.1, resourceId: SPHERE_RESOURCE_ID }],
+    solidOpts
+  )
+  assert.equal(items.length, 1)
+  const item = items[0]
+  assert.equal(item.resourceId, SPHERE_RESOURCE_ID)
+  // 60px 圆、包络高 60px = 2 米 → 直径 2；球体等比 scale（不受 height 影响，height 仅定位）
+  assert.deepEqual(item.scale, [2, 2, 2])
+  assert.deepEqual(item.rotation, [0, 0, 0])
+  assert.equal(item.position[1], 0.05) // y = 厚度/2 + lift(0) = 0.05
+  assert.equal(item.position[2], 0)
+  // 矩形轮廓 → 明确报错（球体只接受圆/椭圆）
+  const rect: [number, number][] = [[0, 0], [100, 0], [100, 60], [0, 60], [0, 0]]
+  assert.throws(
+    () => generateModel([{ id: 'r', points: rect, render: 'solid', height: 0.1, resourceId: SPHERE_RESOURCE_ID }], solidOpts),
+    /球体渲染需要圆\/椭圆轮廓/
+  )
+})
+
+test('parse: sphere resourceId passes through, unknown base element rejected', () => {
+  const opts = { mode: 'extrude', shape: 'cylinder', size: 0.2, count: 8, heightMeters: 2 }
+  const ring = toolCircle(100, 100, 20)
+  const { strokes } = parseDrawModelRequest(JSON.stringify({
+    strokes: [{ id: 'sp', points: ring, render: 'solid', height: 0.1, resourceId: SPHERE_RESOURCE_ID }],
+    options: opts
+  }))
+  assert.equal(strokes[0].resourceId, SPHERE_RESOURCE_ID)
+  assert.throws(
+    () => parseDrawModelRequest(JSON.stringify({
+      strokes: [{ id: 'b', points: ring, render: 'solid', height: 0.1, resourceId: 10009005 }],
+      options: opts
+    })),
+    /基础元件无效/
+  )
 })
 
 // —— 七期修复：旋转副本朝向（叶片 0/120/240 辐向，angle → rotation[1]） ——
