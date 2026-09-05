@@ -62,7 +62,7 @@ def center_pad(m, W, H=640):
 
 def main():
     ref = Image.open('reference/ganyu-front.png')
-    model = Image.open('/tmp/ganyu-v19/view-front-clean.png')
+    model = Image.open('/tmp/ganyu-f5/view-front-clean.png')
     nr = norm_mask(mask_ref(ref))
     nm = norm_mask(mask_model(model))
     W = max(nr.shape[1], nm.shape[1])
@@ -78,7 +78,7 @@ def main():
     vis = np.zeros((640, W*2+10, 3), np.uint8)
     vis[:, :W][nr2] = [60,120,255]
     vis[:, W+10:W*2+10][nm2] = [255,120,60]
-    Image.fromarray(vis).resize((min(1200, vis.shape[1]), 640), Image.NEAREST).save('reference/iou-vis-v10.png')
+    Image.fromarray(vis).resize((min(1200, vis.shape[1]), 640), Image.NEAREST).save('reference/iou-vis-current.png')
 
 if __name__ == '__main__':
     main()

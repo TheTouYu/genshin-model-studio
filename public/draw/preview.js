@@ -248,7 +248,8 @@
     var camera = new THREE.PerspectiveCamera(50, 1, 0.1, 500)
 
     // ---- 光照（PRD §5.3）：环境光 + 方向光（加一盏弱补光避免背光面全黑）----
-    scene.add(new THREE.AmbientLight(0xffffff, 0.65))
+    var ambientLight = new THREE.AmbientLight(0xffffff, 0.65)
+    scene.add(ambientLight)
     var dirLight = new THREE.DirectionalLight(0xffffff, 1.1)
     dirLight.position.set(5, 8, 4)
     scene.add(dirLight)
@@ -499,6 +500,7 @@
       // 2026-09-06 剪影量化：隐藏网格/坐标轴 + 纯色背景，供 readPixels 分割（避免网格线干扰 IoU）
       setGridVisible: function (v) { grid.visible = !!v; axes.visible = !v; renderer.render(scene, camera) },
       setBackground: function (hex) { scene.background = new THREE.Color(hex); renderer.render(scene, camera) },
+      setAmbient: function (v) { ambientLight.intensity = v; dirLight.intensity = v * 0.6; renderer.render(scene, camera) },
     }
   }
 

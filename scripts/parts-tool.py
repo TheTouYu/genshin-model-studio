@@ -119,7 +119,7 @@ for k in range(40):
 print("status:", st)
 js('(() => { const c = document.getElementById("previewCanvas"); c.style.position="fixed"; c.style.inset="0"; c.style.width="100vw"; c.style.height="100vh"; c.style.zIndex="9999"; c.style.border="none"; c.style.background="#000000"; document.body.style.overflow="hidden"; window.dispatchEvent(new Event("resize")); })()')
 time.sleep(1.0)
-js("window.gmsPreview.setGridVisible(false)"); js("window.gmsPreview.setBackground('#000000')")
+js("window.gmsPreview.setGridVisible(false)"); js("window.gmsPreview.setBackground('#000000')"); js("window.gmsPreview.setAmbient(1.5)")
 for name, cam in [('front', {"yaw":0,"pitch":1.57,"radius":None}), ('iso', {"yaw":0.65,"pitch":0.85,"radius":None}), ('back', {"yaw":3.14159,"pitch":1.57,"radius":None})]:
     js("window.gmsPreview.resetView()"); time.sleep(0.4)
     js("window.gmsPreview.setCamera(%s)" % json.dumps(cam)); time.sleep(1.0)
@@ -146,6 +146,8 @@ def listparts():
     print(f"{'id':<9} {'status':<10} note")
     for e in m['parts']:
         print(f"{e['id']:<9} {e['status']:<10} {e['note']}")
+    for t in m.get('tickets', []):
+        print(f"[{t['priority']}] {t['id']:<14} {t['status']:<10} {t['title']}")
 
 if __name__ == '__main__':
     cmd = sys.argv[1] if len(sys.argv) > 1 else 'list'

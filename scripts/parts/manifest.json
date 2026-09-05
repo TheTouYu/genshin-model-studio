@@ -64,5 +64,63 @@
    "view": "front/side/back",
    "crop": ""
   }
+ ],
+ "tickets": [
+  {
+   "id": "hair-waves",
+   "title": "发丝弯曲/卷曲（弓形+侧发末端卷+螺旋呆毛）",
+   "priority": "P0",
+   "status": "todo",
+   "note": "AUDIT #1"
+  },
+  {
+   "id": "horns-fix",
+   "title": "角重建：头顶后-外弯月，黑外层/暗红内层/灰基部/尖细",
+   "priority": "P0",
+   "status": "todo",
+   "note": "AUDIT #2"
+  },
+  {
+   "id": "hands-fingers",
+   "title": "露指手套：掌+4指(肤色指尖)+拇指+蓝指节边",
+   "priority": "P0",
+   "status": "todo",
+   "note": "AUDIT #3"
+  },
+  {
+   "id": "seams-close",
+   "title": "接缝间隙消除：袜-鞋/袖-臂/发-脸/下摆-短裤 微叠+关节盖",
+   "priority": "P1",
+   "status": "todo",
+   "note": "AUDIT #4"
+  },
+  {
+   "id": "gold-vines",
+   "title": "金藤枝（球衣斜襟/侧腰/短裤侧缝/鞋侧/背部）+双徽章",
+   "priority": "P1",
+   "status": "todo",
+   "note": "AUDIT #5-7,10"
+  },
+  {
+   "id": "body-curves",
+   "title": "躯干曲线：实测腰-髋-胸拟合+侧视胸/臀弧（非等宽筒）",
+   "priority": "P1",
+   "status": "todo",
+   "note": "AUDIT #8"
+  },
+  {
+   "id": "face-refine",
+   "title": "鼻/眉形/眼睑精修+唇色",
+   "priority": "P2",
+   "status": "todo",
+   "note": "AUDIT #9"
+  },
+  {
+   "id": "shoe-gold",
+   "title": "鞋型+金藤印刷+交叉鞋带",
+   "priority": "P2",
+   "status": "todo",
+   "note": "AUDIT #7"
+  }
  ]
 }
