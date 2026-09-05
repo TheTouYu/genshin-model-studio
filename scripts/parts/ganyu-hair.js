@@ -55,7 +55,7 @@ function surface(rings, u, colorFn, thick) {
       var c = [(a0[0] + a1[0] + b0[0] + b1[0]) / 4, (A.y + B.y) / 2, (a0[2] + a1[2] + b0[2] + b1[2]) / 4];
       var w = Math.hypot(a1[0] - a0[0], a1[2] - a0[2]);
       var h = Math.hypot(dV[0], dV[1], dV[2]);
-      quad(c, n, w * 1.0, h * 1.0, colorFn(i, j, tm), thick);
+      quad(c, n, w * 1.02, h * 1.02, colorFn(i, j, tm), thick);
     }
   }
 }

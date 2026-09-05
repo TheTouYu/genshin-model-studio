@@ -91,22 +91,22 @@
    "id": "seams-close",
    "title": "接缝间隙消除：袜-鞋/袖-臂/发-脸/下摆-短裤 微叠+关节盖",
    "priority": "P1",
-   "status": "todo",
-   "note": "AUDIT #4"
+   "status": "done",
+   "note": "AUDIT #4 ✅v23 特写核验"
   },
   {
    "id": "gold-vines",
    "title": "金藤枝（球衣斜襟/侧腰/短裤侧缝/鞋侧/背部）+双徽章",
    "priority": "P1",
-   "status": "todo",
-   "note": "AUDIT #5-7,10"
+   "status": "done",
+   "note": "AUDIT #5-7,10 ✅v23 特写核验"
   },
   {
    "id": "body-curves",
    "title": "躯干曲线：实测腰-髋-胸拟合+侧视胸/臀弧（非等宽筒）",
    "priority": "P1",
-   "status": "todo",
-   "note": "AUDIT #8"
+   "status": "done",
+   "note": "AUDIT #8 ✅v23 特写核验"
   },
   {
    "id": "face-refine",

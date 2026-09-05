@@ -55,7 +55,7 @@ function surface(rings, u, colorFn, thick) {
       var c = [(a0[0] + a1[0] + b0[0] + b1[0]) / 4, (A.y + B.y) / 2, (a0[2] + a1[2] + b0[2] + b1[2]) / 4];
       var w = Math.hypot(a1[0] - a0[0], a1[2] - a0[2]);
       var h = Math.hypot(dV[0], dV[1], dV[2]);
-      quad(c, n, w * 1.0, h * 1.0, colorFn(i, j, tm), thick);
+      quad(c, n, w * 1.02, h * 1.02, colorFn(i, j, tm), thick);
     }
   }
 }
@@ -117,9 +117,10 @@ function interp(rings, n) {
 function ringAt2(rings, t) {
   var m = rings.length - 1, x = t * m, i = Math.min(m - 1, Math.floor(x)), f = x - i;
   var a = rings[i], b = rings[i + 1];
+  var sm = f * f * (3 - 2 * f);
   return { y: a.y + (b.y - a.y) * f, cx: (a.cx || 0) + ((b.cx || 0) - (a.cx || 0)) * f,
            cz: (a.cz || -0.02) + ((b.cz || -0.02) - (a.cz || -0.02)) * f,
-           rx: a.rx + (b.rx - a.rx) * f, ry: a.ry + (b.ry - a.ry) * f };
+           rx: a.rx + (b.rx - a.rx) * sm, ry: a.ry + (b.ry - a.ry) * sm };
 }
 function ringsBetween(rings, y0, y1, n) {
   n = n || 7;

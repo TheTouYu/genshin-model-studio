@@ -55,7 +55,7 @@ function surface(rings, u, colorFn, thick) {
       var c = [(a0[0] + a1[0] + b0[0] + b1[0]) / 4, (A.y + B.y) / 2, (a0[2] + a1[2] + b0[2] + b1[2]) / 4];
       var w = Math.hypot(a1[0] - a0[0], a1[2] - a0[2]);
       var h = Math.hypot(dV[0], dV[1], dV[2]);
-      quad(c, n, w * 1.0, h * 1.0, colorFn(i, j, tm), thick);
+      quad(c, n, w * 1.02, h * 1.02, colorFn(i, j, tm), thick);
     }
   }
 }
@@ -133,6 +133,7 @@ function ringsBetween(rings, y0, y1, n) {
 
 /* ---------- 头 + 五官（细节拆分 ticket: face —— 眼睛/睫/嘴逐步优化） ---------- */
 window.gms.part('sphere', { x: 0, y: 1.05, z: 0, r: 0.085, color: SKIN });
+window.gms.part('disc', { x: 0, y: 0.965, z: 0, r: 0.048, thick: 0.030, axis: 'up', color: SKIN });
 // 眼睛：眼白 + 蓝瞳 + 瞳孔 + 高光 + 睫毛线（对比原图三次：眼大、上挑、高光左上）
 function eye(sx) {
   window.gms.part('disc', { x: sx, y: 1.062, z: 0.0795, r: 0.0125, thick: 0.002, axis: 'front', color: WHITE });

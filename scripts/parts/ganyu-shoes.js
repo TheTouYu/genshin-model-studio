@@ -55,7 +55,7 @@ function surface(rings, u, colorFn, thick) {
       var c = [(a0[0] + a1[0] + b0[0] + b1[0]) / 4, (A.y + B.y) / 2, (a0[2] + a1[2] + b0[2] + b1[2]) / 4];
       var w = Math.hypot(a1[0] - a0[0], a1[2] - a0[2]);
       var h = Math.hypot(dV[0], dV[1], dV[2]);
-      quad(c, n, w * 1.0, h * 1.0, colorFn(i, j, tm), thick);
+      quad(c, n, w * 1.02, h * 1.02, colorFn(i, j, tm), thick);
     }
   }
 }
@@ -138,6 +138,9 @@ window.gms.part('el-disc', { x: -0.09, y: 0.026, z: 0, rx: 0.060, ry: 0.040, thi
 window.gms.part('el-disc', { x: 0.09, y: 0.026, z: 0, rx: 0.060, ry: 0.040, thick: 0.028, axis: 'up', rotation: [0, 6, 0], color: BOOT });
 window.gms.part('tri', { x: -0.104, y: 0.032, z: 0.026, w: 0.028, h: 0.016, thick: 0.003, axis: 'side', color: BLUE });
 window.gms.part('tri', { x: 0.104, y: 0.032, z: 0.026, w: 0.028, h: 0.016, thick: 0.003, axis: 'side', color: BLUE });
+// 袜-鞋关节盖（消除接缝）
+window.gms.part('disc', { x: -0.09, y: 0.048, z: 0, r: 0.031, thick: 0.018, axis: 'up', color: SOCK });
+window.gms.part('disc', { x: 0.09, y: 0.048, z: 0, r: 0.031, thick: 0.018, axis: 'up', color: SOCK });
 // 鞋带（白色细杆 ×3 每只）+ 蓝鞋头三棱
 function laces(cx) {
   for (var k = 0; k < 3; k++) {
