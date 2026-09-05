@@ -167,6 +167,62 @@ for r in rings:
     print(f"  {{ y: {r['y']}, rx: {r['rx']}, ry: {r['ry']}, cz: -0.02 }}, // h={r['h']} {r['label']}")
 
 print("SAVED:", [p for p in sorted(os.listdir(OUT)) if p.startswith('ganyu')])
+
+# ---------- 密集测量数据（v9 建模脚本直接消费） ----------
+def dominant(bands):
+    cand = {k: v for k, v in bands.items() if k != 'other' and v > 0.15}
+    if not cand: cand = bands
+    if not cand: return 'other'
+    return max(cand, key=cand.get)
+TORSO_HS = [round(0.42 + i * 0.028, 3) for i in range(21)]  # 0.42..0.98
+leg_hs = [0.04, 0.08, 0.12, 0.16, 0.21, 0.26, 0.31, 0.36, 0.41, 0.46, 0.50, 0.55]
+arm_hs = [0.52, 0.56, 0.60, 0.64, 0.68, 0.72, 0.76, 0.80]
+front = profile['front']; side = profile['side']
+scf = H_M / front['heightPx']; scs = H_M / side['heightPx']
+axis_f = front.get('axis', 193)
+dense = {'H_M': H_M, 'torso': [], 'leg': [], 'arm': [], 'marks': {}}
+for h in TORSO_HS:
+    fr = nearest(front['rows'], h); sd = nearest(side['rows'], h)
+    rx = max(fr['bodyW'] or fr['w'], 0) / 2 * scf
+    ry = max(sd['bodyW'] or sd['w'], 0) / 2 * scs
+    dense['torso'].append({'y': round(h * H_M, 4), 'rx': round(rx * 1.15, 4), 'ry': round(ry, 4),
+                           'cz': -0.02, 'color': dominant(fr['bands'])})
+for h in leg_hs:
+    fr = nearest(front['rows'], h); sd = nearest(side['rows'], h)
+    runs = [r for r in fr.get('runsPx', []) if r[1] - r[0] >= 4]
+    Ls = [r for r in runs if (r[0] + r[1]) / 2 < axis_f]
+    Rs = [r for r in runs if (r[0] + r[1]) / 2 > axis_f]
+    L = max(Ls, key=lambda r: r[1] - r[0]) if Ls else [axis_f - 5, axis_f - 5]
+    R = max(Rs, key=lambda r: r[1] - r[0]) if Rs else [axis_f + 5, axis_f + 5]
+    ry = max(sd.get('bodyW') or sd.get('w'), 0) / 2 * scs
+    dense['leg'].append({'y': round(h * H_M, 4),
+                         'cxL': round(((L[0] + L[1]) / 2 - axis_f) * scf, 4),
+                         'cxR': round(((R[0] + R[1]) / 2 - axis_f) * scf, 4),
+                         'rx': round(max(L[1] - L[0] + 1, R[1] - R[0] + 1) / 2 * scf, 4),
+                         'ry': round(ry, 4), 'color': dominant(fr['bands'])})
+for h in arm_hs:
+    fr = nearest(front['rows'], h)
+    runs = [r for r in fr.get('runsPx', []) if r[1] - r[0] >= 6]
+    Ls = [r for r in runs if (r[0] + r[1]) / 2 < axis_f - 40]
+    Rs = [r for r in runs if (r[0] + r[1]) / 2 > axis_f + 40]
+    D = {'y': round(h * H_M, 3), 'color': dominant(fr['bands'])}
+    if Ls:
+        L = max(Ls, key=lambda r: r[1] - r[0]); D['cxL'] = round(((L[0] + L[1]) / 2 - axis_f) * scf, 4); D['rL'] = round((L[1] - L[0] + 1) / 2 * scf, 4)
+    if Rs:
+        R = max(Rs, key=lambda r: r[1] - r[0]); D['cxR'] = round(((R[0] + R[1]) / 2 - axis_f) * scf, 4); D['rR'] = round((R[1] - R[0] + 1) / 2 * scf, 4)
+    dense['arm'].append(D)
+# 衣装边界：按主导色变迁
+prev = None
+for h in [round(i * 0.02, 2) for i in range(0, 51)]:
+    fr = nearest(front['rows'], h); c = dominant(fr['bands'])
+    if c != prev and c in ('white', 'skin', 'hair', 'blue'):
+        dense['marks']["%.2f" % h] = c
+    prev = c
+with open(os.path.join(OUT, 'ganyu-dense.js'), 'w') as f:
+    f.write('// 自动生成：extract-ganyu-profile.py → 甘雨三视图逐行测量（不靠记忆）\n')
+    f.write('window.GANYU_DENSE = ' + json.dumps(dense, ensure_ascii=False, indent=1) + ';\n')
+print("\nDENSE torso rings:", len(dense['torso']), "leg:", len(dense['leg']), "arm:", len(dense['arm']), "marks:", len(dense['marks']))
+print("SAVED ganyu-dense.js")
 for name in names:
     p = profile.get(name)
     if not p: continue

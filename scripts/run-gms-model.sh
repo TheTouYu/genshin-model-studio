@@ -14,9 +14,10 @@
 DRAW_FILE="$1"
 OUT="${2:-/tmp/gms-model}"
 URL="${3:-http://localhost:8787/}"
-[ -z "$DRAW_FILE" ] && { echo "用法: run-gms-model.sh <组件脚本.js> <输出目录> [URL]" >&2; exit 1; }
+DATA_FILE="${4:-}"
+[ -z "$DRAW_FILE" ] && { echo "用法: run-gms-model.sh <组件脚本.js> <输出目录> [URL] [DATA_FILE.js]" >&2; exit 1; }
 mkdir -p "$OUT"
-export URL OUT DRAW_FILE
+export URL OUT DRAW_FILE DATA_FILE
 
 browser-harness <<'PY'
 import time, os, json, urllib.request
@@ -44,6 +45,13 @@ for _ in range(20):
 if not s:
     print("ERROR: 页面未就绪（gms/gmsPreview 未暴露）")
     raise SystemExit(1)
+
+# 可选预注入数据（如 ganyu-dense.js：window.GANYU_DENSE 测量数据）
+DATA_FILE = os.environ.get('DATA_FILE', '')
+if DATA_FILE:
+    with open(DATA_FILE) as f:
+        js(f.read())
+    time.sleep(0.5)
 
 # 注入组件脚本（模型交付物）
 with open(DRAW_FILE) as f:
