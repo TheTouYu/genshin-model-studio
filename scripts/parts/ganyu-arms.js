@@ -146,7 +146,7 @@ function arm(side) {
     { y: 0.80, cx: side * 1.16, rx: 0.024, ry: 0.024, cz: 0.02 },
   ], 0.006), Math.round(U * 0.7), function () { return WHITE; }, 0.0014);
   window.gms.part('disc', { x: side * 1.16, y: 0.80, z: 0.02, r: 0.027, thick: 0.009, axis: 'up', color: BLUE });
-  window.gms.part('disc', { x: side * 2.00, y: 0.56, z: 0.04, r: 0.024, thick: 0.016, axis: 'front', color: GLOVE });
+  window.gms.part('disc', { x: side * 1.62, y: 0.665, z: 0.04, r: 0.024, thick: 0.016, axis: 'front', color: GLOVE });
 }
 arm(-0.105);
 arm(0.105);

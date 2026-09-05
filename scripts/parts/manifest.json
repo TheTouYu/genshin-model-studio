@@ -28,7 +28,7 @@
    "id": "arms",
    "file": "ganyu-arms.js",
    "status": "done",
-   "note": "0.90/1.20/1.85/2.00 手位对齐参考张开手",
+   "note": "拟合试验：A(1.18/1.32/1.42/1.52) B(1.02/1.15/1.28/1.52) C(贴身) → A 最优",
    "view": "front/side/back",
    "crop": ""
   },
@@ -44,7 +44,7 @@
    "id": "hair",
    "file": "ganyu-hair.js",
    "status": "done",
-   "note": "侧发贴头/马尾大波浪；角红黑渐变",
+   "note": "拟合试验：宽壳+长侧发(0.07/0.21) 最优",
    "view": "front/side/back",
    "crop": ""
   },

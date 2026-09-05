@@ -137,7 +137,7 @@ var headC = [0, 1.06, -0.02];
 window.gms.part('sphere', { x: 0, y: 1.13, z: -0.02, r: 0.088, color: HAIR3 });
 window.gms.part('sphere', { x: 0, y: 1.05, z: -0.05, r: 0.075, color: HAIR2 });
 surface([
-  { y: 0.96, cx: 0, cz: -0.03, rx: 0.055, ry: 0.055 },
+  { y: 0.945, cx: 0, cz: -0.03, rx: 0.070, ry: 0.070 },
   { y: 0.985, cx: 0, cz: -0.012, rx: 0.086, ry: 0.086 },
   { y: 1.04, cx: 0, cz: -0.02, rx: 0.090, ry: 0.090 },
   { y: 1.10, cx: 0, cz: -0.022, rx: 0.091, ry: 0.092 },
@@ -158,7 +158,7 @@ for (var li = 0; li < 14; li++) {
   var sx = li < 7 ? -0.078 - li * 0.003 : 0.078 + (li - 7) * 0.003;
   var di = sx < 0 ? -1 : 1;
   var sy = 1.10 - li * 0.008;
-  ribbon([[sx, sy, -0.012], [sx + di * 0.010, sy - 0.06, 0.03], [sx + di * 0.007, sy - 0.13, 0.03], [sx + di * 0.014, sy - 0.14, 0.02]],
+  ribbon([[sx, sy, -0.012], [sx + di * 0.010, sy - 0.06, 0.03], [sx + di * 0.007, sy - 0.13, 0.03], [sx + di * 0.014, sy - 0.21, 0.03]],
     [0.012, 0.011, 0.010], li % 2 ? HAIR : HAIR2, headC);
 }
 var tailC = [0, 0.85, -0.10];
