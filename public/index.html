@@ -808,9 +808,13 @@ loadExamples()
     state.closed.push(false)
     state.batches.push({ len: 1 })
     state.selectedId = stroke.id // 刚生成的笔画自动选中，便于改参数/旋转复制
-    renderStrokeList()
-    renderDraw()
-    scheduleGen()
+    // 批处理模式（window.__gmsBatch=true）：高密度部件建模（数百笔）跳过逐笔重绘/重生成，
+    // 由脚本末尾 __gmsBatchEnd() 一次性收尾（2026-09-06 甘雨 v4.1 提速）
+    if (!window.__gmsBatch) {
+      renderStrokeList()
+      renderDraw()
+      scheduleGen()
+    }
     return stroke
   }
 
@@ -2017,8 +2021,8 @@ loadExamples()
         if (typeof s.height === 'number' && Number.isFinite(s.height) && s.height > 0) out.height = s.height
         // v3.3：size（笔画级粗细，十六期）必须原样保留——否则刷新/导入即丢失退回全局粗细（铁律 #1 第三次违反）
         if (typeof s.size === 'number' && Number.isFinite(s.size) && s.size > 0) out.size = s.size
-        // v3.5：resourceId（基础元件覆盖，球体 10009002 / 圆锥 10009009）原样保留——否则刷新/导入丢失退回圆柱
-        if (s.resourceId === 10009002 || s.resourceId === 10009009) out.resourceId = s.resourceId
+        // v3.5：resourceId（基础元件覆盖，球体 10009002 / 圆锥 10009009 / 三棱锥 10009006 / 平面 10009003）原样保留——否则刷新/导入丢失退回默认元件
+        if (s.resourceId === 10009002 || s.resourceId === 10009009 || s.resourceId === 10009006 || s.resourceId === 10009003) out.resourceId = s.resourceId
         if (out.render === 'solid' && (s.axis === 'front' || s.axis === 'side')) out.axis = s.axis // 'up'=缺省不写
         // v3.1：lift（solid 离地抬升）与 transform（3D 变换）必须原样保留，否则刷新/导入即丢失（ADR-0001）
         if (typeof s.lift === 'number' && Number.isFinite(s.lift) && s.lift >= 0) out.lift = s.lift
@@ -2293,9 +2297,9 @@ loadExamples()
       o.size = opts.size
     }
     if (opts.resourceId !== undefined) {
-      // 基础元件覆盖：底层拼装基础元件统一走笔画管线（球体 10009002 / 圆锥 10009009）
-      if (opts.resourceId !== 10009002 && opts.resourceId !== 10009009) {
-        throw new Error(`resourceId 参数非法：当前仅支持球体 10009002 / 圆锥 10009009，收到 ${JSON.stringify(opts.resourceId)}`)
+      // 基础元件覆盖：底层拼装基础元件统一走笔画管线（球体 10009002 / 圆锥 10009009 / 三棱锥 10009006 / 平面 10009003）
+      if (opts.resourceId !== 10009002 && opts.resourceId !== 10009009 && opts.resourceId !== 10009006 && opts.resourceId !== 10009003) {
+        throw new Error(`resourceId 参数非法：当前支持球体 10009002 / 圆锥 10009009 / 三棱锥 10009006 / 平面 10009003，收到 ${JSON.stringify(opts.resourceId)}`)
       }
       o.resourceId = opts.resourceId
     }
@@ -2364,11 +2368,23 @@ loadExamples()
       if (o.group === null) delete stroke.group
       else stroke.group = o.group
     }
+    if (!window.__gmsBatch) {
+      renderStrokeList()
+      renderDraw()
+      scheduleGen()
+      saveLocal()
+    }
+    return stroke
+  }
+
+  /** 批处理收尾：恢复渲染/重生成/保存（由高密度建模脚本在末尾调用一次）。 */
+  window.__gmsBatchEnd = function () {
+    window.__gmsBatch = false
     renderStrokeList()
     renderDraw()
     scheduleGen()
     saveLocal()
-    return stroke
+    return gmsSummary()
   }
 
   /** 每笔 bbox：px（画布坐标）与米（按当前标定 heightMeters / canvasHeightPx 换算）。 */
@@ -2677,13 +2693,37 @@ loadExamples()
     return gmsSummary()
   }
 
+  /** 基向量 → 编辑器 YXZ 内旋欧拉（度）：R=Ry(β)·Rx(α)·Rz(γ)，x=局部X、y=局部Y、z=局部Z（世界列向量）。 */
+  function basisToEulerDeg(x, y, z) {
+    const R = [x, y, z] // 列向量
+    const DEG = 180 / Math.PI
+    const r12 = R[1][2]
+    if (Math.abs(r12) > 0.999999) {
+      // α=±90 退化：标准 atan2(0,0) 会选错，本解通过 XY 块精确解 β/γ（2026-09-06 表面面板校准）
+      const s2 = -r12 // s2 = ±1
+      const a = s2 > 0 ? 90 : -90
+      const b = Math.atan2(R[0][1] * s2, R[2][1] * s2)
+      const s1 = Math.sin(b), c1 = Math.cos(b)
+      const m00 = c1, m01 = s1 * s2, m10 = -s1, m11 = c1 * s2
+      const det = m00 * m11 - m01 * m10
+      const c3 = (R[0][0] * m11 - m01 * R[2][0]) / det
+      const s3 = (m00 * R[2][0] - m10 * R[0][0]) / det
+      const g = Math.atan2(s3, c3)
+      return [a * DEG, b * DEG, g * DEG]
+    }
+    const a = Math.asin(Math.max(-1, Math.min(1, -r12)))
+    const b = Math.atan2(R[0][2], R[2][2])
+    const g = Math.atan2(R[1][0], R[1][1])
+    return [a * DEG, b * DEG, g * DEG]
+  }
+
   /** 十二期（基线 v3）：组件级命令——米制世界坐标声明组件，自动 px 换算 / lift / 闭合。
    * 类型：ring（杆环 r 米）、rod（两点杆）、disc（圆盘 solid r/厚）、el-disc（椭圆盘 rx/ry/厚）。
    * 世界语义：x 左右（米，0=中心）、y 高度（米，0=地面）、z 前后（米，0=叶片平面）。
    * solid 的世界 x/y 由 spec 决定（画布位置只影响轮廓形状）；rod 由画布换算自动得。
    * 约束：先画贴地件（y≈厚/2）稳定 bbox 底，再画其余（世界 y 以当前 bbox 底为基准）。 */
   function gmsPart(type, spec) {
-    const TYPES = ['ring', 'rod', 'poly', 'sphere', 'cone', 'disc', 'el-disc', 'arc', 'plate']
+    const TYPES = ['ring', 'rod', 'poly', 'sphere', 'cone', 'tri', 'quad', 'disc', 'el-disc', 'arc', 'plate']
     if (!TYPES.includes(type)) throw new Error(`part 类型非法：应为 ${TYPES.join('/')}，当前值为 ${JSON.stringify(type)}`)
     if (typeof spec !== 'object' || spec === null) throw new Error(`part 参数非法：应为组件参数对象 {x,y,z,...}，当前值为 ${JSON.stringify(spec)}`)
     // 十九期同族加固（2026-09-05 刷新解散）：gms.part 的像素坐标依赖固定原点标定
@@ -2754,6 +2794,51 @@ loadExamples()
         ...base, render: 'solid', height: h, lift: y - h / 2,
         axis: spec.axis === undefined ? 'up' : spec.axis,
         resourceId: 10009009, transform: { position: [0, 0, z] }
+      })
+    } else if (type === 'tri') {
+      // 三棱锥面（10009006）：游戏内三棱锥缩放/压扁即得一个三角面（用户 2026-09-06 提示）。
+      // spec：x/y/z 中心、w 底宽、h 高、thick 厚度（默认 0.002 压扁成面）、axis 缺省 front。
+      const w = num(spec.w, 'w', 0.06)
+      const hh = num(spec.h, 'h', 0.06)
+      const th = num(spec.thick, 'thick', 0.002)
+      const axis = spec.axis === undefined ? 'front' : spec.axis
+      if (w <= 0 || hh <= 0 || th <= 0) throw new Error(`part.w/h/thick 参数非法：应为正数（米），当前值为 w=${JSON.stringify(spec.w)} h=${JSON.stringify(spec.h)} thick=${JSON.stringify(spec.thick)}`)
+      if (!['up', 'front', 'side'].includes(axis)) throw new Error(`part.axis 参数非法：应为 up/front/side，当前值为 ${JSON.stringify(spec.axis)}`)
+      const [cx, cy] = toPx(x, y)
+      const hw = w / 2 / k, hhpx = hh / 2 / k
+      const pts = [
+        [cx - hw, cy + hhpx], [cx + hw, cy + hhpx], [cx, cy - hhpx], [cx - hw, cy + hhpx],
+      ]
+      addStrokeWithOpts(pts, {
+        ...base, render: 'solid', height: th, axis, lift: y - th / 2,
+        resourceId: 10009006, transform: { position: [0, 0, z] }
+      })
+    } else if (type === 'quad') {
+      // 表面面板（平面 10009003）：真实模型由很多“面”拼成——用平面片定义任意朝向的面。
+      // spec：x/y/z 中心、w 宽、h 高、thick 厚、normal [nx,ny,nz] 法线、roll 面内滚转（度）。
+      const w = num(spec.w, 'w', 0.06)
+      const hh = num(spec.h, 'h', 0.06)
+      const th = num(spec.thick, 'thick', 0.002)
+      if (w <= 0 || hh <= 0 || th <= 0) throw new Error(`part.w/h/thick 参数非法：应为正数（米），当前值为 w=${JSON.stringify(spec.w)} h=${JSON.stringify(spec.h)} thick=${JSON.stringify(spec.thick)}`)
+      let n = spec.normal === undefined ? [0, 1, 0] : spec.normal
+      if (!Array.isArray(n) || n.length !== 3 || !n.every(Number.isFinite)) throw new Error(`part.normal 参数非法：应为 [nx,ny,nz] 有限数值，当前值为 ${JSON.stringify(spec.normal)}`)
+      const nl = Math.hypot(n[0], n[1], n[2]); n = [n[0] / nl, n[1] / nl, n[2] / nl]
+      // 面板朝向（含坡度）：rot=[90+δ, 90°−θ, 0]；δ=−asin(ny)，θ=atan2(nz,nx)。
+      // 平面零旋转平躺（法线 +Y）；Rx(90) 立起 → Ry 绕 Y 转方位 → Rx(δ) 抬俯，贴合曲面坡度。
+      // （2026-09-06 单面板校准 + 表面格实测：此公式任意法线皆贴合，不再纸屑/锯齿）
+      const nl0 = Math.hypot(n[0], n[2]) || 1e-9
+      const phi = Math.atan2(n[2], n[0]) * 180 / Math.PI
+      const delta = -Math.asin(Math.max(-1, Math.min(1, n[1]))) * 180 / Math.PI
+      const rot = [90 + delta, 90 - phi, 0]
+      void nl0
+      const [cx, cy] = toPx(x, y)
+      const hw = w / 2 / k, hhp = hh / 2 / k
+      const pts = [
+        [cx - hw, cy + hhp], [cx + hw, cy + hhp], [cx + hw, cy - hhp], [cx - hw, cy - hhp], [cx - hw, cy + hhp],
+      ]
+      addStrokeWithOpts(pts, {
+        ...base, render: 'solid', height: th, axis: 'up', lift: y - th / 2,
+        resourceId: 10009003, transform: { position: [0, 0, z], rotation: rot }
       })
     } else if (type === 'rod') {
       const x1 = num(spec.x1, 'x1'), y1 = num(spec.y1, 'y1'), x2 = num(spec.x2, 'x2'), y2 = num(spec.y2, 'y2')
@@ -2860,6 +2945,13 @@ loadExamples()
       const r = spec.r ?? 0.05
       const half = (spec.h ?? 0.1) / 2
       world = { kind: 'cyl', c: [x, y, z], dir: [0, 1, 0], rad: r, half }
+    } else if (type === 'tri') {
+      // 三棱锥面：接触校验近似为薄盒（中心/半尺寸）
+      const hw = (spec.w ?? 0.06) / 2, hh = (spec.h ?? 0.06) / 2, ht = (spec.thick ?? 0.002) / 2
+      world = { kind: 'box', c: [x, y, z], half: [hw, hh, ht] }
+    } else if (type === 'quad') {
+      const hw = (spec.w ?? 0.06) / 2, hh = (spec.h ?? 0.06) / 2, ht = (spec.thick ?? 0.002) / 2
+      world = { kind: 'box', c: [x, y, z], half: [hw, hh, ht] }
     } else if (type === 'ring') {
       world = { kind: 'ring', c: [x, y, z], r: spec.r, tube: (spec.size ?? 0.03) / 2 }
     } else if (type === 'disc' || type === 'el-disc') {

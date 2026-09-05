@@ -30,7 +30,7 @@
  * - stroke.height 对 rod/lathe 笔画：该笔所有 item 的 position.y += height（整体抬升）。
  */
 import type { ModelOptions, Stroke, TaggedItem, TaggedItemColor } from './types.js'
-import { BOX_RESOURCE_ID, CONE_RESOURCE_ID, CYLINDER_RESOURCE_ID, OPEN_CYLINDER_RESOURCE_ID, SPHERE_RESOURCE_ID } from './types.js'
+import { BOX_RESOURCE_ID, CONE_RESOURCE_ID, CYLINDER_RESOURCE_ID, OPEN_CYLINDER_RESOURCE_ID, PLANE_RESOURCE_ID, SPHERE_RESOURCE_ID, TETRA_RESOURCE_ID } from './types.js'
 import { adaptiveEpsilon, fitStroke, simplifyRdp, type FittedStroke, type Point } from './fitting.js'
 import type { StructureItem } from '../core/structure.js'
 
@@ -283,7 +283,7 @@ const ELLIPSE_RADIUS_REL_VARIANCE = 0.1
 /** 闭合轮廓首尾去重：首尾距离 < 对角线 × 该比例时视为重复闭合点（矩形工具常首尾同点）。 */
 const CLOSURE_DEDUP_RATIO = 0.01
 
-type RecognizedShape = 'circle' | 'ellipse' | 'rectangle'
+type RecognizedShape = 'circle' | 'ellipse' | 'rectangle' | 'triangle'
 
 /** 轮廓识别结果：shape + 圆/椭圆的旋转不变主轴半径（像素，长轴在前）；矩形为 null（bbox 语义保留）。 */
 type Recognized = { shape: RecognizedShape; radii: readonly [number, number] | null }
@@ -323,6 +323,9 @@ function recognizeShape(points: readonly Point[]): Recognized {
     const t = turnAngle(pts, i)
     if (t > CORNER_TURN_DEG && t < 160) corners.push(i)
   }
+  // 三角形：3 个角点（50°~160° 转角筛选后唯一 3 角即三角形）→ 三棱锥面（10009006，
+  // 缩放/压扁可得到三棱锥的一个三角面——甘雨 v4.1 三角发片/衣片/鞋面用法）
+  if (corners.length === 3) return { shape: 'triangle', radii: null }
   // 矩形优先：四角近似 90°、对边平行（角点顺序绕轮廓一周）
   if (corners.length === 4) {
     // 矩形候选：四角近似 90°、对边平行（角点顺序绕轮廓一周）
@@ -545,8 +548,27 @@ function solidColumn(
       ...(color === undefined ? {} : { color: itemColor(color) })
     }
   }
+  // 平面 10009003：矩形轮廓 → 表面面板（scale=[宽, 厚度, 深]，rotation 由 transform 覆盖实现任意朝向）
+  if (stroke.resourceId === PLANE_RESOURCE_ID) {
+    if (shape !== 'rectangle') throw new Error('平面渲染需要矩形轮廓')
+    return {
+      resourceId: PLANE_RESOURCE_ID,
+      position: [
+        centerX + (tp?.[0] ?? 0),
+        thickness / 2 + (stroke.lift ?? 0) + (tp?.[1] ?? 0),
+        centerZ + (tp?.[2] ?? 0)
+      ],
+      rotation: stroke.transform?.rotation ?? [0, 0, 0],
+      scale: scale3,
+      group: stroke.id,
+      ...(color === undefined ? {} : { color: itemColor(color) })
+    }
+  }
+  if (stroke.resourceId === TETRA_RESOURCE_ID && shape !== 'triangle') {
+    throw new Error('三棱锥渲染需要三角形轮廓')
+  }
   return {
-    resourceId: shape === 'rectangle' ? BOX_RESOURCE_ID : CYLINDER_RESOURCE_ID,
+    resourceId: shape === 'rectangle' ? BOX_RESOURCE_ID : shape === 'triangle' ? TETRA_RESOURCE_ID : CYLINDER_RESOURCE_ID,
     position: [
       centerX + (tp?.[0] ?? 0),
       thickness / 2 + (stroke.lift ?? 0) + (tp?.[1] ?? 0),

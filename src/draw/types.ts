@@ -24,9 +24,9 @@ import type { StructureItem } from '../core/structure.js'
  *   solidColumn，两模式都生效；缺省不写 = 0（贴地，既有行为）。杆笔画不消费
  *   （杆的离地抬升用 height）。gms.rotate / UI 旋转复制把 lift 透传给副本
  *   （风扇叶片旋转副本需与源同高度）。
- * - resourceId：可选，仅对 render='solid' 的圆轮廓有效——覆盖默认圆柱/长方体，
- *   目前支持 10009002（球体，scale=[D,D,D]）与 10009009（圆锥，scale=[D,H,D]）。
- *   底层拼装基础元件（球体/圆锥/圆柱/长方体等）统一走同一笔画管线。 */
+ * - resourceId：可选，仅对 render='solid' 的封闭轮廓有效——覆盖默认圆柱/长方体，
+ *   目前支持 10009002（球体）、10009009（圆锥，圆/椭圆轮廓）、10009006（三棱锥，三角轮廓）。
+ *   底层拼装基础元件（球体/圆锥/三棱锥/圆柱/长方体等）统一走同一笔画管线。 */
 export type Stroke = {
   id: string
   points: ReadonlyArray<readonly [number, number] | readonly [number, number, number]>
@@ -82,6 +82,10 @@ export const OPEN_CYLINDER_RESOURCE_ID = 10009012
 export const SPHERE_RESOURCE_ID = 10009002
 /** 圆锥（10009009）：截面直径 1、高 1（预览几何合理猜测，未校准；尖端 +Y）。 */
 export const CONE_RESOURCE_ID = 10009009
+/** 三棱锥（10009006）：未校准合理形状为正四面体；缩放可得到三棱锥的一个三角面（2026-09-06 甘雨 v4.1）。 */
+export const TETRA_RESOURCE_ID = 10009006
+/** 平面（10009003）：零旋转平躺、法线朝 +Y、XZ 平面 1×1；scale=[宽, 厚度, 深]（用于表面面板拼装）。 */
+export const PLANE_RESOURCE_ID = 10009003
 /** 长方体（10009001）：scale=[宽, 高, 长]，长轴 = 局部 Z。 */
 export const BOX_RESOURCE_ID = 10009001
 

@@ -16,6 +16,8 @@
   var cnt = document.getElementById('count');
   if (cnt && String(cnt.value) !== '60') { cnt.value = '60'; cnt.dispatchEvent(new Event('input', { bubbles: true })); }
 })();
+// 批处理：数百笔部件跳过逐笔重绘/重生成，脚本末尾一次性收尾（2026-09-06 提速）
+window.__gmsBatch = true;
 window.gms.mode('extrude');
 window.gms.clear();
 
@@ -166,14 +168,14 @@ window.gms.part('disc', { x: -0.088, y: 1.045, z: 0.0, r: 0.010, thick: 0.005, a
 window.gms.part('disc', { x: 0.088, y: 1.045, z: 0.0, r: 0.010, thick: 0.005, axis: 'side', color: SKIN });
 
 /* ================= 头发（大体积 + 刘海 + 侧发 + 呆毛 + 角 + 长马尾） ================= */
-window.gms.part('sphere', { name: 'hair', x: 0, y: 1.08, z: -0.025, r: 0.092, color: HAIR });
-// 刘海（26 束，4 点微曲 poly → 每束 3 节，更长更蓬）
+window.gms.part('sphere', { name: 'hair', x: 0, y: 1.08, z: -0.035, r: 0.09, color: HAIR });
+// 刘海（26 束，4 点微曲 poly → 每束 3 节；末端保持在眉眼上方，留出脸部）
 for (var bi = 0; bi < 26; bi++) {
   var hx = -0.078 + (bi / 25) * 0.156;
-  var hEnd = 1.036 - (bi % 4) * 0.007;
+  var hEnd = 1.075 - (bi % 3) * 0.006;
   var fx = hx + ((bi % 5) - 2) * 0.003;
   window.gms.part('poly', {
-    points: [[hx, 1.115, 0.052], [hx + (fx - hx) * 0.35, (1.115 + hEnd) / 2, 0.070], [hx + (fx - hx) * 0.75, (1.15 + hEnd) / 2, 0.076], [fx, hEnd, 0.080]],
+    points: [[hx, 1.115, 0.050], [hx + (fx - hx) * 0.35, (1.115 + hEnd) / 2, 0.066], [hx + (fx - hx) * 0.75, (1.15 + hEnd) / 2, 0.072], [fx, hEnd, 0.075]],
     size: 0.0085, color: bi % 2 ? HAIR : HAIR2
   });
 }
@@ -194,12 +196,12 @@ window.gms.part('poly', {
 });
 // 双角（暗红 + 浅蓝尖；poly 曲线 4 节）
 function horn(sideSign) {
-  var bx = 0.045 * sideSign;
+  var bx = 0.05 * sideSign;
   window.gms.part('poly', {
-    points: [[bx, 1.095, 0.0], [bx + 0.014 * sideSign, 1.15, -0.02], [bx + 0.018 * sideSign, 1.20, -0.045], [bx + 0.008 * sideSign, 1.235, -0.065]],
-    size: 0.015, color: HORN
+    points: [[bx, 1.09, 0.0], [bx + 0.018 * sideSign, 1.16, -0.02], [bx + 0.026 * sideSign, 1.24, -0.05], [bx + 0.012 * sideSign, 1.30, -0.09]],
+    size: 0.018, color: HORN
   });
-  window.gms.part('cone', { x: bx + 0.008 * sideSign, y: 1.262, z: -0.065, r: 0.013, h: 0.04, axis: 'up', color: HORN_TIP });
+  window.gms.part('cone', { x: bx + 0.012 * sideSign, y: 1.325, z: -0.09, r: 0.015, h: 0.05, axis: 'up', color: HORN_TIP });
 }
 horn(-1);
 horn(1);
@@ -245,6 +247,26 @@ window.gms.part('rod', { x1: 0.095, y1: 1.08, z: 0.01, x2: 0.10, y2: 1.0, size: 
 window.gms.part('disc', { x: -0.101, y: 1.0, z: 0.01, r: 0.005, thick: 0.003, axis: 'up', color: WHITE });
 window.gms.part('disc', { x: 0.101, y: 1.0, z: 0.01, r: 0.005, thick: 0.003, axis: 'up', color: WHITE });
 
+/* ================= 三角面（三棱锥 10009006：缩放/压扁 = 一个三角面） ================= */
+// 马尾羽毛尖 ×12（浅/深蓝交替，随长度交替位置）
+for (var ti = 0; ti < 12; ti++) {
+  var tx = -0.058 + ti * 0.0105;
+  var ty = 0.33 + (ti % 3) * 0.022;
+  var tz = -0.088 - (ti % 2) * 0.012;
+  window.gms.part('tri', { x: tx, y: ty - 0.02, z: tz, w: 0.02, h: 0.042, thick: 0.002, axis: 'front', color: ti % 2 ? HAIR : HAIR2 });
+}
+// 球衣侧边蓝三角 V 形 ×4（前/后各左右）
+window.gms.part('tri', { x: -0.082, y: 0.855, z: 0.074, w: 0.036, h: 0.046, thick: 0.002, axis: 'front', color: BLUE });
+window.gms.part('tri', { x: 0.082, y: 0.855, z: 0.074, w: 0.036, h: 0.046, thick: 0.002, axis: 'front', color: BLUE });
+window.gms.part('tri', { x: -0.082, y: 0.855, z: -0.074, w: 0.036, h: 0.046, thick: 0.002, axis: 'front', color: BLUE });
+window.gms.part('tri', { x: 0.082, y: 0.855, z: -0.074, w: 0.036, h: 0.046, thick: 0.002, axis: 'front', color: BLUE });
+// 短裤前三角饰 ×2
+window.gms.part('tri', { x: -0.06, y: 0.585, z: 0.088, w: 0.03, h: 0.03, thick: 0.002, axis: 'front', color: BLUE_L });
+window.gms.part('tri', { x: 0.06, y: 0.585, z: 0.088, w: 0.03, h: 0.03, thick: 0.002, axis: 'front', color: BLUE_L });
+// 鞋侧蓝楔形 ×2
+window.gms.part('tri', { x: -0.062, y: 0.032, z: 0.028, w: 0.028, h: 0.02, thick: 0.003, axis: 'side', color: BLUE });
+window.gms.part('tri', { x: 0.062, y: 0.032, z: 0.028, w: 0.028, h: 0.02, thick: 0.003, axis: 'side', color: BLUE });
+
 /* ================= 受力链（结构件 + verify） ================= */
 window.gms.link('LeftBootSole', 'LeftBootUpper', { support: 'b' });
 window.gms.link('RightBootSole', 'RightBootUpper', { support: 'b' });
@@ -272,3 +294,6 @@ if (!__v.ok) {
     badLinks: __v.links.filter(function (l) { return !l.contact; }),
   }));
 }
+
+// 批处理收尾：一次性重绘 + 重生成 + 保存
+window.__gmsBatchEnd && window.__gmsBatchEnd();

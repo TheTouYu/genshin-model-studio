@@ -5,7 +5,7 @@
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
 
-import { BOX_RESOURCE_ID, CONE_RESOURCE_ID, CYLINDER_RESOURCE_ID, SPHERE_RESOURCE_ID, generateModel, toStructureItems } from '../src/draw/types.js'
+import { BOX_RESOURCE_ID, CONE_RESOURCE_ID, CYLINDER_RESOURCE_ID, PLANE_RESOURCE_ID, SPHERE_RESOURCE_ID, TETRA_RESOURCE_ID, generateModel, toStructureItems } from '../src/draw/types.js'
 import { adaptiveEpsilon, detectClosed, fitStroke, resampleUniform, simplifyRdp } from '../src/draw/fitting.js'
 import { OPEN_CYLINDER_RESOURCE_ID } from '../src/draw/types.js'
 import { catmullRom } from '../src/draw/spline.js'
@@ -776,6 +776,35 @@ test('solid: cone resourceId override → 10009009 with height along axis (tip +
   assert.deepEqual(item.scale, [2, 0.2, 2])
   assert.deepEqual(item.rotation, [0, 0, 0])
   assert.equal(item.position[1], 0.1) // y = 高度/2 + lift(0)
+})
+
+test('solid: triangle contour → 10009006 三棱锥面 (flat tetra face, axis front)', () => {
+  const tri: [number, number][] = [[0, 0], [100, 0], [50, 80], [0, 0]]
+  const { items } = generateModel(
+    [{ id: 't', points: tri, render: 'solid', height: 0.002, axis: 'front' }],
+    solidOpts
+  )
+  assert.equal(items.length, 1)
+  const item = items[0]
+  assert.equal(item.resourceId, TETRA_RESOURCE_ID)
+  // bbox 100×80 → s=2/80：宽=2.5、深=2、厚度=0.002；front 旋转 [90,0,0]
+  assert.deepEqual(item.scale, [2.5, 0.002, 2])
+  assert.deepEqual(item.rotation, [90, 0, 0])
+  assert.equal(item.position[1], 0.001)
+})
+
+test('solid: plane resourceId → 10009003 flat panel with transform rotation', () => {
+  const rect: [number, number][] = [[0, 0], [100, 0], [100, 60], [0, 60], [0, 0]]
+  const { items } = generateModel(
+    [{ id: 'p', points: rect, render: 'solid', height: 0.002, resourceId: PLANE_RESOURCE_ID, transform: { rotation: [30, 0, 0] } }],
+    solidOpts
+  )
+  assert.equal(items.length, 1)
+  const item = items[0]
+  assert.equal(item.resourceId, PLANE_RESOURCE_ID)
+  assert.deepEqual(item.rotation, [30, 0, 0])
+  // bbox 100×60 → s=2/60：宽=3.3333、深=2、厚=0.002
+  assert.deepEqual(item.scale, [10 / 3, 0.002, 2])
 })
 
 test('parse: sphere resourceId passes through, unknown base element rejected', () => {

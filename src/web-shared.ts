@@ -7,7 +7,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, extname, basename } from 'node:path'
 import { fitStroke, type FittedStroke } from './draw/fitting.js'
-import { generateModel, toStructureItems, SPHERE_RESOURCE_ID, CONE_RESOURCE_ID } from './draw/types.js'
+import { generateModel, toStructureItems, SPHERE_RESOURCE_ID, CONE_RESOURCE_ID, TETRA_RESOURCE_ID, PLANE_RESOURCE_ID } from './draw/types.js'
 import type { ModelOptions, Stroke, TaggedItem } from './draw/types.js'
 import type { StructureItem } from './core/structure.js'
 import { resolveStructure } from './core/structure.js'
@@ -17,9 +17,9 @@ export const EXAMPLES = join(process.cwd(), 'examples')
 
 /* ==================== 二期：画线建模 /api/draw-model 共享逻辑 ==================== */
 
-/** 笔画/点数量上限（防滥用，正常手绘远达不到；2026-09-06 高精度毛发建模放宽到 500）。 */
-export const MAX_DRAW_STROKES = 500
-export const MAX_DRAW_POINTS = 200000
+/** 笔画/点数量上限（防滥用；2026-09-06 表面面板建模：人物几千面上万装饰，放宽到 30000 笔/50 万点）。 */
+export const MAX_DRAW_STROKES = 30000
+export const MAX_DRAW_POINTS = 500000
 
 /**
  * 校验并解析 /api/draw-model 请求体；非法时抛出中文 Error（调用方转 400）。
@@ -95,10 +95,17 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
     if (axis !== undefined && axis !== 'up' && axis !== 'front' && axis !== 'side') {
       throw new Error(`第 ${i + 1} 笔方向无效：需为 up、front 或 side`)
     }
-    // 基础元件覆盖（底层拼装基础元件）：允许球体 10009002 / 圆锥 10009009，且仅对 solid 圆/椭圆轮廓有效
+    // 基础元件覆盖（底层拼装基础元件）：允许球体 10009002 / 圆锥 10009009 / 三棱锥 10009006 / 平面 10009003，
+    // 且仅对 solid 封闭轮廓有效（球/圆锥=圆椭圆，三棱锥=三角，平面=矩形）
     const resourceId = (stroke as { resourceId?: unknown }).resourceId
-    if (resourceId !== undefined && resourceId !== SPHERE_RESOURCE_ID && resourceId !== CONE_RESOURCE_ID) {
-      throw new Error(`第 ${i + 1} 笔基础元件无效：当前仅支持球体 ${SPHERE_RESOURCE_ID} / 圆锥 ${CONE_RESOURCE_ID}，收到 ${JSON.stringify(resourceId)}`)
+    if (
+      resourceId !== undefined &&
+      resourceId !== SPHERE_RESOURCE_ID &&
+      resourceId !== CONE_RESOURCE_ID &&
+      resourceId !== TETRA_RESOURCE_ID &&
+      resourceId !== PLANE_RESOURCE_ID
+    ) {
+      throw new Error(`第 ${i + 1} 笔基础元件无效：当前支持球体 ${SPHERE_RESOURCE_ID} / 圆锥 ${CONE_RESOURCE_ID} / 三棱锥 ${TETRA_RESOURCE_ID} / 平面 ${PLANE_RESOURCE_ID}，收到 ${JSON.stringify(resourceId)}`)
     }
     const angle = (stroke as { angle?: unknown }).angle
     if (angle !== undefined && (typeof angle !== 'number' || !Number.isFinite(angle))) {
