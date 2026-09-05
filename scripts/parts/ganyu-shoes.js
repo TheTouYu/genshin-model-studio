@@ -143,9 +143,13 @@ window.gms.part('disc', { x: -0.09, y: 0.048, z: 0, r: 0.031, thick: 0.018, axis
 window.gms.part('disc', { x: 0.09, y: 0.048, z: 0, r: 0.031, thick: 0.018, axis: 'up', color: SOCK });
 // 鞋带（白色细杆 ×3 每只）+ 蓝鞋头三棱
 function laces(cx) {
-  for (var k = 0; k < 3; k++) {
-    window.gms.part('rod', { x1: cx - 0.018, y1: 0.055 + k * 0.012, z: 0.034, x2: cx + 0.018, y2: 0.050 + k * 0.012, size: 0.003, color: WHITE });
-  }
+  // 交叉鞋带（X ×2 + 中横带）
+  window.gms.part('rod', { x1: cx - 0.016, y1: 0.050, z: 0.034, x2: cx + 0.016, y2: 0.066, size: 0.0026, color: WHITE });
+  window.gms.part('rod', { x1: cx + 0.016, y1: 0.050, z: 0.034, x2: cx - 0.016, y2: 0.066, size: 0.0026, color: WHITE });
+  window.gms.part('rod', { x1: cx - 0.018, y1: 0.058, z: 0.035, x2: cx + 0.018, y2: 0.058, size: 0.0028, color: WHITE });
+  // 侧金藤印刷（外侧面）
+  window.gms.part('rod', { x1: cx - 0.052, y1: 0.028, z: -0.012, x2: cx - 0.058, y2: 0.040, size: 0.0020, color: '#c9a86a' });
+  window.gms.part('rod', { x1: cx - 0.058, y1: 0.040, z: -0.012, x2: cx - 0.052, y2: 0.050, size: 0.0020, color: '#c9a86a' });
   window.gms.part('tri', { x: cx, y: 0.052, z: 0.052, w: 0.022, h: 0.014, thick: 0.002, axis: 'front', color: BLUE });
 }
 laces(-0.09);

@@ -140,10 +140,13 @@ function eye(sx) {
   window.gms.part('disc', { x: sx, y: 1.060, z: 0.0812, r: 0.0098, thick: 0.0018, axis: 'front', color: '#8a6fd8' });
   window.gms.part('disc', { x: sx, y: 1.058, z: 0.0822, r: 0.0042, thick: 0.0015, axis: 'front', color: '#1a2b4a' });
   window.gms.part('disc', { x: sx + 0.0035, y: 1.0655, z: 0.0828, r: 0.0026, thick: 0.0012, axis: 'front', color: WHITE });
-  window.gms.part('rod', { x1: sx - 0.014, y1: 1.0705, z: 0.0810, x2: sx + 0.014, y2: 1.0705, size: 0.0036, color: '#221c3a' });
+  window.gms.part('rod', { x1: sx - 0.015, y1: 1.0745, z: 0.0810, x2: sx - 0.004, y2: 1.0785, size: 0.0026, color: '#b8cfe8' });
+  window.gms.part('rod', { x1: sx - 0.004, y1: 1.0785, z: 0.0810, x2: sx + 0.014, y2: 1.0755, size: 0.0026, color: '#b8cfe8' });
 }
 eye(-0.028); eye(0.028);
 window.gms.part('disc', { x: -0.030, y: 1.044, z: 0.0825, r: 0.006, thick: 0.0018, axis: 'front', color: '#f0b7b7' });
 window.gms.part('disc', { x: 0.030, y: 1.044, z: 0.0825, r: 0.006, thick: 0.0018, axis: 'front', color: '#f0b7b7' });
-window.gms.part('disc', { x: 0, y: 1.012, z: 0.079, r: 0.0085, thick: 0.002, axis: 'front', color: MOUTH });
+window.gms.part('rod', { x1: 0, y1: 1.052, z: 0.086, x2: 0, y2: 1.040, size: 0.0028, color: '#e8b49b' });
+window.gms.part('disc', { x: 0, y: 1.014, z: 0.081, r: 0.0068, thick: 0.0018, axis: 'front', color: MOUTH });
+window.gms.part('rod', { x1: -0.006, y1: 1.0195, z: 0.0812, x2: 0.006, y2: 1.0195, size: 0.0012, color: '#8a4a4a' });
 window.__gmsBatchEnd && window.__gmsBatchEnd();

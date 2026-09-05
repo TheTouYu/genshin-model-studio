@@ -112,15 +112,15 @@
    "id": "face-refine",
    "title": "鼻/眉形/眼睑精修+唇色",
    "priority": "P2",
-   "status": "todo",
-   "note": "AUDIT #9"
+   "status": "done",
+   "note": "AUDIT #9 ✅v24 特写核验"
   },
   {
    "id": "shoe-gold",
    "title": "鞋型+金藤印刷+交叉鞋带",
    "priority": "P2",
-   "status": "todo",
-   "note": "AUDIT #7"
+   "status": "done",
+   "note": "AUDIT #7 ✅v24 特写核验"
   }
  ]
 }
