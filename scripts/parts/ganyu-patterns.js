@@ -177,4 +177,11 @@ function fleur(x, y) {
 }
 fleur(-0.09, 0.15);
 fleur(0.09, 0.15);
+// 背部蓝色脊披饰品（流苏状蓝丝，垂下至腰）
+var spineC = [0, 0.78, -0.10];
+for (var si2 = 0; si2 < 9; si2++) {
+  var bx2 = -0.026 + (si2 - 4) * 0.007;
+  ribbon([[bx2, 0.86, -0.088], [bx2 * 0.7 + Math.sin(si2) * 0.004, 0.76, -0.090], [bx2 * 0.9, 0.66, -0.086], [bx2 * 0.5, 0.60, -0.082]],
+    [0.012, 0.010, 0.008], si2 % 2 ? BLUE_L : '#a9d4f5', spineC);
+}
 window.__gmsBatchEnd && window.__gmsBatchEnd();

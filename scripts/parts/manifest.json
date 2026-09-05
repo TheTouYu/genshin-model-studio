@@ -43,8 +43,8 @@
   {
    "id": "hair",
    "file": "ganyu-hair.js",
-   "status": "optimizing",
-   "note": "弯月角已放大后弯；马尾大波浪/发量待下轮（对比01/11）",
+   "status": "done",
+   "note": "高位大波浪马尾150丝+波摆（对照11）；角红黑渐变内层（01）",
    "view": "front/side/back",
    "crop": ""
   },
@@ -52,7 +52,7 @@
    "id": "shoes",
    "file": "ganyu-shoes.js",
    "status": "done",
-   "note": "",
+   "note": "蓝后跟三棱+黑鞋钉×3（对照08）",
    "view": "front/side/back",
    "crop": ""
   },
@@ -60,7 +60,7 @@
    "id": "patterns",
    "file": "ganyu-patterns.js",
    "status": "done",
-   "note": "",
+   "note": "背部蓝色脊披流苏（对照13）；chest/back 10 加大",
    "view": "front/side/back",
    "crop": ""
   }
