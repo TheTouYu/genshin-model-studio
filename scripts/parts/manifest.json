@@ -1,0 +1,68 @@
+{
+ "parts": [
+  {
+   "id": "torso",
+   "file": "ganyu-torso.js",
+   "status": "done",
+   "note": "",
+   "view": "front/side/back",
+   "crop": ""
+  },
+  {
+   "id": "shorts",
+   "file": "ganyu-shorts.js",
+   "status": "done",
+   "note": "",
+   "view": "front/side/back",
+   "crop": ""
+  },
+  {
+   "id": "legs",
+   "file": "ganyu-legs.js",
+   "status": "done",
+   "note": "",
+   "view": "front/side/back",
+   "crop": ""
+  },
+  {
+   "id": "arms",
+   "file": "ganyu-arms.js",
+   "status": "done",
+   "note": "",
+   "view": "front/side/back",
+   "crop": ""
+  },
+  {
+   "id": "face",
+   "file": "ganyu-face.js",
+   "status": "done",
+   "note": "紫瞳大眼+上挑睫+高光（对照02-face裁剪）",
+   "view": "front/side/back",
+   "crop": ""
+  },
+  {
+   "id": "hair",
+   "file": "ganyu-hair.js",
+   "status": "optimizing",
+   "note": "弯月角已放大后弯；马尾大波浪/发量待下轮（对比01/11）",
+   "view": "front/side/back",
+   "crop": ""
+  },
+  {
+   "id": "shoes",
+   "file": "ganyu-shoes.js",
+   "status": "done",
+   "note": "",
+   "view": "front/side/back",
+   "crop": ""
+  },
+  {
+   "id": "patterns",
+   "file": "ganyu-patterns.js",
+   "status": "done",
+   "note": "",
+   "view": "front/side/back",
+   "crop": ""
+  }
+ ]
+}
