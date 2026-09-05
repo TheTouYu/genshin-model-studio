@@ -101,6 +101,7 @@ state.options = {
 | preview-demo 直接依赖 work.options | 这是"安全假设"：只要其他路径不再产出缺字段的 work 就不会再现；已在技能坑清单登记防回归 | 已登记 |
 | 其他 options 重建路径 | 已排查：`state.options =` 仅 2 处（onOptionChange 已修、applyWork 自带画布宽+回退）；`gmsMode` 只改 mode 不重建 | 已闭环 |
 | 基础元件覆盖面 | 目前 `resourceId` 只放行 `10009002`（球体）；后续加锥/棱柱等只需扩展白名单与预览映射 | 待扩展 |
+| **API ↔ UI 一致性**（用户 2026-09-05 提出） | `gms.part('sphere')`/`opts.size`/`lift`/`transform`/命名组件+`link`+`verify` 等 API 能力网页真人操作无入口，真人画不出球体/粗细/变换/受力链 | 已产出修复提示词：`docs/game-engine-knowledge/prompt-2026-09-05-api-ui-consistency.md`，待下轮执行 | 未做 |
 
 ---
 
@@ -116,6 +117,7 @@ state.options = {
 **文档 / 证据**
 - `REPORT.md`：交付报告（含 §8 刷新解散修复）
 - `docs/game-engine-knowledge/retrospective-2026-09-05-soccer-player-refresh-disassembly.md`：本复盘
+- `docs/game-engine-knowledge/prompt-2026-09-05-api-ui-consistency.md`：API↔UI 一致性修复提示词（用户 2026-09-05 提出的下轮任务）
 - `delivery/soccer-player/`：work.json / items.json / api-inspect.json / view-*.png / page-smoke.png / after-refresh-fixed-demo.png
 - 历史版本：`vmtoke3crhpnh`（v1）、`vmtokolfnrr0r`（v2 修复刷新解散）
 
