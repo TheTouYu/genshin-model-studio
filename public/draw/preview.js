@@ -494,7 +494,12 @@
       renderer.render(scene, camera) // 同上：同步出帧，不依赖 rAF
     }
 
-    return { setItems: setItems, setCamera: setCamera, resetView: resetView, dispose: dispose }
+    return {
+      setItems: setItems, setCamera: setCamera, resetView: resetView, dispose: dispose,
+      // 2026-09-06 剪影量化：隐藏网格/坐标轴 + 纯色背景，供 readPixels 分割（避免网格线干扰 IoU）
+      setGridVisible: function (v) { grid.visible = !!v; axes.visible = !v; renderer.render(scene, camera) },
+      setBackground: function (hex) { scene.background = new THREE.Color(hex); renderer.render(scene, camera) },
+    }
   }
 
   global.createPreview = createPreview
