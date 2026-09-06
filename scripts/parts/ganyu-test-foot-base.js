@@ -35,6 +35,12 @@
   ];
   var d = profileLoft(path, secs, 36, 40, function () { return '#e8e8ec'; },
     { cap: 'none', dataOnly: true,
+      toes: { frac: 0.30, amp: 0.24, list: [
+        { c: Math.PI * 1.62, w: 0.42, len: 1.00, dy: 0.012 },
+        { c: Math.PI * 1.34, w: 0.34, len: 0.94, dy: 0.008 },
+        { c: Math.PI * 1.08, w: 0.30, len: 0.86, dy: 0.005 },
+        { c: Math.PI * 0.84, w: 0.28, len: 0.78, dy: 0.003 },
+        { c: Math.PI * 0.60, w: 0.28, len: 0.70, dy: 0.002 } ] },
       bumps: [
         { t: 0.10, th: Math.PI * 1.5, amp: 0.10, w: 0.030, wt: 0.7 },   // 内踝（左足内侧 +x，较高大）
         { t: 0.14, th: Math.PI * 0.5, amp: 0.055, w: 0.028, wt: 0.7 },  // 外踝（较小，偏低）

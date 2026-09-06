@@ -1,0 +1,11 @@
+{
+  "iteration": 3,
+  "round": "R3 前掌+五趾",
+  "problem": "趾=锯齿/整体变形；无每趾控制",
+  "hypothesis": "五趾=软体连续高斯瓣（角域）叠加：每趾{c 角中心,w 半宽,len 长度,dy 竖直错位}；趾间浅槽由瓣间自然谷形成；大趾最大",
+  "action": ["profileLoft 新增 toes 原语（每趾参数+包络 env²+dy 抬升）", "左足5趾参数（大趾 c270° 区 w0.42 len1.00 dy0.012 …小趾）"],
+  "tools": ["profileLoft+toes", "顶/内/正 三视角"],
+  "result": { "top": "improved(5趾软体连续、大趾大、长度阶梯、浅槽)", "front": "improved(趾尖圆钝)", "inner": "ok" },
+  "decision": "accept（每趾参数化建立；R4 拓扑/曲率 → R5 袜层前置）",
+  "next": "R4：面密度/环线/法线检查（趾根加密、无极点、无硬折线）"
+}

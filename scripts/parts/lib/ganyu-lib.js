@@ -256,6 +256,20 @@ function profileLoft(path, sections, segs, sides, colorFn, opts) {
         if (scl > 1.32) scl = 1.32;
         if (scl < 0.84) scl = 0.84;
       }
+      if (opts.toes && toeF2 > 0) {
+        var TL = opts.toes.list;
+        for (var tk = 0; tk < TL.length; tk++) {
+          var TW = TL[tk];
+          var tEnd = 1 - (opts.toes.frac || 0.3) + (opts.toes.frac || 0.3) * (TW.len || 1);
+          if (tKm < tEnd) {
+            var env = Math.max(0, (tEnd - tKm) / (opts.toes.frac || 0.3));
+            var dA = Math.atan2(Math.sin(th - TW.c), Math.cos(th - TW.c)) / (TW.w || 0.3);
+            var lobe = Math.exp(-dA * dA) * env * env;
+            scl += (opts.toes.amp || 0.22) * lobe;
+            dyLift += (TW.dy || 0) * env * env;
+          }
+        }
+      }
       if (opts.bumps) {
         for (var bk = 0; bk < opts.bumps.length; bk++) {
           var BP = opts.bumps[bk];
@@ -281,10 +295,12 @@ function profileLoft(path, sections, segs, sides, colorFn, opts) {
         }
       }
       var ryd = sec.ry;
+      var dyLift = 0;
+      var toeF2 = Math.max(0, (tKm - (1 - (opts.toes ? (opts.toes.frac || 0.3) : 0))) / (opts.toes ? (opts.toes.frac || 0.3) : 1));
       if (sec.ryB && Math.sin(th) < 0) ryd = sec.ry * sec.ryB;
-      var off = [u1[0] * (Math.cos(th) * sec.rx * scl + (sec.cx || 0)) + u2[0] * (Math.sin(th) * ryd * scl + (sec.cy || 0)),
-                 u1[1] * (Math.cos(th) * sec.rx * scl + (sec.cx || 0)) + u2[1] * (Math.sin(th) * ryd * scl + (sec.cy || 0)),
-                 u1[2] * (Math.cos(th) * sec.rx * scl + (sec.cx || 0)) + u2[2] * (Math.sin(th) * ryd * scl + (sec.cy || 0))];
+      var off = [u1[0] * (Math.cos(th) * sec.rx * scl + (sec.cx || 0)) + u2[0] * (Math.sin(th) * ryd * scl + (sec.cy || 0) + dyLift),
+                 u1[1] * (Math.cos(th) * sec.rx * scl + (sec.cx || 0)) + u2[1] * (Math.sin(th) * ryd * scl + (sec.cy || 0) + dyLift),
+                 u1[2] * (Math.cos(th) * sec.rx * scl + (sec.cx || 0)) + u2[2] * (Math.sin(th) * ryd * scl + (sec.cy || 0) + dyLift)];
       verts.push([p[0] + off[0], p[1] + off[1], p[2] + off[2]]);
     }
   }
