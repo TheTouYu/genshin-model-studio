@@ -75,7 +75,14 @@ bumps:[ { t:0.145, th:Math.PI*1.5, amp:0.10, w:0.030, wt:0.7 },
   }, WK, true);
   // base 仅取腿上段露出（皮肤）+ 其余被袜遮住看不见——直接把 base 全放（色彩区分）
   window.__GMS_CHECK__ = { base: meshCheck(base), sock: meshCheck(sockData) };
-  window.gms.part('mesh', { mesh: base, color: GRAY });
-  window.gms.part('mesh', { mesh: sockData, color: WHITE, material: 'sock' });
+  function place(d, xOff) {
+    return { vertices: d.vertices.map(function (v) { return [v[0] + xOff, v[1], v[2]]; }), faces: d.faces, colors: d.colors };
+  }
+  var baseL = place(base, -0.088), baseR = place(mirrorMeshData(base), 0.088);
+  var sockL = place(sockData, -0.088), sockR = place(mirrorMeshData(sockData), 0.088);
+  window.gms.part('mesh', { mesh: baseL, color: GRAY });
+  window.gms.part('mesh', { mesh: baseR, color: GRAY });
+  window.gms.part('mesh', { mesh: sockL, color: WHITE, material: 'sock' });
+  window.gms.part('mesh', { mesh: sockR, color: WHITE, material: 'sock' });
   window.__gmsBatchEnd && window.__gmsBatchEnd();
 })();
