@@ -7,13 +7,16 @@
             heel_width:0.032, heel_projection:0.016, instep_height:0.031, arch_depth:0.011,
             forefoot_width:0.038, ball_spread:0.042, toe_total:0.024 };
   var zHeel=-0.02, zToe=P.foot_length-0.02;
-  function baseData(off, colFn, extraBumps, microOn) {
+  function baseData(off, colFn, extraBumps, microOn, withThigh) {
     var path = [
       [0, 0.26, 0], [0, 0.235, 0], [0, 0.21, 0], [0, 0.17, 0], [0, 0.13, 0], [0, 0.10, 0],
       [0, P.ankle_height+0.02, 0], [0, P.ankle_height, 0], [0, P.ankle_height*0.78, 0],
       [0, 0.040, -0.004], [0, 0.040, 0], [0, 0.032, 0.014], [0, 0.028, 0.045],
       [0, 0.024, 0.080], [0, 0.020, zToe-0.012], [0, 0.014, zToe]
     ];
+    if (withThigh) {
+      path = [[0, 0.46, 0], [0, 0.40, 0], [0, 0.35, 0], [0, 0.30, 0]].concat(path);
+    }
     var secs = [
       { rx:0.033+off, ry:0.034+off, cy:-0.007 }, { rx:0.031+off, ry:0.032+off, cy:-0.007 },
       { rx:0.030+off, ry:0.031+off, cy:-0.006 }, { rx:0.028+off, ry:0.030+off, cy:-0.006 },
@@ -29,6 +32,12 @@
       { rx:P.ball_spread*0.52+off, ry:P.instep_height*0.24+off, cy:P.instep_height*0.18, ryB:1.0 },
       { rx:P.ball_spread*0.36+off, ry:P.instep_height*0.12+off, cy:P.instep_height*0.14, ryB:1.0 }
     ];
+    if (withThigh) {
+      secs = [
+        { rx:0.043+off, ry:0.044+off, cy:-0.008 }, { rx:0.041+off, ry:0.042+off, cy:-0.008 },
+        { rx:0.038+off, ry:0.039+off, cy:-0.007 }, { rx:0.035+off, ry:0.036+off, cy:-0.006 }
+      ].concat(secs);
+    }
     return profileLoft(path, secs, 46, 48, colFn, {
       cap:'none', dataOnly:true,
       toes:{ frac:0.30, amp:0.24, list:[
@@ -43,7 +52,7 @@ bumps:[ { t:0.145, th:Math.PI*1.5, amp:0.10, w:0.030, wt:0.7 },
         { t:0.27,  th:Math.PI, amp:0.06,  w:0.030, wt:0.9 } ].concat(extraBumps || []), micro: microOn ? { a1:0.014, f1:38, a2:0.009, f2:96 } : null
     });
   }
-  var base = baseData(0, function(i,j,t){ return (t < 0.055) ? '#f3c9a7' : GRAY; });
+  var base = baseData(0, function(i,j,t){ return (t < 0.045) ? '#f3c9a7' : (t < 0.12 ? '#e3b48f' : GRAY); }, null, false, true);
   var WK = [
     // 踝前压缩褶群（脚背弯折压缩；短弧、错位、不规则；深度≈0.0012m≈amp0.055*0.022）
     { t:0.345, th:0.0,  amp:0.055, w:0.010, wt:0.55, irreg:0.7 },
