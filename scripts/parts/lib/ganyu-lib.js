@@ -96,3 +96,70 @@ function ringsBetween(rings, y0, y1, n) {
   for (var i = 0; i <= n; i++) out.push(ringAt(rings, s + (e - s) * i / n));
   return out;
 }
+
+/** 02-ticket: 沿路径放样 —— path 控制点 + 逐点截面(标量或[rx,ry]) → 弯曲变截面微曲面网格 */
+function loft(pts, radii, segs, sides, colorFn, thick) {
+  segs = segs || 12; sides = sides || 12;
+  var n = pts.length, pts2 = [];
+  for (var k = 0; k <= segs; k++) {
+    var t = (k / segs) * (n - 1), i = Math.min(n - 2, Math.floor(t)), f = t - i;
+    pts2.push(crPt(pts[Math.max(0, i - 1)], pts[i], pts[i + 1], pts[Math.min(n - 1, i + 2)], f));
+  }
+  var rings = [];
+  for (var k = 0; k < pts2.length; k++) {
+    var p = pts2[k];
+    var p0 = pts2[Math.max(0, k - 1)], p1 = pts2[Math.min(pts2.length - 1, k + 1)];
+    var tg = _n([p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]]);
+    var up = Math.abs(tg[1]) > 0.95 ? [1, 0, 0] : [0, 1, 0];
+    var u1 = _n([tg[1] * up[2] - tg[2] * up[1], tg[2] * up[0] - tg[0] * up[2], tg[0] * up[1] - tg[1] * up[0]]);
+    var u2 = [tg[1] * u1[2] - tg[2] * u1[1], tg[2] * u1[0] - tg[0] * u1[2], tg[0] * u1[1] - tg[1] * u1[0]];
+    var r = radii[Math.min(radii.length - 1, Math.round((k / (pts2.length - 1)) * (radii.length - 1)))];
+    var rx = Array.isArray(r) ? r[0] : r, ry = Array.isArray(r) ? r[1] : r;
+    var ring = [];
+    for (var a = 0; a < sides; a++) {
+      var th = (a / sides) * Math.PI * 2;
+      ring.push([p[0] + u1[0] * Math.cos(th) * rx + u2[0] * Math.sin(th) * ry,
+                 p[1] + u1[1] * Math.cos(th) * rx + u2[1] * Math.sin(th) * ry,
+                 p[2] + u1[2] * Math.cos(th) * rx + u2[2] * Math.sin(th) * ry]);
+    }
+    rings.push(ring);
+  }
+  var SUB = 2;
+  var centers = pts2;
+  var ringCenters = [];
+  for (var ck = 0; ck < pts2.length; ck++) ringCenters.push(pts2[ck]);
+  for (var i = 0; i < rings.length - 1; i++) {
+    var RA = rings[i], RB = rings[i + 1];
+    for (var j = 0; j < sides; j++) {
+      function PR(R, sf) {
+        var a = Math.floor(sf) % sides, b = (a + 1) % sides, f = sf - Math.floor(sf);
+        return [R[a][0] + (R[b][0] - R[a][0]) * f, R[a][1] + (R[b][1] - R[a][1]) * f, R[a][2] + (R[b][2] - R[a][2]) * f];
+      }
+      function MXR(f) {
+        var out = [];
+        for (var a = 0; a < sides; a++) out.push([RA[a][0] + (RB[a][0] - RA[a][0]) * f, RA[a][1] + (RB[a][1] - RA[a][1]) * f, RA[a][2] + (RB[a][2] - RA[a][2]) * f]);
+        return out;
+      }
+      function MXC(f) {
+        var cA = ringCenters[i], cB = ringCenters[i + 1];
+        return [cA[0] + (cB[0] - cA[0]) * f, cA[1] + (cB[1] - cA[1]) * f, cA[2] + (cB[2] - cA[2]) * f];
+      }
+      var j1 = (j + 1) % sides;
+      for (var si = 0; si < SUB; si++) for (var sj = 0; sj < SUB; sj++) {
+        var R0 = MXR(sj / SUB), R1 = MXR((sj + 1) / SUB);
+        var s0 = j + si / SUB, s1 = j + (si + 1) / SUB;
+        var pA = PR(R0, s0), pB = PR(R0, s1), pC = PR(R1, s1), pD = PR(R1, s0);
+        var c = [(pA[0] + pB[0] + pC[0] + pD[0]) / 4, (pA[1] + pB[1] + pC[1] + pD[1]) / 4, (pA[2] + pB[2] + pC[2] + pD[2]) / 4];
+        var d1 = [pB[0] - pA[0], pB[1] - pA[1], pB[2] - pA[2]];
+        var d2 = [pD[0] - pA[0], pD[1] - pA[1], pD[2] - pA[2]];
+        var nn = _n([d1[1] * d2[2] - d1[2] * d2[1], d1[2] * d2[0] - d1[0] * d2[2], d1[0] * d2[1] - d1[1] * d2[0]]);
+        var cm = MXC(sj / SUB + 0.5 / SUB);
+        var radv = [c[0] - cm[0], c[1] - cm[1], c[2] - cm[2]];
+        if (nn[0] * radv[0] + nn[1] * radv[1] + nn[2] * radv[2] < 0) nn = [ -nn[0], -nn[1], -nn[2] ];
+        var w = Math.hypot(pB[0] - pA[0], pB[1] - pA[1], pB[2] - pA[2]);
+        var h = Math.hypot(pD[0] - pA[0], pD[1] - pA[1], pD[2] - pA[2]);
+        quad(c, nn, Math.max(w, 0.0006) * 1.10, Math.max(h, 0.0006) * 1.10, colorFn(i, j, si / SUB, sj / SUB), thick);
+      }
+    }
+  }
+}
