@@ -258,6 +258,7 @@ function profileLoft(path, sections, segs, sides, colorFn, opts) {
       faces.push(A, B, C, A, C, D); colors.push(col, col);
     }
   }
+  if (opts.dataOnly) { return { vertices: verts, faces: faces, colors: colors }; }
   var cap = opts.cap || 'both';
   if (cap === 'both' || cap === 'top') {
     var tipIdx = verts.length; verts.push(pts2[0]);
@@ -269,5 +270,21 @@ function profileLoft(path, sections, segs, sides, colorFn, opts) {
     var b0 = ringIdx[pts2.length - 1];
     for (var j = 0; j < sides; j++) { faces.push(tip2, b0 + j, b0 + ((j + 1) % sides)); colors.push(colorFn(pts2.length - 2, j, 1)); }
   }
-  window.gms.part('mesh', { mesh: { vertices: verts, faces: faces, colors: colors }, color: '#ffffff' });
+
+}
+
+/** mirrorMeshData：x 取反 + 面绕序翻转（左右件一次定义复用） */
+function mirrorMeshData(d) {
+  var verts = d.vertices.map(function (v) { return [-v[0], v[1], v[2]]; });
+  var faces = [];
+  for (var i = 0; i < d.faces.length; i += 3) faces.push(d.faces[i], d.faces[i + 2], d.faces[i + 1]);
+  return { vertices: verts, faces: faces, colors: d.colors };
+}
+/** toeBumps：鞋头前端 n 个趾鼓包列（袜包脚趾列） */
+function toeBumps(x, y, z, halfW, n, color, size, bigDir) {
+  n = n || 5; size = size || 0.0062; bigDir = bigDir || 0;
+  for (var i = 0; i < n; i++) {
+    var fx = x + (i / (n - 1) - 0.5) * 2 * halfW;
+    window.gms.part('sphere', { x: fx, y: y, z: z - Math.abs(fx - x) * 0.25, r: size * (1 - Math.abs(i / (n - 1) - 0.5) * 0.3) * (1 + 0.30 * bigDir * (i / (n - 1) - 0.5)), color: color });
+  }
 }
