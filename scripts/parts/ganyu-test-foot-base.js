@@ -33,7 +33,7 @@
     { rx: P.ball_spread * 0.62, ry: P.instep_height * 0.36, cy: P.instep_height * 0.20, ryB: 0.95 },
     { rx: P.ball_spread * 0.52, ry: P.instep_height * 0.24, cy: P.instep_height * 0.18, ryB: 1.0 }
   ];
-  var d = profileLoft(path, secs, 36, 40, function () { return '#e8e8ec'; },
+  var d = profileLoft(path, secs, 44, 48, function () { return '#e8e8ec'; },
     { cap: 'none', dataOnly: true,
       toes: { frac: 0.30, amp: 0.24, list: [
         { c: Math.PI * 1.62, w: 0.42, len: 1.00, dy: 0.012 },
@@ -48,5 +48,6 @@
         { t: 0.27, th: Math.PI, amp: 0.06, w: 0.030, wt: 0.9 }          // 跟后凸
       ] });
   window.gms.part('mesh', { mesh: d, color: '#e8e8ec' });
+  window.__GMS_CHECK__ = meshCheck(d);
   window.__gmsBatchEnd && window.__gmsBatchEnd();
 })();

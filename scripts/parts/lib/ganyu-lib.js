@@ -342,3 +342,26 @@ function toeBumps(x, y, z, halfW, n, color, size, bigDir) {
     window.gms.part('sphere', { x: fx, y: y, z: z - Math.abs(fx - x) * 0.25, r: size * (1 - Math.abs(i / (n - 1) - 0.5) * 0.3) * (1 + 0.30 * bigDir * (i / (n - 1) - 0.5)), color: color });
   }
 }
+
+/** meshCheck：网格拓扑诊断——面数/瘦长三角（minE/maxE<0.08）/面积比例/退化面 */
+function meshCheck(d) {
+  var v = d.vertices, f = d.faces;
+  var skinny = 0, deg = 0, areas = [];
+  for (var i = 0; i + 2 < f.length; i += 3) {
+    var A = v[f[i]], B = v[f[i + 1]], C = v[f[i + 2]];
+    if (!A || !B || !C) { deg++; continue; }
+    var e1 = [B[0] - A[0], B[1] - A[1], B[2] - A[2]];
+    var e2 = [C[0] - A[0], C[1] - A[1], C[2] - A[2]];
+    var nx = e1[1] * e2[2] - e1[2] * e2[1], ny = e1[2] * e2[0] - e1[0] * e2[2], nz = e1[0] * e2[1] - e1[1] * e2[0];
+    var ar = 0.5 * Math.hypot(nx, ny, nz);
+    if (ar < 1e-9) { deg++; continue; }
+    var l1 = Math.hypot(e1[0], e1[1], e1[2]), l2 = Math.hypot(e2[0], e2[1], e2[2]);
+    var l3 = Math.hypot(C[0] - B[0], C[1] - B[1], C[2] - B[2]);
+    var minE = Math.min(l1, l2, l3), maxE = Math.max(l1, l2, l3);
+    if (minE / maxE < 0.08) skinny++;
+    areas.push(ar);
+  }
+  areas.sort(function (a, b) { return a - b; });
+  var q = areas[Math.floor(areas.length * 0.05)] || 0, p = areas[Math.floor(areas.length * 0.95)] || 0;
+  return { faces: Math.floor(f.length / 3), deg: deg, skinny: skinny, skinnyPct: +(100 * skinny / Math.max(1, areas.length)).toFixed(2), areaRatio: +(p / Math.max(q, 1e-12)).toFixed(1) };
+}

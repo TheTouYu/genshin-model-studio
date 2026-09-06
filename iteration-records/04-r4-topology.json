@@ -1,0 +1,11 @@
+{
+  "iteration": 4,
+  "round": "R4 拓扑/曲率",
+  "problem": "网格密度不均/可能瘦三角/极点风险（无栅格诊断）",
+  "hypothesis": "环形拓扑+索引平滑已是好底子；需量化诊断并适度加密（趾根/踝部高曲率区）",
+  "action": ["新增 meshCheck（退化面/瘦长比例/面积比例）", "sides 40→48、segs 36→44", "诊断标准化为后续轮次 gate"],
+  "tools": ["meshCheck", "profileLoft 密度"],
+  "result": { "check": "faces=4224, deg=0, skinny=1.54%(<3% 阈), areaRatio=14.4(<20 阈) —— 通过；无极点(环拓扑)/无退化/法线平滑" },
+  "decision": "accept（R4 gate 建立：deg=0 & skinny<3% & ratio<20；后续 R5-R7 每轮过 gate）",
+  "next": "R5：丝袜薄壳（offset≤2mm+贴合；灰模为 base，先保轮廓透出）"
+}

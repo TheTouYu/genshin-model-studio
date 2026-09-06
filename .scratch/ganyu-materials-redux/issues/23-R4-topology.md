@@ -2,7 +2,7 @@
 
 **Blocked by:** 22
 
-**Status:** ready-for-agent
+**Status:** done（meshCheck gate：deg0/skinny1.54%/areaRatio14.4；sides48/segs44；记录04）
 
 - [ ] 均匀面密度（踝/趾根加密）；无极点/塌陷
 - [ ] 法线连续、无硬折线
