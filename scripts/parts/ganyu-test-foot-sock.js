@@ -9,12 +9,13 @@
   var zHeel=-0.02, zToe=P.foot_length-0.02;
   function baseData(off, colFn, extraBumps, microOn) {
     var path = [
-      [0, 0.21, 0], [0, 0.17, 0], [0, 0.13, 0], [0, 0.10, 0],
+      [0, 0.26, 0], [0, 0.235, 0], [0, 0.21, 0], [0, 0.17, 0], [0, 0.13, 0], [0, 0.10, 0],
       [0, P.ankle_height+0.02, 0], [0, P.ankle_height, 0], [0, P.ankle_height*0.78, 0],
       [0, 0.040, -0.004], [0, 0.040, 0], [0, 0.032, 0.014], [0, 0.028, 0.045],
       [0, 0.024, 0.080], [0, 0.020, zToe-0.012], [0, 0.014, zToe]
     ];
     var secs = [
+      { rx:0.033+off, ry:0.034+off, cy:-0.007 }, { rx:0.031+off, ry:0.032+off, cy:-0.007 },
       { rx:0.030+off, ry:0.031+off, cy:-0.006 }, { rx:0.028+off, ry:0.030+off, cy:-0.006 },
       { rx:0.025+off, ry:0.027+off, cy:-0.004 }, { rx:0.023+off, ry:0.024+off, cy:0 },
       { rx:P.ankle_width*0.34+off, ry:P.ankle_width*0.34+off, cy:0 },
@@ -42,7 +43,7 @@ bumps:[ { t:0.145, th:Math.PI*1.5, amp:0.10, w:0.030, wt:0.7 },
         { t:0.27,  th:Math.PI, amp:0.06,  w:0.030, wt:0.9 } ].concat(extraBumps || []), micro: microOn ? { a1:0.014, f1:38, a2:0.009, f2:96 } : null
     });
   }
-  var base = baseData(0, function(){ return GRAY; });
+  var base = baseData(0, function(i,j,t){ return (t < 0.055) ? '#f3c9a7' : GRAY; });
   var WK = [
     // 踝前压缩褶群（脚背弯折压缩；短弧、错位、不规则；深度≈0.0012m≈amp0.055*0.022）
     { t:0.345, th:0.0,  amp:0.055, w:0.010, wt:0.55, irreg:0.7 },
