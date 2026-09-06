@@ -25,13 +25,13 @@
       { rx: 0.036, ry: 0.011, cy: 0.007 },
       { rx: 0.032, ry: 0.009, cy: 0.008 }     // 趾端
     ];
-    return profileLoft(path, secs, 28, 22, function (i, j, t) {
+    return profileLoft(path, secs, 36, 30, function (i, j, t) {
       if (t < 0.070) return SKIN;            // 膝上皮肤
       if (t < 0.105) return BLUE;            // 上蓝条（宽）
       if (t < 0.135) return WHITE;           // 白缝
       if (t < 0.175) return BLUE2;           // 下蓝条（窄）
       return WHITE;
-    }, { cap: 'none', dataOnly: true });
+    }, { cap: 'none', dataOnly: true, toe: { n: 5, amp: 0.20, frac: 0.30 }, rings: [ { t: 0.545, amp: 0.055, w: 0.018 }, { t: 0.585, amp: 0.05, w: 0.018 } ] });
   }
   function place(d, xOff) {
     return { vertices: d.vertices.map(function (v) { return [v[0] + xOff, v[1], v[2]]; }), faces: d.faces, colors: d.colors };
@@ -40,8 +40,7 @@
   [-0.088, 0.088].forEach(function (fx) {
     var d = fx < 0 ? place(dL, fx) : place(mirrorMeshData(dL), fx);
     window.gms.part('mesh', { mesh: d, color: '#ffffff' });
-    toeBumps(fx, 0.024, 0.130, 0.031, 5, WHITE, 0.0062, fx < 0 ? +1 : -1);
-    // 袜口折边（细蓝环）
+        // 袜口折边（细蓝环）
     window.gms.part('disc', { x: fx, y: 0.293, z: -0.004, r: 0.0375, thick: 0.008, axis: 'up', color: BLUE });
     // 腓骨鸢尾
     window.gms.part('rod', { x1: fx, y1: 0.210, z: 0.030, x2: fx, y2: 0.150, size: 0.0040, color: BLUE });
@@ -50,8 +49,6 @@
     window.gms.part('tri', { x: fx, y: 0.179, z: 0.032, w: 0.008, h: 0.010, thick: 0.002, axis: 'front', color: BLUE });
     // 脚背缝线 + 踝部皱褶（细线）
     window.gms.part('rod', { x1: fx, y1: 0.028, z: 0.030, x2: fx, y2: 0.020, z2: 0.075, size: 0.0020, color: SEAM });
-    window.gms.part('rod', { x1: fx - 0.014, y1: 0.052, z: 0.012, x2: fx + 0.014, y2: 0.050, z2: 0.012, size: 0.0018, color: WHITE2 });
-    window.gms.part('rod', { x1: fx - 0.013, y1: 0.044, z: 0.016, x2: fx + 0.013, y2: 0.042, z2: 0.016, size: 0.0018, color: WHITE2 });
   });
   window.__gmsBatchEnd && window.__gmsBatchEnd();
 })();

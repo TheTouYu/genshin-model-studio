@@ -176,18 +176,30 @@
         isLine = true
         uncalibrated = true
         break
-      case 10009019: { // 网格（2026-09-07）：世界坐标顶点+面，逐面对色；水密曲面/弯曲变截面体
+      case 10009019: { // 网格（2026-09-07）：【索引化】共享顶点 → 计算顶点法线=平滑着色；逐面对色→每顶点取首引用面颜色
         const v = item.vertices || [], f = item.faces || [], cols = item.colors || []
-        const pos = [], col = []
-        for (let fi = 0; fi + 2 < f.length; fi += 3) {
-          for (let k = 0; k < 3; k++) {
-            const vi = f[fi + k]; if (!v[vi]) continue
-            pos.push(v[vi][0], v[vi][1], v[vi][2])
+        const pos = []
+        for (let vi = 0; vi < v.length; vi++) pos.push(v[vi][0], v[vi][1], v[vi][2])
+        const col = []
+        if (cols && cols.length) {
+          const vcol = new Array(v.length).fill(null)
+          for (let fi = 0; fi + 2 < f.length; fi += 3) {
+            const c = cols[fi / 3]
+            if (!c) continue
+            const cc = new THREE.Color(c)
+            for (let k = 0; k < 3; k++) {
+              const vidx = f[fi + k]
+              if (vidx != null && !vcol[vidx]) vcol[vidx] = cc
+            }
           }
-          if (cols[fi / 3]) { const c = new THREE.Color(cols[fi / 3]); for (let k = 0; k < 3; k++) col.push(c.r, c.g, c.b) }
+          for (let vi = 0; vi < v.length; vi++) {
+            const c = vcol[vi] || new THREE.Color('#ffffff')
+            col.push(c.r, c.g, c.b)
+          }
         }
         geo = new THREE.BufferGeometry()
         geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3))
+        geo.setIndex(f)
         if (col.length) geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3))
         geo.computeVertexNormals()
         kind = 'mesh'

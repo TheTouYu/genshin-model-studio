@@ -242,11 +242,26 @@ function profileLoft(path, sections, segs, sides, colorFn, opts) {
     var u1 = _n([tg[1] * up[2] - tg[2] * up[1], tg[2] * up[0] - tg[0] * up[2], tg[0] * up[1] - tg[1] * up[0]]);
     var u2 = [tg[1] * u1[2] - tg[2] * u1[1], tg[2] * u1[0] - tg[0] * u1[2], tg[0] * u1[1] - tg[1] * u1[0]];
     var base = verts.length; ringIdx.push(base);
+    var tKm = k / Math.max(1, pts2.length - 1);
+    var toeF = Math.max(0, (tKm - (1 - (opts.toe ? (opts.toe.frac || 0.28) : 0))) / (opts.toe ? (opts.toe.frac || 0.28) : 1));
     for (var a = 0; a < sides; a++) {
       var th = (a / sides) * Math.PI * 2;
-      var off = [u1[0] * (Math.cos(th) * sec.rx + (sec.cx || 0)) + u2[0] * (Math.sin(th) * sec.ry + (sec.cy || 0)),
-                 u1[1] * (Math.cos(th) * sec.rx + (sec.cx || 0)) + u2[1] * (Math.sin(th) * sec.ry + (sec.cy || 0)),
-                 u1[2] * (Math.cos(th) * sec.rx + (sec.cx || 0)) + u2[2] * (Math.sin(th) * sec.ry + (sec.cy || 0))];
+      var scl = 1;
+      if (opts.toe && toeF > 0) {
+        var A = (opts.toe.amp || 0.16) * toeF * toeF;
+        scl = 1 + A * Math.cos((opts.toe.n || 5) * th + (opts.toe.phase || 0));
+        if (opts.toe.bigDir) scl += A * 0.5 * opts.toe.bigDir * Math.cos(th);
+      }
+      if (opts.rings) {
+        for (var rk = 0; rk < opts.rings.length; rk++) {
+          var RG = opts.rings[rk];
+          var dz = (tKm - RG.t) / (RG.w || 0.02);
+          scl *= 1 + RG.amp * Math.exp(-dz * dz);
+        }
+      }
+      var off = [u1[0] * (Math.cos(th) * sec.rx * scl + (sec.cx || 0)) + u2[0] * (Math.sin(th) * sec.ry * scl + (sec.cy || 0)),
+                 u1[1] * (Math.cos(th) * sec.rx * scl + (sec.cx || 0)) + u2[1] * (Math.sin(th) * sec.ry * scl + (sec.cy || 0)),
+                 u1[2] * (Math.cos(th) * sec.rx * scl + (sec.cx || 0)) + u2[2] * (Math.sin(th) * sec.ry * scl + (sec.cy || 0))];
       verts.push([p[0] + off[0], p[1] + off[1], p[2] + off[2]]);
     }
   }
