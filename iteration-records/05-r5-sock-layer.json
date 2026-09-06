@@ -1,0 +1,11 @@
+{
+  "iteration": 5,
+  "round": "R5 丝袜薄壳",
+  "problem": "无独立袜层；需贴合薄壳+袜口双蓝带",
+  "hypothesis": "袜=独立外层：同一生成器 off=0.0016（≤2mm），跟随全部解剖细节（踝骨/趾/弓）；袜口在胫中段；双蓝带=区域着色",
+  "action": ["baseData(off) 复用于 base(off0) 与 sock(off0.0016)", "sock 区域着色 蓝/白/蓝", "小腿段(y0.21)纳入袜筒"],
+  "tools": ["profileLoft(off)", "meshCheck gate"],
+  "result": { "side": "improved(薄壳贴合/轮廓透出/踝趾形可见)", "cuff": "improved(宽蓝/白缝/窄蓝)", "check": "base deg0/1.38%/12.4；sock deg0/1.22%/11.6 → PASS" },
+  "decision": "accept（独立薄壳层建立；R6 才允许褶皱；R7 材质）",
+  "next": "R6：物理褶皱（压缩/拉伸解释、irregularity、深度≤袜厚、禁止均匀环纹）"
+}
