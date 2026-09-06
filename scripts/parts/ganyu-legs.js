@@ -40,22 +40,24 @@ function surface(rings, u, colorFn, thick) {
   for (var i = 0; i < rings.length - 1; i++) {
     var A = rings[i], B = rings[i + 1];
     var Acx = A.cx || 0, Bcx = B.cx || 0;
+    var SUB = 2;   // 微曲面片：每格 2×2 子面，采样全落在环曲面；法线=解析外法线（无翻转歧义）
     for (var j = 0; j < u; j++) {
       var t0 = (j * 2 * Math.PI) / u, t1 = ((j + 1) * 2 * Math.PI) / u, tm = (t0 + t1) / 2;
-      function P(r, cxr, t) { return [cxr + Math.cos(t) * r.rx, r.y, r.cz + Math.sin(t) * r.ry]; }
-      var a0 = P(A, Acx, t0), a1 = P(A, Acx, t1), b0 = P(B, Bcx, t0), b1 = P(B, Bcx, t1);
-      var dU = [a1[0] - a0[0], a1[1] - a0[1], a1[2] - a0[2]];
-      var am = P(A, Acx, tm), bm = P(B, Bcx, tm);
-      var dV = [bm[0] - am[0], bm[1] - am[1], bm[2] - am[2]];
-      var n = [dU[1] * dV[2] - dU[2] * dV[1], dU[2] * dV[0] - dU[0] * dV[2], dU[0] * dV[1] - dU[1] * dV[0]];
-      // 朝外：与径向点积为正
-      var rad = [am[0] - Acx, 0, am[2] - A.cz];
-      if (n[0] * rad[0] + n[2] * rad[2] < 0) n = [-n[0], -n[1], -n[2]];
-      n = _n(n);
-      var c = [(a0[0] + a1[0] + b0[0] + b1[0]) / 4, (A.y + B.y) / 2, (a0[2] + a1[2] + b0[2] + b1[2]) / 4];
-      var w = Math.hypot(a1[0] - a0[0], a1[2] - a0[2]);
-      var h = Math.hypot(dV[0], dV[1], dV[2]);
-      quad(c, n, w * 1.02, h * 1.02, colorFn(i, j, tm), thick);
+      function P(r, t) { return [r.cx + Math.cos(t) * r.rx, r.y, r.cz + Math.sin(t) * r.ry]; }
+      function mixR(f) {
+        return { y: A.y + (B.y - A.y) * f, rx: A.rx + (B.rx - A.rx) * f, ry: A.ry + (B.ry - A.ry) * f,
+                 cx: Acx + (Bcx - Acx) * f, cz: (A.cz || -0.02) + ((B.cz || -0.02) - (A.cz || -0.02)) * f };
+      }
+      for (var si = 0; si < SUB; si++) for (var sj = 0; sj < SUB; sj++) {
+        var R0 = mixR(sj / SUB), R1 = mixR((sj + 1) / SUB);
+        var u0 = t0 + (t1 - t0) * (si / SUB), u1 = t0 + (t1 - t0) * ((si + 1) / SUB), umid = (u0 + u1) / 2;
+        var p0 = P(R0, u0), p1 = P(R0, u1), p2 = P(R1, u1), p3 = P(R1, u0);
+        var n = _n([Math.cos(umid) / (R0.rx || 1), 0, Math.sin(umid) / (R0.ry || 1)]);  // 椭圆解析外法线
+        var c = [(p0[0] + p1[0] + p2[0] + p3[0]) / 4, R0.y + (R1.y - R0.y) / 2, (p0[2] + p1[2] + p2[2] + p3[2]) / 4];
+        var w = Math.hypot(p1[0] - p0[0], p1[2] - p0[2]);
+        var h = Math.hypot(p3[0] - p0[0], R1.y - R0.y, p3[2] - p0[2]);
+        quad(c, n, Math.max(w, 0.0005) * 1.03, Math.max(h, 0.0005) * 1.03, colorFn(i, j, tm), thick);
+      }
     }
   }
 }
@@ -138,7 +140,7 @@ function leg(sign) {
   var sockEnd = 0;
   while (sockEnd < LEG_DENSE.length && LEG_DENSE[sockEnd].y < 0.30) sockEnd++;
   var sock = mirrorRings(LEG_DENSE.slice(0, Math.max(2, sockEnd + 1)), sign);
-  surface(offsetRings(sock, 0.005), 32, function (i) {
+  surface(offsetRings(sock, 0.009), 32, function (i) {
     var y = sock[Math.min(i, sock.length - 1)].y;
     return (y > 0.235 && y < 0.246) || (y > 0.215 && y < 0.224) ? BLUE : SOCK; // 参考：袜口双蓝条纹
   }, 0.0014);

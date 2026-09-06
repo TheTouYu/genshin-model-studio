@@ -24,7 +24,7 @@ window.gms.mode('extrude');
 window.gms.clear();
 var D = window.GANYU_DENSE || {}; // 测量数据（extract-ganyu-profile.py → ganyu-dense.js 预注入）
 
-var U = 28; // 横向（绕一周）曲线数：越大越圆滑（测量驱动密度）
+var U = 48; // 横向（绕一周）曲线数：越大越圆滑（测量驱动密度）
 var HAIR = '#a9d4f5', HAIR2 = '#8fc0e9', HAIR3 = '#c7e2fa';
 var SKIN = '#f3c9a7';
 var WHITE = '#f7f9fc', BLUE = '#3b6ea5', BLUE_L = '#7aa8d8';
@@ -40,7 +40,7 @@ function surface(rings, u, colorFn, thick) {
   for (var i = 0; i < rings.length - 1; i++) {
     var A = rings[i], B = rings[i + 1];
     var Acx = A.cx || 0, Bcx = B.cx || 0;
-    var SUB = 2;   // 微曲面：每格 2×2 子面片，采样点全部落在环曲面（圆柱/椭圆壳上）
+    var SUB = 2;   // 微曲面片：每格 2×2 子面，采样全落在环曲面；法线=解析外法线（无翻转歧义）
     for (var j = 0; j < u; j++) {
       var t0 = (j * 2 * Math.PI) / u, t1 = ((j + 1) * 2 * Math.PI) / u, tm = (t0 + t1) / 2;
       function P(r, t) { return [r.cx + Math.cos(t) * r.rx, r.y, r.cz + Math.sin(t) * r.ry]; }
@@ -52,16 +52,11 @@ function surface(rings, u, colorFn, thick) {
         var R0 = mixR(sj / SUB), R1 = mixR((sj + 1) / SUB);
         var u0 = t0 + (t1 - t0) * (si / SUB), u1 = t0 + (t1 - t0) * ((si + 1) / SUB), umid = (u0 + u1) / 2;
         var p0 = P(R0, u0), p1 = P(R0, u1), p2 = P(R1, u1), p3 = P(R1, u0);
-        var dU = [Math.cos(umid) * R0.rx * ((u1 - u0)), 0, Math.sin(umid) * R0.ry * ((u1 - u0))];
-        var dV = [R1.cx - R0.cx, R1.y - R0.y, R1.cz - R0.cz];
-        var n = [dU[1] * dV[2] - dU[2] * dV[1], dU[2] * dV[0] - dU[0] * dV[2], dU[0] * dV[1] - dU[1] * dV[0]];
-        var am = P(R0, umid), rad = [am[0] - R0.cx, 0, am[2] - R0.cz];
-        if (n[0] * rad[0] + n[2] * rad[2] < 0) n = [-n[0], -n[1], -n[2]];
-        n = _n(n);
+        var n = _n([Math.cos(umid) / (R0.rx || 1), 0, Math.sin(umid) / (R0.ry || 1)]);  // 椭圆解析外法线
         var c = [(p0[0] + p1[0] + p2[0] + p3[0]) / 4, R0.y + (R1.y - R0.y) / 2, (p0[2] + p1[2] + p2[2] + p3[2]) / 4];
         var w = Math.hypot(p1[0] - p0[0], p1[2] - p0[2]);
         var h = Math.hypot(p3[0] - p0[0], R1.y - R0.y, p3[2] - p0[2]);
-        quad(c, n, Math.max(w, 0.0005) * 1.0, Math.max(h, 0.0005) * 1.0, colorFn(i, j, tm), thick);
+        quad(c, n, Math.max(w, 0.0005) * 1.03, Math.max(h, 0.0005) * 1.03, colorFn(i, j, tm), thick);
       }
     }
   }
@@ -140,13 +135,13 @@ function ringsBetween(rings, y0, y1, n) {
 
 
 /* ---------- 躯干皮肤（下） + 球衣壳层（上，独立面外扩 0.008） ---------- */
-var TORSO_DENSE = ringsBetween(TORSO_R, 0.40, 1.00, 20);
+var TORSO_DENSE = ringsBetween(TORSO_R, 0.40, 1.00, 40);
 surface(mirrorRings(TORSO_DENSE, 1), U, function (i) {
   var r = TORSO_DENSE[Math.min(i, TORSO_DENSE.length - 1)];
   return r.y < 0.40 ? SKIN : (r.y < 0.92 ? WHITE : SKIN); // 上衣/短裤覆盖区全白，杜绝腰腹露肤
 }, 0.0012);
-var jerseyRings = ringsBetween(TORSO_R, 0.56, 0.92, 12);
-surface(offsetRings(jerseyRings, 0.008), U, function (i, j, tm) {
+var jerseyRings = ringsBetween(TORSO_R, 0.56, 0.92, 26);
+surface(offsetRings(jerseyRings, 0.012), U, function (i, j, tm) {
   var front = Math.abs(tm - Math.PI / 2) < Math.PI / 3;
   var diag = Math.abs((tm / Math.PI) - 0.5 + (i - 3) * 0.22) < 0.10;
   var side = Math.abs(tm) < Math.PI / 7 || Math.abs(tm - Math.PI) < Math.PI / 7;   // 侧腹藏青
@@ -155,14 +150,14 @@ surface(offsetRings(jerseyRings, 0.008), U, function (i, j, tm) {
 }, 0.0016);
 window.gms.part('disc', { x: 0, y: 0.968, z: -0.02, r: 0.040, thick: 0.012, axis: 'up', color: BLUE });
 window.gms.part('disc', { x: 0, y: 0.545, z: -0.02, r: 0.062, thick: 0.011, axis: 'up', color: BLUE });
-/* 凹凸测试：胸前/腰腹 6 处微凸 */
-var bumps = [[-0.030, 0.86, 0.068], [0.020, 0.82, 0.072], [-0.015, 0.74, 0.062], [0.035, 0.68, 0.060], [-0.030, 0.60, 0.056], [0.012, 0.55, 0.058]];
+/* 凹凸测试：胸前/腰腹 6 处微凸（贴曲面） */
+var bumps = [[-0.030, 0.86, 0.012], [0.020, 0.82, 0.010], [-0.015, 0.74, 0.008], [0.035, 0.68, 0.006], [-0.030, 0.60, 0.006], [0.012, 0.55, 0.006]];
 for (var bi = 0; bi < bumps.length; bi++) {
   window.gms.part('sphere', { x: bumps[bi][0], y: bumps[bi][1], z: bumps[bi][2], r: 0.006, color: '#eef2f7' });
 }
 /* ---------- 球鞋（对齐测得脚位 cx=±0.09） ---------- */
-window.gms.part('el-disc', { x: -0.09, y: 0.008, z: 0, rx: 0.048, ry: 0.036, thick: 0.012, axis: 'up', rotation: [0, -6, 0], color: SOLE });
-window.gms.part('el-disc', { x: 0.09, y: 0.008, z: 0, rx: 0.048, ry: 0.036, thick: 0.012, axis: 'up', rotation: [0, 6, 0], color: SOLE });
+window.gms.part('el-disc', { x: -0.09, y: 0.006, z: 0, rx: 0.048, ry: 0.036, thick: 0.012, axis: 'up', rotation: [0, -6, 0], color: SOLE });
+window.gms.part('el-disc', { x: 0.09, y: 0.006, z: 0, rx: 0.048, ry: 0.036, thick: 0.012, axis: 'up', rotation: [0, 6, 0], color: SOLE });
 window.gms.part('el-disc', { x: -0.09, y: 0.026, z: 0, rx: 0.060, ry: 0.040, thick: 0.028, axis: 'up', rotation: [0, -6, 0], color: BOOT });
 window.gms.part('el-disc', { x: 0.09, y: 0.026, z: 0, rx: 0.060, ry: 0.040, thick: 0.028, axis: 'up', rotation: [0, 6, 0], color: BOOT });
 window.gms.part('tri', { x: -0.104, y: 0.032, z: 0.026, w: 0.028, h: 0.016, thick: 0.003, axis: 'side', color: BLUE });

@@ -28,3 +28,13 @@
 
 ## 测试资产
 - `scripts/parts/ganyu-test-complex.js`（可重跑）、`/tmp/ganyu-test-*.png`
+
+## 修复后复测（第 15 轮，小步拆分 + 严格核验）
+- **修复**：子面法线改用**椭圆解析外法线**（消除 ±180° 翻转不一致 → z-fight）；子格 1.0（共边采样）后再加 **1.03 微叠**遮 V 缝；壳 offset 提高（球衣 0.012/短裤 0.010/袜 0.009/袖 0.010）。
+- **拆分**（>30s 禁令）：整体测试一次建 3-6k 件导致超时/崩溃 → 拆为 **123 件贴片** & **323 件胸带** 两级，秒级重建。
+- **胸带验收（front+iso read_image）**：
+  ✅ 微曲面包裹（柱面软阴影、上下收腰） ✅ 无缝隙（白/蓝交界干净） ✅ 无 z-fighting ✅ 凸点贴合曲面（半嵌入）
+- **结论：局部验收 PASS（签字核验）**——微曲面工具可按"几千面表达"前进；下一步：全模经 parts 流水线（每部位独立小构建）应用新 surface，再全模核验。
+
+## 证据
+`/tmp/band-front.png`、`/tmp/band-iso.png`、`/tmp/patch-front2.png`、`/tmp/patch-iso2.png`；`scripts/parts/ganyu-test-patch.js`（可重跑，秒级）。
