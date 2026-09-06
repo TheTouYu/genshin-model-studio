@@ -248,9 +248,13 @@ function profileLoft(path, sections, segs, sides, colorFn, opts) {
       var th = (a / sides) * Math.PI * 2;
       var scl = 1;
       if (opts.toe && toeF > 0) {
-        var A = (opts.toe.amp || 0.16) * toeF * toeF;
-        scl = 1 + A * Math.cos((opts.toe.n || 5) * th + (opts.toe.phase || 0));
-        if (opts.toe.bigDir) scl += A * 0.5 * opts.toe.bigDir * Math.cos(th);
+        var A = (opts.toe.amp || 0.16) * toeF * toeF * toeF;
+        var upMask = 0.45 + 0.55 * Math.sin(th);        // 瓣只作用于脚背上弧（底部收敛）
+        var s1 = A * upMask * (Math.cos((opts.toe.n || 5) * th + (opts.toe.phase || 0)) + 0.5 * Math.cos(2 * (opts.toe.n || 5) * th + 2 * (opts.toe.phase || 0)));
+        if (opts.toe.bigDir) s1 += A * 0.5 * opts.toe.bigDir * Math.cos(th) * upMask;
+        scl = 1 + s1;
+        if (scl > 1.32) scl = 1.32;
+        if (scl < 0.84) scl = 0.84;
       }
       if (opts.rings) {
         for (var rk = 0; rk < opts.rings.length; rk++) {
@@ -259,9 +263,20 @@ function profileLoft(path, sections, segs, sides, colorFn, opts) {
           scl *= 1 + RG.amp * Math.exp(-dz * dz);
         }
       }
-      var off = [u1[0] * (Math.cos(th) * sec.rx * scl + (sec.cx || 0)) + u2[0] * (Math.sin(th) * sec.ry * scl + (sec.cy || 0)),
-                 u1[1] * (Math.cos(th) * sec.rx * scl + (sec.cx || 0)) + u2[1] * (Math.sin(th) * sec.ry * scl + (sec.cy || 0)),
-                 u1[2] * (Math.cos(th) * sec.rx * scl + (sec.cx || 0)) + u2[2] * (Math.sin(th) * sec.ry * scl + (sec.cy || 0))];
+      if (opts.creases && tKm > (opts.creases.t0 || 0) && tKm < (opts.creases.t1 || 1)) {
+        for (var ci = 0; ci < opts.creases.lines.length; ci++) {
+          var LN = opts.creases.lines[ci];
+          var vv = (th / (Math.PI * 2) * LN.k1 + tKm * LN.k2) % 1;
+          if (vv < 0) vv += 1;
+          var dv = Math.min(vv, 1 - vv);
+          scl *= 1 + LN.amp * Math.exp(-(dv / (LN.w || 0.05)) * (dv / (LN.w || 0.05)));
+        }
+      }
+      var ryd = sec.ry;
+      if (sec.ryB && Math.sin(th) < 0) ryd = sec.ry * sec.ryB;
+      var off = [u1[0] * (Math.cos(th) * sec.rx * scl + (sec.cx || 0)) + u2[0] * (Math.sin(th) * ryd * scl + (sec.cy || 0)),
+                 u1[1] * (Math.cos(th) * sec.rx * scl + (sec.cx || 0)) + u2[1] * (Math.sin(th) * ryd * scl + (sec.cy || 0)),
+                 u1[2] * (Math.cos(th) * sec.rx * scl + (sec.cx || 0)) + u2[2] * (Math.sin(th) * ryd * scl + (sec.cy || 0))];
       verts.push([p[0] + off[0], p[1] + off[1], p[2] + off[2]]);
     }
   }
