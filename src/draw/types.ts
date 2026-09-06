@@ -42,6 +42,8 @@ export type Stroke = {
   group?: string
   /** 基础元件覆盖（可选）：10009002 = 球体（仅 solid 圆轮廓）。 */
   resourceId?: number
+  /** 网格（10009019）：世界坐标顶点 + 三角面索引 + 逐面颜色（弯曲变截面体/水密曲面）。 */
+  mesh?: { vertices: number[][]; faces: number[]; colors?: string[] }
 }
 
 /** 笔画整体变换（ADR-0001）：形状（点集）与摆放（变换）分离。 */
@@ -72,6 +74,10 @@ export type TaggedItem = {
   scale: [number, number, number]
   group: string // 来源笔画 id
   color?: TaggedItemColor // 来源笔画有 color 时透传（无 = 默认材质，不写）
+  /** 网格（10009019）：世界坐标顶点 + 三角面索引 + 逐面颜色。 */
+  vertices?: number[][]
+  faces?: number[]
+  colors?: string[]
 }
 
 /** 圆柱（10009008）：零旋转轴向 = 局部 Y；scale=[截面直径, 轴向长度, 截面直径]。 */
@@ -91,3 +97,5 @@ export const BOX_RESOURCE_ID = 10009001
 
 export { generateModel, toStructureItems } from './generate.js'
 export type { StructureItem }
+/** 网格（2026-09-07）：任意顶点+面片的网格基础元件——弯曲变截面体/水密曲面唯一可靠表达 */
+export const MESH_RESOURCE_ID = 10009019

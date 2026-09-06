@@ -24,6 +24,10 @@ export type StructureItem = {
   rotation: readonly [number, number, number]
   scale: readonly [number, number, number]
   color?: ItemColor
+  /** 网格（10009019）：世界坐标顶点 + 三角面索引 + 逐面颜色。 */
+  vertices?: number[][]
+  faces?: number[]
+  colors?: string[]
 }
 
 export type ResolvedStructure = {

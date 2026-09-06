@@ -121,6 +121,7 @@
     var kind = null
     var isLine = false
     var uncalibrated = false
+    var customVertexColors = false
 
     switch (id) {
       case 10009001: // 长方体：1×1×1，X/Y/Z 对应三条边；scale=[宽, 高, 长]，长轴=局部 Z（已闭合）
@@ -175,6 +176,24 @@
         isLine = true
         uncalibrated = true
         break
+      case 10009019: { // 网格（2026-09-07）：世界坐标顶点+面，逐面对色；水密曲面/弯曲变截面体
+        const v = item.vertices || [], f = item.faces || [], cols = item.colors || []
+        const pos = [], col = []
+        for (let fi = 0; fi + 2 < f.length; fi += 3) {
+          for (let k = 0; k < 3; k++) {
+            const vi = f[fi + k]; if (!v[vi]) continue
+            pos.push(v[vi][0], v[vi][1], v[vi][2])
+          }
+          if (cols[fi / 3]) { const c = new THREE.Color(cols[fi / 3]); for (let k = 0; k < 3; k++) col.push(c.r, c.g, c.b) }
+        }
+        geo = new THREE.BufferGeometry()
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3))
+        if (col.length) geo.setAttribute('color', new THREE.Float32BufferAttribute(col, 3))
+        geo.computeVertexNormals()
+        kind = 'mesh'
+        customVertexColors = col.length > 0
+        break
+      }
       default: // 几何缺失：提示色立方体占位（位置/旋转/缩放仍生效）
         console.warn('[preview] 未知资源 ID ' + id + '：无几何映射，使用提示色立方体占位（变换仍生效）')
         geo = new THREE.BoxGeometry(1, 1, 1)

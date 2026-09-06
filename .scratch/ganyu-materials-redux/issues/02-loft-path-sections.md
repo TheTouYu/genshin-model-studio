@@ -4,7 +4,7 @@
 
 **Blocked by:** 01（需先有公共库，避免原语再复制 10 份）
 
-**Status:** in-progress（初版 demo 核验 FAIL：平面片在环向的滚转/翻转不一致 → 明暗交替条带；修复方案 A=quad 带 tangent 基向，方案 B=三角补丁(角落点精确共享边) 选择 B 实施后重跑本核验）
+**Status:** in-progress（工具层结论：平面片无法水密表达弯曲体 → 新增【网格基础元件 10009019】全链路打通（part→stroke.mesh→API vertices/faces→preview BufferGeometry，UI 1笔=1元件渲染成功）；下一步：loft 改为输出单个 mesh 项（顶点+面，水密）→ 重跑三用例 demo 核验）
 
 - [ ] 直线路径 + 等截面 = 圆柱（与已有 surface 圆柱几何一致）
 - [ ] 弯月路径 + 变截面 = 弯曲锥状体

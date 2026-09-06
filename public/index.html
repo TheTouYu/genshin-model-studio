@@ -2266,7 +2266,7 @@ loadExamples()
       throw new Error(`opts 参数非法：应为对象 { render, height, axis, lift, color, transform, group }，当前值为 ${JSON.stringify(opts)}`)
     }
     for (const k of Object.keys(opts)) {
-      if (k !== 'render' && k !== 'height' && k !== 'axis' && k !== 'lift' && k !== 'color' && k !== 'transform' && k !== 'group' && k !== 'size' && k !== 'resourceId') {
+      if (k !== 'render' && k !== 'height' && k !== 'axis' && k !== 'lift' && k !== 'color' && k !== 'transform' && k !== 'group' && k !== 'size' && k !== 'resourceId' && k !== 'mesh') {
         throw new Error(`opts 参数非法：未知字段 ${JSON.stringify(k)}（支持 render/height/axis/lift/color/transform/group/size/resourceId），当前值为 ${JSON.stringify(opts)}`)
       }
     }
@@ -2296,10 +2296,13 @@ loadExamples()
       }
       o.size = opts.size
     }
+    if (opts.mesh !== undefined) {
+      o.mesh = opts.mesh
+    }
     if (opts.resourceId !== undefined) {
       // 基础元件覆盖：底层拼装基础元件统一走笔画管线（球体 10009002 / 圆锥 10009009 / 三棱锥 10009006 / 平面 10009003）
-      if (opts.resourceId !== 10009002 && opts.resourceId !== 10009009 && opts.resourceId !== 10009006 && opts.resourceId !== 10009003) {
-        throw new Error(`resourceId 参数非法：当前支持球体 10009002 / 圆锥 10009009 / 三棱锥 10009006 / 平面 10009003，收到 ${JSON.stringify(opts.resourceId)}`)
+      if (opts.resourceId !== 10009002 && opts.resourceId !== 10009009 && opts.resourceId !== 10009006 && opts.resourceId !== 10009003 && opts.resourceId !== 10009019) {
+        throw new Error(`resourceId 参数非法：当前支持球体 10009002 / 圆锥 10009009 / 三棱锥 10009006 / 平面 10009003 / 网格 10009019，收到 ${JSON.stringify(opts.resourceId)}`)
       }
       o.resourceId = opts.resourceId
     }
@@ -2364,6 +2367,7 @@ loadExamples()
     if (o.transform !== undefined) stroke.transform = o.transform
     if (o.size !== undefined) stroke.size = o.size // 十五期：笔画级粗细（弧线罩铁丝 40%）
     if (o.resourceId !== undefined) stroke.resourceId = o.resourceId // 基础元件覆盖（球体 10009002）
+    if (o.mesh !== undefined) stroke.mesh = o.mesh // 网格（10009019）：顶点+面数据
     if (o.group !== undefined) {
       if (o.group === null) delete stroke.group
       else stroke.group = o.group
@@ -2723,7 +2727,7 @@ loadExamples()
    * solid 的世界 x/y 由 spec 决定（画布位置只影响轮廓形状）；rod 由画布换算自动得。
    * 约束：先画贴地件（y≈厚/2）稳定 bbox 底，再画其余（世界 y 以当前 bbox 底为基准）。 */
   function gmsPart(type, spec) {
-    const TYPES = ['ring', 'rod', 'poly', 'sphere', 'cone', 'tri', 'quad', 'disc', 'el-disc', 'arc', 'plate']
+    const TYPES = ['ring', 'rod', 'poly', 'sphere', 'cone', 'tri', 'quad', 'disc', 'el-disc', 'arc', 'plate', 'mesh']
     if (!TYPES.includes(type)) throw new Error(`part 类型非法：应为 ${TYPES.join('/')}，当前值为 ${JSON.stringify(type)}`)
     if (typeof spec !== 'object' || spec === null) throw new Error(`part 参数非法：应为组件参数对象 {x,y,z,...}，当前值为 ${JSON.stringify(spec)}`)
     // 十九期同族加固（2026-09-05 刷新解散）：gms.part 的像素坐标依赖固定原点标定
@@ -2873,6 +2877,13 @@ loadExamples()
         t.rotation = spec.rotation
       }
       addStrokeWithOpts(pts, { ...base, render: 'solid', height: thick, axis, lift: y - thick / 2, transform: t })
+    } else if (type === 'mesh') {
+      // 网格（10009019）：世界坐标顶点+三角面索引+逐面颜色（弯曲变截面体/水密曲面一次成体）
+      const m = spec.mesh || {}
+      const vertices = m.vertices || [], faces = m.faces || [], colors = m.colors || []
+      if (!vertices.length || faces.length < 3) throw new Error('mesh 参数非法：需要 vertices(≥3) 与 faces(三角索引数组)')
+      const [rx, ry] = toPx(0, 0)
+      addStrokeWithOpts([[rx, ry]], { ...base, render: 'rod', resourceId: 10009019, mesh: { vertices: vertices, faces: faces, colors: colors } })
     } else if (type === 'plate') {
       // 十七期：矩形薄片（盒体 10009001）——插头金属片等扁件（圆柱不真实）
       // 参数：x/y/z 中心、len(长)/wid(宽)/thick(厚)（米）、axis up=竖直立起

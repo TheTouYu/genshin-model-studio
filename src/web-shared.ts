@@ -7,7 +7,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs'
 import { join, extname, basename } from 'node:path'
 import { fitStroke, type FittedStroke } from './draw/fitting.js'
-import { generateModel, toStructureItems, SPHERE_RESOURCE_ID, CONE_RESOURCE_ID, TETRA_RESOURCE_ID, PLANE_RESOURCE_ID } from './draw/types.js'
+import { generateModel, toStructureItems, SPHERE_RESOURCE_ID, CONE_RESOURCE_ID, TETRA_RESOURCE_ID, PLANE_RESOURCE_ID, MESH_RESOURCE_ID } from './draw/types.js'
 import type { ModelOptions, Stroke, TaggedItem } from './draw/types.js'
 import type { StructureItem } from './core/structure.js'
 import { resolveStructure } from './core/structure.js'
@@ -102,10 +102,11 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
       resourceId !== undefined &&
       resourceId !== SPHERE_RESOURCE_ID &&
       resourceId !== CONE_RESOURCE_ID &&
+      resourceId !== MESH_RESOURCE_ID &&
       resourceId !== TETRA_RESOURCE_ID &&
       resourceId !== PLANE_RESOURCE_ID
     ) {
-      throw new Error(`第 ${i + 1} 笔基础元件无效：当前支持球体 ${SPHERE_RESOURCE_ID} / 圆锥 ${CONE_RESOURCE_ID} / 三棱锥 ${TETRA_RESOURCE_ID} / 平面 ${PLANE_RESOURCE_ID}，收到 ${JSON.stringify(resourceId)}`)
+      throw new Error(`第 ${i + 1} 笔基础元件无效：当前支持球体 ${SPHERE_RESOURCE_ID} / 圆锥 ${CONE_RESOURCE_ID} / 三棱锥 ${TETRA_RESOURCE_ID} / 平面 ${PLANE_RESOURCE_ID} / 网格 ${MESH_RESOURCE_ID}，收到 ${JSON.stringify(resourceId)}`)
     }
     const angle = (stroke as { angle?: unknown }).angle
     if (angle !== undefined && (typeof angle !== 'number' || !Number.isFinite(angle))) {
@@ -139,6 +140,7 @@ export function parseDrawModelRequest(body: string): { strokes: Stroke[]; option
       ...(lift === undefined ? {} : { lift }),
       ...(axis === undefined ? {} : { axis }),
       ...(resourceId === undefined ? {} : { resourceId }),
+      ...(resourceId === MESH_RESOURCE_ID ? { mesh: (stroke as { mesh?: Stroke['mesh'] }).mesh } : {}),
       ...(size === undefined ? {} : { size }),
       ...(angle === undefined ? {} : { angle }),
       ...(transform === undefined ? {} : { transform: transform as Stroke['transform'] }),

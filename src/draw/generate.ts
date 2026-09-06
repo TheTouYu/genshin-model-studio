@@ -30,7 +30,7 @@
  * - stroke.height 对 rod/lathe 笔画：该笔所有 item 的 position.y += height（整体抬升）。
  */
 import type { ModelOptions, Stroke, TaggedItem, TaggedItemColor } from './types.js'
-import { BOX_RESOURCE_ID, CONE_RESOURCE_ID, CYLINDER_RESOURCE_ID, OPEN_CYLINDER_RESOURCE_ID, PLANE_RESOURCE_ID, SPHERE_RESOURCE_ID, TETRA_RESOURCE_ID } from './types.js'
+import { BOX_RESOURCE_ID, CONE_RESOURCE_ID, CYLINDER_RESOURCE_ID, OPEN_CYLINDER_RESOURCE_ID, PLANE_RESOURCE_ID, SPHERE_RESOURCE_ID, TETRA_RESOURCE_ID, MESH_RESOURCE_ID } from './types.js'
 import { adaptiveEpsilon, fitStroke, simplifyRdp, type FittedStroke, type Point } from './fitting.js'
 import type { StructureItem } from '../core/structure.js'
 
@@ -116,6 +116,25 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
     const si = indexById.get(strokeId)
     if (si !== undefined) strokeItemCounts[si]++
     items.push(it)
+  }
+  // 网格基础元件（10009019）：不依赖轮廓拟合，直接作为单件输出（水密曲面/弯曲变截面体）
+  for (const stroke of strokes) {
+    if (stroke.resourceId === MESH_RESOURCE_ID && stroke.mesh) {
+      const cs = stroke.mesh.colors
+      pushItem({
+        resourceId: MESH_RESOURCE_ID,
+        position: [0, 0, 0],
+        rotation: [0, 0, 0],
+        scale: [1, 1, 1],
+        vertices: stroke.mesh.vertices,
+        faces: stroke.mesh.faces,
+        colors: cs,
+        group: stroke.id,
+        ...(stroke.color === undefined
+          ? {}
+          : { color: { enabled: true, rgb: stroke.color, opacity: 1, overlay: 'overwrite' as const } })
+      } as TaggedItem, stroke.id)
+    }
   }
   if (raw !== null && fitted.length > 0) {
     const bboxWidth = Math.max(raw.maxX - raw.minX, 0)
@@ -509,6 +528,20 @@ function solidColumn(
     (axis === 'front' ? [90, angleDeg, 0] : axis === 'side' ? [0, angleDeg, -90] : [0, angleDeg, 0])
   const scale3: Vec3 = shape === 'circle' ? [width, thickness, width] : [width, thickness, depth]
   const tp = stroke.transform?.position
+  // 网格基础元件（2026-09-07）：世界坐标顶点+面——弯曲变截面体/水密曲面
+  if (stroke.resourceId === MESH_RESOURCE_ID && stroke.mesh) {
+    return {
+      resourceId: MESH_RESOURCE_ID,
+      position: [0, 0, 0],
+      rotation: [0, 0, 0],
+      scale: [1, 1, 1],
+      vertices: stroke.mesh.vertices,
+      faces: stroke.mesh.faces,
+      colors: stroke.mesh.colors,
+      group: stroke.id,
+      ...(stroke.color === undefined ? {} : { color: stroke.color })
+    } as unknown as TaggedItem
+  }
   // 基础元件覆盖（底层拼装）：球体 10009002／圆锥 10009009——圆/椭圆轮廓主轴直径 → 尺寸，
   // 位置/颜色/组语义与柱体一致（position.y = 厚度/2 + lift，gms.part 用 lift 让中心落在 spec.y）。
   if (stroke.resourceId === SPHERE_RESOURCE_ID || stroke.resourceId === CONE_RESOURCE_ID) {
@@ -655,11 +688,14 @@ function structureColor(color: TaggedItemColor): NonNullable<StructureItem['colo
 
 /** 拍平：strip group 等内部字段；item 有 color → 写全字段，无 color → 不写（默认材质，一期语义）。 */
 export function toStructureItems(items: readonly TaggedItem[]): StructureItem[] {
-  return items.map(({ resourceId, position, rotation, scale, color }) => ({
+  return items.map(({ resourceId, position, rotation, scale, color, vertices, faces, colors }) => ({
     resourceId,
     position,
     rotation,
     scale,
+    ...(vertices === undefined ? {} : { vertices }),
+    ...(faces === undefined ? {} : { faces }),
+    ...(colors === undefined ? {} : { colors }),
     ...(color === undefined ? {} : { color: structureColor(color) })
   }))
 }
