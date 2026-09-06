@@ -1,0 +1,11 @@
+{
+  "iteration": 7,
+  "round": "R7 材质/微纹理",
+  "problem": "织物光泽/微织构缺失",
+  "hypothesis": "材质层以受光+sheen 表达（MeshPhysical sheen）；微织构用几何级 sin 径向位移（细罗纹）",
+  "action": ["material 语义透传链（stroke→item→preview：sock=MeshPhysical sheen）", "profileLoft micro{a1,f1,a2,f2} 细罗纹位移（a1=0.014 相对≈0.35mm）"],
+  "tools": ["material passthrough", "micro", "meshCheck gate"],
+  "result": { "sheen": "ok(物理 sheen 材质生效)", "knit": "极限：0.35mm 级微织构在常规尺度下仅隐约可见（0.014 相对位移；本工具无纹理贴图）", "check": "base PASS；sock check 二次确认列后续（ticket 27）" },
+  "decision": "accept-at-ceiling（R7 完成；材质=物理 sheen+受光；微织构=几何级近极限）",
+  "next": "R1–R7 汇总 → 通知用户终审（补充更多细节入口）；遗留：ticket 27 sock meshCheck 复检"
+}

@@ -44,6 +44,8 @@ export type Stroke = {
   resourceId?: number
   /** 网格（10009019）：世界坐标顶点 + 三角面索引 + 逐面颜色（弯曲变截面体/水密曲面）。 */
   mesh?: { vertices: number[][]; faces: number[]; colors?: string[] }
+  /** 材质语义（可选）：'sock' = 织物 sheen；缺省 = 标准哑光。 */
+  material?: string
 }
 
 /** 笔画整体变换（ADR-0001）：形状（点集）与摆放（变换）分离。 */
@@ -78,6 +80,7 @@ export type TaggedItem = {
   vertices?: number[][]
   faces?: number[]
   colors?: string[]
+  material?: string
 }
 
 /** 圆柱（10009008）：零旋转轴向 = 局部 Y；scale=[截面直径, 轴向长度, 截面直径]。 */

@@ -2266,7 +2266,7 @@ loadExamples()
       throw new Error(`opts 参数非法：应为对象 { render, height, axis, lift, color, transform, group }，当前值为 ${JSON.stringify(opts)}`)
     }
     for (const k of Object.keys(opts)) {
-      if (k !== 'render' && k !== 'height' && k !== 'axis' && k !== 'lift' && k !== 'color' && k !== 'transform' && k !== 'group' && k !== 'size' && k !== 'resourceId' && k !== 'mesh') {
+      if (k !== 'render' && k !== 'height' && k !== 'axis' && k !== 'lift' && k !== 'color' && k !== 'transform' && k !== 'group' && k !== 'size' && k !== 'resourceId' && k !== 'mesh' && k !== 'material') {
         throw new Error(`opts 参数非法：未知字段 ${JSON.stringify(k)}（支持 render/height/axis/lift/color/transform/group/size/resourceId），当前值为 ${JSON.stringify(opts)}`)
       }
     }
@@ -2298,6 +2298,9 @@ loadExamples()
     }
     if (opts.mesh !== undefined) {
       o.mesh = opts.mesh
+    }
+    if (opts.material !== undefined) {
+      o.material = opts.material
     }
     if (opts.resourceId !== undefined) {
       // 基础元件覆盖：底层拼装基础元件统一走笔画管线（球体 10009002 / 圆锥 10009009 / 三棱锥 10009006 / 平面 10009003）
@@ -2368,6 +2371,7 @@ loadExamples()
     if (o.size !== undefined) stroke.size = o.size // 十五期：笔画级粗细（弧线罩铁丝 40%）
     if (o.resourceId !== undefined) stroke.resourceId = o.resourceId // 基础元件覆盖（球体 10009002）
     if (o.mesh !== undefined) stroke.mesh = o.mesh // 网格（10009019）：顶点+面数据
+    if (o.material !== undefined) stroke.material = o.material // 材质语义（sock 织物 sheen）
     if (o.group !== undefined) {
       if (o.group === null) delete stroke.group
       else stroke.group = o.group
@@ -2883,7 +2887,7 @@ loadExamples()
       const vertices = m.vertices || [], faces = m.faces || [], colors = m.colors || []
       if (!vertices.length || faces.length < 3) throw new Error('mesh 参数非法：需要 vertices(≥3) 与 faces(三角索引数组)')
       const [rx, ry] = toPx(0, 0)
-      addStrokeWithOpts([[rx, ry]], { ...base, render: 'rod', resourceId: 10009019, mesh: { vertices: vertices, faces: faces, colors: colors } })
+      addStrokeWithOpts([[rx, ry]], { ...base, render: 'rod', resourceId: 10009019, mesh: { vertices: vertices, faces: faces, colors: colors }, ...(spec.material === undefined ? {} : { material: spec.material }) })
     } else if (type === 'plate') {
       // 十七期：矩形薄片（盒体 10009001）——插头金属片等扁件（圆柱不真实）
       // 参数：x/y/z 中心、len(长)/wid(宽)/thick(厚)（米）、axis up=竖直立起

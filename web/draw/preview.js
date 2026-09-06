@@ -225,13 +225,25 @@
     var colorHex = itemColorHex(item)
     var mat
     if (kind === 'mesh') {
-      // 网格：受光材质（Lambert/Standard）+ 逐面顶点色 + 双面（水密件也可能从内看）
-      mat = new THREE.MeshStandardMaterial({
-        vertexColors: customVertexColors,
-        side: THREE.DoubleSide,
-        roughness: 0.9,
-        metalness: 0.0
-      })
+      if (item.material === 'sock') {
+        // 袜：织物 sheen（细纤维光泽）+ 顶点色 + 双面
+        mat = new THREE.MeshPhysicalMaterial({
+          vertexColors: customVertexColors,
+          side: THREE.DoubleSide,
+          roughness: 0.62,
+          metalness: 0.0,
+          sheen: 0.55,
+          sheenColor: new THREE.Color(0xffffff),
+          sheenRoughness: 0.85
+        })
+      } else {
+        mat = new THREE.MeshStandardMaterial({
+          vertexColors: customVertexColors,
+          side: THREE.DoubleSide,
+          roughness: 0.9,
+          metalness: 0.0
+        })
+      }
       if (colorHex != null && !customVertexColors) mat.color.setHex(colorHex)
     } else if (isLine) {
       mat = new THREE.LineBasicMaterial({ color: colorHex != null ? colorHex : COLORS.wire })

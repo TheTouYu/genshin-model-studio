@@ -270,6 +270,9 @@ function profileLoft(path, sections, segs, sides, colorFn, opts) {
           }
         }
       }
+      if (opts.micro) {
+        scl *= 1 + opts.micro.a1 * Math.sin(th * opts.micro.f1 + tKm * 27) + opts.micro.a2 * Math.sin(tKm * opts.micro.f2 * Math.PI + th * 3);
+      }
       if (opts.bumps) {
         for (var bk = 0; bk < opts.bumps.length; bk++) {
           var BP = opts.bumps[bk];

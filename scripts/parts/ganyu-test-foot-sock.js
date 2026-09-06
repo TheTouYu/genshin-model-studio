@@ -7,7 +7,7 @@
             heel_width:0.032, heel_projection:0.016, instep_height:0.031, arch_depth:0.011,
             forefoot_width:0.038, ball_spread:0.042, toe_total:0.024 };
   var zHeel=-0.02, zToe=P.foot_length-0.02;
-  function baseData(off, colFn, extraBumps) {
+  function baseData(off, colFn, extraBumps, microOn) {
     var path = [
       [0, 0.21, 0], [0, 0.17, 0], [0, 0.13, 0], [0, 0.10, 0],
       [0, P.ankle_height+0.02, 0], [0, P.ankle_height, 0], [0, P.ankle_height*0.78, 0],
@@ -39,7 +39,7 @@
 bumps:[ { t:0.145, th:Math.PI*1.5, amp:0.10, w:0.030, wt:0.7 },
         { t:0.175, th:Math.PI*0.5, amp:0.055, w:0.028, wt:0.7 },
         { t:0.215, th:Math.PI, amp:-0.085, w:0.022, wt:0.6 },
-        { t:0.27,  th:Math.PI, amp:0.06,  w:0.030, wt:0.9 } ].concat(extraBumps || [])
+        { t:0.27,  th:Math.PI, amp:0.06,  w:0.030, wt:0.9 } ].concat(extraBumps || []), micro: microOn ? { a1:0.014, f1:38, a2:0.009, f2:96 } : null
     });
   }
   var base = baseData(0, function(){ return GRAY; });
@@ -62,10 +62,10 @@ bumps:[ { t:0.145, th:Math.PI*1.5, amp:0.10, w:0.030, wt:0.7 },
     if (t < 0.085) return WHITE;
     if (t < 0.125) return BLUE2;        // 第二蓝
     return WHITE;
-  }, WK);
+  }, WK, true);
   // base 仅取腿上段露出（皮肤）+ 其余被袜遮住看不见——直接把 base 全放（色彩区分）
   window.gms.part('mesh', { mesh: base, color: GRAY });
-  window.gms.part('mesh', { mesh: sockData, color: WHITE });
+  window.gms.part('mesh', { mesh: sockData, color: WHITE, material: 'sock' });
   window.__GMS_CHECK__ = { base: meshCheck(base), sock: meshCheck(sockData) };
   window.__gmsBatchEnd && window.__gmsBatchEnd();
 })();

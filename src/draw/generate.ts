@@ -129,6 +129,7 @@ export function generateModel(strokes: Stroke[], opts: ModelOptions): GenerateRe
         vertices: stroke.mesh.vertices,
         faces: stroke.mesh.faces,
         colors: cs,
+        material: (stroke as { material?: string }).material,
         group: stroke.id,
         ...(stroke.color === undefined
           ? {}
@@ -688,7 +689,7 @@ function structureColor(color: TaggedItemColor): NonNullable<StructureItem['colo
 
 /** 拍平：strip group 等内部字段；item 有 color → 写全字段，无 color → 不写（默认材质，一期语义）。 */
 export function toStructureItems(items: readonly TaggedItem[]): StructureItem[] {
-  return items.map(({ resourceId, position, rotation, scale, color, vertices, faces, colors }) => ({
+  return items.map(({ resourceId, position, rotation, scale, color, vertices, faces, colors, material }) => ({
     resourceId,
     position,
     rotation,
@@ -696,6 +697,7 @@ export function toStructureItems(items: readonly TaggedItem[]): StructureItem[] 
     ...(vertices === undefined ? {} : { vertices }),
     ...(faces === undefined ? {} : { faces }),
     ...(colors === undefined ? {} : { colors }),
+    ...(material === undefined ? {} : { material }),
     ...(color === undefined ? {} : { color: structureColor(color) })
   }))
 }
