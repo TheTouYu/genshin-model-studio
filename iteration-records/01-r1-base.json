@@ -1,0 +1,17 @@
+{
+  "iteration": 1,
+  "round": "R1 基础比例（灰模）",
+  "problem": "脚长/踝高比不当、脚背过低、跟后凸缺失、足弓不平",
+  "hypothesis": "解剖比例上先定：脚长≈2.2×踝高；背高≈0.22脚长；前掌>中足；跟后凸由截面/cy 表达",
+  "action": [
+    "foot_length 0.150→0.142",
+    "instep_height 0.027→0.031",
+    "arch ryB 0.72→0.60(中足)/0.78(蹠垫)",
+    "heel: 截面 rx↑(0.56×heel_width)+cy0.008 后凸（路径不回折）",
+    "ankle_width 0.024→0.026"
+  ],
+  "tools": ["profileLoft(rx/ry/cy/ryB)", "side/top/front 多视角渲染"],
+  "result": { "side": "improved(踝→背→跟→趾连续、跟弧、背高) ", "front": "ok(踝收窄连续)", "top": "ok(前掌>中足、锥度自然)" },
+  "decision": "accept（作为 R1 基础灰模，进入 R2 踝+跟结构细化）",
+  "next": "R2：内外踝非对称/跟腱收窄/踝背过渡细化"
+}
