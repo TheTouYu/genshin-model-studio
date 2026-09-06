@@ -7,7 +7,7 @@
             heel_width:0.032, heel_projection:0.016, instep_height:0.031, arch_depth:0.011,
             forefoot_width:0.038, ball_spread:0.042, toe_total:0.024 };
   var zHeel=-0.02, zToe=P.foot_length-0.02;
-  function baseData(off, colFn) {
+  function baseData(off, colFn, extraBumps) {
     var path = [
       [0, 0.21, 0], [0, 0.17, 0], [0, 0.13, 0], [0, 0.10, 0],
       [0, P.ankle_height+0.02, 0], [0, P.ankle_height, 0], [0, P.ankle_height*0.78, 0],
@@ -36,20 +36,33 @@
         { c:Math.PI*1.08, w:0.30, len:0.86, dy:0.005 },
         { c:Math.PI*0.84, w:0.28, len:0.78, dy:0.003 },
         { c:Math.PI*0.60, w:0.28, len:0.70, dy:0.002 } ] },
-      bumps:[
-        { t:0.145, th:Math.PI*1.5, amp:0.10, w:0.030, wt:0.7 },
+bumps:[ { t:0.145, th:Math.PI*1.5, amp:0.10, w:0.030, wt:0.7 },
         { t:0.175, th:Math.PI*0.5, amp:0.055, w:0.028, wt:0.7 },
         { t:0.215, th:Math.PI, amp:-0.085, w:0.022, wt:0.6 },
-        { t:0.27,  th:Math.PI, amp:0.06,  w:0.030, wt:0.9 } ]
+        { t:0.27,  th:Math.PI, amp:0.06,  w:0.030, wt:0.9 } ].concat(extraBumps || [])
     });
   }
   var base = baseData(0, function(){ return GRAY; });
+  var WK = [
+    // 踝前压缩褶群（脚背弯折压缩；短弧、错位、不规则；深度≈0.0012m≈amp0.055*0.022）
+    { t:0.345, th:0.0,  amp:0.055, w:0.010, wt:0.55, irreg:0.7 },
+    { t:0.372, th:0.22, amp:0.050, w:0.009, wt:0.50, irreg:0.8 },
+    { t:0.352, th:-0.28, amp:0.045, w:0.008, wt:0.45, irreg:0.9 },
+    // 趾根放射褶（趾弯压缩；每趾根短褶，长度/角度各异）
+    { t:0.760, th:Math.PI*1.62, amp:0.050, w:0.009, wt:0.36, irreg:0.6 },
+    { t:0.775, th:Math.PI*1.34, amp:0.045, w:0.008, wt:0.34, irreg:0.7 },
+    { t:0.788, th:Math.PI*1.08, amp:0.042, w:0.008, wt:0.33, irreg:0.7 },
+    { t:0.800, th:Math.PI*0.84, amp:0.040, w:0.007, wt:0.32, irreg:0.8 },
+    { t:0.810, th:Math.PI*0.60, amp:0.038, w:0.007, wt:0.32, irreg:0.8 },
+    // 袜口微松褶（束口下方；仅局部弧）
+    { t:0.062, th:2.6, amp:0.038, w:0.012, wt:0.75, irreg:0.55 }
+  ];
   var sockData = baseData(0.0016, function(i,j,t){
     if (t < 0.052) return BLUE;         // 袜口上蓝
     if (t < 0.085) return WHITE;
     if (t < 0.125) return BLUE2;        // 第二蓝
     return WHITE;
-  });
+  }, WK);
   // base 仅取腿上段露出（皮肤）+ 其余被袜遮住看不见——直接把 base 全放（色彩区分）
   window.gms.part('mesh', { mesh: base, color: GRAY });
   window.gms.part('mesh', { mesh: sockData, color: WHITE });

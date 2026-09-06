@@ -1,0 +1,11 @@
+{
+  "iteration": 6,
+  "round": "R6 物理褶皱（袜层）",
+  "problem": "褶皱均匀/无受力解释",
+  "hypothesis": "褶皱=压缩/拉伸成因：踝前(脚背弯折压缩)=短弧褶群(错位+irreg)；趾根(趾弯压缩)=每趾放射短褶；袜口(束口压缩)=局部微松褶；深度≤袜厚(amp≤0.055相对≈1.2mm)",
+  "action": ["bumps 增加 irreg(0.55+0.45sin(编码)) 不规则度", "WK 9 条褶皱（踝前×3/趾根×5/袜口×1），角度半宽 wt 限局部弧"],
+  "tools": ["profileLoft+bumps(irreg)", "meshCheck gate"],
+  "result": { "ankle-front": "improved(踝前短褶群、不规则、无均匀环纹)", "toe-root": "ok(趾根放射微褶)", "depth": "≤袜厚(≤1.2mm 相对 amp)" },
+  "decision": "accept（物理褶皱建立；R7 材质/微纹理最后层）",
+  "next": "R7：织物粗糙度/高光/方向纹理/微织构（仅表面级）；随后全件 R1-R7 汇总+终审提交"
+}

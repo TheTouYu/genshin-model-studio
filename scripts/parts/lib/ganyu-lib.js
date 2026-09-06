@@ -275,7 +275,8 @@ function profileLoft(path, sections, segs, sides, colorFn, opts) {
           var BP = opts.bumps[bk];
           var dT = (tKm - BP.t) / (BP.w || 0.03);
           var dTh = Math.atan2(Math.sin(th - BP.th), Math.cos(th - BP.th)) / (BP.wt || 0.6);
-          scl *= 1 + BP.amp * Math.exp(-dT * dT - dTh * dTh);
+          var irr = BP.irreg ? (0.55 + 0.45 * Math.sin(i * 3.7 + j * 5.1 + (BP.t || 0) * 40)) : 1;
+          scl *= 1 + BP.amp * irr * Math.exp(-dT * dT - dTh * dTh);
         }
       }
       if (opts.rings) {
