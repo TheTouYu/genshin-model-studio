@@ -1,0 +1,11 @@
+{
+  "iteration": 2,
+  "round": "R2 踝+后跟（灰模）",
+  "problem": "踝=规则圆柱；无内外踝/跟腱/跟后凸；踝背过渡硬",
+  "hypothesis": "骨性转折 = 环带×角度域高斯鼓包（bumps）：内踝 t0.10 th270° amp0.10（高胖）、外踝 t0.14 th90° amp0.055（低小）、跟腱 t0.20 th180° amp-0.085（收窄）、跟后 t0.27 th180° amp0.06",
+  "action": ["profileLoft 新增 bumps 选项（t/th/w/wt 局部高斯）", "路径踝下加 -0.004 微后点（不折返）", "应用 4 处 bumps"],
+  "tools": ["profileLoft+bumps", "内/外/背 三视角"],
+  "result": { "inner": "improved(内踝鼓包可见) ", "outer": "ok(外踝低小，非镜像)", "back": "improved(跟腱收窄+跟球圆)" },
+  "decision": "accept（踝部骨性转折建立；进入 R3 前掌五趾）",
+  "next": "R3：五趾参数化（长度/宽/高/圆度/间距/错位/弯曲；趾沟浅槽；大趾最大）"
+}

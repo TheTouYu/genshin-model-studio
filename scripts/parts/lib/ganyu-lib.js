@@ -256,6 +256,14 @@ function profileLoft(path, sections, segs, sides, colorFn, opts) {
         if (scl > 1.32) scl = 1.32;
         if (scl < 0.84) scl = 0.84;
       }
+      if (opts.bumps) {
+        for (var bk = 0; bk < opts.bumps.length; bk++) {
+          var BP = opts.bumps[bk];
+          var dT = (tKm - BP.t) / (BP.w || 0.03);
+          var dTh = Math.atan2(Math.sin(th - BP.th), Math.cos(th - BP.th)) / (BP.wt || 0.6);
+          scl *= 1 + BP.amp * Math.exp(-dT * dT - dTh * dTh);
+        }
+      }
       if (opts.rings) {
         for (var rk = 0; rk < opts.rings.length; rk++) {
           var RG = opts.rings[rk];

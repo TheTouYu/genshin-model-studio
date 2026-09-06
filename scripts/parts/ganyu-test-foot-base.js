@@ -18,7 +18,7 @@
   var zHeel = -0.02, zToe = P.foot_length - 0.02;
   var path = [
     [0, P.ankle_height + 0.02, 0], [0, P.ankle_height, 0], [0, P.ankle_height * 0.78, 0],
-    [0, 0.040, 0], [0, 0.032, 0.014], [0, 0.028, 0.045],
+    [0, 0.040, -0.004], [0, 0.040, 0], [0, 0.032, 0.014], [0, 0.028, 0.045],
     [0, 0.024, 0.080],
     [0, 0.020, zToe - 0.012], [0, 0.014, zToe]
   ];
@@ -33,8 +33,14 @@
     { rx: P.ball_spread * 0.62, ry: P.instep_height * 0.36, cy: P.instep_height * 0.20, ryB: 0.95 },
     { rx: P.ball_spread * 0.52, ry: P.instep_height * 0.24, cy: P.instep_height * 0.18, ryB: 1.0 }
   ];
-  var d = profileLoft(path, secs, 32, 36, function () { return '#e8e8ec'; },
-    { cap: 'none', dataOnly: true });
+  var d = profileLoft(path, secs, 36, 40, function () { return '#e8e8ec'; },
+    { cap: 'none', dataOnly: true,
+      bumps: [
+        { t: 0.10, th: Math.PI * 1.5, amp: 0.10, w: 0.030, wt: 0.7 },   // 内踝（左足内侧 +x，较高大）
+        { t: 0.14, th: Math.PI * 0.5, amp: 0.055, w: 0.028, wt: 0.7 },  // 外踝（较小，偏低）
+        { t: 0.20, th: Math.PI, amp: -0.085, w: 0.022, wt: 0.6 },       // 跟腱收窄（后侧）
+        { t: 0.27, th: Math.PI, amp: 0.06, w: 0.030, wt: 0.9 }          // 跟后凸
+      ] });
   window.gms.part('mesh', { mesh: d, color: '#e8e8ec' });
   window.__gmsBatchEnd && window.__gmsBatchEnd();
 })();

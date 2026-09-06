@@ -2,7 +2,7 @@
 
 **Blocked by:** 20
 
-**Status:** ready-for-agent
+**Status:** done（bumps: 内踝高胖/外踝低小/跟腱收窄/跟后凸；内/外/背视角核验；记录02）
 
 - [ ] 内外踝不同高/体积（非镜像）
 - [ ] 跟腱收窄 + 跟后凸曲线
