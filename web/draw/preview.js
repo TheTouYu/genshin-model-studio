@@ -212,7 +212,16 @@
     // 材质：按「颜色 + 几何类」缓存共享；无 color = 该类默认浅色（三期：item.color → 指定色）
     var colorHex = itemColorHex(item)
     var mat
-    if (isLine) {
+    if (kind === 'mesh') {
+      // 网格：受光材质（Lambert/Standard）+ 逐面顶点色 + 双面（水密件也可能从内看）
+      mat = new THREE.MeshStandardMaterial({
+        vertexColors: customVertexColors,
+        side: THREE.DoubleSide,
+        roughness: 0.9,
+        metalness: 0.0
+      })
+      if (colorHex != null && !customVertexColors) mat.color.setHex(colorHex)
+    } else if (isLine) {
       mat = new THREE.LineBasicMaterial({ color: colorHex != null ? colorHex : COLORS.wire })
     } else {
       var matKey = kind + '|' + (colorHex != null ? colorHex : 'default')
