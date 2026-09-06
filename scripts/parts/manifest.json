@@ -128,6 +128,13 @@
    "priority": "P0",
    "status": "done",
    "note": "✅ 微曲面验收 PASS（chest-band 正视+斜视：无缝隙/无z-fight/凸点贴面；法线解析式+1.03微叠）"
+  },
+  {
+   "id": "sock-foot",
+   "title": "丝袜+脚局部（参考袜子图：双蓝条纹夹白条/鸢尾纹/脚跟脚趾形）",
+   "priority": "P1",
+   "status": "in-progress",
+   "note": "mesh 一体水密成型✓（袜筒→踝弯→脚趾，无缝隙/无z-fight）；待修：双条纹可见性/鸢尾精度/趾形（对照袜子图）"
   }
  ]
 }

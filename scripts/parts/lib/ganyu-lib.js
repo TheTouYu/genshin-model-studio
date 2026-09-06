@@ -164,3 +164,57 @@ function loft(pts, radii, segs, sides, colorFn, thick) {
     }
   }
 }
+
+/** loftMesh：路径放样 → 单个 mesh 基础元件（水密曲面：共享边、逐面对色、可选端盖） */
+function loftMesh(pts, radii, segs, sides, colorFn, opts) {
+  opts = opts || {};
+  var pts2 = [];
+  var n = pts.length;
+  for (var k = 0; k <= segs; k++) {
+    var t = (k / segs) * (n - 1), i = Math.min(n - 2, Math.floor(t)), f = t - i;
+    pts2.push(crPt(pts[Math.max(0, i - 1)], pts[i], pts[i + 1], pts[Math.min(n - 1, i + 2)], f));
+  }
+  var verts = [], faces = [], colors = [];
+  var rAt = function (k) {
+    var r = radii[Math.min(radii.length - 1, Math.round((k / (pts2.length - 1)) * (radii.length - 1)))];
+    return { rx: Array.isArray(r) ? r[0] : r, ry: Array.isArray(r) ? r[1] : r };
+  };
+  var ringIdx = [];
+  for (var k = 0; k < pts2.length; k++) {
+    var p = pts2[k];
+    var p0 = pts2[Math.max(0, k - 1)], p1 = pts2[Math.min(pts2.length - 1, k + 1)];
+    var tg = _n([p1[0] - p0[0], p1[1] - p0[1], p1[2] - p0[2]]);
+    var up = Math.abs(tg[1]) > 0.95 ? [1, 0, 0] : [0, 1, 0];
+    var u1 = _n([tg[1] * up[2] - tg[2] * up[1], tg[2] * up[0] - tg[0] * up[2], tg[0] * up[1] - tg[1] * up[0]]);
+    var u2 = [tg[1] * u1[2] - tg[2] * u1[1], tg[2] * u1[0] - tg[0] * u1[2], tg[0] * u1[1] - tg[1] * u1[0]];
+    var r = rAt(k);
+    var base = verts.length;
+    ringIdx.push(base);
+    for (var a = 0; a < sides; a++) {
+      var th = (a / sides) * Math.PI * 2;
+      verts.push([p[0] + u1[0] * Math.cos(th) * r.rx + u2[0] * Math.sin(th) * r.ry,
+                  p[1] + u1[1] * Math.cos(th) * r.rx + u2[1] * Math.sin(th) * r.ry,
+                  p[2] + u1[2] * Math.cos(th) * r.rx + u2[2] * Math.sin(th) * r.ry]);
+    }
+  }
+  for (var i = 0; i < pts2.length - 1; i++) {
+    for (var j = 0; j < sides; j++) {
+      var j1 = (j + 1) % sides;
+      var A = ringIdx[i] + j, B = ringIdx[i] + j1, C = ringIdx[i + 1] + j1, D = ringIdx[i + 1] + j;
+      var col = colorFn(i, j, i / (pts2.length - 1));
+      faces.push(A, B, C, A, C, D);
+      colors.push(col, col);
+    }
+  }
+  if (opts.cap !== 'none') {
+    var tipIdx = verts.length;
+    verts.push(pts2[0]);
+    var a0 = ringIdx[0];
+    for (var j = 0; j < sides; j++) faces.push(tipIdx, a0 + ((j + 1) % sides), a0 + j), colors.push(colorFn(0, j, 0));
+    var tip2 = verts.length;
+    verts.push(pts2[pts2.length - 1]);
+    var b0 = ringIdx[pts2.length - 1];
+    for (var j = 0; j < sides; j++) faces.push(tip2, b0 + j, b0 + ((j + 1) % sides)), colors.push(colorFn(pts2.length - 2, j, 1));
+  }
+  window.gms.part('mesh', { mesh: { vertices: verts, faces: faces, colors: colors }, color: '#ffffff' });
+}
