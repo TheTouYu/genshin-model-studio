@@ -64,8 +64,8 @@ bumps:[ { t:0.145, th:Math.PI*1.5, amp:0.10, w:0.030, wt:0.7 },
     return WHITE;
   }, WK, true);
   // base 仅取腿上段露出（皮肤）+ 其余被袜遮住看不见——直接把 base 全放（色彩区分）
+  window.__GMS_CHECK__ = { base: meshCheck(base), sock: meshCheck(sockData) };
   window.gms.part('mesh', { mesh: base, color: GRAY });
   window.gms.part('mesh', { mesh: sockData, color: WHITE, material: 'sock' });
-  window.__GMS_CHECK__ = { base: meshCheck(base), sock: meshCheck(sockData) };
   window.__gmsBatchEnd && window.__gmsBatchEnd();
 })();
