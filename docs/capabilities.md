@@ -66,5 +66,5 @@
 
 ## 其他 scripts
 
-`build` · `gen-model` · `export-mesh` · `contour-model` · `gen-gia` · `gen-resource-table` · `gen-calibration` · `capabilities` · `test` · `benchmark` · `web`
+`build` · `gen-model` · `export-mesh` · `contour-model` · `export-qa` · `quality-plan` · `run-scenarios` · `render-contact-sheet` · `reference-fit` · `gen-gia` · `gen-resource-table` · `gen-calibration` · `capabilities` · `test` · `benchmark` · `web`
 

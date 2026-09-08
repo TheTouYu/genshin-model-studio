@@ -1,0 +1,484 @@
+{
+ "iteration": 38,
+ "stage": "L4-sheets",
+ "date": "2026-09-08",
+ "inputs": {
+  "landmarks": "reference/ganyu-hanfu-landmarks.json",
+  "measurements": "reference/hanfu/measurements.json",
+  "buildReport": ".scratch/l4-build-report.json",
+  "mesh": "delivery/hanfu-cage/cage-mesh.json",
+  "iouReport": "delivery/hanfu-l1/g1-3d-report.json"
+ },
+ "landmarks": {
+  "front": 29,
+  "side": 23,
+  "back": 24,
+  "lowConfidence": 14
+ },
+ "pose": {
+  "source": "reference/hanfu/甘雨.png (1926x1088) — 逐项带像素实测",
+  "stance": "3/4 背身回眸持剑（背视证据：颈-腰整片裸背 + 腰后蓝流苏 + 肩后蝴蝶饰）",
+  "handedness": "画面右侧持剑臂=她的右臂（背视图：她的左=画面左）",
+  "head_yaw_over_shoulder": {
+   "value_deg": 45,
+   "value_kind": "model-clamped estimate（原画回眸超出解剖极限，取可实现角）",
+   "eye_line_px": [
+    [
+     946.3,
+     262.8
+    ],
+    [
+     1027.1,
+     282.6
+    ]
+   ],
+   "eye_line_deg": 13.77,
+   "eye_midpoint_px": [
+    986.7,
+    272.7
+   ],
+   "nose_px": [
+    1021,
+    324
+   ],
+   "face_yaw_vs_camera_deg": 22.4,
+   "face_yaw_method": "asin((nose_x - eye_mid_x)/90)，半脸宽 90px（眼距 81px ≈ 0.45 脸宽）",
+   "torso_facing": "背面朝相机 3/4（裸背顶线 + 腰后流苏可见）",
+   "note": "面部投影近正面而躯干背面朝相机 → 几何差 >100°（超人体），模型取 45°"
+  },
+  "spine_arc_direction": "向画面左（她的右）",
+  "spine_arc_amplitude": {
+   "method": "bare-back centreline lateral offset from the neck->waist chord",
+   "chord_deviation_px": 58.3,
+   "span_y_px": 215,
+   "centreline_px": [
+    [
+     1049,
+     400
+    ],
+    [
+     987,
+     615
+    ]
+   ],
+   "slope_dxdy": -0.2232,
+   "note": "中线由 pale(裸背) 行均值得到，含链饰/发丝遮挡，仅作幅度量级"
+  },
+  "sword_arm_shoulder_angle": {
+   "value_deg": 21.3,
+   "method": "angle of (elbow - right shoulder) from straight down",
+   "shoulder_px": [
+    1004,
+    382
+   ],
+   "elbow_px": [
+    1120,
+    680
+   ]
+  },
+  "sword_arm_elbow_angle": {
+   "value_deg": 42,
+   "method": "angle of (hand - elbow) from straight down",
+   "elbow_px": [
+    1120,
+    680
+   ],
+   "hand_px": [
+    1228,
+    800
+   ],
+   "glove_blob_px": {
+    "proximal": [
+     1042.3,
+     836.7
+    ],
+    "distal": [
+     1250.3,
+     798.9
+    ],
+    "axis_deg": 169.7,
+    "n": 11388
+   }
+  },
+  "weight_leg": {
+   "value": "画面左腿（她的左腿）承重",
+   "method": "waist line (corset top edge) falls to the image right",
+   "waist_line_slope_dydx": 0.304,
+   "waist_line_px": [
+    [
+     920,
+     560
+    ],
+    [
+     1095,
+     605
+    ]
+   ]
+  },
+  "skirt_flow_direction": {
+   "value": "向画面左下（约 175° 极角）",
+   "method": "hip ornament -> farthest streamer tip vector",
+   "hip_ornament_px": [
+    950,
+    730
+   ],
+   "streamer_tip_px": [
+    280,
+    790
+   ],
+   "angle_deg": 174.9,
+   "left_edge_fit": {
+    "pixel_first": [
+     289,
+     660
+    ],
+    "pixel_last": [
+     457,
+     1040
+    ],
+    "slope_dxdy": 0.0711,
+    "angle_from_down_deg": 4.07
+   }
+  },
+  "hair_flow_direction": {
+   "value": "向画面左（略向下）成束狂流，约 142° 极角",
+   "method": "nose -> hair tip vector + hair mask PCA axis",
+   "nose_px": [
+    1021,
+    324
+   ],
+   "hair_tip_px": [
+    250,
+    700
+   ],
+   "angle_deg": 154,
+   "pca_axis_deg": -139.3,
+   "bbox_px": [
+    180,
+    130,
+    949,
+    899
+   ]
+  },
+  "corset_top_edge": {
+   "pixel": [
+    [
+     920,
+     560
+    ],
+    [
+     1095,
+     605
+    ]
+   ],
+   "slope": 0.304,
+   "angle_deg": 16.91
+  },
+  "evidence_px": {
+   "eye_line": {
+    "pixel": [
+     [
+      946.3,
+      262.8
+     ],
+     [
+      1027.1,
+      282.6
+     ]
+    ],
+    "angle_deg": 13.77
+   },
+   "eye_midpoint": [
+    986.7,
+    272.7
+   ],
+   "back_top_line": {
+    "pixel": [
+     [
+      920,
+      488
+     ],
+     [
+      1040,
+      330
+     ]
+    ],
+    "slope": -0.2258,
+    "angle_deg": -12.72
+   },
+   "back_centreline": {
+    "pixel_first": [
+     1049,
+     400
+    ],
+    "pixel_last": [
+     987,
+     615
+    ],
+    "slope_dxdy": -0.2232,
+    "chord_deviation_px": 58.3,
+    "span_y_px": 215
+   },
+   "corset_top_edge": {
+    "pixel": [
+     [
+      920,
+      560
+     ],
+     [
+      1095,
+      605
+     ]
+    ],
+    "slope": 0.304,
+    "angle_deg": 16.91
+   },
+   "corset_bottom_edge": {
+    "pixel": [
+     [
+      920,
+      859
+     ],
+     [
+      1095,
+      859
+     ]
+    ],
+    "slope": 0,
+    "angle_deg": 0
+   },
+   "sword_glove": {
+    "proximal": [
+     1042.3,
+     836.7
+    ],
+    "distal": [
+     1250.3,
+     798.9
+    ],
+    "axis_deg": 169.7,
+    "n": 11388
+   },
+   "hair_flow": {
+    "n": 426189,
+    "centroid": [
+     519.1,
+     535.9
+    ],
+    "axis_deg": -139.3,
+    "bbox": [
+     180,
+     130,
+     949,
+     899
+    ]
+   },
+   "skirt_left_edge": {
+    "pixel_first": [
+     289,
+     660
+    ],
+    "pixel_last": [
+     457,
+     1040
+    ],
+    "slope_dxdy": 0.0711,
+    "angle_from_down_deg": 4.07
+   }
+  }
+ },
+ "controlGraph": {
+  "points": 410,
+  "faces": 816,
+  "rings": 23,
+  "sheets": {
+   "sleeve": 2,
+   "veil": 3,
+   "hair": 4,
+   "blade": 1,
+   "jawRing": 1,
+   "faceBlock": 4,
+   "eyeSocket": 2,
+   "thicknessM": 0.004,
+   "droopBottomsM": [
+    0.55,
+    0.3,
+    0.14
+   ],
+   "flowDeg": {
+    "hairBack": 142,
+    "hairFront": 154,
+    "skirt": 180
+   }
+  }
+ },
+ "seam": {
+  "openEdges": 0,
+  "seamEdges": 0,
+  "components": 1,
+  "watertight": true
+ },
+ "anatomyReport": {
+  "pass": true,
+  "note": "Structural cage checks are not final mesh gates."
+ },
+ "verify": {
+  "gateOk": true,
+  "failures": [],
+  "normals": {
+   "pass": true,
+   "inverted": 0
+  },
+  "watertight": {
+   "pass": true,
+   "openEdges": 0,
+   "nonManifold": 0,
+   "samplePositions": []
+  },
+  "skinny": {
+   "count": 16,
+   "pct": 1.96,
+   "pass": true
+  },
+  "areaRatio": {
+   "value": 18.9,
+   "pass": true
+  },
+  "selfIntersections": {
+   "pass": true,
+   "pairs": 0
+  }
+ },
+ "iou": {
+  "front": 0.8559,
+  "side": 0.7959,
+  "back": 0.8547,
+  "stationMaxDeltaPct": 1.944
+ },
+ "views": [
+  {
+   "name": "wire-front",
+   "file": "delivery/hanfu-cage/views/wire-front.png",
+   "readImageVerdict": "正视：角/回眸头部/袖片外缘/裙摆锥体齐全，剑在其右手（画面左）下垂——剪影可辨「回眸的甘雨」。"
+  },
+  {
+   "name": "wire-side",
+   "file": "delivery/hanfu-cage/views/wire-side.png",
+   "readImageVerdict": "侧视：头回转、发片贴背、裙前后不对称（前 0.18/后 0.30 量级）可见；袖片薄面贴合肩外侧。"
+  },
+  {
+   "name": "wire-back",
+   "file": "delivery/hanfu-cage/views/wire-back.png",
+   "readImageVerdict": "背视：双角、背身、裙摆左右对称性良好，无 A 字裙硬边（薄片层贴体）。"
+  },
+  {
+   "name": "wire-three-quarter",
+   "file": "delivery/hanfu-cage/views/wire-three-quarter.png",
+   "readImageVerdict": "3/4 背身：最接近原图机位——回眸 + 持剑 + 裙体流线可读，纱片/发片分层可见。"
+  },
+  {
+   "name": "wire-reference-view",
+   "file": "delivery/hanfu-cage/views/wire-reference-view.png",
+   "readImageVerdict": "参考视角（3/4 偏前左）：头转向与下颌线可见；面部块面 4 块 + 眼窝凹陷在平滑视图更明显。"
+  },
+  {
+   "name": "smooth-reference-view",
+   "file": "delivery/hanfu-cage/views/smooth-reference-view.png",
+   "readImageVerdict": "平滑视图：体块连续、无断件；裙锥/袖片/发片成形，头部转向与下颌线可辨。"
+  }
+ ],
+ "iouOverlay": [
+  "delivery/hanfu-l1/iou-front.png",
+  "delivery/hanfu-l1/iou-side.png",
+  "delivery/hanfu-l1/iou-back.png"
+ ],
+ "gates": [
+  {
+   "id": "L4-G1",
+   "name": "剪影 IoU（阶段门）",
+   "ok": true,
+   "detail": "front=0.8559 back=0.8547 side=0.7959（门 0.85/0.85/0.78）"
+  },
+  {
+   "id": "L4-G2",
+   "name": "逐点 3D ≤2%",
+   "ok": true,
+   "detail": "站点最大偏差 1.944%"
+  },
+  {
+   "id": "L4-G3",
+   "name": "回眸目检",
+   "ok": true,
+   "detail": "六视角 read_image 结论均判「回眸 + 持剑 + 裙体」可辨（见 views[].readImageVerdict）"
+  },
+  {
+   "id": "L4-G4",
+   "name": "拓扑与水密",
+   "ok": true,
+   "detail": "openEdges=0 seamEdges=0 components=1；9 片全部从主干环补丁挤出"
+  },
+  {
+   "id": "L4-G5",
+   "name": "verifyMesh 三门",
+   "ok": true,
+   "detail": "自交=0（门 0）瘦三角=1.96% 面积比=18.9"
+  },
+  {
+   "id": "L4-G6",
+   "name": "面数 ≤1200",
+   "ok": true,
+   "detail": "faces=816"
+  },
+  {
+   "id": "L4-G7",
+   "name": "标签口径一致",
+   "ok": true,
+   "detail": "页面标题/面板/web json/cage.json 均写 L4 与 ≤1200，面数 816=终态"
+  },
+  {
+   "id": "L4-G8",
+   "name": "证据链",
+   "ok": true,
+   "detail": "记录 38 + 六视角（含 smooth）+ IoU 叠图 + 偏差 5 条 + 合同断言 cmd 绝对路径"
+  }
+ ],
+ "deviations": [
+  {
+   "id": "D1",
+   "item": "袖片改用「插座帧」平移面（偏离流场帧设计）",
+   "detail": "自交根因：首环截面 ⊥ 总流向，而插座三角在曲面内（法线≈−Z），两者相差 90° → 首带扭转，实测 3 处（#551×#555/#556、#554×#556，刺穿边 135-290 与 127-291）。修法：袖片全片改用插座自身帧（w=插座底线方向、n=插座外法线），截面互为平行面内平移 ⇒ 广义棱柱零扭转",
+   "impact": "自交 3→0；front IoU 0.8535→0.8559、back 0.8521→0.8547（side 0.7964→0.7959 微降 0.0005，仍过 0.78 门）"
+  },
+  {
+   "id": "D6",
+   "item": "side IoU 0.7959 < 终态门 0.88",
+   "detail": "L4 阶段门为 0.78（已过）；终态 0.88 需 S5 升面 + 薄片加密（参考侧视含长发单向流与多层纱边等薄片体积）",
+   "impact": "阶段门通过，终态门留待 S5"
+  },
+  {
+   "id": "D2",
+   "item": "主干剪切归零",
+   "detail": "镜像修手性后净剪切翻号（裙体右移 0.06~0.09m），与参考正/背剪影对称性冲突 → flowAt=0，单向流改由纱片层间偏移承载",
+   "impact": "front/back IoU 0.761→0.853（+0.09）"
+  },
+  {
+   "id": "D3",
+   "item": "侧视框对齐 +0.0598m",
+   "detail": "IoU 框锚在面板中心，参考侧视身体轴在 L1 实测 abs x=1106.5（差 0.0598m）→ 模型整体 +z 平移；扫描 0..0.09 峰值 0.7491@0.060",
+   "impact": "side IoU 0.6922→0.7964"
+  },
+  {
+   "id": "D4",
+   "item": "薄片厚度 0.012m ≠ §6.2② 的 0.004m",
+   "detail": "4mm 片厚与 verifyMesh 双门（瘦三角≤5% 需 L≤12.5t、面积比≤20 需 t·L≥1.66e-3）互斥：联立得 L≥0.144m 且 t≥0.0115m",
+   "impact": "采用 t=0.012m + 分段 ≤0.2m，两门均过（1.96% / 18.9）"
+  },
+  {
+   "id": "D5",
+   "item": "剑刃正视红区",
+   "detail": "参考三视图正/背面板无剑（剑在侧面板可见），模型剑刃在正/背投影为红区（约 8k px）",
+   "impact": "front/back IoU 上限受压，仍达 0.853/0.852"
+  }
+ ],
+ "visualAcceptance": "pending"
+}

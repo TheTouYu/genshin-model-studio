@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>S1b 古风甘雨控制图粗模 v2</title>
+<title>S3 古风甘雨语义控制图粗模 L4（薄片层 · ≤1200 面）</title>
 <style>
   html, body { margin: 0; height: 100%; overflow: hidden; background: #10151c; font-family: system-ui, sans-serif; }
   #view { position: fixed; inset: 0; }
@@ -19,8 +19,8 @@
 <body>
 <div id="view"><canvas id="canvas"></canvas></div>
 <div id="hud">
-  <h1>S1b 古风甘雨控制图粗模 v2（≤300 面）</h1>
-  <div>框线/平滑切换 + 五视角；结构=共享顶点曲面（asym 前后剖面 + extrudePatch 臂/角/发）</div>
+  <h1>S3 古风甘雨语义控制图粗模 L4（袖2/纱3/发4/刃1 · ≤1200 面）</h1>
+  <div>框线/平滑切换 + 五视角；结构=共享顶点曲面（asym 前后剖面 + 分支挤出 + 薄片层）</div>
   <div class="btn-row"><button id="btnWire" class="on">▧ 框线</button><button id="btnSmooth">● 平滑</button></div>
   <div class="btn-row">
     <button data-yaw="0" data-pitch="1.57">前</button>
@@ -49,7 +49,7 @@
         window.gmsPreview = preview
         preview.setItems(data.items || [])
         var st = data.summary || {}
-        statusEl.textContent = '面数 ' + (st.faces || 0) + ' tris · 预算 ≤600: ' + (st.inBudget ? 'PASS' : 'FAIL') + '\nseamCheck: ' + (st.seams ? (st.seams.openEdges === 0 && st.seams.seamEdges === 0 ? '0缝/0断' : '有缝') : '') + '\ngate: ' + (st.gate && st.gate.ok ? 'PASS' : 'FAIL')
+        statusEl.textContent = '面数 ' + (st.faces || 0) + ' tris · 预算 ≤1200: ' + (st.inBudget ? 'PASS' : 'FAIL') + '\nseamCheck: ' + (st.seams ? (st.seams.openEdges === 0 && st.seams.seamEdges === 0 ? '0缝/0断' : '有缝') : '') + '\ngate: ' + (st.gate && st.gate.ok ? 'PASS' : 'FAIL')
         var bw = document.getElementById('btnWire'), bs = document.getElementById('btnSmooth')
         function setMode(w) { preview.setWireframe(w); bw.className = w ? 'on' : ''; bs.className = w ? '' : 'on' }
         bw.onclick = function () { setMode(true) }; bs.onclick = function () { setMode(false) }

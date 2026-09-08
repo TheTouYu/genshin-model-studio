@@ -10,7 +10,7 @@ const OUT = process.argv[2] || 'delivery/hanfu-cage/views'
 const URL = 'http://localhost:8787/draw/hanfu-cage.html'
 fs.mkdirSync(OUT, { recursive: true })
 
-const target = await (await fetch('http://127.0.0.1:9222/json/new?' + encodeURIComponent(URL), { method: 'PUT' })).json()
+const target = await (await fetch('http://127.0.0.1:9333/json/new?' + encodeURIComponent(URL), { method: 'PUT' })).json()
 const ws = new WebSocket(target.webSocketDebuggerUrl)
 await new Promise((res, rej) => { ws.onopen = res; ws.onerror = rej })
 

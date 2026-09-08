@@ -14,21 +14,21 @@
       "i": 1,
       "name": "hair_crown_top",
       "pixel": [
-        468,
-        35
+        458,
+        81
       ],
       "uncertaintyPx": 4,
-      "distToSilhouetteEdgePx": 1.0
+      "distToSilhouetteEdgePx": 23.0
     },
     {
       "i": 2,
       "name": "horn_tip_left",
       "pixel": [
-        341,
-        128
+        340,
+        126
       ],
       "uncertaintyPx": 5,
-      "distToSilhouetteEdgePx": 1.0
+      "distToSilhouetteEdgePx": 1.4
     },
     {
       "i": 3,
@@ -44,8 +44,8 @@
       "i": 4,
       "name": "horn_tip_right",
       "pixel": [
-        573,
-        128
+        574,
+        126
       ],
       "uncertaintyPx": 5,
       "distToSilhouetteEdgePx": 1.0
@@ -55,10 +55,10 @@
       "name": "horn_root_right",
       "pixel": [
         493,
-        66
+        67
       ],
       "uncertaintyPx": 6,
-      "distToSilhouetteEdgePx": 2.2
+      "distToSilhouetteEdgePx": 3.2
     },
     {
       "i": 6,
@@ -152,7 +152,7 @@
     },
     {
       "i": 15,
-      "name": "neck_base_center",
+      "name": "shoulder_line_center",
       "pixel": [
         457,
         335
@@ -162,6 +162,16 @@
     },
     {
       "i": 16,
+      "name": "neck_base",
+      "pixel": [
+        446,
+        259
+      ],
+      "uncertaintyPx": 5,
+      "distToSilhouetteEdgePx": 6.7
+    },
+    {
+      "i": 17,
       "name": "chest_gem",
       "pixel": [
         457,
@@ -171,7 +181,7 @@
       "distToSilhouetteEdgePx": 12.5
     },
     {
-      "i": 17,
+      "i": 18,
       "name": "corset_top_center",
       "pixel": [
         457,
@@ -181,7 +191,7 @@
       "distToSilhouetteEdgePx": 6.3
     },
     {
-      "i": 18,
+      "i": 19,
       "name": "corset_bottom_center",
       "pixel": [
         457,
@@ -191,7 +201,7 @@
       "distToSilhouetteEdgePx": 1.4
     },
     {
-      "i": 19,
+      "i": 20,
       "name": "waist_center",
       "pixel": [
         457,
@@ -201,7 +211,7 @@
       "distToSilhouetteEdgePx": 3.2
     },
     {
-      "i": 20,
+      "i": 21,
       "name": "waist_belt_center",
       "pixel": [
         456,
@@ -211,7 +221,7 @@
       "distToSilhouetteEdgePx": 19.0
     },
     {
-      "i": 21,
+      "i": 22,
       "name": "hand_left",
       "pixel": [
         157,
@@ -221,7 +231,7 @@
       "distToSilhouetteEdgePx": 1.4
     },
     {
-      "i": 22,
+      "i": 23,
       "name": "wrist_left",
       "pixel": [
         197,
@@ -231,7 +241,7 @@
       "distToSilhouetteEdgePx": 8.6
     },
     {
-      "i": 23,
+      "i": 24,
       "name": "hand_right",
       "pixel": [
         756,
@@ -241,7 +251,7 @@
       "distToSilhouetteEdgePx": 1.4
     },
     {
-      "i": 24,
+      "i": 25,
       "name": "wrist_right",
       "pixel": [
         716,
@@ -251,7 +261,7 @@
       "distToSilhouetteEdgePx": 7.8
     },
     {
-      "i": 25,
+      "i": 26,
       "name": "hem_bottom_center",
       "pixel": [
         420,
@@ -261,7 +271,7 @@
       "distToSilhouetteEdgePx": 2.2
     },
     {
-      "i": 26,
+      "i": 27,
       "name": "hem_left",
       "pixel": [
         219,
@@ -271,7 +281,7 @@
       "distToSilhouetteEdgePx": 0.0
     },
     {
-      "i": 27,
+      "i": 28,
       "name": "hem_right",
       "pixel": [
         622,
