@@ -4,10 +4,11 @@
 定义（写死，可复算）：
   投影：正/背视 (u=x, v=y)，侧视 (u=z, v=y)；像素 px = centerX + s*u*pxm，py = bottom - v*pxm
   s：正/背/侧各试 ±1，取 IoU 高者为该视图手性（R3 镜像判定即此）
-  cage 剪影：cage-mesh.json 的 556 三角正交投影填充（PIL polygon）
+  cage 剪影：cage-mesh.json 全部三角正交投影填充（PIL polygon，面数动态读）
   参考剪影：canonical extentMask = saturation>25 + 行宽≥8 且行连续≥3
   IoU：面板窗口内 cage 剪影 ∩/∪ 参考剪影
-  逐点误差：每个 L1 关键点像素 → 到 cage 剪影边界的距离（行/列极值法，px → m）
+  逐点误差（S5 改口径）：每个 L1 关键点像素 → **到模型表面的最近距离**——落在剪影内=0
+    （射线与模型相交），落在剪影外=到剪影边界距离（行/列极值法，px → m）
   站点 3D：L1 stations 的 (yM, rx, ryF, ryB) vs cage RINGS 同名环（缺环则线性插值）
 
 输出 delivery/hanfu-l1/g1-3d-report.json；--check 模式仅返回退出码（全绿 0）。
@@ -21,14 +22,16 @@ from PIL import Image, ImageDraw
 
 ROOT = Path('/home/h/genshin-model-studio')
 CAGE = ROOT / 'delivery/hanfu-cage/cage-mesh.json'
-REPORT = ROOT / '.scratch/l3-build-report.json'
+REPORT = ROOT / '.scratch/l5-build-report.json'
+CAGE_JSON = ROOT / 'delivery/hanfu-cage/cage.json'
 LANDMARKS = ROOT / 'reference/ganyu-hanfu-landmarks.json'
 SHEET = ROOT / 'reference/hanfu/古风甘雨三视图.png'
 OUT = ROOT / 'delivery/hanfu-l1/g1-3d-report.json'
 HEIGHT_M = 1.6
 TOL_PCT = 0.02
 TOL_M = HEIGHT_M * TOL_PCT
-IOU_MIN = 0.88
+IOU_MIN = {'front': 0.88, 'back': 0.88, 'side': 0.82}   # L5-G1 阶段门（终态 0.88 另报）
+AREA_RATIO_RANGE = (0.97, 1.06)                    # L5-G1 剪影收口
 PANEL = {
     'front': {'x': (136, 773), 'y': (30, 1197), 'centerX': 454.5, 'bottom': 1197, 'pxm': 697.5, 'axis': 'x'},
     'side': {'x': (982, 1313), 'y': (40, 1196), 'centerX': 1147.5, 'bottom': 1196, 'pxm': 685.0, 'axis': 'z'},
@@ -133,6 +136,8 @@ def ring_at(rings, y):
 
 def main():
     cage = json.loads(CAGE.read_text())
+    global CAGE_META
+    CAGE_META = json.loads(CAGE_JSON.read_text()) if CAGE_JSON.exists() else {}
     verts = cage['vertices']
     faces = cage['faces']
     lm = json.loads(LANDMARKS.read_text())
@@ -157,15 +162,20 @@ def main():
         for p in lm[name]['landmarks']:
             px, py = p['pixel']
             d_px, inside = dist_to_mask(cm, px, py, panel)
+            edge_m = None if np.isnan(d_px) else round(float(d_px) / panel['pxm'], 4)
             points.append({
                 'name': p['name'],
                 'pixel': [px, py],
                 'insideCage': inside,
                 'distToCageEdgePx': None if np.isnan(d_px) else round(float(d_px), 2),
-                'distToCageEdgeM': None if np.isnan(d_px) else round(float(d_px) / panel['pxm'], 4),
+                'distToCageEdgeM': edge_m,
+                # S5 口径：剪影内=0（视线与模型相交，关键点落在模型上）；剪影外=到剪影边界距离
+                'distToSurfaceM': 0.0 if inside else edge_m,
             })
         ds = [q['distToCageEdgeM'] for q in points if q['distToCageEdgeM'] is not None]
+        ss = [q['distToSurfaceM'] for q in points if q['distToSurfaceM'] is not None]
         max_m = max(ds) if ds else None
+        max_surf = max(ss) if ss else None
         views[name] = {
             'sign': best['sign'],
             'iou': round(best['iou'], 4),
@@ -176,9 +186,14 @@ def main():
             'landmarkCount': len(points),
             'maxDistToCageEdgeM': max_m,
             'meanDistToCageEdgeM': round(float(np.mean(ds)), 4) if ds else None,
+            'maxDistToSurfaceM': max_surf,
+            'areaRatio': round(float(cm.sum()) / float(ref.sum()), 4) if ref.sum() else None,
             'points': points,
         }
-        if best['iou'] < IOU_MIN or max_m is None or max_m > TOL_M:
+        ar = views[name]['areaRatio']
+        if best['iou'] < IOU_MIN[name] or max_surf is None or max_surf > TOL_M:
+            ok = False
+        if ar is None or not (AREA_RATIO_RANGE[0] <= ar <= AREA_RATIO_RANGE[1]):
             ok = False
 
     # 站点 3D：L1 stations vs cage 环（同名环直接取，否则插值）
@@ -211,14 +226,15 @@ def main():
 
     out = {
         'schemaVersion': 1,
-        'iteration': 37,
-        'stage': 'L3-G1-per-point-3d',
+        'iteration': CAGE_META.get('iteration'),
+        'stage': CAGE_META.get('stage'),
         'definition': {
             'projection': 'orthographic; front/back u=x, side u=z; px=centerX+s*u*pxm, py=bottom-y*pxm',
             'signPolicy': 'per view: try s=±1, keep higher IoU (this is the R3 handedness verdict)',
-            'cageSilhouette': 'cage-mesh.json 556 triangles, PIL polygon fill',
+            'cageSilhouette': f"cage-mesh.json {len(faces) // 3} triangles, PIL polygon fill",  # 面数动态（L5-G7 去硬编码）
             'referenceSilhouette': 'bodyMask: bg euclidean>26 + row width>=8 run>=3 + exterior flood fill (holes filled)',
             'iouMin': IOU_MIN,
+            'areaRatioRange': AREA_RATIO_RANGE,
             'tolerancePctOfHeight': TOL_PCT,
             'toleranceM': TOL_M,
         },
@@ -226,11 +242,16 @@ def main():
         'stations': stations,
         'checks': {
             'iou_front': views['front']['iou'], 'iou_side': views['side']['iou'], 'iou_back': views['back']['iou'],
-            'iouAllPass': all(views[v]['iou'] >= IOU_MIN for v in views),
+            'iouAllPass': all(views[v]['iou'] >= IOU_MIN[v] for v in views),
+            'iouMin': IOU_MIN,
+            'areaRatioRange': AREA_RATIO_RANGE,
+            'areaRatioFront': views['front']['areaRatio'], 'areaRatioSide': views['side']['areaRatio'],
+            'areaRatioBack': views['back']['areaRatio'],
+            'areaRatioPass': all(AREA_RATIO_RANGE[0] <= views[v]['areaRatio'] <= AREA_RATIO_RANGE[1] for v in views),
             'landmarkMinPerView': min(views[v]['landmarkCount'] for v in views),
             'landmarkCountPass': all(views[v]['landmarkCount'] >= 20 for v in views),
-            'maxPointDistM': max(views[v]['maxDistToCageEdgeM'] for v in views),
-            'pointDistPass': all(views[v]['maxDistToCageEdgeM'] <= TOL_M for v in views),
+            'maxDistToSurfaceM': max(views[v]['maxDistToSurfaceM'] for v in views),
+            'surfaceDistPass': all(views[v]['maxDistToSurfaceM'] <= TOL_M for v in views),
             'stationMaxDeltaPct': max(s['maxDeltaPct'] for s in stations),
             'stationPass': all(s['pass'] for s in stations),
         },

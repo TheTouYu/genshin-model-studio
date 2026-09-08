@@ -3,31 +3,44 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>S3 古风甘雨语义控制图粗模 L4（薄片层 · ≤1200 面）</title>
+<title>S5 古风甘雨语义控制图粗模 L5（薄片成型 + 分色 · ≤1500 面 / 960 面）</title>
 <style>
   html, body { margin: 0; height: 100%; overflow: hidden; background: #10151c; font-family: system-ui, sans-serif; }
   #view { position: fixed; inset: 0; }
   #view canvas { display: block; width: 100%; height: 100%; touch-action: none; }
-  #hud { position: fixed; top: 12px; left: 12px; z-index: 2; max-width: 360px; color: #dfe6ee;
+  #hud { position: fixed; top: 12px; left: 12px; z-index: 2; max-width: 380px; color: #dfe6ee;
     background: rgba(16,21,28,0.82); border: 1px solid #2b3542; border-radius: 8px; padding: 10px 14px; font-size: 13px; line-height: 1.7; }
   .btn-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 4px; }
   .btn-row button { cursor: pointer; padding: 5px 9px; background: #24343b; color: #dfe6ee; border: 1px solid #77929b; border-radius: 4px; font-size: 12px; }
   .btn-row button.on { background: #2b6cb0; border-color: #7fb3e8; }
+  #legend { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 6px; font-size: 12px; }
+  #legend .sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 4px; vertical-align: -1px; }
   #status { color: #ffd479; font-size: 12px; margin-top: 6px; white-space: pre-wrap; }
 </style>
 </head>
 <body>
 <div id="view"><canvas id="canvas"></canvas></div>
 <div id="hud">
-  <h1>S3 古风甘雨语义控制图粗模 L4（袖2/纱3/发4/刃1 · ≤1200 面）</h1>
-  <div>框线/平滑切换 + 五视角；结构=共享顶点曲面（asym 前后剖面 + 分支挤出 + 薄片层）</div>
+  <h1>S5 古风甘雨语义控制图粗模 L5（袖2/纱3/发4/刃1/角2 · ≤1500 面 · 960 面）</h1>
+  <div>框线/平滑 + 分色/单色 + 五视角；结构=共享顶点曲面（asym 前后剖面 + 分支挤出 + 薄片层）</div>
   <div class="btn-row"><button id="btnWire" class="on">▧ 框线</button><button id="btnSmooth">● 平滑</button></div>
+  <div class="btn-row"><button id="btnColor" class="on">🎨 分色</button><button id="btnMono">◻ 单色</button></div>
   <div class="btn-row">
     <button data-yaw="0" data-pitch="1.57">前</button>
     <button data-yaw="1.5708" data-pitch="1.57">侧</button>
     <button data-yaw="0.65" data-pitch="0.12">顶</button>
     <button data-yaw="3.14159" data-pitch="1.57">背</button>
     <button data-yaw="0.65" data-pitch="0.85">3/4</button>
+  </div>
+  <div id="legend">
+    <span data-legend="trunk"><i class="sw" style="background:#c9c9c9"></i>主干/臂</span>
+    <span data-legend="sleeve"><i class="sw" style="background:#7fb3e8"></i>袖片</span>
+    <span data-legend="veil"><i class="sw" style="background:#9fd6c0"></i>纱片</span>
+    <span data-legend="hair"><i class="sw" style="background:#b9a7e0"></i>发片</span>
+    <span data-legend="sword"><i class="sw" style="background:#e8d27f"></i>剑刃</span>
+    <span data-legend="horn"><i class="sw" style="background:#8a8f99"></i>角</span>
+    <span data-legend="gem"><i class="sw" style="background:#e87f9f"></i>饰件</span>
+    <span data-legend="face"><i class="sw" style="background:#f0d9c0"></i>面部块面</span>
   </div>
   <div id="status">加载…</div>
 </div>
@@ -42,17 +55,27 @@
     if (cdnIdx >= CDNS.length) { statusEl.className = 'err'; statusEl.textContent = 'Three.js 加载失败'; return }
     var s = document.createElement('script'); s.src = CDNS[cdnIdx++]; s.onload = boot; s.onerror = loadCdn; document.head.appendChild(s)
   }
+  function monoItems(items) {
+    return (items || []).map(function (it) {
+      var c = it.colors || []
+      return { resourceId: it.resourceId, vertices: it.vertices, faces: it.faces, colors: c.map(function () { return '#c9c9c9' }) }
+    })
+  }
   function boot() {
     fetch('./hanfu-cage.json?t=' + Date.now()).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json() })
       .then(function (data) {
         var preview = window.createPreview(document.getElementById('canvas'))
         window.gmsPreview = preview
-        preview.setItems(data.items || [])
+        var items = data.items || []
+        preview.setItems(items)
         var st = data.summary || {}
-        statusEl.textContent = '面数 ' + (st.faces || 0) + ' tris · 预算 ≤1200: ' + (st.inBudget ? 'PASS' : 'FAIL') + '\nseamCheck: ' + (st.seams ? (st.seams.openEdges === 0 && st.seams.seamEdges === 0 ? '0缝/0断' : '有缝') : '') + '\ngate: ' + (st.gate && st.gate.ok ? 'PASS' : 'FAIL')
+        statusEl.textContent = '面数 ' + (st.faces || 0) + ' tris · 预算 ≤1500: ' + (st.inBudget ? 'PASS' : 'FAIL') + '\nseamCheck: ' + (st.seams ? (st.seams.openEdges === 0 && st.seams.seamEdges === 0 ? '0缝/0断' : '有缝') : '') + '\n分色: ' + (st.colors ? st.colors.distinct + ' 类' : '-') + '\ngate: ' + (st.gate && st.gate.ok ? 'PASS' : 'FAIL')
         var bw = document.getElementById('btnWire'), bs = document.getElementById('btnSmooth')
         function setMode(w) { preview.setWireframe(w); bw.className = w ? 'on' : ''; bs.className = w ? '' : 'on' }
         bw.onclick = function () { setMode(true) }; bs.onclick = function () { setMode(false) }
+        var bc = document.getElementById('btnColor'), bm = document.getElementById('btnMono')
+        bc.onclick = function () { preview.setItems(items); bc.className = 'on'; bm.className = '' }
+        bm.onclick = function () { preview.setItems(monoItems(items)); bm.className = 'on'; bc.className = '' }
         document.querySelectorAll('#hud .btn-row button[data-yaw]').forEach(function (b) {
           b.onclick = function () { preview.setCamera({ yaw: Number(b.dataset.yaw), pitch: Number(b.dataset.pitch) }) }
         })

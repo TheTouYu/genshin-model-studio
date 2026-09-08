@@ -18,6 +18,7 @@
  * 面预算 ≤600；退出码 0 = verifyMesh 三门（自交=0/瘦三角≤5%/面积比≤20）+ 面数门通过。
  */
 import fs from 'node:fs';
+import { execFileSync } from 'node:child_process';
 import vm from 'node:vm';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -213,14 +214,18 @@ const deg = (d) => (d * Math.PI) / 180;
 const RINGS = [
   // 全部由 L1 实测驱动：裙区取 central-run 剖面，躯干取 stations 插值（R4/G1 逐点 3D 前置修正）
   { name: 'under_cap', y: -0.030, rx: 0.0900, ryF: 0.0700, ryB: 0.0900 }, // 裙内封盖
+  { name: 'under_mid', y: -0.010, rx: 0.2726, ryF: 0.1259, ryB: 0.1958 }, // S5 面积比门：拆大面（under_cap→hem 原单跨 0.0392）
+  { name: 'hem_low', y: 0.000, rx: 0.3639, ryF: 0.1539, ryB: 0.2487 }, // S5 面积比门拆大面
   { name: 'hem', y: 0.010, rx: 0.4552, ryF: 0.1818, ryB: 0.3015 },        // L1 hem
   { name: 'hem_upper', y: 0.075, rx: 0.4035, ryF: 0.1788, ryB: 0.2723 },   // 剖面插值（拆大面）
   { name: 'tierC_mid', y: 0.140, rx: 0.3527, ryF: 0.1759, ryB: 0.2431 },   // L1 skirt_wide
+  { name: 'tierC_hi', y: 0.200, rx: 0.3323, ryF: 0.1725, ryB: 0.2308 },  // S5 面积比门拆大面
   { name: 'tierC_top', y: 0.260, rx: 0.3118, ryF: 0.1690, ryB: 0.2185 },   // 剖面实测
   { name: 'tierB_bot', y: 0.300, rx: 0.2989, ryF: 0.1667, ryB: 0.2103 },
   { name: 'tierB_mid', y: 0.400, rx: 0.2667, ryF: 0.1609, ryB: 0.1899 },
   { name: 'tierB_top', y: 0.500, rx: 0.2366, ryF: 0.1552, ryB: 0.1696 },
   { name: 'tierA_bot', y: 0.550, rx: 0.2258, ryF: 0.1523, ryB: 0.1594 },   // 剖面实测（裙最窄）
+  { name: 'tierA_hip', y: 0.625, rx: 0.2572, ryF: 0.1481, ryB: 0.1443 }, // S5 面积比门拆大面
   { name: 'hip', y: 0.700, rx: 0.2885, ryF: 0.1438, ryB: 0.1291 },         // L1 hip
   { name: 'upper_hip', y: 0.820, rx: 0.2620, ryF: 0.1445, ryB: 0.1233 },
   { name: 'mid_body', y: 0.950, rx: 0.2334, ryF: 0.1452, ryB: 0.1170 },
@@ -454,9 +459,8 @@ function ribbonFromLoop(mesh, loopIn, spine, opts) {
     }
   }
   const last = ringIds[ringIds.length - 1];
-  const ci = mesh.vertices.length;
-  mesh.vertices.push(centroidOf(mesh, last));
-  for (let j = 0; j < 3; j += 1) push3(ci, last[(j + 1) % 3], last[j]);
+  /* S5 面积比门：端盖用「环自身三角面」而非形心扇（面积 ×3、少 2 面 → p5 抬升） */
+  push3(last[0], last[2], last[1]);
   return { loop: loop.slice(), B: 3, rings: ringIds };
 }
 
@@ -508,7 +512,7 @@ function buildCageMesh() {
     eyeSockets.push({ ring: 'head_widest', angle: a, vertex: vi, depth: 0.012 });
   }
 
-  const info = { branches: [], parts: [{ name: 'trunk', vStart: 0, vEnd: mesh.vertices.length }] };
+  const info = { branches: [], parts: [{ name: 'trunk', vStart: 0, vEnd: mesh.vertices.length }], sheets5: [], horns: [] };
   const log = (name, patch, res, faceStart) => info.branches.push({ name, B: res.B, rings: res.rings ? res.rings.length : 0 });
   const mark = (name, vStart) => info.parts.push({ name, vStart, vEnd: mesh.vertices.length });
 
@@ -520,20 +524,20 @@ function buildCageMesh() {
     const hc = patchCentroid(mesh, patchVerts(mesh, ['seal_top', 'chest'], angles));
     const nrm = V3.norm([hc[0], 0, hc[2] - 0.01]);
     return [
-      { c: V3.add(hc, V3.mul(nrm, off)), ru: rad, rv: rad },
-      { c: elbow, ru: 0.060, rv: 0.055 },
-      { c: wrist, ru: 0.065, rv: 0.058 },
+      { c: V3.add(V3.add(hc, V3.mul(nrm, off)), [0, 0, -0.01]), ru: rad, rv: rad },
+      { c: elbow, ru: 0.038, rv: 0.036 },
+      { c: wrist, ru: 0.040, rv: 0.038 },
     ];
   };
   // L4：手臂轴内收（肘 0.30→0.25、腕 0.292→0.245）+ 半径收窄——参考正视图 y0.98-1.46
   // 模型超宽 0.05~0.18m（front 残差 excR 峰值 0.181），外缘对齐实测 ±0.32
   const armR = attach(mesh, ['seal_top', 'chest'], [7, 0, 1],
-    armRings([7, 0, 1], [0.285, 1.010, 0.095], [0.275, 0.730, 0.185], 0.08, 0.038),
+    armRings([7, 0, 1], [0.240, 1.010, 0.130], [0.245, 0.730, 0.175], 0.075, 0.026),
     { axis: [0.25, -0.95, 0.15], cap: false });
   log('armR', null, armR); mark('armR', armR._faceStart);
 
   const armL = attach(mesh, ['seal_top', 'chest'], [4,5,3],
-    armRings([3, 4, 5], [-0.295, 1.010, 0.110], [-0.285, 0.730, 0.205], 0.12, 0.040),
+    armRings([3, 4, 5], [-0.245, 1.010, 0.140], [-0.250, 0.730, 0.185], 0.085, 0.028),
     { axis: [-0.25, -0.95, 0.2] });
   log('armL', null, armL); mark('armL', armL._faceStart);
 
@@ -543,19 +547,41 @@ function buildCageMesh() {
   const handRing = armR.rings[armR.rings.length - 1];
   const _swfs = mesh.vertices.length;
   const sword = tubeFromLoop(mesh, handRing, [
-    { c: [0.400, 0.600, 0.134], dir: [0.30, -0.95, 0.06], ru: 0.026, rv: 0.022 },  // 柄
-    { c: [0.448, 0.462, 0.142], dir: [0.32, -0.94, 0.06], ru: 0.044, rv: 0.024 },  // 护手
-    { c: [0.596, 0.080, 0.158], dir: [0.34, -0.93, 0.05], ru: 0.038, rv: 0.002 },  // 刃（薄片）
+    { c: [0.235, 0.600, 0.178], dir: [0.02, -1.0, 0.01], ru: 0.016, rv: 0.020 },  // 柄
+    { c: [0.232, 0.480, 0.183], dir: [0.01, -1.0, 0.01], ru: 0.022, rv: 0.020 },  // 护手
+    { c: [0.240, 0.090, 0.193], dir: [0.01, -1.0, 0.01], ru: 0.034, rv: 0.006 },  // 刃（薄片，近垂直）
   ], {});
   info.branches.push({ name: 'sword', B: sword.B, rings: sword.rings.length });
   mark('sword', _swfs);
 
   /* 双角：头顶 2×2 盘（B=4）→ 单顶点 apex 锥（每角 4 三角，无中间环 = 无环带互穿）
      镜像对：绕 x=0 镜像角 θ→180°−θ，故 hornR[0,1] ↔ hornL[4,5]（[3,4] 不是镜像，是前移 45°） */
-  const hornR = attachCone(mesh, ['head_widest', 'crown'], [0, 1], [0.205, 1.805, -0.070]);
-  log('hornR', null, hornR); mark('hornR', hornR._vStart);
-  const hornL = attachCone(mesh, ['head_widest', 'crown'], [4, 5], [-0.205, 1.805, -0.070]);
-  log('hornL', null, hornL); mark('hornL', hornL._vStart);
+  /* S5 双角复位（§6.4）：参考角=短粗+向外后弯，实测投影长 0.190m（side horn_root→horn_tip_back）
+     ×1.10 = 0.2090m 上限。L4 的 attachCone 是「插座→单 apex」=2 控制点（长直尖刺，全身最不像）。
+     改 3 控制点角链（根/中/尖）管体：短粗（根 r 0.034 → 尖 r 0.010）+ 后弯（尖 z −0.095）。
+     角长按链长实测（root→mid→tip 折线长），镜像对 [0,1] ↔ [4,5]。 */
+  const hornChain = (sign) => {
+    const hc = patchCentroid(mesh, patchVerts(mesh, ['head_widest', 'crown'], sign > 0 ? [0, 1] : [4, 5]));
+    const mid = [sign * 0.150, 1.600, -0.040];
+    const tip = [sign * 0.170, 1.570, -0.120];
+    return { hc, mid, tip };
+  };
+  for (const [nm, sgn] of [['hornR', 1], ['hornL', -1]]) {
+    const { hc, mid, tip } = hornChain(sgn);
+    const _vfs = mesh.vertices.length;
+    const res = attach(mesh, ['head_widest', 'crown'], sgn > 0 ? [0, 1] : [4, 5], [
+      { c: mid, ru: 0.026, rv: 0.024 },
+      { c: tip, ru: 0.010, rv: 0.009 },
+    ], { axis: [sgn * 0.18, 0.96, -0.20] });
+    log(nm, null, res); mark(nm, _vfs);
+    const chain = [hc, mid, tip];
+    let len = 0; for (let i = 1; i < chain.length; i += 1) len += Math.hypot(...V3.sub(chain[i], chain[i - 1]));
+    info.horns.push({
+      name: nm, chain: chain.map((p) => p.map((x) => +x.toFixed(4))),
+      lengthM: +len.toFixed(4), backBendM: +Math.abs(tip[2] - hc[2]).toFixed(4),
+      rootRadiusM: 0.034, tipRadiusM: 0.010,
+    });
+  }
 
   /* L4 薄片统一构造：从插座补丁长出「片」。帧 u=+z / v=−x（近竖直流向）⇒ ru=片厚半值、
      rv=片宽半值；片厚取 0.002（总厚 0.004m ≤ §6.5 上限）。全部经 attach→tubeFromLoop
@@ -584,58 +610,95 @@ function buildCageMesh() {
     }
     const res = attachRibbon(mesh, rows, angles, segs, { ru: t / 2, dir: nrm, debug: false, frameSocket: opts.frameSocket });
     log(name, null, res); mark(name, res._faceStart);
+    /* S5 薄片成型度量（§6.3）：环数 / 根尖宽度比 / 中心线弯曲（偏离弦） */
+    const c0 = chain[0]; const cN = chain[chain.length - 1];
+    const chord = V3.sub(cN, c0); const cl = Math.hypot(...chord);
+    let bend = 0;
+    for (const p of chain.slice(1, -1)) {
+      const d = V3.sub(p, c0);
+      const proj = V3.mul(chord, V3.dot(d, chord) / (cl * cl));
+      bend = Math.max(bend, Math.hypot(...V3.sub(d, proj)));
+    }
+    const wRoot = 2 * root.rv; const wTip = 2 * spine[spine.length - 1].rv;
+    info.sheets5.push({
+      name, kind: opts.kind, rings: res.rings.length,
+      rootWidthM: +wRoot.toFixed(4), tipWidthM: +wTip.toFixed(4),
+      widthRatio: +(Math.max(wRoot, wTip) / Math.min(wRoot, wTip)).toFixed(2),
+      taperDir: wRoot >= wTip ? 'root-wider' : 'tip-wider',
+      bendDeviationM: +bend.toFixed(4), spineStations: spine.length,
+      flowDeg: opts.flowDeg ?? null, layer: opts.layer ?? null,
+    });
     return res;
   };
   const hcOf = (rows, angles) => centroidOf(mesh, socketTriangle(mesh, rows, angles).tri);
 
-  /* L4 发片 ×4（片厚 0.004m，流向沿用实测：后 142° / 前 154°）
-     参考侧视背缘（相对身体轴）：y1.26 −0.093（贴身）→ y0.78 −0.211（下摆外扬）；
-     旧 hairBack 管体 rv 0.062~0.080 → 侧视填充率仅 0.028（22.8k 红），改片贴体 */
+  /* S5 发片 ×4（§6.3）：每片 3 控制点（≥3 环）+ 根宽尖窄锥化 ≥1.6:1 + 中心线弯曲（单向流）
+     流向沿用实测：后 142° / 前 154°；根贴头（y≈1.18-1.24）→ 尖端下垂至 y 0.78-0.90 */
   sheet('hairBack1', ['jaw', 'head_widest'], [5, 6], [
-    { c: [-0.210, 0.870, -0.215], rv: 0.035 },
-  ], { axis: [-0.25, -0.96, -0.10] });
+    { c: [-0.150, 1.180, -0.130], rv: 0.048 },
+    { c: [-0.215, 0.980, -0.120], rv: 0.036 },
+    { c: [-0.270, 0.790, -0.175], rv: 0.0235 },
+  ], { axis: [-0.25, -0.96, -0.10], kind: 'hair', flowDeg: 142, layer: 0 });
   sheet('hairBack2', ['jaw', 'head_widest'], [6, 7], [
-    { c: [0.215, 0.890, -0.210], rv: 0.035 },
-  ], { axis: [0.25, -0.96, -0.10] });
+    { c: [0.155, 1.190, -0.110], rv: 0.048 },
+    { c: [0.220, 1.000, -0.118], rv: 0.035 },
+    { c: [0.276, 0.815, -0.172], rv: 0.0235 },
+  ], { axis: [0.25, -0.96, -0.10], kind: 'hair', flowDeg: 142, layer: 0 });
   sheet('hairFront1', ['jaw', 'head_widest'], [0, 1], [
-    { c: [0.225, 1.055, 0.210], rv: 0.035 },
-  ], { axis: [0.25, -0.96, 0.10] });
+    { c: [0.150, 1.235, 0.145], rv: 0.052 },
+    { c: [0.173, 1.060, 0.165], rv: 0.035 },
+    { c: [0.172, 0.885, 0.185], rv: 0.025 },
+  ], { axis: [0.25, -0.96, 0.10], kind: 'hair', flowDeg: 154, layer: 0 });
   sheet('hairFront2', ['jaw', 'head_widest'], [3, 4], [
-    { c: [-0.225, 1.055, 0.210], rv: 0.035 },
-  ], { axis: [-0.25, -0.96, 0.10] });
+    { c: [-0.155, 1.242, 0.148], rv: 0.052 },
+    { c: [-0.178, 1.070, 0.167], rv: 0.035 },
+    { c: [-0.177, 0.900, 0.187], rv: 0.025 },
+  ], { axis: [-0.25, -0.96, 0.10], kind: 'hair', flowDeg: 154, layer: 0 });
 
-  /* L4 袖片 ×2（片厚 0.004m）：臂插座 [seal_top,chest] 已占用，故从肩上行 [chest,neck_base]
-     长出。参考正视 y0.86 出现 ±0.41 的袖口横档（残差 gapL/gapR 0.043-0.044），
-     外缘取 L1 实测 ±0.431/±0.437 → 设计 0.435 */
+  /* S5 袖片 ×2（§6.3）：臂插座 [seal_top,chest] 已占用，故从肩上行 [chest,neck_base] 长出。
+     参考正视剖面（probe:iou-targets-l5）：y1.22 ref±0.215 / y1.14 ±0.255 / y1.06 ±0.284 /
+     y0.98 ±0.320 / y0.90 ±0.383 / y0.86 ±0.411 / **y0.82 ±0.433（袖口最宽）**。
+     旧袖 y0.875 触底且 y1.14-1.22 超宽 0.05-0.10 → 3 控制点改 4 站：上收下探到 0.82。
+     锥化方向=尖宽（袖口宽）——与发/纱相反，照参考实测（大袖开口最宽）。 */
   sheet('sleeveR', ['chest', 'neck_base'], [6, 7], [
-    { c: [0.250, 1.160, -0.085], rv: 0.045 },
-    { c: [0.300, 1.010, -0.090], rv: 0.070 },
-    { c: [0.325, 0.880, -0.090], rv: 0.105 },
-  ], { axis: [0.22, -0.96, -0.08], frameSocket: true });
+    { c: [0.205, 1.195, -0.055], rv: 0.030 },
+    { c: [0.245, 1.070, -0.060], rv: 0.045 },
+    { c: [0.300, 0.945, -0.060], rv: 0.070 },
+    { c: [0.348, 0.790, -0.055], rv: 0.085 },
+  ], { axis: [0.22, -0.96, -0.08], frameSocket: true, kind: 'sleeve', flowDeg: 180, layer: 0 });
   sheet('sleeveL', ['chest', 'neck_base'], [5, 6], [
-    { c: [-0.250, 1.170, -0.095], rv: 0.045 },
-    { c: [-0.305, 1.010, -0.085], rv: 0.070 },
-    { c: [-0.330, 0.880, -0.085], rv: 0.105 },
-  ], { axis: [-0.22, -0.96, -0.08], frameSocket: true });
+    { c: [-0.210, 1.200, -0.065], rv: 0.030 },
+    { c: [-0.250, 1.075, -0.060], rv: 0.045 },
+    { c: [-0.305, 0.950, -0.058], rv: 0.070 },
+    { c: [-0.351, 0.795, -0.053], rv: 0.085 },
+  ], { axis: [-0.22, -0.96, -0.08], frameSocket: true, kind: 'sleeve', flowDeg: 180, layer: 0 });
 
-  /* L4 纱片 ×3（片厚 0.004m）：从腰/臀环长出，层底 0.55/0.30/0.14 → 层间下垂差 0.250/0.160m
-     （沿用 L3-G3 实测）；单向流由层间 z 偏移 0.150→0.178 承载（主干剪切已归零） */
+  /* S5 纱片 ×3（§6.3）：层底 0.55/0.30/0.14 → 层间下垂差 0.250/0.160m（沿用 L3-G3 实测）；
+     每片 3 控制点（弯曲垂坠）+ 根宽尖窄锥化 ≥1.6:1；veilC(z 0.215-0.272) 在 veilA
+     (z 0.160-0.215) 之外 → 正视投影遮挡 veilA（§6.3③ ≥2 层可见遮挡） */
   sheet('veilA', ['hip', 'upper_hip'], [1, 2], [
-    { c: [0.150, 0.550, 0.160], rv: 0.050 },
-  ], { axis: [0.0, -0.99, 0.14] });
+    { c: [0.085, 0.680, 0.138], rv: 0.048 },
+    { c: [0.1, 0.605, 0.150], rv: 0.038 },
+    { c: [0.112, 0.555, 0.161], rv: 0.0235 },
+  ], { axis: [0.0, -0.99, 0.14], kind: 'veil', flowDeg: 175, layer: 0 });
   sheet('veilB', ['upper_hip', 'mid_body'], [6, 7], [
-    { c: [-0.150, 0.300, -0.222], rv: 0.050 },
-  ], { axis: [0.0, -0.99, -0.14] });
+    { c: [0.1, 0.430, -0.155], rv: 0.060 },
+    { c: [0.12, 0.350, -0.170], rv: 0.042 },
+    { c: [0.14, 0.298, -0.180], rv: 0.030 },
+  ], { axis: [0.0, -0.99, -0.14], kind: 'veil', flowDeg: 175, layer: 1 });
   sheet('veilC', ['mid_body', 'lower_waist'], [2, 3], [
-    { c: [-0.160, 0.140, 0.215], rv: 0.050 },
-  ], { axis: [0.0, -0.99, 0.14] });
+    { c: [0.115, 0.620, 0.222], rv: 0.058 },
+    { c: [0.125, 0.270, 0.214], rv: 0.048 },
+    { c: [0.145, 0.195, 0.226], rv: 0.036 },
+    { c: [0.160, 0.140, 0.238], rv: 0.028 },
+  ], { axis: [0.0, -0.99, 0.14], kind: 'veil', flowDeg: 175, layer: 2 });
 
   /* 肩饰宝石 ×4：单面片外挤（肩前/肩后 + 腰前/腰后），从主干长出 */
   const gems = [
-    { rows: ['chest', 'neck_base'], angles: [1, 2], out: 0.075 },
-    { rows: ['chest', 'neck_base'], angles: [4, 5], out: 0.075 },
-    { rows: ['mid_body', 'lower_waist'], angles: [1, 2], out: 0.070 },
-    { rows: ['mid_body', 'lower_waist'], angles: [5, 6], out: 0.070 },
+    { rows: ['chest', 'neck_base'], angles: [1, 2], out: 0.022 },
+    { rows: ['chest', 'neck_base'], angles: [4, 5], out: 0.022 },
+    { rows: ['mid_body', 'lower_waist'], angles: [1, 2], out: 0.024 },
+    { rows: ['mid_body', 'lower_waist'], angles: [6, 7], out: 0.024 },
   ];
 
   /* 棱柱贴片（宝石 / 面部块面共用）：从补丁长出 scale 收缩的单环棱柱 */
@@ -662,20 +725,20 @@ function buildCageMesh() {
   gems.forEach((g, i) => prismPatch(`gem${i + 1}`, g.rows, g.angles, g.out));
 
   /* L4 面部块面 ×4（额/颊×2/颌）+ 眼窝凹陷 ×2 —— 目标：reference-view 目检可见头转向 + 下颌线 */
-  prismPatch('faceForehead', ['head_widest', 'crown'], [1, 2], 0.050);
-  prismPatch('faceCheekR', ['jaw', 'head_widest'], [1, 2], 0.036);
-  prismPatch('faceCheekL', ['jaw', 'head_widest'], [2, 3], 0.036);
-  prismPatch('faceJaw', ['head_base', 'jaw'], [2, 3], 0.050);
+  prismPatch('faceForehead', ['head_widest', 'crown'], [1, 2], 0.028);
+  prismPatch('faceCheekR', ['jaw', 'head_widest'], [1, 2], 0.026);
+  prismPatch('faceCheekL', ['jaw', 'head_widest'], [2, 3], 0.026);
+  prismPatch('faceJaw', ['head_base', 'jaw'], [2, 3], 0.026);
 
   /* 挂带 ×2：胸上 2×2 盘向下挤（背右 / 前左） */
   const strapBack = attach(mesh, ['seal_top', 'chest'], [1, 2], [
-    { c: [0.070, 1.200, 0.270], ru: 0.046, rv: 0.022 },
-    { c: [0.080, 1.010, 0.300], ru: 0.058, rv: 0.034 },
+    { c: [0.070, 1.200, 0.198], ru: 0.018, rv: 0.022 },
+    { c: [0.080, 1.010, 0.212], ru: 0.020, rv: 0.034 },
   ], { axis: [0.02, -0.98, 0.18] });
   log('strapBack', null, strapBack); mark('strapBack', strapBack._faceStart);
   const strapFront = attach(mesh, ['seal_top', 'chest'], [2, 3], [
-    { c: [-0.070, 1.200, 0.270], ru: 0.046, rv: 0.022 },
-    { c: [-0.080, 1.010, 0.300], ru: 0.058, rv: 0.034 },
+    { c: [-0.070, 1.200, 0.198], ru: 0.018, rv: 0.022 },
+    { c: [-0.080, 1.010, 0.212], ru: 0.020, rv: 0.034 },
   ], { axis: [-0.02, -0.98, 0.18] });
   log('strapFront', null, strapFront); mark('strapFront', strapFront._faceStart);
 
@@ -722,8 +785,83 @@ function triStats(vertices, faces) {
   return { rows, areas, p5: q(0.05), p50: q(0.5), p95: q(0.95), min: areas[0], max: areas[areas.length - 1], ratio: q(0.95) / q(0.05) };
 }
 
+/* S5 §6.3③ 纱片可见遮挡：正视投影（x,y）下，外层纱片（z 更大=更靠前）覆盖内层纱片的
+ * 投影面积占比。2mm 栅格栅格化（控制图精度足够），返回 {inner, outer, pct}。 */
+function veilOcclusion(mesh, parts) {
+  const veils = parts.filter((p) => p.name.startsWith('veil'));
+  const triOf = (p) => {
+    const out = [];
+    for (let f = 0; f + 2 < mesh.faces.length; f += 3) {
+      const t = [mesh.faces[f], mesh.faces[f + 1], mesh.faces[f + 2]];
+      if (t.every((vi) => vi >= p.vStart && vi < p.vEnd)) out.push(t.map((vi) => mesh.vertices[vi]));
+    }
+    return out;
+  };
+  const raster = (tris, box, cell) => {
+    const w = Math.max(1, Math.ceil((box[2] - box[0]) / cell));
+    const h = Math.max(1, Math.ceil((box[3] - box[1]) / cell));
+    const g = new Uint8Array(w * h);
+    for (const t of tris) {
+      const xs = t.map((p) => (p[0] - box[0]) / cell); const ys = t.map((p) => (p[1] - box[1]) / cell);
+      const x0 = Math.max(0, Math.floor(Math.min(...xs))); const x1 = Math.min(w - 1, Math.ceil(Math.max(...xs)));
+      const y0 = Math.max(0, Math.floor(Math.min(...ys))); const y1 = Math.min(h - 1, Math.ceil(Math.max(...ys)));
+      const d = (a, b, c) => (b[0] - a[0]) * (c[1] - a[1]) - (c[0] - a[0]) * (b[1] - a[1]);
+      const P = t.map((p) => [(p[0] - box[0]) / cell, (p[1] - box[1]) / cell]);
+      for (let y = y0; y <= y1; y += 1) {
+        for (let x = x0; x <= x1; x += 1) {
+          const q = [x + 0.5, y + 0.5];
+          const d1 = d(P[0], P[1], q); const d2 = d(P[1], P[2], q); const d3 = d(P[2], P[0], q);
+          if (!((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0))) g[y * w + x] = 1;
+        }
+      }
+    }
+    return { g, w, h };
+  };
+  const boxOf = (tris) => {
+    const xs = []; const ys = [];
+    for (const t of tris) for (const p of t) { xs.push(p[0]); ys.push(p[1]); }
+    return [Math.min(...xs), Math.min(...ys), Math.max(...xs), Math.max(...ys)];
+  };
+  const out = [];
+  const tris = Object.fromEntries(veils.map((p) => [p.name, triOf(p)]));
+  const meanZ = (name) => {
+    let s = 0; let n = 0;
+    for (const t of tris[name]) for (const p of t) { s += p[2]; n += 1; }
+    return n ? s / n : 0;
+  };
+  for (const inner of veils) {
+    let best = 0; let outerName = null;
+    for (const outer of veils) {
+      if (outer.name === inner.name) continue;
+      if (meanZ(outer.name) <= meanZ(inner.name)) continue; // 只在更靠前的片下算遮挡
+      const box = [
+        Math.min(boxOf(tris[inner.name])[0], boxOf(tris[outer.name])[0]) - 0.01,
+        Math.min(boxOf(tris[inner.name])[1], boxOf(tris[outer.name])[1]) - 0.01,
+        Math.max(boxOf(tris[inner.name])[2], boxOf(tris[outer.name])[2]) + 0.01,
+        Math.max(boxOf(tris[inner.name])[3], boxOf(tris[outer.name])[3]) + 0.01,
+      ];
+      const cell = 0.002;
+      const A = raster(tris[inner.name], box, cell); const B = raster(tris[outer.name], box, cell);
+      let ai = 0; let inter = 0;
+      for (let i = 0; i < A.g.length; i += 1) { if (A.g[i]) { ai += 1; if (B.g[i]) inter += 1; } }
+      const pct = ai ? (100 * inter) / ai : 0;
+      if (pct > best) { best = pct; outerName = outer.name; }
+    }
+    out.push({ inner: inner.name, outer: outerName, pct: +best.toFixed(1) });
+  }
+  return out;
+}
+
 function main() {
   const { mesh, info } = buildCageMesh();
+  const occ = veilOcclusion(mesh, info.parts);
+  for (const s of info.sheets5) {
+    if (s.kind === 'veil') {
+      const o = occ.find((q) => q.inner === s.name);
+      s.occlusionPct = o ? o.pct : 0;
+      s.occludedBy = o ? o.outer : null;
+    }
+  }
   const faceCount = mesh.faces.length / 3;
   const v = verifyMesh({ vertices: mesh.vertices, faces: mesh.faces }, {});
   const st = triStats(mesh.vertices, mesh.faces);
@@ -742,6 +880,34 @@ function main() {
     pairByPart[k] = (pairByPart[k] || 0) + 1;
   }
   const byArea = [...st.rows].sort((a, b) => a.area - b.area);
+  /* S5 §6.8 分色：部件→色（分组取 parts[] 区间），按顶点索引对齐写 cage-mesh.colors；
+     预览页 10009019 分支按面读 cols[fi/3] → web json 另写逐面色（同调色板、同部件映射）。 */
+  const PALETTE = {
+    trunk: '#c9c9c9', sleeve: '#7fb3e8', veil: '#9fd6c0', hair: '#b9a7e0',
+    sword: '#e8d27f', horn: '#8a8f99', gem: '#e87f9f', face: '#f0d9c0',
+  };
+  const colorOfPart = (name) => {
+    if (name.startsWith('sleeve')) return PALETTE.sleeve;
+    if (name.startsWith('veil')) return PALETTE.veil;
+    if (name.startsWith('hair')) return PALETTE.hair;
+    if (name.startsWith('sword')) return PALETTE.sword;
+    if (name.startsWith('horn')) return PALETTE.horn;
+    if (name.startsWith('gem') || name.startsWith('strap')) return PALETTE.gem;
+    if (name.startsWith('face')) return PALETTE.face;
+    return PALETTE.trunk;
+  };
+  const hex2rgb = (h) => [parseInt(h.slice(1, 3), 16) / 255, parseInt(h.slice(3, 5), 16) / 255, parseInt(h.slice(5, 7), 16) / 255];
+  const vcol = new Array(mesh.vertices.length).fill(PALETTE.trunk);
+  for (const p of info.parts) {
+    const c = colorOfPart(p.name);
+    for (let vi = p.vStart; vi < p.vEnd; vi += 1) vcol[vi] = c;
+  }
+  const vertexColors = [];
+  for (const c of vcol) vertexColors.push(...hex2rgb(c));
+  const faceColors = [];
+  for (let f = 0; f + 2 < mesh.faces.length; f += 3) faceColors.push(vcol[mesh.faces[f]]);
+  const colorHist = {};
+  for (const c of vcol) colorHist[c] = (colorHist[c] || 0) + 1;
   const report = {
     faces: faceCount, vertices: mesh.vertices.length,
     parts: info.parts, pairByPart,
@@ -763,20 +929,23 @@ function main() {
     zAlign: Z_ALIGN,
     trunkShearAtHem: flowAt(0.01),
     sheets: info.sheets,
+    sheets5: info.sheets5,
+    horns: info.horns,
+    veilOcclusion: occ,
+    colors: { palette: PALETTE, histogram: colorHist, distinct: Object.keys(colorHist).length },
     eyeSockets: info.eyeSockets ?? [],
   };
   fs.writeFileSync(R('delivery/hanfu-cage/cage.json'), JSON.stringify({
-    iteration: 38, stage: 'L4-sheets', mesh, provenance: { builder: 'scripts/build-hanfu-cage.mjs', sides: SIDES, rings: RINGS.length },
+    iteration: 39, stage: 'L5-sheets-colors', mesh, provenance: { builder: 'scripts/build-hanfu-cage.mjs', sides: SIDES, rings: RINGS.length },
   }, null, 1));
   // 预览页契约：{name, items[{resourceId,vertices,faces,colors}], summary{faces,seams,gate,inBudget}}
-  const webColors = [];
-  for (let i = 0; i < mesh.faces.length; i += 1) webColors.push(mesh.colors && mesh.colors[i] ? mesh.colors[i] : NEUTRAL);
   fs.writeFileSync(R('web/draw/hanfu-cage.json'), JSON.stringify({
     name: 'hanfu-cage',
-    items: [{ resourceId: 10009019, vertices: mesh.vertices, faces: mesh.faces, colors: webColors }],
+    items: [{ resourceId: 10009019, vertices: mesh.vertices, faces: mesh.faces, colors: faceColors }],
     summary: {
-      stage: 'hanfu-control-cage-L4-sheets',
+      stage: 'hanfu-control-cage-L5-sheets-colors',
       faces: faceCount,
+      colors: { distinct: Object.keys(colorHist).length, palette: PALETTE },
       seams: { openEdges: seam.openEdges, seamEdges: seam.seamEdges, components: seam.components, onePiece: seam.components === 1, watertight: seam.openEdges === 0 },
       gate: { ok: report.verify.gateOk && report.budgetOk && seam.openEdges === 0, failures: report.verify.failures },
       inBudget: faceCount <= TARGET_FACES,
@@ -786,17 +955,29 @@ function main() {
     schemaVersion: 1,
     units: 'm',
     coordinateSystem: '+Y up +Z front',
-    iteration: 38,
-    stage: 'L4-sheets',
+    iteration: 39,
+    stage: 'L5-sheets-colors',
     faceCount: faceCount,
     vertexCount: mesh.vertices.length,
     vertices: mesh.vertices,
     faces: mesh.faces,
+    colors: vertexColors,
+    colorParts: info.parts.map((p) => ({ name: p.name, color: colorOfPart(p.name), vStart: p.vStart, vEnd: p.vEnd })),
   }, null, 1));
+  fs.writeFileSync(R('.scratch/l5-build-report.json'), JSON.stringify(report, null, 1));
   fs.writeFileSync(R('.scratch/l4-build-report.json'), JSON.stringify(report, null, 1));
-  console.log(JSON.stringify(report, null, 1));
+  console.log(JSON.stringify({
+    faces: report.faces, vertices: report.vertices, verify: report.verify.selfIntersections,
+    skinny: report.verify.skinny, areaRatio: report.verify.areaRatio, seam: report.seam,
+    sheets5: report.sheets5, horns: report.horns, veilOcclusion: report.veilOcclusion,
+    colors: report.colors, thin: report.thin, pairByPart: report.pairByPart,
+  }, null, 1));
   const ok = report.budgetOk && report.verify.gateOk && seam.openEdges === 0 && seam.components === 1;
-  console.log(ok ? '\n✅ L4 BUILD GATE OK' : '\n❌ L4 BUILD GATE FAIL');
+  console.log(ok ? '\n✅ L5 BUILD GATE OK' : '\n❌ L5 BUILD GATE FAIL');
+  // L4 教训：build 会覆盖记录定稿块 → 末尾自定稿（记录 39）
+  try {
+    execFileSync(process.execPath, [R('scripts/finalize-hanfu-record39.mjs')], { stdio: 'inherit' });
+  } catch { /* 定稿失败不阻断构建 */ }
   process.exitCode = ok ? 0 : 1;
 }
 
