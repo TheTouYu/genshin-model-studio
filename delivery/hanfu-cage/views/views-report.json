@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "url": "http://localhost:8787/draw/hanfu-cage.html",
+  "background": "#10151c",
+  "cameraRadius": 2.9,
+  "cameraTarget": [
+    0,
+    0.82,
+    0
+  ],
+  "handedness": {
+    "mirrored": false,
+    "note": "R3 已修：网格末尾绕 x=0 镜像顶点+翻转面绕序，使「面朝 +Z、上 +Y」的右手系成立（右手在 -X）；正视图里她的右手（持剑手）落画面左，与真实人物一致。",
+    "frontSignVsReference": 1
+  },
+  "views": {
+    "wire-front": {
+      "width": 780,
+      "height": 493,
+      "silhouettePixels": 22136,
+      "coverage": 0.0576,
+      "bbox": [
+        268,
+        40,
+        535,
+        421
+      ],
+      "camera": {
+        "yaw": 0,
+        "pitch": 1.57
+      }
+    },
+    "wire-side": {
+      "width": 780,
+      "height": 493,
+      "silhouettePixels": 17444,
+      "coverage": 0.0454,
+      "bbox": [
+        244,
+        40,
+        450,
+        439
+      ],
+      "camera": {
+        "yaw": 1.5708,
+        "pitch": 1.57
+      }
+    },
+    "wire-back": {
+      "width": 780,
+      "height": 493,
+      "silhouettePixels": 21844,
+      "coverage": 0.0568,
+      "bbox": [
+        244,
+        81,
+        498,
+        430
+      ],
+      "camera": {
+        "yaw": 3.14159,
+        "pitch": 1.57
+      }
+    },
+    "wire-three-quarter": {
+      "width": 780,
+      "height": 493,
+      "silhouettePixels": 19906,
+      "coverage": 0.0518,
+      "bbox": [
+        299,
+        61,
+        499,
+        436
+      ],
+      "camera": {
+        "yaw": 0.65,
+        "pitch": 0.85
+      }
+    },
+    "wire-reference-view": {
+      "width": 780,
+      "height": 493,
+      "silhouettePixels": 19977,
+      "coverage": 0.052,
+      "bbox": [
+        302,
+        47,
+        498,
+        435
+      ],
+      "camera": {
+        "yaw": -0.65,
+        "pitch": 1.45
+      }
+    },
+    "smooth-reference-view": {
+      "width": 780,
+      "height": 493,
+      "silhouettePixels": 30233,
+      "coverage": 0.0786,
+      "bbox": [
+        303,
+        47,
+        498,
+        434
+      ],
+      "camera": {
+        "yaw": -0.65,
+        "pitch": 1.45
+      }
+    }
+  }
+}

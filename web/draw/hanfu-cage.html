@@ -49,7 +49,7 @@
         window.gmsPreview = preview
         preview.setItems(data.items || [])
         var st = data.summary || {}
-        statusEl.textContent = '面数 ' + (st.faces || 0) + ' tris · 预算 ≤300: ' + (st.inBudget ? 'PASS' : 'FAIL') + '\nseamCheck: ' + (st.seams ? (st.seams.openEdges === 0 && st.seams.seamEdges === 0 ? '0缝/0断' : '有缝') : '') + '\ngate: ' + (st.gate && st.gate.ok ? 'PASS' : 'FAIL')
+        statusEl.textContent = '面数 ' + (st.faces || 0) + ' tris · 预算 ≤600: ' + (st.inBudget ? 'PASS' : 'FAIL') + '\nseamCheck: ' + (st.seams ? (st.seams.openEdges === 0 && st.seams.seamEdges === 0 ? '0缝/0断' : '有缝') : '') + '\ngate: ' + (st.gate && st.gate.ok ? 'PASS' : 'FAIL')
         var bw = document.getElementById('btnWire'), bs = document.getElementById('btnSmooth')
         function setMode(w) { preview.setWireframe(w); bw.className = w ? 'on' : ''; bs.className = w ? '' : 'on' }
         bw.onclick = function () { setMode(true) }; bs.onclick = function () { setMode(false) }

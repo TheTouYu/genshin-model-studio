@@ -1,74 +1,1290 @@
 {
   "schemaVersion": 1,
-  "reference": "古风甘雨三视图.png",
-  "imageSize": [1065, 600],
-  "method": "Manual visual landmark picks from read_image of /mnt/c/Users/touyu/Downloads/古风甘雨三视图.png; approximate pixels, not automated segmentation",
-  "status": "initial_provisional",
-  "coordinateConvention": "Image x right, y down. Body world +Y up, +Z front.",
+  "reference": "reference/hanfu/古风甘雨三视图.png (+ 甘雨.png for pose)",
+  "imageSize": [
+    2184,
+    1230
+  ],
+  "method": "Pillow/numpy pixel measurement on the full-resolution sheets: background-distance silhouette (>12), colour segmentation for hair/horn/skin/dark-blue/gold/red, silhouette extremes and row-profile stations. Every landmark carries a rule: source string; human grid-overlay readings are used only as cross-checks and are folded into uncertaintyPx.",
+  "status": "measured_v2",
+  "coordinateConvention": "Image x right, y down, absolute pixels of reference/hanfu/古风甘雨三视图.png (2184x1230). Body world: +Y up, +Z front (front view looks along -Z).",
   "scale": {
     "heightMeters": 1.6,
-    "status": "provisional",
-    "topPixel": 52,
-    "bottomPixel": 575,
+    "status": "provisional (inherited from the previous iteration record)",
+    "topPixel": 81,
+    "topPixelRule": "topmost hair-mask row with width>=100px (head mass; ahoge+horns excluded)",
+    "bottomPixel": 1197,
     "excludes": "horns and ahoge",
-    "note": "hair crown to dress hem/floor envelope; 古风裙摆长，脚部被裙遮住，以裙摆着地点为底."
+    "note": "hair crown to skirt hem envelope; feet hidden by the dress"
+  },
+  "measurementMetadata": {
+    "sourceSheet": "reference/hanfu/古风甘雨三视图.png",
+    "panelGeometry": {
+      "front": {
+        "panelWindow": [
+          136,
+          773
+        ],
+        "x": [
+          136,
+          773
+        ],
+        "y": [
+          30,
+          1197
+        ],
+        "height": 1168,
+        "width": 638,
+        "centerX": 454.5
+      },
+      "side": {
+        "panelWindow": [
+          982,
+          1313
+        ],
+        "x": [
+          982,
+          1313
+        ],
+        "y": [
+          40,
+          1196
+        ],
+        "height": 1157,
+        "width": 332,
+        "centerX": 1147.5
+      },
+      "back": {
+        "panelWindow": [
+          1430,
+          2052
+        ],
+        "x": [
+          1430,
+          2052
+        ],
+        "y": [
+          30,
+          1196
+        ],
+        "height": 1167,
+        "width": 623,
+        "centerX": 1741.0
+      }
+    },
+    "panelGeometrySource": "reference/hanfu/measurements.json (canonical mask definition)",
+    "poseSource": "reference/hanfu/甘雨.png",
+    "landmarkRules": {
+      "front": 29,
+      "side": 23,
+      "back": 24
+    },
+    "stationMeta": {
+      "pxPerMeterFront": 697.5,
+      "pxPerMeterSide": 685.0,
+      "frontCrownRowPx": 81,
+      "frontHemRowPx": 1197,
+      "sideCrownRowPx": 100,
+      "sideHemRowPx": 1196,
+      "sideBodyAxisX": 1106.5,
+      "heightMeters": 1.6,
+      "note": "rx from front silhouette/corset band; ryF/ryB from side silhouette (garment+hair inclusive); +Z front = smaller side-view x"
+    },
+    "pixelPerMeter": 697.5
   },
   "front": {
-    "centerX": 218,
+    "centerX": 454.5,
     "landmarks": [
-      { "name": "hair_crown", "pixel": [218, 52], "uncertaintyPx": 5 },
-      { "name": "chin", "pixel": [218, 132], "uncertaintyPx": 6 },
-      { "name": "neck_base", "pixel": [218, 150], "uncertaintyPx": 7 },
-      { "name": "shoulder_left", "pixel": [158, 176], "uncertaintyPx": 12 },
-      { "name": "shoulder_right", "pixel": [278, 176], "uncertaintyPx": 12 },
-      { "name": "chest_cloth_front", "pixel": [218, 225], "uncertaintyPx": 8 },
-      { "name": "waist_cloth_left", "pixel": [155, 300], "uncertaintyPx": 10 },
-      { "name": "waist_cloth_right", "pixel": [281, 300], "uncertaintyPx": 10 },
-      { "name": "hip_left", "pixel": [162, 355], "uncertaintyPx": 12 },
-      { "name": "hip_right", "pixel": [274, 355], "uncertaintyPx": 12 },
-      { "name": "dress_hem", "pixel": [218, 575], "uncertaintyPx": 6 }
+      {
+        "name": "ahoge_tip",
+        "pixel": [
+          469,
+          30
+        ],
+        "uncertaintyPx": 4,
+        "source": "rule:topmost lm row in cx±70"
+      },
+      {
+        "name": "hair_crown_top",
+        "pixel": [
+          458,
+          81
+        ],
+        "uncertaintyPx": 4,
+        "source": "rule:topmost hair row width>=100 in cx±180 (head mass, ahoge excluded)"
+      },
+      {
+        "name": "horn_tip_left",
+        "pixel": [
+          340,
+          126
+        ],
+        "uncertaintyPx": 5,
+        "source": "rule:horn blob point farthest from head crown"
+      },
+      {
+        "name": "horn_root_left",
+        "pixel": [
+          423,
+          67
+        ],
+        "uncertaintyPx": 6,
+        "source": "rule:horn blob point nearest head crown"
+      },
+      {
+        "name": "horn_tip_right",
+        "pixel": [
+          574,
+          126
+        ],
+        "uncertaintyPx": 5,
+        "source": "rule:horn blob point farthest from head crown"
+      },
+      {
+        "name": "horn_root_right",
+        "pixel": [
+          493,
+          67
+        ],
+        "uncertaintyPx": 6,
+        "source": "rule:horn blob point nearest head crown"
+      },
+      {
+        "name": "head_widest_left",
+        "pixel": [
+          359,
+          146
+        ],
+        "uncertaintyPx": 5,
+        "source": "rule:hair widest row left edge"
+      },
+      {
+        "name": "head_widest_right",
+        "pixel": [
+          554,
+          146
+        ],
+        "uncertaintyPx": 5,
+        "source": "rule:hair widest row right edge"
+      },
+      {
+        "name": "chin",
+        "pixel": [
+          457,
+          229
+        ],
+        "uncertaintyPx": 5,
+        "source": "rule:face skin blob lowest point"
+      },
+      {
+        "name": "face_left",
+        "pixel": [
+          413,
+          174
+        ],
+        "uncertaintyPx": 6,
+        "source": "rule:face skin blob lateral extreme"
+      },
+      {
+        "name": "face_right",
+        "pixel": [
+          501,
+          178
+        ],
+        "uncertaintyPx": 6,
+        "source": "rule:face skin blob lateral extreme"
+      },
+      {
+        "name": "neck_left",
+        "pixel": [
+          411,
+          259
+        ],
+        "uncertaintyPx": 5,
+        "source": "rule:narrowest skin row, left edge"
+      },
+      {
+        "name": "neck_right",
+        "pixel": [
+          482,
+          259
+        ],
+        "uncertaintyPx": 5,
+        "source": "rule:narrowest skin row, right edge"
+      },
+      {
+        "name": "shoulder_left",
+        "pixel": [
+          320,
+          341
+        ],
+        "uncertaintyPx": 20,
+        "source": "rule:steepest silhouette widening below chin, left edge",
+        "baseUncertaintyPx": 10,
+        "confidence": "low",
+        "confidenceReason": "正面视图为生成推测（任务书：正面服饰点低置信，uncertainty x2）"
+      },
+      {
+        "name": "shoulder_right",
+        "pixel": [
+          594,
+          341
+        ],
+        "uncertaintyPx": 20,
+        "source": "rule:steepest silhouette widening below chin, right edge",
+        "baseUncertaintyPx": 10,
+        "confidence": "low",
+        "confidenceReason": "正面视图为生成推测（任务书：正面服饰点低置信，uncertainty x2）"
+      },
+      {
+        "name": "shoulder_line_center",
+        "pixel": [
+          457,
+          335
+        ],
+        "uncertaintyPx": 6,
+        "source": "rule:shoulder row centre, 6px above"
+      },
+      {
+        "name": "neck_base",
+        "pixel": [
+          446,
+          259
+        ],
+        "uncertaintyPx": 5,
+        "source": "rule:neck narrowest skin row centre"
+      },
+      {
+        "name": "chest_gem",
+        "pixel": [
+          457,
+          310
+        ],
+        "uncertaintyPx": 12,
+        "source": "rule:dark blue blob centroid near centre, sternum band",
+        "baseUncertaintyPx": 6,
+        "confidence": "low",
+        "confidenceReason": "正面视图为生成推测（任务书：正面服饰点低置信，uncertainty x2）"
+      },
+      {
+        "name": "corset_top_center",
+        "pixel": [
+          457,
+          331
+        ],
+        "uncertaintyPx": 14,
+        "source": "rule:centred dark-blue row band top",
+        "baseUncertaintyPx": 7,
+        "confidence": "low",
+        "confidenceReason": "正面视图为生成推测（任务书：正面服饰点低置信，uncertainty x2）"
+      },
+      {
+        "name": "corset_bottom_center",
+        "pixel": [
+          457,
+          376
+        ],
+        "uncertaintyPx": 14,
+        "source": "rule:centred dark-blue row band bottom",
+        "baseUncertaintyPx": 7,
+        "confidence": "low",
+        "confidenceReason": "正面视图为生成推测（任务书：正面服饰点低置信，uncertainty x2）"
+      },
+      {
+        "name": "waist_center",
+        "pixel": [
+          457,
+          354
+        ],
+        "uncertaintyPx": 14,
+        "source": "rule:centred dark-blue row band centre",
+        "baseUncertaintyPx": 7,
+        "confidence": "low",
+        "confidenceReason": "正面视图为生成推测（任务书：正面服饰点低置信，uncertainty x2）"
+      },
+      {
+        "name": "waist_belt_center",
+        "pixel": [
+          456,
+          414
+        ],
+        "uncertaintyPx": 16,
+        "source": "rule:centred gold row band centre",
+        "baseUncertaintyPx": 8,
+        "confidence": "low",
+        "confidenceReason": "正面视图为生成推测（任务书：正面服饰点低置信，uncertainty x2）"
+      },
+      {
+        "name": "hand_left",
+        "pixel": [
+          157,
+          623
+        ],
+        "uncertaintyPx": 16,
+        "source": "rule:glove blob lowest point (fingers)",
+        "baseUncertaintyPx": 8,
+        "confidence": "low",
+        "confidenceReason": "正面视图为生成推测（任务书：正面服饰点低置信，uncertainty x2）"
+      },
+      {
+        "name": "wrist_left",
+        "pixel": [
+          197,
+          540
+        ],
+        "uncertaintyPx": 20,
+        "source": "rule:glove blob top edge centre",
+        "baseUncertaintyPx": 10,
+        "confidence": "low",
+        "confidenceReason": "正面视图为生成推测（任务书：正面服饰点低置信，uncertainty x2）"
+      },
+      {
+        "name": "hand_right",
+        "pixel": [
+          756,
+          623
+        ],
+        "uncertaintyPx": 16,
+        "source": "rule:glove blob lowest point (fingers)",
+        "baseUncertaintyPx": 8,
+        "confidence": "low",
+        "confidenceReason": "正面视图为生成推测（任务书：正面服饰点低置信，uncertainty x2）"
+      },
+      {
+        "name": "wrist_right",
+        "pixel": [
+          716,
+          540
+        ],
+        "uncertaintyPx": 20,
+        "source": "rule:glove blob top edge centre",
+        "baseUncertaintyPx": 10,
+        "confidence": "low",
+        "confidenceReason": "正面视图为生成推测（任务书：正面服饰点低置信，uncertainty x2）"
+      },
+      {
+        "name": "hem_bottom_center",
+        "pixel": [
+          420,
+          1198
+        ],
+        "uncertaintyPx": 12,
+        "source": "rule:lowest lm row centre",
+        "baseUncertaintyPx": 6,
+        "confidence": "low",
+        "confidenceReason": "正面视图为生成推测（任务书：正面服饰点低置信，uncertainty x2）"
+      },
+      {
+        "name": "hem_left",
+        "pixel": [
+          219,
+          1198
+        ],
+        "uncertaintyPx": 16,
+        "source": "rule:bottom row left edge",
+        "baseUncertaintyPx": 8,
+        "confidence": "low",
+        "confidenceReason": "正面视图为生成推测（任务书：正面服饰点低置信，uncertainty x2）"
+      },
+      {
+        "name": "hem_right",
+        "pixel": [
+          622,
+          1198
+        ],
+        "uncertaintyPx": 16,
+        "source": "rule:bottom row right edge",
+        "baseUncertaintyPx": 8,
+        "confidence": "low",
+        "confidenceReason": "正面视图为生成推测（任务书：正面服饰点低置信，uncertainty x2）"
+      }
     ]
   },
   "side": {
-    "frontDirection": "image -X",
+    "centerX": 1147.5,
     "landmarks": [
-      { "name": "nose_tip", "pixel": [540, 100], "uncertaintyPx": 4 },
-      { "name": "chin", "pixel": [548, 132], "uncertaintyPx": 5 },
-      { "name": "chest_cloth_front", "pixel": [530, 220], "uncertaintyPx": 7 },
-      { "name": "waist_cloth_front", "pixel": [560, 300], "uncertaintyPx": 9 },
-      { "name": "hip_front", "pixel": [570, 350], "uncertaintyPx": 12 },
-      { "name": "dress_hem_front", "pixel": [560, 575], "uncertaintyPx": 6 },
-      { "name": "hair_back_extent", "pixel": [640, 340], "uncertaintyPx": 14 }
+      {
+        "name": "hair_crown_top",
+        "pixel": [
+          1085,
+          44
+        ],
+        "uncertaintyPx": 4,
+        "source": "rule:topmost hair row width>=30"
+      },
+      {
+        "name": "ahoge_tip",
+        "pixel": [
+          1085,
+          40
+        ],
+        "uncertaintyPx": 4,
+        "source": "rule:topmost lm row"
+      },
+      {
+        "name": "horn_tip_back",
+        "pixel": [
+          1213,
+          131
+        ],
+        "uncertaintyPx": 5,
+        "source": "rule:horn blob rearmost point"
+      },
+      {
+        "name": "horn_root",
+        "pixel": [
+          1096,
+          74
+        ],
+        "uncertaintyPx": 6,
+        "source": "rule:horn blob point nearest head crown"
+      },
+      {
+        "name": "forehead_front",
+        "pixel": [
+          1055,
+          329
+        ],
+        "uncertaintyPx": 5,
+        "source": "rule:skin blob frontmost point (forehead/nose)"
+      },
+      {
+        "name": "chin",
+        "pixel": [
+          1071,
+          357
+        ],
+        "uncertaintyPx": 5,
+        "source": "rule:skin blob lowest point"
+      },
+      {
+        "name": "face_back",
+        "pixel": [
+          1134,
+          295
+        ],
+        "uncertaintyPx": 6,
+        "source": "rule:skin blob rearmost point (ear line)"
+      },
+      {
+        "name": "neck_front",
+        "pixel": [
+          1003,
+          363
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:silhouette front edge at station row"
+      },
+      {
+        "name": "neck_back",
+        "pixel": [
+          1177,
+          363
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:silhouette back edge at station row"
+      },
+      {
+        "name": "chest_front",
+        "pixel": [
+          1010,
+          502
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:silhouette front edge at station row"
+      },
+      {
+        "name": "chest_back",
+        "pixel": [
+          1224,
+          502
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:silhouette back edge at station row"
+      },
+      {
+        "name": "waist_front",
+        "pixel": [
+          1002,
+          641
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:silhouette front edge at station row"
+      },
+      {
+        "name": "waist_back",
+        "pixel": [
+          1252,
+          641
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:silhouette back edge at station row"
+      },
+      {
+        "name": "hip_front",
+        "pixel": [
+          1006,
+          756
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:silhouette front edge at station row"
+      },
+      {
+        "name": "hip_back",
+        "pixel": [
+          1212,
+          756
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:silhouette back edge at station row"
+      },
+      {
+        "name": "knee_front",
+        "pixel": [
+          997,
+          964
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:silhouette front edge at station row"
+      },
+      {
+        "name": "knee_back",
+        "pixel": [
+          1240,
+          964
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:silhouette back edge at station row"
+      },
+      {
+        "name": "hem_front",
+        "pixel": [
+          982,
+          1190
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:silhouette front edge at station row"
+      },
+      {
+        "name": "hem_back",
+        "pixel": [
+          1313,
+          1190
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:silhouette back edge at station row"
+      },
+      {
+        "name": "bust_front_apex",
+        "pixel": [
+          1002,
+          570
+        ],
+        "uncertaintyPx": 7,
+        "source": "rule:frontmost silhouette point, chest band"
+      },
+      {
+        "name": "glute_back_apex",
+        "pixel": [
+          1246,
+          675
+        ],
+        "uncertaintyPx": 7,
+        "source": "rule:rearmost silhouette point, hip band"
+      },
+      {
+        "name": "hair_tail_tip",
+        "pixel": [
+          1131,
+          949
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:hair blob lowest point in this panel"
+      },
+      {
+        "name": "hand_front",
+        "pixel": [
+          1076,
+          622
+        ],
+        "uncertaintyPx": 9,
+        "source": "rule:glove blob lowest point"
+      }
+    ]
+  },
+  "back": {
+    "centerX": 1741.0,
+    "landmarks": [
+      {
+        "name": "hair_crown_top",
+        "pixel": [
+          1746,
+          35
+        ],
+        "uncertaintyPx": 4,
+        "source": "rule:topmost hair row width>=40"
+      },
+      {
+        "name": "ahoge_tip",
+        "pixel": [
+          1746,
+          30
+        ],
+        "uncertaintyPx": 4,
+        "source": "rule:topmost lm row in cx±70"
+      },
+      {
+        "name": "horn_tip_left",
+        "pixel": [
+          1626,
+          128
+        ],
+        "uncertaintyPx": 5,
+        "source": "rule:horn blob farthest point from crown"
+      },
+      {
+        "name": "horn_root_left",
+        "pixel": [
+          1708,
+          66
+        ],
+        "uncertaintyPx": 6,
+        "source": "rule:horn blob nearest point to crown"
+      },
+      {
+        "name": "horn_tip_right",
+        "pixel": [
+          1860,
+          129
+        ],
+        "uncertaintyPx": 5,
+        "source": "rule:horn blob farthest point from crown"
+      },
+      {
+        "name": "horn_root_right",
+        "pixel": [
+          1779,
+          66
+        ],
+        "uncertaintyPx": 6,
+        "source": "rule:horn blob nearest point to crown"
+      },
+      {
+        "name": "head_widest_left",
+        "pixel": [
+          1647,
+          145
+        ],
+        "uncertaintyPx": 5,
+        "source": "rule:hair widest row left edge"
+      },
+      {
+        "name": "head_widest_right",
+        "pixel": [
+          1841,
+          145
+        ],
+        "uncertaintyPx": 5,
+        "source": "rule:hair widest row right edge"
+      },
+      {
+        "name": "nape_gem",
+        "pixel": [
+          1743,
+          343
+        ],
+        "uncertaintyPx": 7,
+        "source": "rule:red gem blob centroid at nape"
+      },
+      {
+        "name": "back_v_bottom",
+        "pixel": [
+          1766,
+          416
+        ],
+        "uncertaintyPx": 9,
+        "source": "rule:bare-back skin blob lowest point (V back)"
+      },
+      {
+        "name": "shoulder_left",
+        "pixel": [
+          1619,
+          328
+        ],
+        "uncertaintyPx": 10,
+        "source": "rule:silhouette extents at bare-back top (hair-inclusive)"
+      },
+      {
+        "name": "shoulder_right",
+        "pixel": [
+          1868,
+          328
+        ],
+        "uncertaintyPx": 10,
+        "source": "rule:silhouette extents at bare-back top (hair-inclusive)"
+      },
+      {
+        "name": "corset_top_center",
+        "pixel": [
+          1743,
+          407
+        ],
+        "uncertaintyPx": 7,
+        "source": "rule:centred dark-blue row band top (back corset)"
+      },
+      {
+        "name": "corset_bottom_center",
+        "pixel": [
+          1743,
+          569
+        ],
+        "uncertaintyPx": 7,
+        "source": "rule:centred dark-blue row band bottom (back corset)"
+      },
+      {
+        "name": "waist_center",
+        "pixel": [
+          1743,
+          488
+        ],
+        "uncertaintyPx": 7,
+        "source": "rule:centred dark-blue row band centre (back corset)"
+      },
+      {
+        "name": "tassel_left",
+        "pixel": [
+          1705,
+          548
+        ],
+        "uncertaintyPx": 9,
+        "source": "rule:blue tassel blob centroid"
+      },
+      {
+        "name": "tassel_right",
+        "pixel": [
+          1779,
+          549
+        ],
+        "uncertaintyPx": 9,
+        "source": "rule:blue tassel blob centroid"
+      },
+      {
+        "name": "hand_left",
+        "pixel": [
+          1549,
+          517
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:glove blob outermost point"
+      },
+      {
+        "name": "wrist_left",
+        "pixel": [
+          1495,
+          497
+        ],
+        "uncertaintyPx": 10,
+        "source": "rule:glove blob top edge centre"
+      },
+      {
+        "name": "hand_right",
+        "pixel": [
+          1939,
+          516
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:glove blob outermost point"
+      },
+      {
+        "name": "wrist_right",
+        "pixel": [
+          1992,
+          504
+        ],
+        "uncertaintyPx": 10,
+        "source": "rule:glove blob top edge centre"
+      },
+      {
+        "name": "hem_bottom_center",
+        "pixel": [
+          1740,
+          1197
+        ],
+        "uncertaintyPx": 6,
+        "source": "rule:lowest lm row centre"
+      },
+      {
+        "name": "hem_left",
+        "pixel": [
+          1556,
+          1197
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:bottom row left edge"
+      },
+      {
+        "name": "hem_right",
+        "pixel": [
+          1924,
+          1197
+        ],
+        "uncertaintyPx": 8,
+        "source": "rule:bottom row right edge"
+      }
     ]
   },
   "pose": {
-    "stance": "回眸持剑 3/4 背身",
-    "source": "原图立绘 /mnt/c/Users/touyu/Downloads/甘雨.png（三视图仅量体量，不取姿态）",
-    "headYawDeg": 30,
-    "headYawDir": "看向画面左（-X）",
-    "chestYawDeg": 18,
-    "spineSideBendDeg": 4,
-    "swordArm": {
-      "shoulderDir": [0.9, -0.35, 0.10],
-      "elbowDir": [0.35, -0.9, 0.12],
-      "wristDir": [0.05, -0.99, 0.25]
+    "source": "reference/hanfu/甘雨.png (1926x1088) — 逐项带像素实测",
+    "stance": "3/4 背身回眸持剑（背视证据：颈-腰整片裸背 + 腰后蓝流苏 + 肩后蝴蝶饰）",
+    "handedness": "画面右侧持剑臂=她的右臂（背视图：她的左=画面左）",
+    "head_yaw_over_shoulder": {
+      "value_deg": 45,
+      "value_kind": "model-clamped estimate（原画回眸超出解剖极限，取可实现角）",
+      "eye_line_px": [
+        [
+          946.3,
+          262.8
+        ],
+        [
+          1027.1,
+          282.6
+        ]
+      ],
+      "eye_line_deg": 13.77,
+      "eye_midpoint_px": [
+        986.7,
+        272.7
+      ],
+      "nose_px": [
+        1021,
+        324
+      ],
+      "face_yaw_vs_camera_deg": 22.4,
+      "face_yaw_method": "asin((nose_x - eye_mid_x)/90)，半脸宽 90px（眼距 81px ≈ 0.45 脸宽）",
+      "torso_facing": "背面朝相机 3/4（裸背顶线 + 腰后流苏可见）",
+      "note": "面部投影近正面而躯干背面朝相机 → 几何差 >100°（超人体），模型取 45°"
     },
-    "offArm": {
-      "shoulderDir": [-0.85, -0.40, 0.10],
-      "elbowDir": [-0.2, -0.95, -0.1],
-      "wristDir": [-0.05, -0.99, -0.2]
+    "spine_arc_direction": "向画面左（她的右）",
+    "spine_arc_amplitude": {
+      "method": "bare-back centreline lateral offset from the neck->waist chord",
+      "chord_deviation_px": 58.3,
+      "span_y_px": 215,
+      "centreline_px": [
+        [
+          1049,
+          400
+        ],
+        [
+          987,
+          615
+        ]
+      ],
+      "slope_dxdy": -0.2232,
+      "note": "中线由 pale(裸背) 行均值得到，含链饰/发丝遮挡，仅作幅度量级"
     },
-    "weightLeg": "left",
-    "skirtFlowDir": [-0.72, -0.28, -0.63]
+    "sword_arm_shoulder_angle": {
+      "value_deg": 21.3,
+      "method": "angle of (elbow - right shoulder) from straight down",
+      "shoulder_px": [
+        1004,
+        382
+      ],
+      "elbow_px": [
+        1120,
+        680
+      ]
+    },
+    "sword_arm_elbow_angle": {
+      "value_deg": 42.0,
+      "method": "angle of (hand - elbow) from straight down",
+      "elbow_px": [
+        1120,
+        680
+      ],
+      "hand_px": [
+        1228,
+        800
+      ],
+      "glove_blob_px": {
+        "proximal": [
+          1042.3,
+          836.7
+        ],
+        "distal": [
+          1250.3,
+          798.9
+        ],
+        "axis_deg": 169.7,
+        "n": 11388
+      }
+    },
+    "weight_leg": {
+      "value": "画面左腿（她的左腿）承重",
+      "method": "waist line (corset top edge) falls to the image right",
+      "waist_line_slope_dydx": 0.304,
+      "waist_line_px": [
+        [
+          920,
+          560
+        ],
+        [
+          1095,
+          605
+        ]
+      ]
+    },
+    "skirt_flow_direction": {
+      "value": "向画面左下（约 175° 极角）",
+      "method": "hip ornament -> farthest streamer tip vector",
+      "hip_ornament_px": [
+        950,
+        730
+      ],
+      "streamer_tip_px": [
+        280,
+        790
+      ],
+      "angle_deg": 174.9,
+      "left_edge_fit": {
+        "pixel_first": [
+          289,
+          660
+        ],
+        "pixel_last": [
+          457,
+          1040
+        ],
+        "slope_dxdy": 0.0711,
+        "angle_from_down_deg": 4.07
+      }
+    },
+    "hair_flow_direction": {
+      "value": "向画面左（略向下）成束狂流，约 142° 极角",
+      "method": "nose -> hair tip vector + hair mask PCA axis",
+      "nose_px": [
+        1021,
+        324
+      ],
+      "hair_tip_px": [
+        250,
+        700
+      ],
+      "angle_deg": 154.0,
+      "pca_axis_deg": -139.3,
+      "bbox_px": [
+        180,
+        130,
+        949,
+        899
+      ]
+    },
+    "corset_top_edge": {
+      "pixel": [
+        [
+          920,
+          560
+        ],
+        [
+          1095,
+          605
+        ]
+      ],
+      "slope": 0.304,
+      "angle_deg": 16.91
+    },
+    "evidence_px": {
+      "eye_line": {
+        "pixel": [
+          [
+            946.3,
+            262.8
+          ],
+          [
+            1027.1,
+            282.6
+          ]
+        ],
+        "angle_deg": 13.77
+      },
+      "eye_midpoint": [
+        986.7,
+        272.7
+      ],
+      "back_top_line": {
+        "pixel": [
+          [
+            920,
+            488
+          ],
+          [
+            1040,
+            330
+          ]
+        ],
+        "slope": -0.2258,
+        "angle_deg": -12.72
+      },
+      "back_centreline": {
+        "pixel_first": [
+          1049,
+          400
+        ],
+        "pixel_last": [
+          987,
+          615
+        ],
+        "slope_dxdy": -0.2232,
+        "chord_deviation_px": 58.3,
+        "span_y_px": 215
+      },
+      "corset_top_edge": {
+        "pixel": [
+          [
+            920,
+            560
+          ],
+          [
+            1095,
+            605
+          ]
+        ],
+        "slope": 0.304,
+        "angle_deg": 16.91
+      },
+      "corset_bottom_edge": {
+        "pixel": [
+          [
+            920,
+            859
+          ],
+          [
+            1095,
+            859
+          ]
+        ],
+        "slope": 0.0,
+        "angle_deg": 0.0
+      },
+      "sword_glove": {
+        "proximal": [
+          1042.3,
+          836.7
+        ],
+        "distal": [
+          1250.3,
+          798.9
+        ],
+        "axis_deg": 169.7,
+        "n": 11388
+      },
+      "hair_flow": {
+        "n": 426189,
+        "centroid": [
+          519.1,
+          535.9
+        ],
+        "axis_deg": -139.3,
+        "bbox": [
+          180,
+          130,
+          949,
+          899
+        ]
+      },
+      "skirt_left_edge": {
+        "pixel_first": [
+          289,
+          660
+        ],
+        "pixel_last": [
+          457,
+          1040
+        ],
+        "slope_dxdy": 0.0711,
+        "angle_from_down_deg": 4.07
+      }
+    }
   },
-  "limitations": [
-    "古风裙摆遮住膝/踝/脚，三视图只能量到裙摆体积包络，腿侧地标缺失",
-    "正面服饰点为生成图低置信度，主结构以原图可见碎片延续",
-    "头发遮挡后颈与背部，头发边界仅取包络"
-  ],
-  "next": [
-    "用本表驱动 createAnatomyControlGraph/moveAnatomyControlPoint 摆点",
-    "前后剖面用 ganyu-asym-loft（ryF/cyF vs ryB/cyB）",
-    "裙从腰环共享顶点长出、臂从肩环挤出"
+  "stations": [
+    {
+      "name": "hem",
+      "yM": 0.01,
+      "rx": 0.4552,
+      "ryF": 0.1818,
+      "ryB": 0.3015,
+      "frontRowPx": 1190,
+      "sideRowPx": 1189,
+      "rxSource": "silhouette",
+      "frontExtentPx": [
+        137,
+        772
+      ],
+      "sideExtentPx": [
+        982,
+        1313
+      ]
+    },
+    {
+      "name": "skirt_wide",
+      "yM": 0.1391,
+      "rx": 0.3527,
+      "ryF": 0.1759,
+      "ryB": 0.2431,
+      "frontRowPx": 1100,
+      "sideRowPx": 1100,
+      "rxSource": "silhouette",
+      "frontExtentPx": [
+        209,
+        701
+      ],
+      "sideExtentPx": [
+        986,
+        1273
+      ]
+    },
+    {
+      "name": "hip",
+      "yM": 0.6982,
+      "rx": 0.2889,
+      "ryF": 0.1438,
+      "ryB": 0.1292,
+      "frontRowPx": 710,
+      "sideRowPx": 717,
+      "rxSource": "silhouette",
+      "frontExtentPx": [
+        255,
+        658
+      ],
+      "sideExtentPx": [
+        1008,
+        1195
+      ]
+    },
+    {
+      "name": "waist",
+      "yM": 1.2086,
+      "rx": 0.1763,
+      "ryF": 0.1467,
+      "ryB": 0.1044,
+      "frontRowPx": 376,
+      "sideRowPx": 368,
+      "rxSource": "corset_min",
+      "frontExtentPx": [
+        255,
+        658
+      ],
+      "sideExtentPx": [
+        1006,
+        1178
+      ]
+    },
+    {
+      "name": "shoulder",
+      "yM": 1.2272,
+      "rx": 0.1964,
+      "ryF": 0.1555,
+      "ryB": 0.1,
+      "frontRowPx": 341,
+      "sideRowPx": 355,
+      "rxSource": "silhouette",
+      "frontExtentPx": [
+        320,
+        594
+      ],
+      "sideExtentPx": [
+        1000,
+        1175
+      ]
+    },
+    {
+      "name": "upper_chest",
+      "yM": 1.2416,
+      "rx": 0.195,
+      "ryF": 0.1569,
+      "ryB": 0.0956,
+      "frontRowPx": 331,
+      "sideRowPx": 345,
+      "rxSource": "corset",
+      "frontExtentPx": [
+        321,
+        593
+      ],
+      "sideExtentPx": [
+        999,
+        1172
+      ]
+    },
+    {
+      "name": "neck",
+      "yM": 1.3448,
+      "rx": 0.109,
+      "ryF": 0.0796,
+      "ryB": 0.0796,
+      "frontRowPx": 259,
+      "sideRowPx": 274,
+      "rxSource": "silhouette",
+      "frontExtentPx": [
+        381,
+        533
+      ],
+      "sideExtentPx": [
+        1052,
+        1161
+      ]
+    },
+    {
+      "name": "head_base",
+      "yM": 1.3878,
+      "rx": 0.1176,
+      "ryF": 0.0518,
+      "ryB": 0.0971,
+      "frontRowPx": 229,
+      "sideRowPx": 245,
+      "rxSource": "silhouette",
+      "frontExtentPx": [
+        375,
+        539
+      ],
+      "sideExtentPx": [
+        1071,
+        1173
+      ]
+    },
+    {
+      "name": "head_widest",
+      "yM": 1.5068,
+      "rx": 0.1405,
+      "ryF": 0.1394,
+      "ryB": 0.1219,
+      "frontRowPx": 146,
+      "sideRowPx": 163,
+      "rxSource": "silhouette",
+      "frontExtentPx": [
+        359,
+        555
+      ],
+      "sideExtentPx": [
+        1011,
+        1190
+      ]
+    },
+    {
+      "name": "crown",
+      "yM": 1.6,
+      "rx": 0.1276,
+      "ryF": 0.119,
+      "ryB": 0.1088,
+      "frontRowPx": 81,
+      "sideRowPx": 100,
+      "rxSource": "silhouette",
+      "frontExtentPx": [
+        369,
+        547
+      ],
+      "sideExtentPx": [
+        1025,
+        1181
+      ]
+    }
   ]
 }

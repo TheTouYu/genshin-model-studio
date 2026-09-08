@@ -1,0 +1,758 @@
+{
+  "front": [
+    {
+      "i": 0,
+      "name": "ahoge_tip",
+      "pixel": [
+        469,
+        30
+      ],
+      "uncertaintyPx": 4,
+      "distToSilhouetteEdgePx": 1.0
+    },
+    {
+      "i": 1,
+      "name": "hair_crown_top",
+      "pixel": [
+        468,
+        35
+      ],
+      "uncertaintyPx": 4,
+      "distToSilhouetteEdgePx": 1.0
+    },
+    {
+      "i": 2,
+      "name": "horn_tip_left",
+      "pixel": [
+        341,
+        128
+      ],
+      "uncertaintyPx": 5,
+      "distToSilhouetteEdgePx": 1.0
+    },
+    {
+      "i": 3,
+      "name": "horn_root_left",
+      "pixel": [
+        423,
+        67
+      ],
+      "uncertaintyPx": 6,
+      "distToSilhouetteEdgePx": 2.0
+    },
+    {
+      "i": 4,
+      "name": "horn_tip_right",
+      "pixel": [
+        573,
+        128
+      ],
+      "uncertaintyPx": 5,
+      "distToSilhouetteEdgePx": 1.0
+    },
+    {
+      "i": 5,
+      "name": "horn_root_right",
+      "pixel": [
+        493,
+        66
+      ],
+      "uncertaintyPx": 6,
+      "distToSilhouetteEdgePx": 2.2
+    },
+    {
+      "i": 6,
+      "name": "head_widest_left",
+      "pixel": [
+        359,
+        146
+      ],
+      "uncertaintyPx": 5,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 7,
+      "name": "head_widest_right",
+      "pixel": [
+        554,
+        146
+      ],
+      "uncertaintyPx": 5,
+      "distToSilhouetteEdgePx": 1.0
+    },
+    {
+      "i": 8,
+      "name": "chin",
+      "pixel": [
+        457,
+        229
+      ],
+      "uncertaintyPx": 5,
+      "distToSilhouetteEdgePx": 19.7
+    },
+    {
+      "i": 9,
+      "name": "face_left",
+      "pixel": [
+        413,
+        174
+      ],
+      "uncertaintyPx": 6,
+      "distToSilhouetteEdgePx": 7.3
+    },
+    {
+      "i": 10,
+      "name": "face_right",
+      "pixel": [
+        501,
+        178
+      ],
+      "uncertaintyPx": 6,
+      "distToSilhouetteEdgePx": 5.0
+    },
+    {
+      "i": 11,
+      "name": "neck_left",
+      "pixel": [
+        411,
+        259
+      ],
+      "uncertaintyPx": 5,
+      "distToSilhouetteEdgePx": 10.6
+    },
+    {
+      "i": 12,
+      "name": "neck_right",
+      "pixel": [
+        482,
+        259
+      ],
+      "uncertaintyPx": 5,
+      "distToSilhouetteEdgePx": 11.3
+    },
+    {
+      "i": 13,
+      "name": "shoulder_left",
+      "pixel": [
+        320,
+        341
+      ],
+      "uncertaintyPx": 20,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 14,
+      "name": "shoulder_right",
+      "pixel": [
+        594,
+        341
+      ],
+      "uncertaintyPx": 20,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 15,
+      "name": "neck_base_center",
+      "pixel": [
+        457,
+        335
+      ],
+      "uncertaintyPx": 6,
+      "distToSilhouetteEdgePx": 4.5
+    },
+    {
+      "i": 16,
+      "name": "chest_gem",
+      "pixel": [
+        457,
+        310
+      ],
+      "uncertaintyPx": 12,
+      "distToSilhouetteEdgePx": 12.5
+    },
+    {
+      "i": 17,
+      "name": "corset_top_center",
+      "pixel": [
+        457,
+        331
+      ],
+      "uncertaintyPx": 14,
+      "distToSilhouetteEdgePx": 6.3
+    },
+    {
+      "i": 18,
+      "name": "corset_bottom_center",
+      "pixel": [
+        457,
+        376
+      ],
+      "uncertaintyPx": 14,
+      "distToSilhouetteEdgePx": 1.4
+    },
+    {
+      "i": 19,
+      "name": "waist_center",
+      "pixel": [
+        457,
+        354
+      ],
+      "uncertaintyPx": 14,
+      "distToSilhouetteEdgePx": 3.2
+    },
+    {
+      "i": 20,
+      "name": "waist_belt_center",
+      "pixel": [
+        456,
+        414
+      ],
+      "uncertaintyPx": 16,
+      "distToSilhouetteEdgePx": 19.0
+    },
+    {
+      "i": 21,
+      "name": "hand_left",
+      "pixel": [
+        157,
+        623
+      ],
+      "uncertaintyPx": 16,
+      "distToSilhouetteEdgePx": 1.4
+    },
+    {
+      "i": 22,
+      "name": "wrist_left",
+      "pixel": [
+        197,
+        540
+      ],
+      "uncertaintyPx": 20,
+      "distToSilhouetteEdgePx": 8.6
+    },
+    {
+      "i": 23,
+      "name": "hand_right",
+      "pixel": [
+        756,
+        623
+      ],
+      "uncertaintyPx": 16,
+      "distToSilhouetteEdgePx": 1.4
+    },
+    {
+      "i": 24,
+      "name": "wrist_right",
+      "pixel": [
+        716,
+        540
+      ],
+      "uncertaintyPx": 20,
+      "distToSilhouetteEdgePx": 7.8
+    },
+    {
+      "i": 25,
+      "name": "hem_bottom_center",
+      "pixel": [
+        420,
+        1198
+      ],
+      "uncertaintyPx": 12,
+      "distToSilhouetteEdgePx": 2.2
+    },
+    {
+      "i": 26,
+      "name": "hem_left",
+      "pixel": [
+        219,
+        1198
+      ],
+      "uncertaintyPx": 16,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 27,
+      "name": "hem_right",
+      "pixel": [
+        622,
+        1198
+      ],
+      "uncertaintyPx": 16,
+      "distToSilhouetteEdgePx": 0.0
+    }
+  ],
+  "side": [
+    {
+      "i": 0,
+      "name": "hair_crown_top",
+      "pixel": [
+        1085,
+        44
+      ],
+      "uncertaintyPx": 4,
+      "distToSilhouetteEdgePx": 2.0
+    },
+    {
+      "i": 1,
+      "name": "ahoge_tip",
+      "pixel": [
+        1085,
+        40
+      ],
+      "uncertaintyPx": 4,
+      "distToSilhouetteEdgePx": 1.4
+    },
+    {
+      "i": 2,
+      "name": "horn_tip_back",
+      "pixel": [
+        1213,
+        131
+      ],
+      "uncertaintyPx": 5,
+      "distToSilhouetteEdgePx": 1.4
+    },
+    {
+      "i": 3,
+      "name": "horn_root",
+      "pixel": [
+        1096,
+        74
+      ],
+      "uncertaintyPx": 6,
+      "distToSilhouetteEdgePx": 9.0
+    },
+    {
+      "i": 4,
+      "name": "forehead_front",
+      "pixel": [
+        1055,
+        329
+      ],
+      "uncertaintyPx": 5,
+      "distToSilhouetteEdgePx": 1.4
+    },
+    {
+      "i": 5,
+      "name": "chin",
+      "pixel": [
+        1071,
+        357
+      ],
+      "uncertaintyPx": 5,
+      "distToSilhouetteEdgePx": 1.4
+    },
+    {
+      "i": 6,
+      "name": "face_back",
+      "pixel": [
+        1134,
+        295
+      ],
+      "uncertaintyPx": 6,
+      "distToSilhouetteEdgePx": 25.1
+    },
+    {
+      "i": 7,
+      "name": "neck_front",
+      "pixel": [
+        1003,
+        363
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 8,
+      "name": "neck_back",
+      "pixel": [
+        1177,
+        363
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 9,
+      "name": "chest_front",
+      "pixel": [
+        1010,
+        502
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 10,
+      "name": "chest_back",
+      "pixel": [
+        1224,
+        502
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 11,
+      "name": "waist_front",
+      "pixel": [
+        1002,
+        641
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 12,
+      "name": "waist_back",
+      "pixel": [
+        1252,
+        641
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 13,
+      "name": "hip_front",
+      "pixel": [
+        1006,
+        756
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 14,
+      "name": "hip_back",
+      "pixel": [
+        1212,
+        756
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 15,
+      "name": "knee_front",
+      "pixel": [
+        997,
+        964
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 16,
+      "name": "knee_back",
+      "pixel": [
+        1240,
+        964
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 17,
+      "name": "hem_front",
+      "pixel": [
+        982,
+        1190
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 1.0
+    },
+    {
+      "i": 18,
+      "name": "hem_back",
+      "pixel": [
+        1313,
+        1190
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 5.0
+    },
+    {
+      "i": 19,
+      "name": "bust_front_apex",
+      "pixel": [
+        1002,
+        570
+      ],
+      "uncertaintyPx": 7,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 20,
+      "name": "glute_back_apex",
+      "pixel": [
+        1246,
+        675
+      ],
+      "uncertaintyPx": 7,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 21,
+      "name": "hair_tail_tip",
+      "pixel": [
+        1131,
+        949
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 36.9
+    },
+    {
+      "i": 22,
+      "name": "hand_front",
+      "pixel": [
+        1076,
+        622
+      ],
+      "uncertaintyPx": 9,
+      "distToSilhouetteEdgePx": 1.0
+    }
+  ],
+  "back": [
+    {
+      "i": 0,
+      "name": "hair_crown_top",
+      "pixel": [
+        1746,
+        35
+      ],
+      "uncertaintyPx": 4,
+      "distToSilhouetteEdgePx": 1.0
+    },
+    {
+      "i": 1,
+      "name": "ahoge_tip",
+      "pixel": [
+        1746,
+        30
+      ],
+      "uncertaintyPx": 4,
+      "distToSilhouetteEdgePx": 1.0
+    },
+    {
+      "i": 2,
+      "name": "horn_tip_left",
+      "pixel": [
+        1626,
+        128
+      ],
+      "uncertaintyPx": 5,
+      "distToSilhouetteEdgePx": 1.0
+    },
+    {
+      "i": 3,
+      "name": "horn_root_left",
+      "pixel": [
+        1708,
+        66
+      ],
+      "uncertaintyPx": 6,
+      "distToSilhouetteEdgePx": 2.0
+    },
+    {
+      "i": 4,
+      "name": "horn_tip_right",
+      "pixel": [
+        1860,
+        129
+      ],
+      "uncertaintyPx": 5,
+      "distToSilhouetteEdgePx": 1.0
+    },
+    {
+      "i": 5,
+      "name": "horn_root_right",
+      "pixel": [
+        1779,
+        66
+      ],
+      "uncertaintyPx": 6,
+      "distToSilhouetteEdgePx": 1.0
+    },
+    {
+      "i": 6,
+      "name": "head_widest_left",
+      "pixel": [
+        1647,
+        145
+      ],
+      "uncertaintyPx": 5,
+      "distToSilhouetteEdgePx": 1.0
+    },
+    {
+      "i": 7,
+      "name": "head_widest_right",
+      "pixel": [
+        1841,
+        145
+      ],
+      "uncertaintyPx": 5,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 8,
+      "name": "nape_gem",
+      "pixel": [
+        1743,
+        343
+      ],
+      "uncertaintyPx": 7,
+      "distToSilhouetteEdgePx": 8.1
+    },
+    {
+      "i": 9,
+      "name": "back_v_bottom",
+      "pixel": [
+        1766,
+        416
+      ],
+      "uncertaintyPx": 9,
+      "distToSilhouetteEdgePx": 18.4
+    },
+    {
+      "i": 10,
+      "name": "shoulder_left",
+      "pixel": [
+        1619,
+        328
+      ],
+      "uncertaintyPx": 10,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 11,
+      "name": "shoulder_right",
+      "pixel": [
+        1868,
+        328
+      ],
+      "uncertaintyPx": 10,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 12,
+      "name": "corset_top_center",
+      "pixel": [
+        1743,
+        407
+      ],
+      "uncertaintyPx": 7,
+      "distToSilhouetteEdgePx": 15.3
+    },
+    {
+      "i": 13,
+      "name": "corset_bottom_center",
+      "pixel": [
+        1743,
+        569
+      ],
+      "uncertaintyPx": 7,
+      "distToSilhouetteEdgePx": 6.4
+    },
+    {
+      "i": 14,
+      "name": "waist_center",
+      "pixel": [
+        1743,
+        488
+      ],
+      "uncertaintyPx": 7,
+      "distToSilhouetteEdgePx": 15.8
+    },
+    {
+      "i": 15,
+      "name": "tassel_left",
+      "pixel": [
+        1705,
+        548
+      ],
+      "uncertaintyPx": 9,
+      "distToSilhouetteEdgePx": 11.7
+    },
+    {
+      "i": 16,
+      "name": "tassel_right",
+      "pixel": [
+        1779,
+        549
+      ],
+      "uncertaintyPx": 9,
+      "distToSilhouetteEdgePx": 11.0
+    },
+    {
+      "i": 17,
+      "name": "hand_left",
+      "pixel": [
+        1549,
+        517
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 19.1
+    },
+    {
+      "i": 18,
+      "name": "wrist_left",
+      "pixel": [
+        1495,
+        497
+      ],
+      "uncertaintyPx": 10,
+      "distToSilhouetteEdgePx": 22.5
+    },
+    {
+      "i": 19,
+      "name": "hand_right",
+      "pixel": [
+        1939,
+        516
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 17.0
+    },
+    {
+      "i": 20,
+      "name": "wrist_right",
+      "pixel": [
+        1992,
+        504
+      ],
+      "uncertaintyPx": 10,
+      "distToSilhouetteEdgePx": 21.3
+    },
+    {
+      "i": 21,
+      "name": "hem_bottom_center",
+      "pixel": [
+        1740,
+        1197
+      ],
+      "uncertaintyPx": 6,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 22,
+      "name": "hem_left",
+      "pixel": [
+        1556,
+        1197
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 0.0
+    },
+    {
+      "i": 23,
+      "name": "hem_right",
+      "pixel": [
+        1924,
+        1197
+      ],
+      "uncertaintyPx": 8,
+      "distToSilhouetteEdgePx": 0.0
+    }
+  ]
+}

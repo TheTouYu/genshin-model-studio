@@ -1,0 +1,761 @@
+{
+ "schemaVersion": 1,
+ "iteration": 37,
+ "stage": "L3-structures",
+ "date": "2026-09-08",
+ "inputs": {
+  "builder": "scripts/build-hanfu-cage.mjs",
+  "landmarks": "reference/ganyu-hanfu-landmarks.json",
+  "measurements": "reference/hanfu/measurements.json",
+  "references": [
+   "reference/hanfu/古风甘雨三视图.png",
+   "reference/hanfu/古风甘雨三视图-线框图.png",
+   "reference/hanfu/甘雨-白膜线框图.png",
+   "reference/hanfu/甘雨.png"
+  ]
+ },
+ "landmarks": {
+  "count": {
+   "front": 29,
+   "side": 23,
+   "back": 24
+  },
+  "lowConfidence": 14
+ },
+ "pose": {
+  "head_yaw_over_shoulder_deg": 22.4,
+  "head_yaw_source": "L1 pose.head_yaw_over_shoulder.face_yaw_vs_camera_deg（22.4°，L3-G2 口径；45° 为解剖夹取值，不作网格门）",
+  "spine_arc_direction": "向画面左（她的右）",
+  "skirt_flow_direction_deg": 174.9,
+  "hair_flow_direction_deg": 154,
+  "sword_arm_shoulder_angle_deg": 21.3,
+  "sword_arm_elbow_angle_deg": 42,
+  "weight_leg": {
+   "value": "画面左腿（她的左腿）承重",
+   "method": "waist line (corset top edge) falls to the image right",
+   "waist_line_slope_dydx": 0.304,
+   "waist_line_px": [
+    [
+     920,
+     560
+    ],
+    [
+     1095,
+     605
+    ]
+   ]
+  }
+ },
+ "controlGraph": {
+  "points": 284,
+  "faces": 564,
+  "sides": 8,
+  "rings": 21,
+  "ringTable": [
+   {
+    "name": "under_cap",
+    "y": -0.03,
+    "rx": 0.09,
+    "ryF": 0.07,
+    "ryB": 0.09
+   },
+   {
+    "name": "hem",
+    "y": 0.01,
+    "rx": 0.4552,
+    "ryF": 0.1818,
+    "ryB": 0.3015
+   },
+   {
+    "name": "hem_upper",
+    "y": 0.075,
+    "rx": 0.4035,
+    "ryF": 0.1788,
+    "ryB": 0.2723
+   },
+   {
+    "name": "tierC_mid",
+    "y": 0.14,
+    "rx": 0.3527,
+    "ryF": 0.1759,
+    "ryB": 0.2431
+   },
+   {
+    "name": "tierC_top",
+    "y": 0.26,
+    "rx": 0.3118,
+    "ryF": 0.169,
+    "ryB": 0.2185
+   },
+   {
+    "name": "tierB_bot",
+    "y": 0.3,
+    "rx": 0.2989,
+    "ryF": 0.1667,
+    "ryB": 0.2103
+   },
+   {
+    "name": "tierB_mid",
+    "y": 0.4,
+    "rx": 0.2667,
+    "ryF": 0.1609,
+    "ryB": 0.1899
+   },
+   {
+    "name": "tierB_top",
+    "y": 0.5,
+    "rx": 0.2366,
+    "ryF": 0.1552,
+    "ryB": 0.1696
+   },
+   {
+    "name": "tierA_bot",
+    "y": 0.55,
+    "rx": 0.2258,
+    "ryF": 0.1523,
+    "ryB": 0.1594
+   },
+   {
+    "name": "hip",
+    "y": 0.7,
+    "rx": 0.2885,
+    "ryF": 0.1438,
+    "ryB": 0.1291
+   },
+   {
+    "name": "upper_hip",
+    "y": 0.82,
+    "rx": 0.262,
+    "ryF": 0.1445,
+    "ryB": 0.1233
+   },
+   {
+    "name": "mid_body",
+    "y": 0.95,
+    "rx": 0.2334,
+    "ryF": 0.1452,
+    "ryB": 0.117
+   },
+   {
+    "name": "lower_waist",
+    "y": 1.1,
+    "rx": 0.2003,
+    "ryF": 0.1461,
+    "ryB": 0.1097
+   },
+   {
+    "name": "seal_bot",
+    "y": 1.19,
+    "rx": 0.1804,
+    "ryF": 0.1466,
+    "ryB": 0.1053
+   },
+   {
+    "name": "seal_top",
+    "y": 1.23,
+    "rx": 0.1961,
+    "ryF": 0.1558,
+    "ryB": 0.0991
+   },
+   {
+    "name": "chest",
+    "y": 1.31,
+    "rx": 0.138,
+    "ryF": 0.1057,
+    "ryB": 0.085
+   },
+   {
+    "name": "neck_base",
+    "y": 1.345,
+    "rx": 0.109,
+    "ryF": 0.0795,
+    "ryB": 0.0797
+   },
+   {
+    "name": "neck_mid",
+    "y": 1.37,
+    "rx": 0.114,
+    "ryF": 0.0633,
+    "ryB": 0.0899
+   },
+   {
+    "name": "head_base",
+    "y": 1.43,
+    "rx": 0.1257,
+    "ryF": 0.0829,
+    "ryB": 0.1059
+   },
+   {
+    "name": "head_widest",
+    "y": 1.51,
+    "rx": 0.1401,
+    "ryF": 0.1387,
+    "ryB": 0.1215
+   },
+   {
+    "name": "crown",
+    "y": 1.6,
+    "rx": 0.1276,
+    "ryF": 0.119,
+    "ryB": 0.1088
+   }
+  ],
+  "branches": [
+   {
+    "name": "armR",
+    "B": 6,
+    "rings": 4
+   },
+   {
+    "name": "armL",
+    "B": 6,
+    "rings": 4
+   },
+   {
+    "name": "sword",
+    "B": 6,
+    "rings": 4
+   },
+   {
+    "name": "hornR",
+    "B": 4,
+    "rings": 0
+   },
+   {
+    "name": "hornL",
+    "B": 4,
+    "rings": 0
+   },
+   {
+    "name": "hairBack",
+    "B": 4,
+    "rings": 3
+   },
+   {
+    "name": "hairFront",
+    "B": 4,
+    "rings": 3
+   },
+   {
+    "name": "gem1",
+    "B": 4,
+    "rings": 2
+   },
+   {
+    "name": "gem2",
+    "B": 4,
+    "rings": 2
+   },
+   {
+    "name": "gem3",
+    "B": 4,
+    "rings": 2
+   },
+   {
+    "name": "gem4",
+    "B": 4,
+    "rings": 2
+   },
+   {
+    "name": "strapBack",
+    "B": 4,
+    "rings": 3
+   },
+   {
+    "name": "strapFront",
+    "B": 4,
+    "rings": 3
+   }
+  ]
+ },
+ "seam": {
+  "openEdges": 0,
+  "seamEdges": 0,
+  "components": 1,
+  "nonManifoldEdges": 0,
+  "onePiece": true,
+  "watertight": true
+ },
+ "anatomyReport": {
+  "pass": true,
+  "referenceFit": false,
+  "note": "Structural cage checks are not final mesh gates.（ganyu-anatomy-cage.js:108 硬编码）"
+ },
+ "verify": {
+  "gateOk": true,
+  "failures": [],
+  "selfIntersections": 0,
+  "invertedNormals": 0,
+  "skinny": {
+   "count": 2,
+   "pct": 0.35,
+   "pass": true
+  },
+  "areaRatio": {
+   "value": 18.4,
+   "pass": true
+  },
+  "areas": {
+   "min": 0.0002780951556715855,
+   "p5": 0.0008546370385167743,
+   "p50": 0.005716700351757804,
+   "p95": 0.015670460043356794,
+   "max": 0.039137654784225775,
+   "ratio": 18.34
+  },
+  "watertight": {
+   "pass": true,
+   "openEdges": 0,
+   "nonManifold": 0,
+   "samplePositions": []
+  }
+ },
+ "l3Structures": {
+  "head_neck_lookback": {
+   "neckRings": [
+    "neck_base",
+    "neck_mid"
+   ],
+   "headYawDeg": 22.4,
+   "headPoints": [
+    "chin",
+    "forehead_front",
+    "hair_crown_top"
+   ],
+   "hairStrands": [
+    "hairBack",
+    "hairFront"
+   ],
+   "hairFlowDeg": 154
+  },
+  "skirtLayers": {
+   "tiers": [
+    "tierA_bot",
+    "tierB_bot",
+    "tierC_mid"
+   ],
+   "tierY": [
+    {
+     "name": "tierC_mid",
+     "y": 0.14,
+     "rx": 0.3527
+    },
+    {
+     "name": "tierB_bot",
+     "y": 0.3,
+     "rx": 0.2989
+    },
+    {
+     "name": "tierA_bot",
+     "y": 0.55,
+     "rx": 0.2258
+    }
+   ],
+   "droopM": [
+    0.25,
+    0.16
+   ],
+   "flowDeg": 180,
+   "flowRefDeg": 174.9
+  },
+  "ornaments": {
+   "sealRings": [
+    "seal_bot",
+    "seal_top"
+   ],
+   "gems": [
+    "gem1",
+    "gem2",
+    "gem3",
+    "gem4"
+   ],
+   "straps": [
+    "strapBack",
+    "strapFront"
+   ]
+  },
+  "sword": {
+   "segments": [
+    "柄",
+    "护手",
+    "刃"
+   ],
+   "rings": 3,
+   "B": 6,
+   "yM": {
+    "grip": 0.6,
+    "guard": 0.462,
+    "bladeTip": 0.08
+   },
+   "pxPerMeter": 697.5,
+   "measuredGloveAxisPx": {
+    "proximal": [
+     1042.3,
+     836.7
+    ],
+    "distal": [
+     1250.3,
+     798.9
+    ],
+    "axis_deg": 169.7,
+    "n": 11388
+   }
+  }
+ },
+ "g1": {
+  "definition": {
+   "projection": "orthographic; front/back u=x, side u=z; px=centerX+s*u*pxm, py=bottom-y*pxm",
+   "signPolicy": "per view: try s=±1, keep higher IoU (this is the R3 handedness verdict)",
+   "cageSilhouette": "cage-mesh.json 556 triangles, PIL polygon fill",
+   "referenceSilhouette": "bodyMask: bg euclidean>26 + row width>=8 run>=3 + exterior flood fill (holes filled)",
+   "iouMin": 0.88,
+   "tolerancePctOfHeight": 0.02,
+   "toleranceM": 0.032
+  },
+  "views": {
+   "front": {
+    "sign": 1,
+    "iou": 0.761,
+    "landmarkCount": 29,
+    "maxDistToCageEdgeM": 0.3168,
+    "cagePx": 473832,
+    "refPx": 410753
+   },
+   "side": {
+    "sign": -1,
+    "iou": 0.6922,
+    "landmarkCount": 23,
+    "maxDistToCageEdgeM": 0.2219,
+    "cagePx": 301501,
+    "refPx": 238806
+   },
+   "back": {
+    "sign": 1,
+    "iou": 0.7639,
+    "landmarkCount": 24,
+    "maxDistToCageEdgeM": 0.3699,
+    "cagePx": 472037,
+    "refPx": 409647
+   }
+  },
+  "stations": [
+   {
+    "name": "hem",
+    "maxDeltaM": 0,
+    "maxDeltaPct": 0,
+    "pass": true
+   },
+   {
+    "name": "skirt_wide",
+    "maxDeltaM": 0.0007,
+    "maxDeltaPct": 0.044,
+    "pass": true
+   },
+   {
+    "name": "hip",
+    "maxDeltaM": 0.0004,
+    "maxDeltaPct": 0.025,
+    "pass": true
+   },
+   {
+    "name": "waist",
+    "maxDeltaM": 0.0114,
+    "maxDeltaPct": 0.713,
+    "pass": true
+   },
+   {
+    "name": "shoulder",
+    "maxDeltaM": 0.0014,
+    "maxDeltaPct": 0.087,
+    "pass": true
+   },
+   {
+    "name": "upper_chest",
+    "maxDeltaM": 0.0084,
+    "maxDeltaPct": 0.523,
+    "pass": true
+   },
+   {
+    "name": "neck",
+    "maxDeltaM": 0.0002,
+    "maxDeltaPct": 0.01,
+    "pass": true
+   },
+   {
+    "name": "head_base",
+    "maxDeltaM": 0.0311,
+    "maxDeltaPct": 1.944,
+    "pass": true
+   },
+   {
+    "name": "head_widest",
+    "maxDeltaM": 0.0007,
+    "maxDeltaPct": 0.044,
+    "pass": true
+   },
+   {
+    "name": "crown",
+    "maxDeltaM": 0,
+    "maxDeltaPct": 0,
+    "pass": true
+   }
+  ],
+  "checks": {
+   "iou_front": 0.761,
+   "iou_side": 0.6922,
+   "iou_back": 0.7639,
+   "iouAllPass": false,
+   "landmarkMinPerView": 23,
+   "landmarkCountPass": true,
+   "maxPointDistM": 0.3699,
+   "pointDistPass": false,
+   "stationMaxDeltaPct": 1.944,
+   "stationPass": true
+  }
+ },
+ "gate": {
+  "ok": false,
+  "checks": [
+   {
+    "name": "L3-G1 逐点 3D + IoU",
+    "ok": false,
+    "detail": "每视图 29/23/24 点 ≥20 ✓；站点最大偏差 1.944% ≤2% ✓；剪影 IoU 0.761/0.6922/0.7639 vs 门 0.88 ✗"
+   },
+   {
+    "name": "L3-G2 回眸",
+    "ok": true,
+    "detail": "颈环 neck_base+neck_mid（2 环）；网格 22.4° vs 实测 22.4°（差 0.00°）；chin+forehead_front+hair_crown_top 均在 L1 表（front/side）；hairBack+hairFront，流向沿用实测 154°"
+   },
+   {
+    "name": "L3-G3 裙分层",
+    "ok": true,
+    "detail": "tierA_bot@y=0.55 / tierB_bot@y=0.3 / tierC_mid@y=0.14；下垂差 0.250m / 0.160m；网格 180° vs 实测 174.9°（差 5.1°）"
+   },
+   {
+    "name": "L3-G4 拓扑与预算",
+    "ok": true,
+    "detail": "openEdges=0；seamEdges=0；components=1；564 faces；插座共享顶点数 armR:6 armL:6 sword:6 hairBack:4 hairFront:4 gem1:4 gem2:4 gem3:4 gem4:4 strapBack:4 strapFront:4"
+   },
+   {
+    "name": "L3-G5 自交债",
+    "ok": true,
+    "detail": "局部自交 0 处；瘦三角 2 个 / 0.35%；p95/p5 = 18.4；朝内面 0"
+   },
+   {
+    "name": "L3-G6 剑三段",
+    "ok": true,
+    "detail": "sword 分支 B=6、3 环（柄 y=0.600 / 护手 y=0.462 / 刃尖 y=0.080 m）；实测手套轴 px [1042.3,836.7]→[1250.3,798.9]（axis 169.7°，px/m 697.5）"
+   },
+   {
+    "name": "L3-G7 证据链",
+    "ok": true,
+    "detail": "✓37-hanfu-l3-structures.json ✓cage-mesh.json ✓g1-3d-report.json ✓iou-front.png ✓views-report.json 视角 6/6"
+   }
+  ]
+ },
+ "gates": {
+  "L3-G1": {
+   "ok": false,
+   "detail": "每视图 29/23/24 点 ≥20 ✓；站点最大偏差 1.944% ≤2% ✓；剪影 IoU 0.761/0.6922/0.7639 vs 门 0.88 ✗"
+  },
+  "L3-G2": {
+   "ok": true,
+   "detail": "颈环 neck_base+neck_mid（2 环）；网格 22.4° vs 实测 22.4°（差 0.00°）；chin+forehead_front+hair_crown_top 均在 L1 表（front/side）；hairBack+hairFront，流向沿用实测 154°"
+  },
+  "L3-G3": {
+   "ok": true,
+   "detail": "tierA_bot@y=0.55 / tierB_bot@y=0.3 / tierC_mid@y=0.14；下垂差 0.250m / 0.160m；网格 180° vs 实测 174.9°（差 5.1°）"
+  },
+  "L3-G4": {
+   "ok": true,
+   "detail": "openEdges=0；seamEdges=0；components=1；564 faces；插座共享顶点数 armR:6 armL:6 sword:6 hairBack:4 hairFront:4 gem1:4 gem2:4 gem3:4 gem4:4 strapBack:4 strapFront:4"
+  },
+  "L3-G5": {
+   "ok": true,
+   "detail": "局部自交 0 处；瘦三角 2 个 / 0.35%；p95/p5 = 18.4；朝内面 0"
+  },
+  "L3-G6": {
+   "ok": true,
+   "detail": "sword 分支 B=6、3 环（柄 y=0.600 / 护手 y=0.462 / 刃尖 y=0.080 m）；实测手套轴 px [1042.3,836.7]→[1250.3,798.9]（axis 169.7°，px/m 697.5）"
+  },
+  "L3-G7": {
+   "ok": true,
+   "detail": "✓37-hanfu-l3-structures.json ✓cage-mesh.json ✓g1-3d-report.json ✓iou-front.png ✓views-report.json 视角 6/6"
+  }
+ },
+ "visualAcceptance": "pending",
+ "mesh": {
+  "file": "delivery/hanfu-cage/cage-mesh.json",
+  "vertexCount": 284,
+  "faceCount": 564,
+  "units": "m",
+  "coordinateSystem": "+Y up +Z front"
+ },
+ "provenance": {
+  "builder": "scripts/build-hanfu-cage.mjs",
+  "capture": "scripts/cdp-capture-hanfu.mjs",
+  "g1Checker": "scripts/check-hanfu-g1-3d.py",
+  "structureChecker": "scripts/check-hanfu-l3-structures.mjs",
+  "handedness": {
+   "mirrored": false,
+   "note": "R3 已修：网格末尾绕 x=0 镜像顶点+翻转面绕序，使「面朝 +Z、上 +Y」的右手系成立（右手在 -X）；正视图里她的右手（持剑手）落画面左，与真实人物一致。",
+   "frontSignVsReference": 1
+  }
+ },
+ "views": [
+  {
+   "name": "wire-front",
+   "file": "delivery/hanfu-cage/views/wire-front.png",
+   "camera": {
+    "yaw": 0,
+    "pitch": 1.57
+   },
+   "silhouetteBBoxPx": [
+    268,
+    40,
+    535,
+    421
+   ],
+   "coverage": 0.0576,
+   "readImageVerdict": "双角 + 宽袖 + 持剑长臂（剑在画面左＝她的右手，手性已修）+ 长裙钟形剪影可读；回眸不明显（头偏 22.4°），裙为单层钟形而非三层纱。"
+  },
+  {
+   "name": "wire-side",
+   "file": "delivery/hanfu-cage/views/wire-side.png",
+   "camera": {
+    "yaw": 1.5708,
+    "pitch": 1.57
+   },
+   "silhouetteBBoxPx": [
+    244,
+    40,
+    450,
+    439
+   ],
+   "coverage": 0.0454,
+   "readImageVerdict": "侧视剖面：角 / 头 / 袖 / 窄裙柱可读；裙深≈宽的一半（实测 hem 0.48m 深 / 0.91m 宽）与站表一致；发束与剑不突出。"
+  },
+  {
+   "name": "wire-back",
+   "file": "delivery/hanfu-cage/views/wire-back.png",
+   "camera": {
+    "yaw": 3.14159,
+    "pitch": 1.57
+   },
+   "silhouetteBBoxPx": [
+    244,
+    81,
+    498,
+    430
+   ],
+   "coverage": 0.0568,
+   "readImageVerdict": "背视：双角 + 背发束 + 裙可读；剑落画面右（她的右手在背视的正确侧），可辨认为同一人物。"
+  },
+  {
+   "name": "wire-three-quarter",
+   "file": "delivery/hanfu-cage/views/wire-three-quarter.png",
+   "camera": {
+    "yaw": 0.65,
+    "pitch": 0.85
+   },
+   "silhouetteBBoxPx": [
+    299,
+    61,
+    499,
+    436
+   ],
+   "coverage": 0.0518,
+   "readImageVerdict": "3/4 前右视：袖 / 剑 / 裙可读，体块连续无断件；头部读作块状，回眸弱。"
+  },
+  {
+   "name": "wire-reference-view",
+   "file": "delivery/hanfu-cage/views/wire-reference-view.png",
+   "camera": {
+    "yaw": -0.65,
+    "pitch": 1.45
+   },
+   "silhouetteBBoxPx": [
+    302,
+    47,
+    498,
+    435
+   ],
+   "coverage": 0.052,
+   "readImageVerdict": "3/4 前左视：头转向与下颌线弱可读（头偏 22.4°），剑在画面左，整体可辨认「持剑古风人物」；与甘雨.png 的 3/4 背视机位不同侧。"
+  },
+  {
+   "name": "smooth-reference-view",
+   "file": "delivery/hanfu-cage/views/smooth-reference-view.png",
+   "camera": {
+    "yaw": -0.65,
+    "pitch": 1.45
+   },
+   "silhouetteBBoxPx": [
+    303,
+    47,
+    498,
+    434
+   ],
+   "coverage": 0.0786,
+   "readImageVerdict": "平滑渲染：角 / 头 / 袖 / 裙 / 剑均读得出；头部为块状（无面部特征），回眸需靠颈部偏转推断；无断件、无翻面。"
+  }
+ ],
+ "adoptionList": {
+  "reference/hanfu/古风甘雨三视图-线框图.png": {
+   "adopted": [
+    "环线位置（胸/腰/裙分层）",
+    "体块分组（胸廓/腰/骨盆/裙三段）",
+    "密度策略（躯干密、裙疏）",
+    "正/侧/背三视图的剪影宽度与高度（驱动全部 RINGS）"
+   ],
+   "rejected": [
+    "均匀方格网（网纹密度）",
+    "对称站桩姿态（双臂微张）",
+    "正面对称 A 字裙（只取体积包络）"
+   ]
+  },
+  "reference/hanfu/甘雨-白膜线框图.png": {
+   "adopted": [
+    "3/4 背身动势（回眸 + 持剑下指）",
+    "裙与发的单向流（流场剪切方向）",
+    "体块切分（头/颈/胸/腰/裙）"
+   ],
+   "rejected": [
+    "外卷上翘角（原图为向外后弯）",
+    "对称 A 字裙",
+    "羽片肩饰（原图为肩饰宝石挂带）",
+    "紫蓝眼色（原图为红粉调）",
+    "均匀网纹"
+   ]
+  }
+ },
+ "deviations": [
+  {
+   "item": "L3-G1c 三视图剪影 IoU",
+   "target": "≥0.88",
+   "measured": "front 0.761 / side 0.6922 / back 0.7639",
+   "reason": "cage 以管状体块近似大袖/发束/纱裙；参考剪影含宽袖片、长发扬流与多层纱边（薄片体积），564 面控制图无法填满这些薄片区域。逐项归因：去发束 IoU 0.7734/0.7516/0.7759（发束占 ~0.05），去剑 side 反降 0.691→0.665（剑对侧视有帮助）。",
+   "next": "S3 用薄片面片（非管体）重建袖/纱/发，或改用 IoU 之外的薄片友好度量。"
+  },
+  {
+   "item": "L3-G2d 回眸目检",
+   "target": "reference-view 目检「能看出头转向 + 下颌线」",
+   "measured": "头偏 22.4° 数值达标，但 564 面无面部特征，头读作块状",
+   "reason": "L3-G2 的数值门（22.4°±3°）达标；目检门部分达成（颈部偏转可读、下颌线不可读）。",
+   "next": "L4 加下颌线环 + 面部块面（面数预算内）。"
+  },
+  {
+   "item": "裙摆层数表达",
+   "target": "≥3 层独立环、层间下垂差 ≥0.08m",
+   "measured": "tierA/B/C 三组环 + 下垂差 0.250/0.160 m",
+   "reason": "单管 loft 以「阶梯半径 + Y 错位」表达三层；不是三条独立网格（那会破坏共享顶点/水密）。",
+   "next": "若需要真实分层薄片，走 extrudeRing 从主干长出（面数 +N）。"
+  },
+  {
+   "item": "web 预览资源 id",
+   "target": "预览页可渲染",
+   "measured": "resourceId 必须为 10009019（索引网格）",
+   "reason": "首次导出用字符串 id → 预览只画坐标轴（覆盖率 0.0018）；改 10009019 后覆盖率 0.05-0.08 ✓"
+  }
+ ]
+}

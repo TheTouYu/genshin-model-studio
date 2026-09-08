@@ -1,0 +1,1020 @@
+{
+ "schemaVersion": 1,
+ "iteration": 37,
+ "stage": "L3-G1-per-point-3d",
+ "definition": {
+  "projection": "orthographic; front/back u=x, side u=z; px=centerX+s*u*pxm, py=bottom-y*pxm",
+  "signPolicy": "per view: try s=±1, keep higher IoU (this is the R3 handedness verdict)",
+  "cageSilhouette": "cage-mesh.json 556 triangles, PIL polygon fill",
+  "referenceSilhouette": "bodyMask: bg euclidean>26 + row width>=8 run>=3 + exterior flood fill (holes filled)",
+  "iouMin": 0.88,
+  "tolerancePctOfHeight": 0.02,
+  "toleranceM": 0.032
+ },
+ "views": {
+  "front": {
+   "sign": 1,
+   "iou": 0.761,
+   "intersectionPx": 382276,
+   "unionPx": 502309,
+   "refPx": 410753,
+   "cagePx": 473832,
+   "landmarkCount": 29,
+   "maxDistToCageEdgeM": 0.3168,
+   "meanDistToCageEdgeM": 0.1187,
+   "points": [
+    {
+     "name": "ahoge_tip",
+     "pixel": [
+      469,
+      30
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 47.0,
+     "distToCageEdgeM": 0.0674
+    },
+    {
+     "name": "hair_crown_top",
+     "pixel": [
+      458,
+      81
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 3.0,
+     "distToCageEdgeM": 0.0043
+    },
+    {
+     "name": "horn_tip_left",
+     "pixel": [
+      340,
+      126
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 24.0,
+     "distToCageEdgeM": 0.0344
+    },
+    {
+     "name": "horn_root_left",
+     "pixel": [
+      423,
+      67
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 14.0,
+     "distToCageEdgeM": 0.0201
+    },
+    {
+     "name": "horn_tip_right",
+     "pixel": [
+      574,
+      126
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 21.0,
+     "distToCageEdgeM": 0.0301
+    },
+    {
+     "name": "horn_root_right",
+     "pixel": [
+      493,
+      67
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 8.0,
+     "distToCageEdgeM": 0.0115
+    },
+    {
+     "name": "head_widest_left",
+     "pixel": [
+      359,
+      146
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 10.0,
+     "distToCageEdgeM": 0.0143
+    },
+    {
+     "name": "head_widest_right",
+     "pixel": [
+      554,
+      146
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 1.0,
+     "distToCageEdgeM": 0.0014
+    },
+    {
+     "name": "chin",
+     "pixel": [
+      457,
+      229
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 133.0,
+     "distToCageEdgeM": 0.1907
+    },
+    {
+     "name": "face_left",
+     "pixel": [
+      413,
+      174
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 56.0,
+     "distToCageEdgeM": 0.0803
+    },
+    {
+     "name": "face_right",
+     "pixel": [
+      501,
+      178
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 79.0,
+     "distToCageEdgeM": 0.1133
+    },
+    {
+     "name": "neck_left",
+     "pixel": [
+      411,
+      259
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 105.0,
+     "distToCageEdgeM": 0.1505
+    },
+    {
+     "name": "neck_right",
+     "pixel": [
+      482,
+      259
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 162.0,
+     "distToCageEdgeM": 0.2323
+    },
+    {
+     "name": "shoulder_left",
+     "pixel": [
+      320,
+      341
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 43.0,
+     "distToCageEdgeM": 0.0616
+    },
+    {
+     "name": "shoulder_right",
+     "pixel": [
+      594,
+      341
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 93.0,
+     "distToCageEdgeM": 0.1333
+    },
+    {
+     "name": "shoulder_line_center",
+     "pixel": [
+      457,
+      335
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 177.0,
+     "distToCageEdgeM": 0.2538
+    },
+    {
+     "name": "neck_base",
+     "pixel": [
+      446,
+      259
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 140.0,
+     "distToCageEdgeM": 0.2007
+    },
+    {
+     "name": "chest_gem",
+     "pixel": [
+      457,
+      310
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 168.0,
+     "distToCageEdgeM": 0.2409
+    },
+    {
+     "name": "corset_top_center",
+     "pixel": [
+      457,
+      331
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 175.0,
+     "distToCageEdgeM": 0.2509
+    },
+    {
+     "name": "corset_bottom_center",
+     "pixel": [
+      457,
+      376
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 200.0,
+     "distToCageEdgeM": 0.2867
+    },
+    {
+     "name": "waist_center",
+     "pixel": [
+      457,
+      354
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 188.0,
+     "distToCageEdgeM": 0.2695
+    },
+    {
+     "name": "waist_belt_center",
+     "pixel": [
+      456,
+      414
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 221.0,
+     "distToCageEdgeM": 0.3168
+    },
+    {
+     "name": "hand_left",
+     "pixel": [
+      157,
+      623
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 41.0,
+     "distToCageEdgeM": 0.0588
+    },
+    {
+     "name": "wrist_left",
+     "pixel": [
+      197,
+      540
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 2.0,
+     "distToCageEdgeM": 0.0029
+    },
+    {
+     "name": "hand_right",
+     "pixel": [
+      756,
+      623
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 41.0,
+     "distToCageEdgeM": 0.0588
+    },
+    {
+     "name": "wrist_right",
+     "pixel": [
+      716,
+      540
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 0.0,
+     "distToCageEdgeM": 0.0
+    },
+    {
+     "name": "hem_bottom_center",
+     "pixel": [
+      420,
+      1198
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": null,
+     "distToCageEdgeM": null
+    },
+    {
+     "name": "hem_left",
+     "pixel": [
+      219,
+      1198
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": null,
+     "distToCageEdgeM": null
+    },
+    {
+     "name": "hem_right",
+     "pixel": [
+      622,
+      1198
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": null,
+     "distToCageEdgeM": null
+    }
+   ]
+  },
+  "side": {
+   "sign": -1,
+   "iou": 0.6922,
+   "intersectionPx": 221021,
+   "unionPx": 319286,
+   "refPx": 238806,
+   "cagePx": 301501,
+   "landmarkCount": 23,
+   "maxDistToCageEdgeM": 0.2219,
+   "meanDistToCageEdgeM": 0.0727,
+   "points": [
+    {
+     "name": "hair_crown_top",
+     "pixel": [
+      1085,
+      44
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 49.0,
+     "distToCageEdgeM": 0.0715
+    },
+    {
+     "name": "ahoge_tip",
+     "pixel": [
+      1085,
+      40
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 53.0,
+     "distToCageEdgeM": 0.0774
+    },
+    {
+     "name": "horn_tip_back",
+     "pixel": [
+      1213,
+      131
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 7.0,
+     "distToCageEdgeM": 0.0102
+    },
+    {
+     "name": "horn_root",
+     "pixel": [
+      1096,
+      74
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 19.0,
+     "distToCageEdgeM": 0.0277
+    },
+    {
+     "name": "forehead_front",
+     "pixel": [
+      1055,
+      329
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 73.0,
+     "distToCageEdgeM": 0.1066
+    },
+    {
+     "name": "chin",
+     "pixel": [
+      1071,
+      357
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 89.0,
+     "distToCageEdgeM": 0.1299
+    },
+    {
+     "name": "face_back",
+     "pixel": [
+      1134,
+      295
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 152.0,
+     "distToCageEdgeM": 0.2219
+    },
+    {
+     "name": "neck_front",
+     "pixel": [
+      1003,
+      363
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 21.0,
+     "distToCageEdgeM": 0.0307
+    },
+    {
+     "name": "neck_back",
+     "pixel": [
+      1177,
+      363
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 136.0,
+     "distToCageEdgeM": 0.1985
+    },
+    {
+     "name": "chest_front",
+     "pixel": [
+      1010,
+      502
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 28.0,
+     "distToCageEdgeM": 0.0409
+    },
+    {
+     "name": "chest_back",
+     "pixel": [
+      1224,
+      502
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 89.0,
+     "distToCageEdgeM": 0.1299
+    },
+    {
+     "name": "waist_front",
+     "pixel": [
+      1002,
+      641
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 20.0,
+     "distToCageEdgeM": 0.0292
+    },
+    {
+     "name": "waist_back",
+     "pixel": [
+      1252,
+      641
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 25.0,
+     "distToCageEdgeM": 0.0365
+    },
+    {
+     "name": "hip_front",
+     "pixel": [
+      1006,
+      756
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 8.0,
+     "distToCageEdgeM": 0.0117
+    },
+    {
+     "name": "hip_back",
+     "pixel": [
+      1212,
+      756
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 28.0,
+     "distToCageEdgeM": 0.0409
+    },
+    {
+     "name": "knee_front",
+     "pixel": [
+      997,
+      964
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 17.0,
+     "distToCageEdgeM": 0.0248
+    },
+    {
+     "name": "knee_back",
+     "pixel": [
+      1240,
+      964
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 44.0,
+     "distToCageEdgeM": 0.0642
+    },
+    {
+     "name": "hem_front",
+     "pixel": [
+      982,
+      1190
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 43.0,
+     "distToCageEdgeM": 0.0628
+    },
+    {
+     "name": "hem_back",
+     "pixel": [
+      1313,
+      1190
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 0.0,
+     "distToCageEdgeM": 0.0
+    },
+    {
+     "name": "bust_front_apex",
+     "pixel": [
+      1002,
+      570
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 18.0,
+     "distToCageEdgeM": 0.0263
+    },
+    {
+     "name": "glute_back_apex",
+     "pixel": [
+      1246,
+      675
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 16.0,
+     "distToCageEdgeM": 0.0234
+    },
+    {
+     "name": "hair_tail_tip",
+     "pixel": [
+      1131,
+      949
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 116.0,
+     "distToCageEdgeM": 0.1693
+    },
+    {
+     "name": "hand_front",
+     "pixel": [
+      1076,
+      622
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 94.0,
+     "distToCageEdgeM": 0.1372
+    }
+   ]
+  },
+  "back": {
+   "sign": 1,
+   "iou": 0.7639,
+   "intersectionPx": 381842,
+   "unionPx": 499842,
+   "refPx": 409647,
+   "cagePx": 472037,
+   "landmarkCount": 24,
+   "maxDistToCageEdgeM": 0.3699,
+   "meanDistToCageEdgeM": 0.14,
+   "points": [
+    {
+     "name": "hair_crown_top",
+     "pixel": [
+      1746,
+      35
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 42.0,
+     "distToCageEdgeM": 0.0602
+    },
+    {
+     "name": "ahoge_tip",
+     "pixel": [
+      1746,
+      30
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 47.0,
+     "distToCageEdgeM": 0.0674
+    },
+    {
+     "name": "horn_tip_left",
+     "pixel": [
+      1626,
+      128
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 26.0,
+     "distToCageEdgeM": 0.0373
+    },
+    {
+     "name": "horn_root_left",
+     "pixel": [
+      1708,
+      66
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 15.0,
+     "distToCageEdgeM": 0.0215
+    },
+    {
+     "name": "horn_tip_right",
+     "pixel": [
+      1860,
+      129
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 22.0,
+     "distToCageEdgeM": 0.0315
+    },
+    {
+     "name": "horn_root_right",
+     "pixel": [
+      1779,
+      66
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 8.0,
+     "distToCageEdgeM": 0.0115
+    },
+    {
+     "name": "head_widest_left",
+     "pixel": [
+      1647,
+      145
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": 9.0,
+     "distToCageEdgeM": 0.0129
+    },
+    {
+     "name": "head_widest_right",
+     "pixel": [
+      1841,
+      145
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 1.0,
+     "distToCageEdgeM": 0.0014
+    },
+    {
+     "name": "nape_gem",
+     "pixel": [
+      1743,
+      343
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 182.0,
+     "distToCageEdgeM": 0.2609
+    },
+    {
+     "name": "back_v_bottom",
+     "pixel": [
+      1766,
+      416
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 222.0,
+     "distToCageEdgeM": 0.3183
+    },
+    {
+     "name": "shoulder_left",
+     "pixel": [
+      1619,
+      328
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 49.0,
+     "distToCageEdgeM": 0.0703
+    },
+    {
+     "name": "shoulder_right",
+     "pixel": [
+      1868,
+      328
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 104.0,
+     "distToCageEdgeM": 0.1491
+    },
+    {
+     "name": "corset_top_center",
+     "pixel": [
+      1743,
+      407
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 218.0,
+     "distToCageEdgeM": 0.3125
+    },
+    {
+     "name": "corset_bottom_center",
+     "pixel": [
+      1743,
+      569
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 258.0,
+     "distToCageEdgeM": 0.3699
+    },
+    {
+     "name": "waist_center",
+     "pixel": [
+      1743,
+      488
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 257.0,
+     "distToCageEdgeM": 0.3685
+    },
+    {
+     "name": "tassel_left",
+     "pixel": [
+      1705,
+      548
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 220.0,
+     "distToCageEdgeM": 0.3154
+    },
+    {
+     "name": "tassel_right",
+     "pixel": [
+      1779,
+      549
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 223.0,
+     "distToCageEdgeM": 0.3197
+    },
+    {
+     "name": "hand_left",
+     "pixel": [
+      1549,
+      517
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 63.0,
+     "distToCageEdgeM": 0.0903
+    },
+    {
+     "name": "wrist_left",
+     "pixel": [
+      1495,
+      497
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 9.0,
+     "distToCageEdgeM": 0.0129
+    },
+    {
+     "name": "hand_right",
+     "pixel": [
+      1939,
+      516
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 64.0,
+     "distToCageEdgeM": 0.0918
+    },
+    {
+     "name": "wrist_right",
+     "pixel": [
+      1992,
+      504
+     ],
+     "insideCage": true,
+     "distToCageEdgePx": 11.0,
+     "distToCageEdgeM": 0.0158
+    },
+    {
+     "name": "hem_bottom_center",
+     "pixel": [
+      1740,
+      1197
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": null,
+     "distToCageEdgeM": null
+    },
+    {
+     "name": "hem_left",
+     "pixel": [
+      1556,
+      1197
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": null,
+     "distToCageEdgeM": null
+    },
+    {
+     "name": "hem_right",
+     "pixel": [
+      1924,
+      1197
+     ],
+     "insideCage": false,
+     "distToCageEdgePx": null,
+     "distToCageEdgeM": null
+    }
+   ]
+  }
+ },
+ "stations": [
+  {
+   "name": "hem",
+   "source": "ring",
+   "yM_ref": 0.01,
+   "yM_cage": 0.01,
+   "dY": 0.0,
+   "rx_ref": 0.4552,
+   "rx_cage": 0.4552,
+   "dX": 0.0,
+   "ryF_ref": 0.1818,
+   "ryF_cage": 0.1818,
+   "dZF": 0.0,
+   "ryB_ref": 0.3015,
+   "ryB_cage": 0.3015,
+   "dZB": 0.0,
+   "maxDeltaM": 0.0,
+   "maxDeltaPct": 0.0,
+   "pass": true
+  },
+  {
+   "name": "skirt_wide",
+   "source": "interpolated",
+   "yM_ref": 0.1391,
+   "yM_cage": null,
+   "dY": 0.0,
+   "rx_ref": 0.3527,
+   "rx_cage": 0.3534,
+   "dX": 0.0007,
+   "ryF_ref": 0.1759,
+   "ryF_cage": 0.1759,
+   "dZF": 0.0,
+   "ryB_ref": 0.2431,
+   "ryB_cage": 0.2435,
+   "dZB": 0.0004,
+   "maxDeltaM": 0.0007,
+   "maxDeltaPct": 0.044,
+   "pass": true
+  },
+  {
+   "name": "hip",
+   "source": "ring",
+   "yM_ref": 0.6982,
+   "yM_cage": 0.7,
+   "dY": 0.0018,
+   "rx_ref": 0.2889,
+   "rx_cage": 0.2885,
+   "dX": 0.0004,
+   "ryF_ref": 0.1438,
+   "ryF_cage": 0.1438,
+   "dZF": 0.0,
+   "ryB_ref": 0.1292,
+   "ryB_cage": 0.1291,
+   "dZB": 0.0001,
+   "maxDeltaM": 0.0004,
+   "maxDeltaPct": 0.025,
+   "pass": true
+  },
+  {
+   "name": "waist",
+   "source": "interpolated",
+   "yM_ref": 1.2086,
+   "yM_cage": null,
+   "dY": 0.0,
+   "rx_ref": 0.1763,
+   "rx_cage": 0.1877,
+   "dX": 0.0114,
+   "ryF_ref": 0.1467,
+   "ryF_cage": 0.1509,
+   "dZF": 0.0042,
+   "ryB_ref": 0.1044,
+   "ryB_cage": 0.1024,
+   "dZB": 0.002,
+   "maxDeltaM": 0.0114,
+   "maxDeltaPct": 0.713,
+   "pass": true
+  },
+  {
+   "name": "shoulder",
+   "source": "interpolated",
+   "yM_ref": 1.2272,
+   "yM_cage": null,
+   "dY": 0.0,
+   "rx_ref": 0.1964,
+   "rx_cage": 0.195,
+   "dX": 0.0014,
+   "ryF_ref": 0.1555,
+   "ryF_cage": 0.1552,
+   "dZF": 0.0003,
+   "ryB_ref": 0.1,
+   "ryB_cage": 0.0995,
+   "dZB": 0.0005,
+   "maxDeltaM": 0.0014,
+   "maxDeltaPct": 0.087,
+   "pass": true
+  },
+  {
+   "name": "upper_chest",
+   "source": "interpolated",
+   "yM_ref": 1.2416,
+   "yM_cage": null,
+   "dY": 0.0,
+   "rx_ref": 0.195,
+   "rx_cage": 0.1877,
+   "dX": 0.0073,
+   "ryF_ref": 0.1569,
+   "ryF_cage": 0.1485,
+   "dZF": 0.0084,
+   "ryB_ref": 0.0956,
+   "ryB_cage": 0.0971,
+   "dZB": 0.0015,
+   "maxDeltaM": 0.0084,
+   "maxDeltaPct": 0.523,
+   "pass": true
+  },
+  {
+   "name": "neck",
+   "source": "interpolated",
+   "yM_ref": 1.3448,
+   "yM_cage": null,
+   "dY": 0.0,
+   "rx_ref": 0.109,
+   "rx_cage": 0.1092,
+   "dX": 0.0002,
+   "ryF_ref": 0.0796,
+   "ryF_cage": 0.0796,
+   "dZF": 0.0,
+   "ryB_ref": 0.0796,
+   "ryB_cage": 0.0797,
+   "dZB": 0.0001,
+   "maxDeltaM": 0.0002,
+   "maxDeltaPct": 0.01,
+   "pass": true
+  },
+  {
+   "name": "head_base",
+   "source": "ring",
+   "yM_ref": 1.3878,
+   "yM_cage": 1.43,
+   "dY": 0.0422,
+   "rx_ref": 0.1176,
+   "rx_cage": 0.1257,
+   "dX": 0.0081,
+   "ryF_ref": 0.0518,
+   "ryF_cage": 0.0829,
+   "dZF": 0.0311,
+   "ryB_ref": 0.0971,
+   "ryB_cage": 0.1059,
+   "dZB": 0.0088,
+   "maxDeltaM": 0.0311,
+   "maxDeltaPct": 1.944,
+   "pass": true
+  },
+  {
+   "name": "head_widest",
+   "source": "ring",
+   "yM_ref": 1.5068,
+   "yM_cage": 1.51,
+   "dY": 0.0032,
+   "rx_ref": 0.1405,
+   "rx_cage": 0.1401,
+   "dX": 0.0004,
+   "ryF_ref": 0.1394,
+   "ryF_cage": 0.1387,
+   "dZF": 0.0007,
+   "ryB_ref": 0.1219,
+   "ryB_cage": 0.1215,
+   "dZB": 0.0004,
+   "maxDeltaM": 0.0007,
+   "maxDeltaPct": 0.044,
+   "pass": true
+  },
+  {
+   "name": "crown",
+   "source": "ring",
+   "yM_ref": 1.6,
+   "yM_cage": 1.6,
+   "dY": 0.0,
+   "rx_ref": 0.1276,
+   "rx_cage": 0.1276,
+   "dX": 0.0,
+   "ryF_ref": 0.119,
+   "ryF_cage": 0.119,
+   "dZF": 0.0,
+   "ryB_ref": 0.1088,
+   "ryB_cage": 0.1088,
+   "dZB": 0.0,
+   "maxDeltaM": 0.0,
+   "maxDeltaPct": 0.0,
+   "pass": true
+  }
+ ],
+ "checks": {
+  "iou_front": 0.761,
+  "iou_side": 0.6922,
+  "iou_back": 0.7639,
+  "iouAllPass": false,
+  "landmarkMinPerView": 23,
+  "landmarkCountPass": true,
+  "maxPointDistM": 0.3699,
+  "pointDistPass": false,
+  "stationMaxDeltaPct": 1.944,
+  "stationPass": true
+ },
+ "ok": false
+}
