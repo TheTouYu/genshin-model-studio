@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "kind": "genshin-model-studio.contour-model.summary",
+  "tool": {
+    "name": "genshin-model-studio",
+    "version": "0.1.0"
+  },
+  "input": {
+    "file": "/home/h/genshin-model-studio/examples/contour-foot.json",
+    "sha256": "2c75111626507e662ae1054fa98563a5f3460796ede3fb733ebdac7ee4a90192"
+  },
+  "model": {
+    "name": "fail-budget",
+    "mesh": {
+      "faces": 1152,
+      "quads": 576,
+      "tris": 0,
+      "degenerate": 0,
+      "units": 576
+    }
+  },
+  "output": {
+    "mesh": "/home/h/genshin-model-studio/delivery/quality-demo/fail-budget/fail-budget.mesh.json",
+    "meshSha256": "353093c25eb3467a25de55f6a0b1a73a6915bafe60af87f728511c2df707d9d8",
+    "structure": "/home/h/genshin-model-studio/delivery/quality-demo/fail-budget/fail-budget.structure.json",
+    "gil": "/home/h/genshin-model-studio/delivery/quality-demo/fail-budget/fail-budget.gil",
+    "gia": "/home/h/genshin-model-studio/delivery/quality-demo/fail-budget/fail-budget.gia",
+    "summary": "/home/h/genshin-model-studio/delivery/quality-demo/fail-budget/fail-budget.summary.json"
+  },
+  "budget": {
+    "requested": 10,
+    "used": 576,
+    "exceeded": true
+  },
+  "gate": {
+    "invoked": false,
+    "state": "skipped",
+    "reason": "SKIPPED_GATE"
+  }
+}

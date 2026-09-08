@@ -1,0 +1,13 @@
+{
+  "iteration": 12,
+  "round": "R0 趾列可见性专项（外挂趾体回归审计）",
+  "problem": "降低环向采样后 meshCheck 改善，但用户截图显示五趾纵向体像悬浮圆柱/外挂条带，趾根与前掌存在硬边。",
+  "priority": "L2 趾掌连续性优先于局部可见性；禁止用同一 mesh 数组掩盖断开拓扑。",
+  "reference": "用户要求趾=软体连续，不是贴球、独立球体或外挂柱体。",
+  "hypothesis": "当前 lofted 趾列虽写入同一 vertices/faces 数组，但未与前掌 ring 共享顶点/桥接面，因此视觉上仍是独立面片。",
+  "action": ["将 sides 从64降至48以降低瘦长面", "扩大趾根并增加 rootInset", "保留圆端面", "用户视觉复核后确认外挂回归"],
+  "tools": ["profileLoft.lofted", "meshCheck", "browser-harness", "read_image"],
+  "result": {"base":{"faces":6628,"deg":0,"skinnyPct":1.13,"areaRatio":22},"sock":{"faces":6628,"deg":0,"skinnyPct":0.84,"areaRatio":12.7},"visual":"FAIL: 五趾可数但与前掌硬连接/悬浮，不满足软体连续。"},
+  "decision": "reject/continue",
+  "next": "回退外挂趾列思路，改为共享前掌末端 ring 的桥接拓扑：趾根必须复用/连接末端环顶点，再沿纵向分叉；在此之前不进入交付 gate。"
+}

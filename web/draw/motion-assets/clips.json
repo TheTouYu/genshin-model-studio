@@ -1,0 +1,1488 @@
+[
+  {
+    "id": "spine-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "spine",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "neck-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "neck",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "shoulderL-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "shoulderL",
+        "axis": "z",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "elbowL-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "elbowL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "wristL-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "wristL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "hipL-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "hipL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "kneeL-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "kneeL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ankleL-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "ankleL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "shoulderR-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "shoulderR",
+        "axis": "z",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "elbowR-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "elbowR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "wristR-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "wristR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "hipR-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "hipR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "kneeR-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "kneeR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ankleR-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "ankleR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "head-look",
+    "duration": 4,
+    "loop": true,
+    "category": "common-motion",
+    "tracks": [
+      {
+        "joint": "neck",
+        "axis": "y",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.4
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.4
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "head-nod",
+    "duration": 4,
+    "loop": true,
+    "category": "common-motion",
+    "tracks": [
+      {
+        "joint": "neck",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.25
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.25
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "bow",
+    "duration": 4,
+    "loop": true,
+    "category": "common-motion",
+    "tracks": [
+      {
+        "joint": "spine",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.3
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "neck",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.12
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.12
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "torso-turn",
+    "duration": 4,
+    "loop": true,
+    "category": "common-motion",
+    "tracks": [
+      {
+        "joint": "spine",
+        "axis": "y",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.25
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.25
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "neck",
+        "axis": "y",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.15
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "side-bend",
+    "duration": 4,
+    "loop": true,
+    "category": "common-motion",
+    "tracks": [
+      {
+        "joint": "spine",
+        "axis": "z",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.2
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.2
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "neck",
+        "axis": "z",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.1
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.1
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "arm-raise",
+    "duration": 4,
+    "loop": true,
+    "category": "common-motion",
+    "tracks": [
+      {
+        "joint": "shoulderL",
+        "axis": "z",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.4
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.4
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "shoulderR",
+        "axis": "z",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.4
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.4
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "elbow-curl",
+    "duration": 4,
+    "loop": true,
+    "category": "common-motion",
+    "tracks": [
+      {
+        "joint": "elbowL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.5
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.5
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "elbowR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.5
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.5
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "wristL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.2
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.2
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "wristR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.2
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.2
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "squat-study",
+    "duration": 4,
+    "loop": true,
+    "category": "common-motion",
+    "tracks": [
+      {
+        "joint": "hipL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.3
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "hipR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.3
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "kneeL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.5
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.5
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "kneeR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.5
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.5
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "ankleL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.2
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.2
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "ankleR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.2
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.2
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "spine",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.1
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.1
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "walk-in-place-study",
+    "duration": 4,
+    "loop": true,
+    "category": "common-motion",
+    "tracks": [
+      {
+        "joint": "hipL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.25
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.25
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "hipR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.25
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.25
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "kneeL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.2
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.2
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "kneeR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.2
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.2
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "ankleL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.12
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.12
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "ankleR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.12
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.12
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "shoulderL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.2
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.2
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "shoulderR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.2
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.2
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "elbowL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.1
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.1
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "elbowR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.1
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.1
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "spine",
+        "axis": "y",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.08
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            -0.08
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      },
+      {
+        "joint": "neck",
+        "axis": "y",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.04
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.04
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  }
+]

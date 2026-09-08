@@ -1,0 +1,24 @@
+{
+  "stage": "low-point whole-body draft",
+  "loadedInMainAndStandalone": {
+    "vertices": 113,
+    "triangles": 222,
+    "id": "body-blockout-low"
+  },
+  "screenshots": [
+    "front.png",
+    "side.png",
+    "quarter.png"
+  ],
+  "reviewed": true,
+  "structuralApproval": false,
+  "referenceFit": false,
+  "remaining": [
+    "boxy head",
+    "chest shaping and shoulder profile need reference fitting",
+    "palm block has no thumb or fingers",
+    "wedge foot needs heel/forefoot shape",
+    "calf volume not yet established"
+  ],
+  "exportAllowed": false
+}

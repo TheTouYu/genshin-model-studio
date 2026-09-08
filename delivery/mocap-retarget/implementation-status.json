@@ -1,0 +1,19 @@
+{
+  "humanAcceptanceReady": false,
+  "sourceAssets": 10,
+  "playbackIntegrated": true,
+  "knownIssues": [
+    "Synthetic inward shoulder sweep self-intersection",
+    "Retargeted mesh deformations remain invalid",
+    "Terminal directions corrected; dynamic mesh gates still failing",
+    "Sequence currently concatenates clips without blended transitions"
+  ],
+  "completed": [
+    "ASF own-joint FK defect corrected with fixture",
+    "T-pose to A-pose direction alignment corrected",
+    "Duration-aware quaternion playback integrated",
+    "Root translation offset regression passed",
+    "Full bundle hash protects synthetic evidence"
+  ],
+  "next": "Repair remaining full-body deformation and blend sequence transitions; repeat complete numeric/browser checks. No user acceptance requested."
+}

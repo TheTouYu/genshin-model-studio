@@ -1,0 +1,312 @@
+{
+  "schemaVersion": 1,
+  "generatedBy": "scripts/list-capabilities.mjs",
+  "tool": {
+    "name": "genshin-model-studio",
+    "version": "0.1.0"
+  },
+  "cli": [
+    {
+      "name": "gen-model",
+      "command": "npm run gen-model",
+      "bin": "dist/src/cli/gen-model.js",
+      "params": [
+        "<input.json> (structure.json 超集)",
+        "--out-dir <dir>",
+        "--force",
+        "--format text|json",
+        "--list-resources",
+        "-h/--help"
+      ],
+      "outputs": [
+        "<name>.gil",
+        "<name>.summary.json"
+      ],
+      "source": "src/cli/gen-model.ts",
+      "description": "structure.json 超集 → .gil 候选 + 摘要；--list-resources 打印官方基础元件速查表。"
+    },
+    {
+      "name": "export-mesh",
+      "command": "npm run export-mesh",
+      "bin": "dist/src/cli/export-mesh.js",
+      "params": [
+        "<input.json> (mesh JSON 或 structure 超集)",
+        "--out-dir <dir>",
+        "--format gil|gia|both",
+        "--budget <N>",
+        "--no-gate",
+        "--force",
+        "--format-txt text|json",
+        "-h/--help"
+      ],
+      "outputs": [
+        "<name>.gil",
+        "<name>.gia",
+        "<name>.structure.json",
+        "<name>.summary.json"
+      ],
+      "source": "src/cli/export-mesh.ts",
+      "description": "面板化（配对→10009003 平面 / 未配对→10009006 / 退化→10009001 盒）→ .gil/.gia + 摘要；默认门禁。"
+    },
+    {
+      "name": "contour-model",
+      "command": "npm run contour-model",
+      "bin": "dist/src/cli/contour-model.js",
+      "params": [
+        "<input.json> (topOutline+sideProfile 或 rings)",
+        "--out-dir <dir>",
+        "--name <name>",
+        "--format gil|gia|both",
+        "--budget <N>",
+        "--points <N>",
+        "--views",
+        "--no-gate",
+        "--force",
+        "--format-txt text|json",
+        "-h/--help"
+      ],
+      "outputs": [
+        "<name>.mesh.json",
+        "<name>.structure.json",
+        "<name>.gil",
+        "<name>.gia",
+        "<name>.summary.json",
+        "view-{iso,front,side,top,back}.svg"
+      ],
+      "source": "src/cli/contour-model.ts",
+      "description": "任意闭合轮廓（顶视+侧视剖面或直接环）→ 蒙皮水密网格 → 面板化 → 门禁 → 导出；--views 五视角 SVG。"
+    },
+    {
+      "name": "gen-gia",
+      "command": "npm run gen-gia",
+      "bin": "dist/src/gia/gia-encoder.js",
+      "params": [
+        "<structure.json>",
+        "<output.gia>"
+      ],
+      "outputs": [
+        "<output.gia>"
+      ],
+      "source": "src/gia/gia-encoder.ts",
+      "description": "structure.json 超集 → .gia 字节（GIA 格式破译自真实样本）。"
+    },
+    {
+      "name": "gen-resource-table",
+      "command": "npm run gen-resource-table",
+      "bin": "scripts/gen-resource-table.mjs",
+      "params": [
+        "--write"
+      ],
+      "outputs": [
+        "docs/input-format.md",
+        "README.md"
+      ],
+      "source": "scripts/gen-resource-table.mjs",
+      "description": "官方基础元件资源表单一来源，生成/校验 docs/input-format.md 与 README.md 资源行。"
+    },
+    {
+      "name": "gen-calibration",
+      "command": "npm run gen-calibration",
+      "bin": "scripts/gen-calibration-package.mjs",
+      "params": [
+        "（无命令行参数；确定性生成校准包，可重跑）"
+      ],
+      "outputs": [
+        "delivery/calibration-mesh/*/",
+        "delivery/calibration-mesh/MANIFEST.json"
+      ],
+      "source": "scripts/gen-calibration-package.mjs",
+      "description": "生成网格-面片最小校准包（10009003/10009006/10009019 + 面板化示例）。"
+    }
+  ],
+  "gms": {
+    "commands": {
+      "geometry": [
+        "clear",
+        "circle",
+        "rect",
+        "line",
+        "curve",
+        "polyline",
+        "loop",
+        "undo",
+        "import",
+        "export"
+      ],
+      "component": [
+        "part",
+        "group",
+        "ungroup",
+        "props",
+        "rotate",
+        "rotatem",
+        "delete"
+      ],
+      "physicsDeclaration": [
+        "point",
+        "touches",
+        "link",
+        "floating",
+        "collides",
+        "verify",
+        "parts"
+      ],
+      "tool": [
+        "summary",
+        "px2m",
+        "m2px",
+        "mode",
+        "list"
+      ]
+    },
+    "partTypes": [
+      "ring",
+      "rod",
+      "poly",
+      "sphere",
+      "cone",
+      "tri",
+      "quad",
+      "disc",
+      "el-disc",
+      "arc",
+      "plate",
+      "mesh"
+    ]
+  },
+  "mesh": {
+    "verificationThresholds": {
+      "watertight": "openEdges=0 且 nonManifold=0（每条边引用次数：2=闭合、1=开边、>2=非流形）",
+      "weldTolerance": "2e-4",
+      "minArea": "1e-9",
+      "skinnyEdgeRatio": "0.08",
+      "maxSkinnyPct": "5%",
+      "maxAreaRatio": "20",
+      "quadThickness": "0.005",
+      "triThickness": "0.002",
+      "boxThickness": "0.0015",
+      "normalTolerance": "0.999",
+      "resamplePoints": "200",
+      "degenerateMode": "'box'（默认；或 'skip' 只计数）"
+    },
+    "resourceRows": [
+      {
+        "resourceId": 10005018,
+        "scaleSemantics": "无可见几何",
+        "localBasis": "作为宿主保存局部原点",
+        "status": "已闭合",
+        "readmeSemantics": "宿主模板，无可见几何",
+        "name": "空模型"
+      },
+      {
+        "resourceId": 10009001,
+        "scaleSemantics": "`1×1×1`（边长 1 米，半尺寸 0.5）",
+        "localBasis": "X/Y/Z 对应三条边；`scale=[宽, 高, 长]`，长轴=局部 Z",
+        "status": "已闭合",
+        "readmeSemantics": "1×1×1；scale=[宽,高,长]，长轴=Z",
+        "name": "长方体"
+      },
+      {
+        "resourceId": 10009002,
+        "scaleSemantics": "直径 1（统一设计语言）",
+        "localBasis": "—",
+        "status": "已闭合*",
+        "readmeSemantics": "直径 1",
+        "name": "球体"
+      },
+      {
+        "resourceId": 10009003,
+        "scaleSemantics": "`1×1`",
+        "localBasis": "—",
+        "status": "未校准",
+        "readmeSemantics": "1×1（未校准）",
+        "name": "平面"
+      },
+      {
+        "resourceId": 10009004,
+        "scaleSemantics": "高 1，底面正三角形**外接圆直径 1**（外接半径 0.5，边长 0.866）",
+        "localBasis": "高度轴 Y；底面 XZ；一个顶点朝 `-Z`",
+        "status": "已闭合",
+        "readmeSemantics": "高 1，底面外接圆直径 1；顶点朝 -Z",
+        "name": "三棱柱"
+      },
+      {
+        "resourceId": 10009005,
+        "scaleSemantics": "高 1，底面正五边形**外接圆直径 1**（外接半径 0.5，边长 0.588，顶点到对边距离 0.905）",
+        "localBasis": "高度轴 Y；底面 XZ；一个顶点朝 `-Z`",
+        "status": "已闭合",
+        "readmeSemantics": "高 1，底面外接圆直径 1；顶点朝 -Z",
+        "name": "五棱柱"
+      },
+      {
+        "resourceId": 10009006,
+        "scaleSemantics": "—",
+        "localBasis": "—",
+        "status": "未校准",
+        "readmeSemantics": "未校准",
+        "name": "三棱锥"
+      },
+      {
+        "resourceId": 10009008,
+        "scaleSemantics": "截面直径 1",
+        "localBasis": "**零旋转轴向 Y（竖直）**；`scale=[截面直径, 轴向长度, 截面直径]`",
+        "status": "已闭合",
+        "readmeSemantics": "截面直径 1；零旋转轴向 Y",
+        "name": "圆柱"
+      },
+      {
+        "resourceId": 10009009,
+        "scaleSemantics": "—",
+        "localBasis": "—",
+        "status": "未校准",
+        "readmeSemantics": "未校准",
+        "name": "圆锥"
+      },
+      {
+        "resourceId": 10009010,
+        "scaleSemantics": "—",
+        "localBasis": "—",
+        "status": "未校准",
+        "readmeSemantics": "未校准",
+        "name": "线框长方体"
+      },
+      {
+        "resourceId": 10009011,
+        "scaleSemantics": "—",
+        "localBasis": "—",
+        "status": "未校准",
+        "readmeSemantics": "未校准",
+        "name": "线框圆柱"
+      },
+      {
+        "resourceId": 10009012,
+        "scaleSemantics": "截面直径 1；轴向长 = `scale.y`（空心，无顶盖/底盖 openEnded）",
+        "localBasis": "**零旋转轴向 Y（竖直）**；`scale=[截面直径, 轴向长, 截面直径]`",
+        "status": "未校准",
+        "readmeSemantics": "截面直径 1；空心无盖底",
+        "name": "开口薄壁圆柱"
+      },
+      {
+        "resourceId": 10009019,
+        "scaleSemantics": "几何由 `vertices/faces/colors` 承载（世界坐标）；`scale` 无尺寸语义",
+        "localBasis": "顶点即世界坐标（`position/rotation` 忽略，非变换语义）",
+        "status": "未校准",
+        "readmeSemantics": "由顶点+面承载（世界坐标）",
+        "name": "网格"
+      }
+    ]
+  },
+  "scripts": [
+    "build",
+    "gen-model",
+    "export-mesh",
+    "contour-model",
+    "gen-gia",
+    "gen-resource-table",
+    "gen-calibration",
+    "capabilities",
+    "test",
+    "benchmark",
+    "web"
+  ]
+}

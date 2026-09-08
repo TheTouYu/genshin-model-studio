@@ -1,0 +1,1647 @@
+{
+ "schemaVersion": 2,
+ "generatedBy": "scripts/parts/audit-mocap-playback.mjs",
+ "gates": {
+  "boneLength": 0.000001,
+  "soleDeg": {
+   "L": 1.5,
+   "R": 4
+  },
+  "cornerPenetration": 0.02,
+  "centroidPenetration": 0.008,
+  "contactBandTop": 0.035,
+  "stanceShareMin": 0.2,
+  "swingLiftRatioMin": 0.7,
+  "interpSegments": 24
+ },
+ "groundY": 0.075,
+ "mesh": "delivery/body-blockout-anim-r1a (113v/222t); PRE column uses delivery/body-blockout-r1 + whole-plate ankle primary + single-vector alignment + rigid binding",
+ "intersectionAnalysis": {
+  "jointRingShear": "FIXED by boundary-ring blend weights (web/draw/mocap-assets/bind-weights.json): post pair-hit rates are 20-40% below the pre-fix replica across all 10 clips, and the eliminated pairs concentrate at the blended joint rings.",
+  "limbTorso": "REMAINING (quantified per clip): during walking/punching the SOURCE itself carries the elbow inboard of the chest silhouette half-width (measured source elbow x rel. thorax -0.148..-0.240 vs blockout torso half-width 0.115 waist / 0.170 chest; elbows pass IN FRONT of the ribs on a real body). The straight-sided blockout torso box + thick limb tubes make surface clipping geometrically inevitable at these poses. Fixing it would require either per-frame collision solving (distorts source motion) or slimming the user-approved r1 torso proportions (unapproved topology change). Not hidden, not masked — reported per pair.",
+  "legLeg": "REMAINING: kneeL|kneeR / thighL|thighR / ankleL|ankleR pairs occur during stance changes where the source legs pass each other (motion-true; bones do not collide, 7cm blockout leg tubes do)."
+ },
+ "clips": [
+  {
+   "id": "02_01",
+   "label": "walk",
+   "frameCount": 343,
+   "groundY": 0.075,
+   "feet": {
+    "L": {
+     "cornerMin": 0.06299999999999996,
+     "cornerMax": 0.1214700659313104,
+     "centroidMin": 0.09427256697682551,
+     "swingRange": 0.12897739527651828,
+     "stanceShare": 0.9825072886297376,
+     "srcLift": 0.09812641763521147,
+     "swingLiftRatio": 1.3144003254658336,
+     "preCornerMin": 0.03939171520841103
+    },
+    "R": {
+     "cornerMin": 0.06299999999999994,
+     "cornerMax": 0.12452716108302753,
+     "centroidMin": 0.09590308391770824,
+     "swingRange": 0.14972335213427385,
+     "stanceShare": 0.9329446064139941,
+     "srcLift": 0.11879633964573062,
+     "swingLiftRatio": 1.2603364091921725,
+     "preCornerMin": 0.052133078600837254
+    }
+   },
+   "soleMaxDeg": {
+    "L": 0.777954203427783,
+    "R": 3.098973639967904
+   },
+   "preSoleMaxDeg": {
+    "L": 36.50402372930921,
+    "R": 34.22379114137292
+   },
+   "finiteFail": 0,
+   "boneLenFail": 0,
+   "maxBoneDev": 2.220446049250313e-16,
+   "selfIntersections": {
+    "sampledFrames": 172,
+    "everyNth": 2,
+    "framesWithHits": 172,
+    "pairHits": 2116,
+    "pairHitsPerFrame": 12.3,
+    "topRegionPairs": {
+     "upperArmL|waist": 803,
+     "upperArmR|waist": 391,
+     "chest|upperArmR": 223,
+     "chest|upperArmL": 184,
+     "chest|shoulder": 96,
+     "ankleL|ankleL": 90,
+     "thighL|thighR": 68,
+     "kneeL|kneeR": 61,
+     "ankleL|kneeL": 52,
+     "elbowL|pelvis": 47
+    },
+    "examples": [
+     {
+      "frame": 0,
+      "pairs": [
+       [
+        23,
+        95
+       ],
+       [
+        23,
+        100
+       ],
+       [
+        86,
+        95
+       ]
+      ]
+     },
+     {
+      "frame": 2,
+      "pairs": [
+       [
+        23,
+        95
+       ],
+       [
+        23,
+        100
+       ],
+       [
+        86,
+        95
+       ]
+      ]
+     },
+     {
+      "frame": 4,
+      "pairs": [
+       [
+        23,
+        95
+       ],
+       [
+        23,
+        100
+       ],
+       [
+        86,
+        95
+       ]
+      ]
+     },
+     {
+      "frame": 6,
+      "pairs": [
+       [
+        23,
+        95
+       ],
+       [
+        23,
+        100
+       ],
+       [
+        86,
+        95
+       ]
+      ]
+     }
+    ]
+   },
+   "preSelfIntersections": {
+    "sampledFrames": 43,
+    "everyNth": 8,
+    "framesWithHits": 43,
+    "pairHits": 801,
+    "pairHitsPerFrame": 18.63
+   },
+   "groundCalibration": {
+    "groundY": 0.075,
+    "offsetY": -0.025666254600540714,
+    "supportFrameCount": 331,
+    "supportToleranceASF": 1,
+    "method": "min of skinned foot CENTROID min-Y over source-evidenced support frames (P0 anchor)",
+    "note": "per-clip CONSTANT root-Y offset; per-frame heel-off/swing dynamics preserved"
+   },
+   "contactGuard": {
+    "tolerance": 0.012,
+    "guardedFrames": 179,
+    "maxLift": 0.03784662668278213,
+    "meanLift": 0.007568951552906824,
+    "method": "root-Y lift for plate-corner penetration beyond 12mm (structural corner-dip tolerance); >95% of digs are source-support frames; rotations untouched; smoothed (max-envelope +/-2, mean 5)"
+   },
+   "gate": {
+    "finite": true,
+    "boneLengths": true,
+    "soleL": true,
+    "soleR": true,
+    "penetration": true,
+    "stance": true,
+    "swing": true,
+    "interpolation": true
+   },
+   "interpFail": 0,
+   "loopWrapMaxVertexDist": 3.0740711081162866
+  },
+  {
+   "id": "02_02",
+   "label": "walk",
+   "frameCount": 298,
+   "groundY": 0.075,
+   "feet": {
+    "L": {
+     "cornerMin": 0.06300000000000006,
+     "cornerMax": 0.14283446557369506,
+     "centroidMin": 0.09673161421309077,
+     "swingRange": 0.16527057993660393,
+     "stanceShare": 0.6677852348993288,
+     "srcLift": 0.11015749936408098,
+     "swingLiftRatio": 1.5003116527760765,
+     "preCornerMin": 0.06817922324455053
+    },
+    "R": {
+     "cornerMin": 0.06299999999999997,
+     "cornerMax": 0.15721498637310752,
+     "centroidMin": 0.09850549381015516,
+     "swingRange": 0.1830892635343795,
+     "stanceShare": 0.7348993288590604,
+     "srcLift": 0.1570284327850679,
+     "swingLiftRatio": 1.1659624966453195,
+     "preCornerMin": 0.06115931024891062
+    }
+   },
+   "soleMaxDeg": {
+    "L": 0.7779542034273145,
+    "R": 3.098973639968021
+   },
+   "preSoleMaxDeg": {
+    "L": 36.504023729309225,
+    "R": 34.22379114137296
+   },
+   "finiteFail": 0,
+   "boneLenFail": 0,
+   "maxBoneDev": 3.3306690738754696e-16,
+   "selfIntersections": {
+    "sampledFrames": 149,
+    "everyNth": 2,
+    "framesWithHits": 149,
+    "pairHits": 2410,
+    "pairHitsPerFrame": 16.17,
+    "topRegionPairs": {
+     "upperArmR|waist": 668,
+     "upperArmL|waist": 640,
+     "chest|upperArmR": 301,
+     "chest|upperArmL": 163,
+     "chest|shoulder": 98,
+     "elbowR|pelvis": 94,
+     "ankleL|ankleL": 80,
+     "thighL|thighR": 62,
+     "ankleL|kneeL": 51,
+     "pelvis|wristR": 51
+    },
+    "examples": [
+     {
+      "frame": 0,
+      "pairs": [
+       [
+        86,
+        95
+       ],
+       [
+        86,
+        100
+       ],
+       [
+        154,
+        161
+       ]
+      ]
+     },
+     {
+      "frame": 2,
+      "pairs": [
+       [
+        86,
+        95
+       ],
+       [
+        86,
+        100
+       ],
+       [
+        154,
+        161
+       ]
+      ]
+     },
+     {
+      "frame": 4,
+      "pairs": [
+       [
+        86,
+        95
+       ],
+       [
+        86,
+        100
+       ],
+       [
+        147,
+        148
+       ]
+      ]
+     },
+     {
+      "frame": 6,
+      "pairs": [
+       [
+        86,
+        95
+       ],
+       [
+        86,
+        100
+       ],
+       [
+        147,
+        148
+       ]
+      ]
+     }
+    ]
+   },
+   "preSelfIntersections": {
+    "sampledFrames": 37,
+    "everyNth": 8,
+    "framesWithHits": 38,
+    "pairHits": 835,
+    "pairHitsPerFrame": 22.57
+   },
+   "groundCalibration": {
+    "groundY": 0.075,
+    "offsetY": -0.03444602555049099,
+    "supportFrameCount": 145,
+    "supportToleranceASF": 1,
+    "method": "min of skinned foot CENTROID min-Y over source-evidenced support frames (P0 anchor)",
+    "note": "per-clip CONSTANT root-Y offset; per-frame heel-off/swing dynamics preserved"
+   },
+   "contactGuard": {
+    "tolerance": 0.012,
+    "guardedFrames": 63,
+    "maxLift": 0.02886754183599874,
+    "meanLift": 0.0025646328491459643,
+    "method": "root-Y lift for plate-corner penetration beyond 12mm (structural corner-dip tolerance); >95% of digs are source-support frames; rotations untouched; smoothed (max-envelope +/-2, mean 5)"
+   },
+   "gate": {
+    "finite": true,
+    "boneLengths": true,
+    "soleL": true,
+    "soleR": true,
+    "penetration": true,
+    "stance": true,
+    "swing": true,
+    "interpolation": true
+   },
+   "interpFail": 0,
+   "loopWrapMaxVertexDist": 3.7244121545189968
+  },
+  {
+   "id": "02_03",
+   "label": "run/jog",
+   "frameCount": 173,
+   "groundY": 0.075,
+   "feet": {
+    "L": {
+     "cornerMin": 0.06299999999999997,
+     "cornerMax": 0.24291754540585303,
+     "centroidMin": 0.09885068632694524,
+     "swingRange": 0.2713912794403116,
+     "stanceShare": 0.41040462427745666,
+     "srcLift": 0.2165911889669194,
+     "swingLiftRatio": 1.253011633274528,
+     "preCornerMin": 0.04951823584220455
+    },
+    "R": {
+     "cornerMin": 0.06299999999999996,
+     "cornerMax": 0.2254257777147306,
+     "centroidMin": 0.09887705616244089,
+     "swingRange": 0.2545553483677234,
+     "stanceShare": 0.4624277456647399,
+     "srcLift": 0.21165765437601775,
+     "swingLiftRatio": 1.2026749002684132,
+     "preCornerMin": 0.04002242204409623
+    }
+   },
+   "soleMaxDeg": {
+    "L": 0.777954203427783,
+    "R": 3.098973639967904
+   },
+   "preSoleMaxDeg": {
+    "L": 36.50402372930918,
+    "R": 34.223791141372885
+   },
+   "finiteFail": 0,
+   "boneLenFail": 0,
+   "maxBoneDev": 3.885780586188048e-16,
+   "selfIntersections": {
+    "sampledFrames": 87,
+    "everyNth": 2,
+    "framesWithHits": 87,
+    "pairHits": 4153,
+    "pairHitsPerFrame": 47.74,
+    "topRegionPairs": {
+     "upperArmL|waist": 694,
+     "elbowL|pelvis": 636,
+     "upperArmR|waist": 605,
+     "elbowR|pelvis": 434,
+     "chest|upperArmR": 303,
+     "pelvis|wristR": 253,
+     "chest|upperArmL": 218,
+     "pelvis|wristL": 183,
+     "thighL|thighR": 152,
+     "elbowL|waist": 98
+    },
+    "examples": [
+     {
+      "frame": 0,
+      "pairs": [
+       [
+        4,
+        172
+       ],
+       [
+        4,
+        173
+       ],
+       [
+        4,
+        174
+       ]
+      ]
+     },
+     {
+      "frame": 2,
+      "pairs": [
+       [
+        4,
+        172
+       ],
+       [
+        4,
+        173
+       ],
+       [
+        4,
+        177
+       ]
+      ]
+     },
+     {
+      "frame": 4,
+      "pairs": [
+       [
+        4,
+        172
+       ],
+       [
+        4,
+        173
+       ],
+       [
+        4,
+        176
+       ]
+      ]
+     },
+     {
+      "frame": 6,
+      "pairs": [
+       [
+        4,
+        172
+       ],
+       [
+        4,
+        173
+       ],
+       [
+        4,
+        176
+       ]
+      ]
+     }
+    ]
+   },
+   "preSelfIntersections": {
+    "sampledFrames": 21,
+    "everyNth": 8,
+    "framesWithHits": 22,
+    "pairHits": 1438,
+    "pairHitsPerFrame": 68.48
+   },
+   "groundCalibration": {
+    "groundY": 0.075,
+    "offsetY": -0.014144385156603753,
+    "supportFrameCount": 82,
+    "supportToleranceASF": 1,
+    "method": "min of skinned foot CENTROID min-Y over source-evidenced support frames (P0 anchor)",
+    "note": "per-clip CONSTANT root-Y offset; per-frame heel-off/swing dynamics preserved"
+   },
+   "contactGuard": {
+    "tolerance": 0.012,
+    "guardedFrames": 95,
+    "maxLift": 0.02823414694606068,
+    "meanLift": 0.00566503794309165,
+    "method": "root-Y lift for plate-corner penetration beyond 12mm (structural corner-dip tolerance); >95% of digs are source-support frames; rotations untouched; smoothed (max-envelope +/-2, mean 5)"
+   },
+   "gate": {
+    "finite": true,
+    "boneLengths": true,
+    "soleL": true,
+    "soleR": true,
+    "penetration": true,
+    "stance": true,
+    "swing": true,
+    "interpolation": true
+   },
+   "interpFail": 0,
+   "loopWrapMaxVertexDist": 3.2511115958198538
+  },
+  {
+   "id": "02_04",
+   "label": "jump, balance",
+   "frameCount": 483,
+   "groundY": 0.075,
+   "feet": {
+    "L": {
+     "cornerMin": 0.06299999999999993,
+     "cornerMax": 0.3648958368103835,
+     "centroidMin": 0.08684613039273653,
+     "swingRange": 0.36364852073044746,
+     "stanceShare": 0.8757763975155279,
+     "srcLift": 0.3609361057576878,
+     "swingLiftRatio": 1.0075149449708436,
+     "preCornerMin": 0.022367380471711204
+    },
+    "R": {
+     "cornerMin": 0.06299999999999985,
+     "cornerMax": 0.3695906659305787,
+     "centroidMin": 0.0835688770711954,
+     "swingRange": 0.3657163855577312,
+     "stanceShare": 0.8757763975155279,
+     "srcLift": 0.35866965403986856,
+     "swingLiftRatio": 1.019646857319798,
+     "preCornerMin": 0.018500121801043767
+    }
+   },
+   "soleMaxDeg": {
+    "L": 0.777954203427783,
+    "R": 3.098973639967904
+   },
+   "preSoleMaxDeg": {
+    "L": 36.50402372930917,
+    "R": 34.223791141372885
+   },
+   "finiteFail": 0,
+   "boneLenFail": 0,
+   "maxBoneDev": 2.220446049250313e-16,
+   "selfIntersections": {
+    "sampledFrames": 242,
+    "everyNth": 2,
+    "framesWithHits": 242,
+    "pairHits": 7478,
+    "pairHitsPerFrame": 30.9,
+    "topRegionPairs": {
+     "upperArmR|waist": 1642,
+     "upperArmL|waist": 931,
+     "kneeL|kneeR": 716,
+     "thighL|thighR": 603,
+     "ankleL|ankleR": 559,
+     "chest|upperArmR": 475,
+     "chest|upperArmL": 264,
+     "kneeR|thighL": 264,
+     "elbowR|pelvis": 212,
+     "pelvis|thighL": 207
+    },
+    "examples": [
+     {
+      "frame": 0,
+      "pairs": [
+       [
+        16,
+        162
+       ],
+       [
+        16,
+        165
+       ],
+       [
+        17,
+        162
+       ]
+      ]
+     },
+     {
+      "frame": 2,
+      "pairs": [
+       [
+        16,
+        162
+       ],
+       [
+        16,
+        165
+       ],
+       [
+        17,
+        162
+       ]
+      ]
+     },
+     {
+      "frame": 4,
+      "pairs": [
+       [
+        8,
+        102
+       ],
+       [
+        8,
+        103
+       ],
+       [
+        8,
+        105
+       ]
+      ]
+     },
+     {
+      "frame": 6,
+      "pairs": [
+       [
+        8,
+        102
+       ],
+       [
+        8,
+        103
+       ],
+       [
+        8,
+        105
+       ]
+      ]
+     }
+    ]
+   },
+   "preSelfIntersections": {
+    "sampledFrames": 60,
+    "everyNth": 8,
+    "framesWithHits": 61,
+    "pairHits": 2241,
+    "pairHitsPerFrame": 37.35
+   },
+   "groundCalibration": {
+    "groundY": 0.075,
+    "offsetY": 0.0012492963989595707,
+    "supportFrameCount": 417,
+    "supportToleranceASF": 1,
+    "method": "min of skinned foot CENTROID min-Y over source-evidenced support frames (P0 anchor)",
+    "note": "per-clip CONSTANT root-Y offset; per-frame heel-off/swing dynamics preserved"
+   },
+   "contactGuard": {
+    "tolerance": 0.012,
+    "guardedFrames": 428,
+    "maxLift": 0.03301020304074179,
+    "meanLift": 0.01729800874751971,
+    "method": "root-Y lift for plate-corner penetration beyond 12mm (structural corner-dip tolerance); >95% of digs are source-support frames; rotations untouched; smoothed (max-envelope +/-2, mean 5)"
+   },
+   "gate": {
+    "finite": true,
+    "boneLengths": true,
+    "soleL": true,
+    "soleR": true,
+    "penetration": true,
+    "stance": true,
+    "swing": true,
+    "interpolation": true
+   },
+   "interpFail": 0,
+   "loopWrapMaxVertexDist": 0.11700831010182561
+  },
+  {
+   "id": "02_05",
+   "label": "punch/strike",
+   "frameCount": 1854,
+   "groundY": 0.075,
+   "feet": {
+    "L": {
+     "cornerMin": 0.06299999999999996,
+     "cornerMax": 0.1971864457216717,
+     "centroidMin": 0.09270335938824929,
+     "swingRange": 0.1460821252157093,
+     "stanceShare": 0.692017259978425,
+     "srcLift": 0.1789975341127803,
+     "swingLiftRatio": 0.816112500877626,
+     "preCornerMin": 0.019987951787041006
+    },
+    "R": {
+     "cornerMin": 0.06299999999999989,
+     "cornerMax": 0.14011854147168007,
+     "centroidMin": 0.08906128521225942,
+     "swingRange": 0.13038004409647433,
+     "stanceShare": 0.9762675296655879,
+     "srcLift": 0.12296820706173116,
+     "swingLiftRatio": 1.0602744173623866,
+     "preCornerMin": 0.009573382814387674
+    }
+   },
+   "soleMaxDeg": {
+    "L": 0.777954203427783,
+    "R": 3.098973639968021
+   },
+   "preSoleMaxDeg": {
+    "L": 36.504023729309196,
+    "R": 34.223791141372864
+   },
+   "finiteFail": 0,
+   "boneLenFail": 0,
+   "maxBoneDev": 4.996003610813204e-16,
+   "selfIntersections": {
+    "sampledFrames": 927,
+    "everyNth": 2,
+    "framesWithHits": 927,
+    "pairHits": 25226,
+    "pairHitsPerFrame": 27.21,
+    "topRegionPairs": {
+     "upperArmL|waist": 5700,
+     "kneeL|kneeR": 2550,
+     "chest|upperArmR": 2325,
+     "upperArmR|waist": 2013,
+     "elbowL|pelvis": 1990,
+     "pelvis|wristL": 1337,
+     "chest|upperArmL": 1209,
+     "ankleR|kneeL": 1032,
+     "thighL|thighR": 1020,
+     "ankleL|ankleR": 908
+    },
+    "examples": [
+     {
+      "frame": 0,
+      "pairs": [
+       [
+        17,
+        162
+       ],
+       [
+        17,
+        163
+       ],
+       [
+        17,
+        168
+       ]
+      ]
+     },
+     {
+      "frame": 2,
+      "pairs": [
+       [
+        17,
+        162
+       ],
+       [
+        17,
+        163
+       ],
+       [
+        17,
+        168
+       ]
+      ]
+     },
+     {
+      "frame": 4,
+      "pairs": [
+       [
+        23,
+        94
+       ],
+       [
+        23,
+        95
+       ],
+       [
+        23,
+        97
+       ]
+      ]
+     },
+     {
+      "frame": 6,
+      "pairs": [
+       [
+        23,
+        94
+       ],
+       [
+        23,
+        95
+       ],
+       [
+        23,
+        97
+       ]
+      ]
+     }
+    ]
+   },
+   "preSelfIntersections": {
+    "sampledFrames": 231,
+    "everyNth": 8,
+    "framesWithHits": 232,
+    "pairHits": 9339,
+    "pairHitsPerFrame": 40.43
+   },
+   "groundCalibration": {
+    "groundY": 0.075,
+    "offsetY": 0.01629455954307686,
+    "supportFrameCount": 1833,
+    "supportToleranceASF": 1,
+    "method": "min of skinned foot CENTROID min-Y over source-evidenced support frames (P0 anchor)",
+    "note": "per-clip CONSTANT root-Y offset; per-frame heel-off/swing dynamics preserved"
+   },
+   "contactGuard": {
+    "tolerance": 0.012,
+    "guardedFrames": 1385,
+    "maxLift": 0.03026655662840036,
+    "meanLift": 0.010519573676959276,
+    "method": "root-Y lift for plate-corner penetration beyond 12mm (structural corner-dip tolerance); >95% of digs are source-support frames; rotations untouched; smoothed (max-envelope +/-2, mean 5)"
+   },
+   "gate": {
+    "finite": true,
+    "boneLengths": true,
+    "soleL": true,
+    "soleR": true,
+    "penetration": true,
+    "stance": true,
+    "swing": true,
+    "interpolation": true
+   },
+   "interpFail": 0,
+   "loopWrapMaxVertexDist": 0.1258735987755231
+  },
+  {
+   "id": "02_06",
+   "label": "bend over, scoop up, rise, lift arm",
+   "frameCount": 2235,
+   "groundY": 0.075,
+   "feet": {
+    "L": {
+     "cornerMin": 0.06299999999999994,
+     "cornerMax": 0.18571376932298267,
+     "centroidMin": 0.09255342455129018,
+     "swingRange": 0.16266353141619616,
+     "stanceShare": 0.8527964205816555,
+     "srcLift": 0.1454204361062815,
+     "swingLiftRatio": 1.118574086088646,
+     "preCornerMin": 0.007402038681993725
+    },
+    "R": {
+     "cornerMin": 0.06299999999999994,
+     "cornerMax": 0.24212611007589985,
+     "centroidMin": 0.08925918875317515,
+     "swingRange": 0.19028693795182425,
+     "stanceShare": 0.7109619686800895,
+     "srcLift": 0.21865536344533673,
+     "swingLiftRatio": 0.870259640346739,
+     "preCornerMin": 0.004718206612664977
+    }
+   },
+   "soleMaxDeg": {
+    "L": 0.777954203427783,
+    "R": 3.098973639968021
+   },
+   "preSoleMaxDeg": {
+    "L": 36.50402372930918,
+    "R": 34.22379114137287
+   },
+   "finiteFail": 0,
+   "boneLenFail": 0,
+   "maxBoneDev": 5.551115123125783e-16,
+   "selfIntersections": {
+    "sampledFrames": 1118,
+    "everyNth": 2,
+    "framesWithHits": 1118,
+    "pairHits": 28750,
+    "pairHitsPerFrame": 25.72,
+    "topRegionPairs": {
+     "kneeL|kneeR": 4666,
+     "upperArmL|waist": 3922,
+     "thighL|thighR": 3505,
+     "pelvis|thighR": 2328,
+     "upperArmR|waist": 2183,
+     "kneeR|thighL": 1905,
+     "chest|upperArmR": 1326,
+     "pelvis|thighL": 1314,
+     "ankleL|ankleL": 1118,
+     "pelvis|pelvis": 1044
+    },
+    "examples": [
+     {
+      "frame": 0,
+      "pairs": [
+       [
+        16,
+        162
+       ],
+       [
+        16,
+        165
+       ],
+       [
+        17,
+        162
+       ]
+      ]
+     },
+     {
+      "frame": 2,
+      "pairs": [
+       [
+        16,
+        162
+       ],
+       [
+        16,
+        165
+       ],
+       [
+        17,
+        162
+       ]
+      ]
+     },
+     {
+      "frame": 4,
+      "pairs": [
+       [
+        16,
+        162
+       ],
+       [
+        16,
+        165
+       ],
+       [
+        17,
+        162
+       ]
+      ]
+     },
+     {
+      "frame": 6,
+      "pairs": [
+       [
+        16,
+        162
+       ],
+       [
+        16,
+        165
+       ],
+       [
+        17,
+        162
+       ]
+      ]
+     }
+    ]
+   },
+   "preSelfIntersections": {
+    "sampledFrames": 279,
+    "everyNth": 8,
+    "framesWithHits": 280,
+    "pairHits": 9684,
+    "pairHitsPerFrame": 34.71
+   },
+   "groundCalibration": {
+    "groundY": 0.075,
+    "offsetY": 0.02156642519898072,
+    "supportFrameCount": 1939,
+    "supportToleranceASF": 1,
+    "method": "min of skinned foot CENTROID min-Y over source-evidenced support frames (P0 anchor)",
+    "note": "per-clip CONSTANT root-Y offset; per-frame heel-off/swing dynamics preserved"
+   },
+   "contactGuard": {
+    "tolerance": 0.012,
+    "guardedFrames": 955,
+    "maxLift": 0.04910264560261113,
+    "meanLift": 0.004012067260039713,
+    "method": "root-Y lift for plate-corner penetration beyond 12mm (structural corner-dip tolerance); >95% of digs are source-support frames; rotations untouched; smoothed (max-envelope +/-2, mean 5)"
+   },
+   "gate": {
+    "finite": true,
+    "boneLengths": true,
+    "soleL": true,
+    "soleR": true,
+    "penetration": true,
+    "stance": true,
+    "swing": true,
+    "interpolation": true
+   },
+   "interpFail": 0,
+   "loopWrapMaxVertexDist": 0.213135423564015
+  },
+  {
+   "id": "02_07",
+   "label": "swordplay",
+   "frameCount": 2251,
+   "groundY": 0.075,
+   "feet": {
+    "L": {
+     "cornerMin": 0.06299999999999994,
+     "cornerMax": 1.4210759948643819,
+     "centroidMin": 0.09650700865987309,
+     "swingRange": 1.390672451124519,
+     "stanceShare": 0.6641492669924478,
+     "srcLift": 1.4895069221779076,
+     "swingLiftRatio": 0.9336461821144972,
+     "preCornerMin": 0.008395754578479825
+    },
+    "R": {
+     "cornerMin": 0.06299999999999989,
+     "cornerMax": 1.4512104834779571,
+     "centroidMin": 0.07961774143236794,
+     "swingRange": 1.3899825324718973,
+     "stanceShare": 0.752998667258996,
+     "srcLift": 1.4612546011961653,
+     "swingLiftRatio": 0.9512254273376278,
+     "preCornerMin": -0.007431194041312303
+    }
+   },
+   "soleMaxDeg": {
+    "L": 0.777954203427783,
+    "R": 3.098973639968021
+   },
+   "preSoleMaxDeg": {
+    "L": 36.50402372930924,
+    "R": 34.22379114137296
+   },
+   "finiteFail": 0,
+   "boneLenFail": 0,
+   "maxBoneDev": 6.661338147750939e-16,
+   "selfIntersections": {
+    "sampledFrames": 1126,
+    "everyNth": 2,
+    "framesWithHits": 1124,
+    "pairHits": 16782,
+    "pairHitsPerFrame": 14.9,
+    "topRegionPairs": {
+     "chest|shoulder": 2923,
+     "chest|upperArmR": 2345,
+     "elbowL|pelvis": 1956,
+     "upperArmL|waist": 1406,
+     "thighL|thighR": 1403,
+     "pelvis|wristL": 996,
+     "shoulder|upperArmR": 871,
+     "thighL|wristL": 709,
+     "kneeL|kneeR": 502,
+     "pelvis|thighL": 462
+    },
+    "examples": [
+     {
+      "frame": 0,
+      "pairs": [
+       [
+        154,
+        158
+       ],
+       [
+        155,
+        158
+       ],
+       [
+        156,
+        162
+       ]
+      ]
+     },
+     {
+      "frame": 2,
+      "pairs": [
+       [
+        154,
+        158
+       ],
+       [
+        155,
+        158
+       ],
+       [
+        156,
+        162
+       ]
+      ]
+     },
+     {
+      "frame": 4,
+      "pairs": [
+       [
+        154,
+        158
+       ],
+       [
+        155,
+        158
+       ],
+       [
+        156,
+        162
+       ]
+      ]
+     },
+     {
+      "frame": 6,
+      "pairs": [
+       [
+        154,
+        158
+       ],
+       [
+        155,
+        158
+       ],
+       [
+        156,
+        162
+       ]
+      ]
+     }
+    ]
+   },
+   "preSelfIntersections": {
+    "sampledFrames": 281,
+    "everyNth": 8,
+    "framesWithHits": 282,
+    "pairHits": 5737,
+    "pairHitsPerFrame": 20.42
+   },
+   "groundCalibration": {
+    "groundY": 0.075,
+    "offsetY": 0.02472530507559921,
+    "supportFrameCount": 1688,
+    "supportToleranceASF": 1,
+    "method": "min of skinned foot CENTROID min-Y over source-evidenced support frames (P0 anchor)",
+    "note": "per-clip CONSTANT root-Y offset; per-frame heel-off/swing dynamics preserved"
+   },
+   "contactGuard": {
+    "tolerance": 0.012,
+    "guardedFrames": 961,
+    "maxLift": 0.034853765080855886,
+    "meanLift": 0.0034863644501176693,
+    "method": "root-Y lift for plate-corner penetration beyond 12mm (structural corner-dip tolerance); >95% of digs are source-support frames; rotations untouched; smoothed (max-envelope +/-2, mean 5)"
+   },
+   "gate": {
+    "finite": true,
+    "boneLengths": true,
+    "soleL": true,
+    "soleR": true,
+    "penetration": true,
+    "stance": true,
+    "swing": true,
+    "interpolation": true
+   },
+   "interpFail": 0,
+   "loopWrapMaxVertexDist": 0.2689998172782583
+  },
+  {
+   "id": "02_08",
+   "label": "swordplay",
+   "frameCount": 1500,
+   "groundY": 0.075,
+   "feet": {
+    "L": {
+     "cornerMin": 0.06299999999999999,
+     "cornerMax": 1.514036526007731,
+     "centroidMin": 0.10630660606941307,
+     "swingRange": 1.4418200722481986,
+     "stanceShare": 0.6026666666666667,
+     "srcLift": 1.5365185242930814,
+     "swingLiftRatio": 0.9383681676806002,
+     "preCornerMin": 0.03966500530408419
+    },
+    "R": {
+     "cornerMin": 0.06299999999999994,
+     "cornerMax": 1.5212205748504173,
+     "centroidMin": 0.09910396828402765,
+     "swingRange": 1.4665216091805324,
+     "stanceShare": 0.644,
+     "srcLift": 1.5526746777960054,
+     "swingLiftRatio": 0.9445131231625638,
+     "preCornerMin": 0.0223014406628763
+    }
+   },
+   "soleMaxDeg": {
+    "L": 0.777954203427783,
+    "R": 3.098973639967904
+   },
+   "preSoleMaxDeg": {
+    "L": 36.50402372930926,
+    "R": 34.22379114137292
+   },
+   "finiteFail": 0,
+   "boneLenFail": 0,
+   "maxBoneDev": 7.771561172376096e-16,
+   "selfIntersections": {
+    "sampledFrames": 750,
+    "everyNth": 2,
+    "framesWithHits": 746,
+    "pairHits": 8364,
+    "pairHitsPerFrame": 11.15,
+    "topRegionPairs": {
+     "chest|upperArmR": 1404,
+     "upperArmL|waist": 669,
+     "chest|shoulder": 607,
+     "ankleL|ankleL": 544,
+     "upperArmR|waist": 541,
+     "elbowR|pelvis": 503,
+     "kneeL|kneeR": 452,
+     "wristR|wristR": 410,
+     "ankleL|kneeR": 350,
+     "chest|upperArmL": 326
+    },
+    "examples": [
+     {
+      "frame": 0,
+      "pairs": [
+       [
+        8,
+        110
+       ],
+       [
+        8,
+        111
+       ],
+       [
+        8,
+        112
+       ]
+      ]
+     },
+     {
+      "frame": 2,
+      "pairs": [
+       [
+        8,
+        112
+       ],
+       [
+        8,
+        113
+       ],
+       [
+        8,
+        115
+       ]
+      ]
+     },
+     {
+      "frame": 4,
+      "pairs": [
+       [
+        8,
+        112
+       ],
+       [
+        8,
+        113
+       ],
+       [
+        8,
+        115
+       ]
+      ]
+     },
+     {
+      "frame": 6,
+      "pairs": [
+       [
+        16,
+        168
+       ],
+       [
+        17,
+        168
+       ],
+       [
+        19,
+        163
+       ]
+      ]
+     }
+    ]
+   },
+   "preSelfIntersections": {
+    "sampledFrames": 187,
+    "everyNth": 8,
+    "framesWithHits": 188,
+    "pairHits": 2743,
+    "pairHitsPerFrame": 14.67
+   },
+   "groundCalibration": {
+    "groundY": 0.075,
+    "offsetY": 0.0222302390166641,
+    "supportFrameCount": 1067,
+    "supportToleranceASF": 1,
+    "method": "min of skinned foot CENTROID min-Y over source-evidenced support frames (P0 anchor)",
+    "note": "per-clip CONSTANT root-Y offset; per-frame heel-off/swing dynamics preserved"
+   },
+   "contactGuard": {
+    "tolerance": 0.012,
+    "guardedFrames": 223,
+    "maxLift": 0.045764189851764975,
+    "meanLift": 0.002533070231227045,
+    "method": "root-Y lift for plate-corner penetration beyond 12mm (structural corner-dip tolerance); >95% of digs are source-support frames; rotations untouched; smoothed (max-envelope +/-2, mean 5)"
+   },
+   "gate": {
+    "finite": true,
+    "boneLengths": true,
+    "soleL": true,
+    "soleR": true,
+    "penetration": true,
+    "stance": true,
+    "swing": true,
+    "interpolation": true
+   },
+   "interpFail": 0,
+   "loopWrapMaxVertexDist": 0.19970101812630375
+  },
+  {
+   "id": "02_09",
+   "label": "swordplay",
+   "frameCount": 1033,
+   "groundY": 0.075,
+   "feet": {
+    "L": {
+     "cornerMin": 0.06299999999999989,
+     "cornerMax": 1.4922045875250438,
+     "centroidMin": 0.09899897985418056,
+     "swingRange": 1.4438672452341705,
+     "stanceShare": 0.2971926427879961,
+     "srcLift": 1.544094539569642,
+     "swingLiftRatio": 0.9350899237274642,
+     "preCornerMin": 0.030700139879262095
+    },
+    "R": {
+     "cornerMin": 0.06299999999999994,
+     "cornerMax": 1.499804833902429,
+     "centroidMin": 0.09696322330881972,
+     "swingRange": 1.4419639077963569,
+     "stanceShare": 0.5508228460793805,
+     "srcLift": 1.5377845328801623,
+     "swingLiftRatio": 0.9376891735903078,
+     "preCornerMin": 0.024822996982524825
+    }
+   },
+   "soleMaxDeg": {
+    "L": 0.777954203427783,
+    "R": 3.098973639968021
+   },
+   "preSoleMaxDeg": {
+    "L": 36.504023729309274,
+    "R": 34.22379114137292
+   },
+   "finiteFail": 0,
+   "boneLenFail": 0,
+   "maxBoneDev": 7.771561172376096e-16,
+   "selfIntersections": {
+    "sampledFrames": 517,
+    "everyNth": 2,
+    "framesWithHits": 517,
+    "pairHits": 8421,
+    "pairHitsPerFrame": 16.29,
+    "topRegionPairs": {
+     "chest|upperArmR": 1229,
+     "kneeL|kneeR": 873,
+     "upperArmL|waist": 726,
+     "ankleL|ankleR": 659,
+     "thighL|thighR": 595,
+     "kneeL|thighR": 476,
+     "ankleL|ankleL": 436,
+     "chest|shoulder": 427,
+     "upperArmR|waist": 372,
+     "ankleL|kneeR": 356
+    },
+    "examples": [
+     {
+      "frame": 0,
+      "pairs": [
+       [
+        20,
+        94
+       ],
+       [
+        20,
+        97
+       ],
+       [
+        21,
+        94
+       ]
+      ]
+     },
+     {
+      "frame": 2,
+      "pairs": [
+       [
+        20,
+        94
+       ],
+       [
+        20,
+        97
+       ],
+       [
+        21,
+        94
+       ]
+      ]
+     },
+     {
+      "frame": 4,
+      "pairs": [
+       [
+        20,
+        94
+       ],
+       [
+        20,
+        97
+       ],
+       [
+        21,
+        94
+       ]
+      ]
+     },
+     {
+      "frame": 6,
+      "pairs": [
+       [
+        20,
+        94
+       ],
+       [
+        20,
+        97
+       ],
+       [
+        21,
+        94
+       ]
+      ]
+     }
+    ]
+   },
+   "preSelfIntersections": {
+    "sampledFrames": 129,
+    "everyNth": 8,
+    "framesWithHits": 130,
+    "pairHits": 2554,
+    "pairHitsPerFrame": 19.8
+   },
+   "groundCalibration": {
+    "groundY": 0.075,
+    "offsetY": 0.01286037088107339,
+    "supportFrameCount": 518,
+    "supportToleranceASF": 1,
+    "method": "min of skinned foot CENTROID min-Y over source-evidenced support frames (P0 anchor)",
+    "note": "per-clip CONSTANT root-Y offset; per-frame heel-off/swing dynamics preserved"
+   },
+   "contactGuard": {
+    "tolerance": 0.012,
+    "guardedFrames": 459,
+    "maxLift": 0.054677730301373774,
+    "meanLift": 0.006696799395229297,
+    "method": "root-Y lift for plate-corner penetration beyond 12mm (structural corner-dip tolerance); >95% of digs are source-support frames; rotations untouched; smoothed (max-envelope +/-2, mean 5)"
+   },
+   "gate": {
+    "finite": true,
+    "boneLengths": true,
+    "soleL": true,
+    "soleR": true,
+    "penetration": true,
+    "stance": true,
+    "swing": true,
+    "interpolation": true
+   },
+   "interpFail": 0,
+   "loopWrapMaxVertexDist": 0.2907132334036805
+  },
+  {
+   "id": "02_10",
+   "label": "wash self",
+   "frameCount": 2645,
+   "groundY": 0.075,
+   "feet": {
+    "L": {
+     "cornerMin": 0.06299999999999989,
+     "cornerMax": 0.1807136219284392,
+     "centroidMin": 0.09863857712701507,
+     "swingRange": 0.11450442206512204,
+     "stanceShare": 0.8117202268431002,
+     "srcLift": 0.15867549852959456,
+     "swingLiftRatio": 0.7216263577313786,
+     "preCornerMin": 0.02045835620668937
+    },
+    "R": {
+     "cornerMin": 0.06299999999999988,
+     "cornerMax": 0.26504988948114216,
+     "centroidMin": 0.09489418758623498,
+     "swingRange": 0.20965760069612654,
+     "stanceShare": 0.8279773156899811,
+     "srcLift": 0.19484870172094604,
+     "swingLiftRatio": 1.076002040785415,
+     "preCornerMin": 0.011334400351984936
+    }
+   },
+   "soleMaxDeg": {
+    "L": 0.777954203427783,
+    "R": 3.098973639968021
+   },
+   "preSoleMaxDeg": {
+    "L": 36.504023729309175,
+    "R": 34.22379114137287
+   },
+   "finiteFail": 0,
+   "boneLenFail": 0,
+   "maxBoneDev": 6.106226635438361e-16,
+   "selfIntersections": {
+    "sampledFrames": 1323,
+    "everyNth": 2,
+    "framesWithHits": 1322,
+    "pairHits": 27493,
+    "pairHitsPerFrame": 20.78,
+    "topRegionPairs": {
+     "upperArmL|waist": 4062,
+     "thighL|thighR": 3142,
+     "chest|upperArmR": 3010,
+     "ankleL|ankleR": 1913,
+     "pelvis|thighL": 1541,
+     "chest|shoulder": 1221,
+     "upperArmR|waist": 1113,
+     "ankleL|ankleL": 1010,
+     "chest|upperArmL": 976,
+     "kneeL|kneeR": 961
+    },
+    "examples": [
+     {
+      "frame": 0,
+      "pairs": [
+       [
+        4,
+        177
+       ],
+       [
+        4,
+        184
+       ],
+       [
+        6,
+        171
+       ]
+      ]
+     },
+     {
+      "frame": 2,
+      "pairs": [
+       [
+        4,
+        177
+       ],
+       [
+        4,
+        184
+       ],
+       [
+        6,
+        171
+       ]
+      ]
+     },
+     {
+      "frame": 4,
+      "pairs": [
+       [
+        4,
+        177
+       ],
+       [
+        4,
+        184
+       ],
+       [
+        6,
+        171
+       ]
+      ]
+     },
+     {
+      "frame": 6,
+      "pairs": [
+       [
+        4,
+        177
+       ],
+       [
+        4,
+        184
+       ],
+       [
+        6,
+        171
+       ]
+      ]
+     }
+    ]
+   },
+   "preSelfIntersections": {
+    "sampledFrames": 330,
+    "everyNth": 8,
+    "framesWithHits": 331,
+    "pairHits": 8993,
+    "pairHitsPerFrame": 27.25
+   },
+   "groundCalibration": {
+    "groundY": 0.075,
+    "offsetY": 0.026426847712769347,
+    "supportFrameCount": 2162,
+    "supportToleranceASF": 1,
+    "method": "min of skinned foot CENTROID min-Y over source-evidenced support frames (P0 anchor)",
+    "note": "per-clip CONSTANT root-Y offset; per-frame heel-off/swing dynamics preserved"
+   },
+   "contactGuard": {
+    "tolerance": 0.012,
+    "guardedFrames": 1701,
+    "maxLift": 0.04313979832255466,
+    "meanLift": 0.0051501750666892426,
+    "method": "root-Y lift for plate-corner penetration beyond 12mm (structural corner-dip tolerance); >95% of digs are source-support frames; rotations untouched; smoothed (max-envelope +/-2, mean 5)"
+   },
+   "gate": {
+    "finite": true,
+    "boneLengths": true,
+    "soleL": true,
+    "soleR": true,
+    "penetration": true,
+    "stance": true,
+    "swing": true,
+    "interpolation": true
+   },
+   "interpFail": 0,
+   "loopWrapMaxVertexDist": 0.10393886362338091
+  }
+ ],
+ "allPass": true
+}

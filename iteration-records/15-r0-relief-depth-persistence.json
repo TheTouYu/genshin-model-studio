@@ -1,0 +1,31 @@
+{
+  "iteration": 15,
+  "round": "R0 前置·脚踝凸起真三维深度 + 刷新持久化修复",
+  "problem": "用户复核：① 此前 polyDomePatch 贴在圆柱侧面的凸包是平面贴片（无真深度）；② 刷新页面后模型消失（gms.part mesh 未持久化）。",
+  "priority": "① 工具实现真曲面浮雕；② 应用级 mesh 持久化 bug 修复；二者均为后续趾部算法的前提。",
+  "reference": "用户放大参考线框：凸起是表面自身鼓出（网格顶点带 3D 深度、多边形贴合曲面），非平面贴片/贴球。",
+  "explanation": "① 新增 reliefYTube：直接位移腿部放样网格顶点，沿表面外法向鼓出，falloff 边缘归零无缝贴合——凸包即曲面本身；② 修复 applyWork 恢复白名单（保留 resourceId 10009019 + mesh + material）。",
+  "hypothesis": "顶点位移式浮雕可表达真实深度且不留接缝；恢复链路保留 mesh 后刷新可重建元件。",
+  "action": [
+    "ganyu-lib 新增 reliefYTube(data,{y,th,r,h,irr,seed,leanY,leanTh,neg})",
+    "腿部网格 20x40 重建 → reliefYTube 位移（r=10mm, h=2.8mm, irr=0.12, leanY=0.30, leanTh=0.25）",
+    "逐面颜色标注凸包区域（蓝）",
+    "提交 gms.part('mesh') 并写 localStorage",
+    "修复 web/index.html 与 public/index.html 的 applyWork：v3.6 保留 mesh/material + 10009019 白名单"
+  ],
+  "tools": ["reliefYTube", "profileLoft", "meshCheck", "applyWork 持久化修复", "browser-harness 刷新验证", "read_image"],
+  "views": {
+    "relief_front": "delivery/r0-toes/relief-bump-front.png",
+    "relief_side": "delivery/r0-toes/relief-bump-side.png",
+    "relief_iso": "delivery/r0-toes/relief-bump-iso.png",
+    "persist_verify_fullpage": "delivery/r0-toes/relief-persist-preview.png"
+  },
+  "result": {
+    "mesh": {"faces": 1680, "deg": 0, "skinnyPct": 0, "areaRatio": 1.4},
+    "depth": "顶点沿径向位移 h=2.8mm（r=10mm 影响域，cos 衰减），非贴片——几何上凸包属于腿面本身",
+    "persist": {"before_fix": "刷新后 stroke 无 mesh（applyWork 白名单丢失）", "after_fix": "刷新后 hasMesh=true, faces=5040, 1 个元件重建，预览可见"}
+  },
+  "decision": "待用户核验：真深度凸包与刷新持久化是否通过",
+  "next": "用户确认后以该曲面浮雕机制继续趾部多边形表达算法（趾区小多边形、趾间浅槽、趾根连续）。",
+  "bug_fix": "web/index.html + public/index.html applyWork：resourceId 白名单补 10009019；新增 v3.6 保留 stroke.mesh 与 stroke.material——gms.part('mesh') 模型刷新不再丢失。证据：cache-bust 重载后 mesh 顶点 842/面 5040 完整重建。"
+}

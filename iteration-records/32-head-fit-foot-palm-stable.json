@@ -1,0 +1,28 @@
+{
+  "iteration": 32,
+  "status": "head_fit_foot_palm_stable_fingers_started",
+  "geometry": {
+    "vertices": 614,
+    "tris": 1212,
+    "heightM": 1.596,
+    "gate": "ok, selfIntersections 0, areaRatio 19.4, watertight one piece, mirror 1.19e-16, directed edges 0",
+    "independentRebuild": true
+  },
+  "head": {
+    "chinY": 1.36,
+    "crownY": 1.60,
+    "headHeightM": 0.24,
+    "headBody": 6.65,
+    "referenceEnvelopeRatio": 6.6524,
+    "match": true,
+    "neckTransition": "selfIntersections 0"
+  },
+  "creaseFinding": "front midline 'zigzag' is the SOCK/CLOTH color boundary along the leg patch loop on a curved torso; geometry dihedral histogram smooth; not a fold",
+  "foot": {
+    "bendSteps": 7,
+    "lengthM": 0.241,
+    "soleMinY": 0.004,
+    "forefootThicknessMM": 43.6
+  },
+  "palm": "single hand 33 vertices incl wrist ring; shared boundary extrudePatch; onePiece"
+}

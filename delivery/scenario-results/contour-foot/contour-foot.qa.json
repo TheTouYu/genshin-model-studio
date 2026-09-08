@@ -1,0 +1,100 @@
+{
+  "ok": true,
+  "base": "contour-foot",
+  "dir": "/home/h/genshin-model-studio/delivery/scenario-results/contour-foot",
+  "checks": {
+    "id": {
+      "pass": true,
+      "issues": []
+    },
+    "resources": {
+      "pass": true,
+      "uncalibrated": [
+        {
+          "resourceId": 10009003,
+          "name": "平面",
+          "status": "未校准",
+          "count": 576,
+          "index": 0
+        }
+      ],
+      "unknown": [],
+      "issues": []
+    },
+    "budget": {
+      "pass": true,
+      "detail": {
+        "requested": null,
+        "used": 576,
+        "exceeded": false,
+        "gateState": "passed"
+      },
+      "issues": []
+    },
+    "readback": {
+      "pass": true,
+      "detail": {
+        "gil": {
+          "prefabId": 1077936129,
+          "templateResourceId": 10005018,
+          "items": 576,
+          "closureComplete": true
+        },
+        "gia": {
+          "items": 576,
+          "idRange": [
+            1073741825,
+            1073742400
+          ],
+          "resourceIds": [
+            10009003
+          ],
+          "structureId": 1077936129,
+          "templatePrefabId": 10005018,
+          "name": "contour-foot"
+        }
+      },
+      "issues": []
+    },
+    "artifacts": {
+      "pass": true,
+      "detail": {
+        "artifacts": [
+          {
+            "path": "/home/h/genshin-model-studio/delivery/scenario-results/contour-foot/contour-foot.structure.json",
+            "exists": true,
+            "size": 289024
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/scenario-results/contour-foot/contour-foot.summary.json",
+            "exists": true,
+            "size": 2052
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/scenario-results/contour-foot/contour-foot.gil",
+            "exists": true,
+            "size": 187638
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/scenario-results/contour-foot/contour-foot.gia",
+            "exists": true,
+            "size": 114452
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/scenario-results/contour-foot/contour-foot.mesh.json",
+            "exists": true,
+            "size": 94923
+          }
+        ],
+        "items": 576,
+        "units": 576,
+        "meshFaces": 1152
+      },
+      "issues": []
+    }
+  },
+  "failures": [],
+  "notes": [
+    "资源覆盖：存在 1 类未校准基元（候选/待校准）：平面(10009003)×576"
+  ]
+}

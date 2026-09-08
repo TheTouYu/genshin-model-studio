@@ -1,0 +1,166 @@
+{
+  "checkpoint": "body-current",
+  "fingerprints": {
+    "sources": {
+      "scripts/parts/lib/ganyu-lib.js": "c035914396e2262365b6115a8510bcc7f6ef0f6ea70ed7cc36b5fa3a85d1a082",
+      "scripts/parts/lib/ganyu-cage-branch.js": "f47b20ae10771f0db723a6c28c2a004de3957116e98e2de1344670eb23206523",
+      "scripts/parts/lib/ganyu-seam-check.js": "cf08969b60aaf425c47d376a8a86209a3dbe451236255561751594f0d8d328c6",
+      "scripts/parts/ganyu-body-cage.js": "7719000dcfa8c537ef6b84f0a50deab26f75d4352ff163673467b26e20695ff8"
+    },
+    "mesh": "b9c978b7831cb2a7032c2d88193a6eb6f11ae0c9f8232893f5419ff0be329041",
+    "verifier": "1563a76025f3df6b71e3607aab2edf529c5e855a9691b4e0a2ae1e5bf1015aba"
+  },
+  "stage": "blockout",
+  "referenceFit": {
+    "status": "provisional",
+    "references": [
+      "reference/ganyu-3view.png",
+      "reference/body-wire-front.png",
+      "reference/body-wire-side.png",
+      "reference/body-wire-quarter.png",
+      "reference/body-wire-back.png"
+    ],
+    "reason": "References recovered; landmark fitting and clothing clearance remain unverified"
+  },
+  "metrics": {
+    "vertices": 534,
+    "tris": 1060,
+    "limbs": 4
+  },
+  "scale": {
+    "height": 1.598,
+    "unit": "m",
+    "front": "+Z"
+  },
+  "seam": {
+    "openEdges": 0,
+    "nonManifoldEdges": 0,
+    "seamEdges": 0,
+    "components": 1,
+    "onePiece": true,
+    "watertight": true,
+    "seams": []
+  },
+  "gate": {
+    "ok": false,
+    "checkedFaces": 1060,
+    "checks": {
+      "watertight": {
+        "pass": true,
+        "openEdges": 0,
+        "nonManifold": 0,
+        "samplePositions": []
+      },
+      "seams": {
+        "pass": true,
+        "seamCount": 0,
+        "samplePositions": []
+      },
+      "normals": {
+        "pass": true,
+        "invertedCount": 0,
+        "sampleFaces": []
+      },
+      "degenerate": {
+        "count": 0,
+        "pass": true
+      },
+      "skinny": {
+        "count": 0,
+        "pct": 0,
+        "pass": true
+      },
+      "areaRatio": {
+        "value": 16.7,
+        "pass": true
+      },
+      "budget": {
+        "requested": null,
+        "used": 1060,
+        "exceeded": false,
+        "pass": true
+      },
+      "selfIntersections": {
+        "pass": false,
+        "intersectingPairs": 67,
+        "samplePairs": [
+          {
+            "faceA": 0,
+            "faceB": 667,
+            "positionA": [
+              0.06518,
+              0.856687,
+              -0.092861
+            ],
+            "positionB": [
+              0.079808,
+              0.826667,
+              -0.081782
+            ]
+          },
+          {
+            "faceA": 6,
+            "faceB": 873,
+            "positionA": [
+              -0.081942,
+              0.856687,
+              -0.083829
+            ],
+            "positionB": [
+              -0.091008,
+              0.826667,
+              -0.068264
+            ]
+          },
+          {
+            "faceA": 358,
+            "faceB": 667,
+            "positionA": [
+              0.045408,
+              0.835021,
+              -0.054366
+            ],
+            "positionB": [
+              0.079808,
+              0.826667,
+              -0.081782
+            ]
+          },
+          {
+            "faceA": 361,
+            "faceB": 872,
+            "positionA": [
+              -0.045408,
+              0.835021,
+              -0.054366
+            ],
+            "positionB": [
+              -0.096584,
+              0.873333,
+              -0.066738
+            ]
+          },
+          {
+            "faceA": 361,
+            "faceB": 873,
+            "positionA": [
+              -0.045408,
+              0.835021,
+              -0.054366
+            ],
+            "positionB": [
+              -0.091008,
+              0.826667,
+              -0.068264
+            ]
+          }
+        ]
+      }
+    },
+    "failures": [
+      "存在 67 处局部自交（面 #0 与 #667）"
+    ]
+  },
+  "visualAcceptance": "pending",
+  "gameAcceptance": "pending"
+}

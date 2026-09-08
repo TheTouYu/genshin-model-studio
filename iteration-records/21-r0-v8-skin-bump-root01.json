@@ -1,0 +1,16 @@
+{
+  "iteration": 21,
+  "round": "R0 前置·v8：凸包肉色 + 空模型 0.1 根缩放（游戏实测后收尾修复）",
+  "problem": "用户验收 v7 降面数成功。修改：① 凸起区域换肉色；② 空模型（根）尺寸 1×1×1 → 0.1×0.1×0.1 防碰撞；装饰物保持约 1.7m 常规大小。",
+  "priority": "收尾可测版本，随后进入趾部算法。",
+  "action": [
+    "凸包区（relief 影响域 d<r）面板 color={rgb:0xf0c6a2, opacity:95}（肉色）；其余保持灰 0x9aa2ab/90",
+    "模型 rootTransform.scale=[0.1,0.1,0.1]（空模型容器缩小防碰撞）",
+    "装饰物整体 ×24（约 1.7m），密度沿用 v7（nFine12/nCoarse16/mult2）",
+    "编码校验：v8 二进制含 skin/gray varint 与 0.1 float（11 处）"
+  ],
+  "stats": {"units": 702, "faces": 1456, "bytes": 142890, "file": "delivery/r0-toes/ankle-bump-min-v8.gia"},
+  "web_preview": ["delivery/r0-toes/units-v8-preview-bump.png", "delivery/r0-toes/units-v8-preview-iso.png"],
+  "decision": "待用户游戏实测 v8",
+  "next": "v8 通过后进入趾部算法：同族自适应细分 + 三角/圆盘单元混用（端盖→disc 圆盘、趾列→细密不规则面片）。"
+}

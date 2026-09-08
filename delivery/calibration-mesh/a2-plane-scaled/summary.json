@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "kind": "genshin-model-studio.calibration-mesh.summary",
+  "sample": "a2-plane-scaled",
+  "name": "平面_缩放0.5x0.3",
+  "primitive": "10009003 平面",
+  "resourceIds": [
+    10009003
+  ],
+  "unitCount": 1,
+  "output": {
+    "gil": 1518,
+    "gia": 809,
+    "structure": 1
+  },
+  "observe": [
+    "尺寸：scale=[0.5,1,0.3] 是否呈现宽 0.5 × 深 0.3（X/Z 对应宽深）",
+    "朝向：是否仍为水平面"
+  ],
+  "sampleFamily": "a-plane"
+}

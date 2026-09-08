@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "kind": "genshin-model-studio.contour-model.summary",
+  "tool": {
+    "name": "genshin-model-studio",
+    "version": "0.1.0"
+  },
+  "input": {
+    "file": "/home/h/genshin-model-studio/benchmark/scenarios/inputs/cylinder.json",
+    "sha256": "9950287c339245c34cb488df00abd1b3ec3c5689cbe3486ea2316bfbc1637e68"
+  },
+  "model": {
+    "name": "basic-cylinder",
+    "mesh": {
+      "faces": 96,
+      "quads": 48,
+      "tris": 0,
+      "degenerate": 0,
+      "units": 48
+    }
+  },
+  "output": {
+    "mesh": "/home/h/genshin-model-studio/delivery/scenario-results/basic-cylinder/basic-cylinder.mesh.json",
+    "meshSha256": "c8c1f094720719faaaf7238e634cfe3cd53b34ac355ee7098874827333b48fe5",
+    "structure": "/home/h/genshin-model-studio/delivery/scenario-results/basic-cylinder/basic-cylinder.structure.json",
+    "gil": "/home/h/genshin-model-studio/delivery/scenario-results/basic-cylinder/basic-cylinder.gil",
+    "gia": "/home/h/genshin-model-studio/delivery/scenario-results/basic-cylinder/basic-cylinder.gia",
+    "summary": "/home/h/genshin-model-studio/delivery/scenario-results/basic-cylinder/basic-cylinder.summary.json"
+  },
+  "budget": {
+    "requested": null,
+    "used": 48,
+    "exceeded": false
+  },
+  "gate": {
+    "invoked": true,
+    "state": "passed",
+    "ok": true,
+    "checkedFaces": 96,
+    "failures": [],
+    "checks": {
+      "watertight": {
+        "pass": true,
+        "openEdges": 0,
+        "nonManifold": 0,
+        "samplePositions": []
+      },
+      "seams": {
+        "pass": true,
+        "seamCount": 0,
+        "samplePositions": []
+      },
+      "normals": {
+        "pass": true,
+        "invertedCount": 0,
+        "sampleFaces": []
+      },
+      "degenerate": {
+        "count": 0,
+        "pass": true
+      },
+      "skinny": {
+        "count": 0,
+        "pct": 0,
+        "pass": true
+      },
+      "areaRatio": {
+        "value": 2,
+        "pass": true
+      },
+      "budget": {
+        "requested": null,
+        "used": 48,
+        "exceeded": false,
+        "pass": true
+      }
+    }
+  }
+}

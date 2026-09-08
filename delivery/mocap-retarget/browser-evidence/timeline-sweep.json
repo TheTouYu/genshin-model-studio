@@ -1,0 +1,12 @@
+{
+  "02_01": {"dur": 2.85, "samples": 61, "finite": true, "changingFrames": "60/60", "minFootY": 0.063, "maxHeadY": 1.626, "PASS": true},
+  "02_02": {"dur": 2.475, "samples": 61, "finite": true, "changingFrames": "60/60", "minFootY": 0.063, "maxHeadY": 1.637, "PASS": true},
+  "02_03": {"dur": 1.433, "samples": 61, "finite": true, "changingFrames": "60/60", "minFootY": 0.063, "maxHeadY": 1.663, "PASS": true},
+  "02_04": {"dur": 4.017, "samples": 61, "finite": true, "changingFrames": "60/60", "minFootY": 0.063, "maxHeadY": 1.977, "PASS": true},
+  "02_05": {"dur": 15.442, "samples": 61, "finite": true, "changingFrames": "60/60", "minFootY": 0.063, "maxHeadY": 1.629, "PASS": true},
+  "02_06": {"dur": 18.617, "samples": 61, "finite": true, "changingFrames": "60/60", "minFootY": 0.063, "maxHeadY": 1.625, "PASS": true},
+  "02_07": {"dur": 18.75, "samples": 61, "finite": true, "changingFrames": "60/60", "minFootY": 0.063, "maxHeadY": 1.624, "PASS": true},
+  "02_08": {"dur": 12.492, "samples": 61, "finite": true, "changingFrames": "60/60", "minFootY": 0.038, "maxHeadY": 1.638, "PASS": true},
+  "02_09": {"dur": 8.6, "samples": 61, "finite": true, "changingFrames": "60/60", "minFootY": -0.013, "maxHeadY": 1.624, "PASS": true},
+  "02_10": {"dur": 22.033, "samples": 61, "finite": true, "changingFrames": "60/60", "minFootY": 0.063, "maxHeadY": 1.638, "PASS": true}
+}

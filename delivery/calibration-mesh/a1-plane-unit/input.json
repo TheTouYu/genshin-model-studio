@@ -1,0 +1,30 @@
+{
+  "name": "平面_单位1x1",
+  "template": "空模型",
+  "items": [
+    {
+      "resourceId": 10009003,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "color": {
+        "enabled": true,
+        "rgb": 4088797,
+        "opacity": 100,
+        "overlay": "overwrite"
+      }
+    }
+  ]
+}

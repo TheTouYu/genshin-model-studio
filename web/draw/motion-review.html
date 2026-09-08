@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>动作核验台 — motion review</title>
+<style>
+  :root { color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #10151b; color: #cfe3ee; font: 13px/1.45 system-ui, sans-serif; }
+  #app { display: flex; flex-direction: column; height: 100dvh; }
+  header { padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; border-bottom: 1px solid #22303c; background: #131a22; }
+  header h1 { font-size: 14px; margin: 0; font-weight: 600; }
+  header .tag { font-size: 11px; color: #7fa3b8; }
+  #stage { position: relative; flex: 1; min-height: 240px; }
+  canvas { display: block; width: 100%; height: 100%; }
+  #stats { position: absolute; left: 8px; top: 6px; font: 11px/1.5 ui-monospace, monospace; color: #8fb4c8; background: rgba(10,16,22,.55); padding: 4px 8px; border-radius: 6px; pointer-events: none; white-space: pre; }
+  #controls { border-top: 1px solid #22303c; background: #131a22; padding: 8px 12px; display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; }
+  .grp { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .grp .lbl { color: #7fa3b8; font-size: 11px; }
+  button, select, input[type=range] { accent-color: #4fd1c5; }
+  button { background: #1d2a36; color: #cfe3ee; border: 1px solid #2c3e50; border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  button:hover { background: #27394a; }
+  button.on { background: #14532d; border-color: #22c55e; color: #d7ffe3; }
+  select { background: #1d2a36; color: #cfe3ee; border: 1px solid #2c3e50; border-radius: 6px; padding: 4px 6px; max-width: 240px; }
+  input[type=range] { width: 180px; }
+  label.ck { display: flex; gap: 4px; align-items: center; cursor: pointer; }
+  .seg { display: flex; border: 1px solid #2c3e50; border-radius: 6px; overflow: hidden; }
+  .seg button { border: 0; border-radius: 0; padding: 4px 9px; }
+  .seg button.on { background: #0e7490; color: #e0f7ff; }
+  #timeinfo { font: 11px ui-monospace, monospace; color: #8fb4c8; min-width: 132px; }
+  #err { position: absolute; inset: auto 8px 8px 8px; color: #ff9aa2; background: rgba(60,10,16,.85); border-radius: 6px; padding: 6px 10px; display: none; white-space: pre-wrap; }
+  @media (max-width: 700px) {
+    header h1 { font-size: 13px; }
+    header { padding: 4px 8px; gap: 4px 8px; }
+    #stage { min-height: 170px; }
+    input[type=range] { width: 116px; }
+    #stats { font-size: 9px; }
+    #controls { gap: 4px 8px; padding: 5px 6px; }
+    .grp { gap: 4px; font-size: 12px; }
+    .grp .lbl { font-size: 10px; }
+    button { padding: 3px 7px; font-size: 12px; }
+    .seg button { padding: 3px 7px; }
+    select { max-width: 170px; }
+    label.ck { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>动作核验台</h1>
+    <span class="tag" id="modeTag"></span>
+    <span class="tag" id="clipTag"></span>
+  </header>
+  <div id="stage">
+    <div id="stats"></div>
+    <div id="err"></div>
+  </div>
+  <div id="controls">
+    <div class="grp">
+      <button id="play">▶ 播放</button>
+      <button id="first">⏮ 首帧</button>
+      <button id="last">⏭ 末帧</button>
+      <button id="prev">−1帧</button>
+      <button id="next">+1帧</button>
+      <button id="rest">静止姿态</button>
+    </div>
+    <div class="grp">
+      <span class="lbl">时间</span>
+      <input type="range" id="time" min="0" max="1" step="any" value="0">
+      <span id="timeinfo">0.000s f0</span>
+    </div>
+    <div class="grp">
+      <span class="lbl">速度</span>
+      <span class="seg" id="speed">
+        <button data-v="0.25">0.25×</button><button data-v="0.5">0.5×</button><button data-v="1" class="on">1×</button>
+      </span>
+    </div>
+    <div class="grp">
+      <span class="lbl">视角</span>
+      <span class="seg" id="view">
+        <button data-v="front" class="on">正</button><button data-v="side">侧</button><button data-v="back">背</button><button data-v="free">自由</button>
+      </span>
+    </div>
+    <div class="grp">
+      <span class="lbl">渲染</span>
+      <span class="seg" id="render">
+        <button data-v="wire" id="btnWire">线框</button><button data-v="white" id="btnWhite" class="on">平滑白模</button>
+      </span>
+    </div>
+    <div class="grp">
+      <label class="ck"><input type="checkbox" id="ground" checked> 地面</label>
+      <label class="ck"><input type="checkbox" id="bones"> 骨骼节点</label>
+      <label class="ck"><input type="checkbox" id="props" checked> 道具</label>
+      <label class="ck"><input type="checkbox" id="inplace"> 原地</label>
+      <label class="ck"><input type="checkbox" id="loop" checked> 循环</label>
+      <label class="ck"><input type="checkbox" id="sequence"> 顺序连播</label>
+    </div>
+    <div class="grp">
+      <span class="lbl">片段</span>
+      <select id="clip"></select>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+<script src="motion-runtime.js"></script>
+<script>
+(async function () {
+  'use strict';
+  const MOCAP = new URLSearchParams(location.search).get('mocap') === '1';
+  const $ = (id) => document.getElementById(id);
+  const errBox = $('err');
+  const showErr = (msg) => { errBox.style.display = 'block'; errBox.textContent += msg + '\n'; console.error(msg); };
+  window.addEventListener('error', (e) => showErr('页面错误: ' + e.message));
+  window.addEventListener('unhandledrejection', (e) => showErr('Promise 错误: ' + (e.reason && e.reason.message || e.reason)));
+
+  // ---- load assets ---------------------------------------------------------
+  // mocap 模式直接使用 mocap-assets（r1a 候选网格 + 蒙皮权重 + 校准后的片段 +
+  // 证据驱动道具配置）；程序化模式保持原 motion-assets 行为不变。
+  let asset, mocapClips = null, scenarios = null;
+  const fetchJson = (u) => fetch(u + '?t=' + Date.now()).then((r) => { if (!r.ok) throw new Error(u + ' ' + r.status); return r.json(); });
+  if (MOCAP) {
+    try {
+      const [rig, mesh, clips, scen] = await Promise.all([
+        fetchJson('mocap-assets/rig.json'), fetchJson('mocap-assets/mesh.json'),
+        fetchJson('mocap-assets/clips.json'), fetchJson('mocap-scenarios.json').catch(() => null),
+      ]);
+      asset = { mesh, rig, clips: [] };
+      mocapClips = clips.clips;
+      scenarios = scen;
+    } catch (e) { showErr('mocap 资产加载失败: ' + e.message); asset = await fetchJson('motion-assets/bundle.json'); }
+  } else {
+    asset = await fetchJson('motion-assets/bundle.json');
+  }
+
+  // ---- three scene ---------------------------------------------------------
+  const stage = $('stage');
+  const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); // deterministic canvas readback for verification
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  stage.appendChild(renderer.domElement);
+  const scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x10151b);
+  scene.fog = new THREE.Fog(0x10151b, 6, 14);
+  const camera = new THREE.PerspectiveCamera(40, 1, 0.05, 60);
+  const camTarget = new THREE.Vector3(0, 0.85, 0);
+  const cam = { yaw: 0, pitch: 0.08, dist: 3.4, view: 'front' };
+  function applyCamera() {
+    const cp = Math.cos(cam.pitch), sp = Math.sin(cam.pitch);
+    camera.position.set(cam.dist * cp * Math.sin(cam.yaw), Math.max(0.1, 0.95 + cam.dist * sp * 0.4), cam.dist * cp * Math.cos(cam.yaw));
+    camera.lookAt(camTarget);
+  }
+  applyCamera();
+  // lights: soft hemisphere + key with contact shadow
+  scene.add(new THREE.HemisphereLight(0xdfeaf2, 0x2a3038, 1.6));
+  const key = new THREE.DirectionalLight(0xffffff, 3.0);
+  key.position.set(2.2, 4.2, 2.8);
+  key.castShadow = true;
+  key.shadow.mapSize.set(1024, 1024);
+  key.shadow.camera.left = -2.2; key.shadow.camera.right = 2.2;
+  key.shadow.camera.top = 2.6; key.shadow.camera.bottom = -0.4;
+  key.shadow.camera.near = 0.5; key.shadow.camera.far = 12;
+  key.shadow.bias = -0.0015;
+  scene.add(key);
+  const fill = new THREE.DirectionalLight(0xbcd5e8, 0.9);
+  fill.position.set(-2.5, 1.8, -2.2);
+  scene.add(fill);
+
+  // ground: visible soft plane + shadow catcher, at groundY (calibrated sole plane)
+  const groundY = (MOCAP && scenarios && Number.isFinite(scenarios.groundY))
+    ? scenarios.groundY
+    : Math.min(...asset.mesh.vertices.map((v) => v[1])); // rest sole plane of whichever mesh is loaded
+  const groundGroup = new THREE.Group();
+  const groundMat = new THREE.MeshStandardMaterial({ color: 0x1b232c, roughness: 0.95, metalness: 0 });
+  const groundMesh = new THREE.Mesh(new THREE.PlaneGeometry(24, 24), groundMat);
+  groundMesh.rotation.x = -Math.PI / 2;
+  groundMesh.position.y = groundY;
+  groundMesh.receiveShadow = true;
+  groundGroup.add(groundMesh);
+  const grid = new THREE.GridHelper(6, 30, 0x31465a, 0x22303c);
+  grid.position.y = groundY + 0.001;
+  groundGroup.add(grid);
+  scene.add(groundGroup);
+
+  // character mesh: ONE geometry object; render mode only swaps material.
+  const geometry = new THREE.BufferGeometry();
+  const V = asset.mesh.vertices.length;
+  geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(V * 3), 3));
+  geometry.setIndex(asset.mesh.faces);
+  const wireMat = new THREE.MeshBasicMaterial({ color: 0xbdd5df, wireframe: true });
+  const whiteMat = new THREE.MeshStandardMaterial({ color: 0xf2f4f5, roughness: 0.82, metalness: 0.0 });
+  const meshObj = new THREE.Mesh(geometry, whiteMat);
+  meshObj.castShadow = true;
+  meshObj.frustumCulled = false;
+  scene.add(meshObj);
+  // skeleton dots (independent toggle)
+  const boneGeo = new THREE.SphereGeometry(0.016, 10, 8);
+  const boneMat = new THREE.MeshBasicMaterial({ color: 0x4fd1c5 });
+  const boneDots = asset.rig.joints.map(() => new THREE.Mesh(boneGeo, boneMat));
+  boneDots.forEach((d) => { d.visible = false; scene.add(d); });
+
+  const rig = createMotionRig(THREE, asset);
+  scene.add(rig.group);
+
+  // ---- props ---------------------------------------------------------------
+  const propRoot = new THREE.Group();
+  scene.add(propRoot);
+  const propRuntime = { list: [], box: null, boxState: null };
+  function buildProps(clipId) {
+    // segment switch resets the scene per action — props are fully recreated
+    propRoot.clear();
+    propRuntime.list = [];
+    propRuntime.box = null;
+    propRuntime.boxState = null;
+    const sc = MOCAP && scenarios && scenarios.clips[clipId];
+    if (!sc) return;
+    const mk = (geo, mat) => { const m = new THREE.Mesh(geo, mat); m.castShadow = true; return m; };
+    for (const p of sc.props || []) {
+      if (p.type === 'sword') {
+        const g = new THREE.Group();
+        const blade = mk(new THREE.BoxGeometry(0.045, p.bladeLength, 0.012), new THREE.MeshStandardMaterial({ color: 0xc9d4dc, roughness: 0.35, metalness: 0.75 }));
+        blade.position.y = p.handleLength / 2 + p.bladeLength / 2;
+        const guard = mk(new THREE.BoxGeometry(p.guardWidth, 0.02, 0.03), new THREE.MeshStandardMaterial({ color: 0x8a6d3b, roughness: 0.5, metalness: 0.4 }));
+        guard.position.y = p.handleLength / 2 + 0.01;
+        const handle = mk(new THREE.CylinderGeometry(0.016, 0.018, p.handleLength, 10), new THREE.MeshStandardMaterial({ color: 0x3b2f26, roughness: 0.9 }));
+        g.add(blade, guard, handle);
+        g.userData = { kind: 'sword', cfg: p };
+        propRoot.add(g); propRuntime.list.push(g);
+      } else if (p.type === 'box') {
+        const g = new THREE.Group();
+        const bx = mk(new THREE.BoxGeometry(p.size[0], p.size[1], p.size[2]), new THREE.MeshStandardMaterial({ color: 0xa8794a, roughness: 0.85 }));
+        g.add(bx);
+        if (p.withSupport) {
+          // static pedestal: must NOT ride along when the box is carried/dropped
+          const top = p.supportTopY;
+          const h = Math.max(0.05, top - scenarios.groundY);
+          const stand = mk(new THREE.CylinderGeometry(0.16, 0.2, h, 12), new THREE.MeshStandardMaterial({ color: 0x39434d, roughness: 0.9 }));
+          stand.position.set(p.worldPose.position[0], scenarios.groundY + h / 2, p.worldPose.position[2]);
+          propRoot.add(stand);
+        }
+        g.userData = { kind: 'box', cfg: p };
+        g.position.fromArray(p.worldPose.position);
+        propRoot.add(g); propRuntime.list.push(g);
+        propRuntime.box = g;
+        propRuntime.boxState = { phase: 'rest', releaseAt: p.releaseAtSeconds, followFrom: p.followPalmsFromSeconds, vy: 0 };
+      } else if (p.type === 'basin') {
+        const g = new THREE.Group();
+        const basin = mk(new THREE.CylinderGeometry(p.radius, p.radius * 0.82, p.height, 24, 1, true), new THREE.MeshStandardMaterial({ color: 0x9fb4c4, roughness: 0.6, metalness: 0.3, side: THREE.DoubleSide }));
+        basin.position.fromArray(p.worldPose.position);
+        g.add(basin);
+        const water = new THREE.Mesh(new THREE.CircleGeometry(p.radius * 0.93, 24), new THREE.MeshStandardMaterial({ color: 0x2f6f8f, roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.85 }));
+        water.rotation.x = -Math.PI / 2;
+        water.position.set(p.worldPose.position[0], p.worldPose.position[1] + p.height * 0.32, p.worldPose.position[2]);
+        g.add(water);
+        if (p.withStand) {
+          const h = p.worldPose.position[1] - p.height / 2 - scenarios.groundY;
+          const stand = mk(new THREE.CylinderGeometry(0.06, 0.09, h, 10), new THREE.MeshStandardMaterial({ color: 0x39434d, roughness: 0.9 }));
+          stand.position.set(p.worldPose.position[0], scenarios.groundY + h / 2, p.worldPose.position[2]);
+          g.add(stand);
+        }
+        g.userData = { kind: 'basin', cfg: p };
+        propRoot.add(g); propRuntime.list.push(g);
+      }
+    }
+  }
+
+  // ---- state ---------------------------------------------------------------
+  const clips = mocapClips || asset.clips;
+  const state = {
+    mode: MOCAP ? 'mocap' : 'procedural',
+    clipId: clips.length ? clips[0].id : null,
+    time: 0, playing: false, speed: 1, render: MOCAP ? 'white' : 'wire',
+    ground: true, bones: !MOCAP, props: true, inPlace: !MOCAP, loop: true, sequence: false,
+    view: 'front',
+  };
+  const clipById = new Map(clips.map((c) => [c.id, c]));
+  const cur = () => clipById.get(state.clipId);
+  const clipDur = (c) => (c.durationSeconds !== undefined ? c.durationSeconds : (c.duration !== undefined ? c.duration : 1));
+  // UI defaults: mocap = 平滑白模 + 地面开 + 骨骼节点关 + 预置第一段走路 + 首帧暂停
+  $('modeTag').textContent = MOCAP ? 'mocap · CMU subject-02 · 10 段' : '程序化动作（默认线框，行为不变）';
+  $('render').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === state.render));
+  $('ground').checked = state.ground;
+  $('bones').checked = state.bones;
+  $('props').checked = state.props;
+  $('inplace').checked = state.inPlace;
+  $('loop').checked = state.loop;
+  $('sequence').checked = state.sequence;
+  $('props').parentElement.style.display = MOCAP ? '' : 'none';
+  if (!MOCAP) { // procedural keeps原默认线框 + skeleton on
+    meshObj.material = wireMat;
+  }
+  const sel = $('clip');
+  for (const c of clips) {
+    const o = document.createElement('option');
+    o.value = c.id;
+    const dur = clipDur(c);
+    o.textContent = c.id + ' · ' + (c.label || '') + (Number.isFinite(dur) ? ' · ' + dur.toFixed(2) + 's' : '');
+    sel.appendChild(o);
+  }
+  // preselect first walk for mocap
+  if (MOCAP) { const walk = clips.find((c) => /walk/i.test(c.label || '')); if (walk) { state.clipId = walk.id; sel.value = walk.id; } }
+
+  // ---- pose + draw ---------------------------------------------------------
+  window.motionState = { time: 0, clip: state.clipId, vertices: [], joints: [] };
+  // palm plate world centroid from the CURRENT deformed vertices (rigid palm binding)
+  function palmWorld(jid) {
+    const idx = asset.rig.joints.findIndex((j) => j.id === jid);
+    const ids = [];
+    for (let vi = 0; vi < asset.rig.vertexJoint.length; vi++) if (asset.rig.vertexJoint[vi] === idx) ids.push(vi);
+    const v = window.motionState.vertices;
+    if (!v.length || !ids.length) return [0, 0, 0];
+    const c = [0, 0, 0];
+    for (const vi of ids) { c[0] += v[vi][0]; c[1] += v[vi][1]; c[2] += v[vi][2]; }
+    return [c[0] / ids.length, c[1] / ids.length, c[2] / ids.length];
+  }
+  window.motionReview = {
+    asset,
+    pose(id, t) {
+      const c = clipById.get(id);
+      if (!c) throw new Error('unknown clip ' + id);
+      if (!Number.isFinite(t) || t < 0 || t > clipDur(c)) throw new Error('invalid time ' + t);
+      return mocapClips ? rig.poseMocap(c, t, state.inPlace) : rig.pose(c, t);
+    },
+    status() {
+      return { ...state, duration: cur() ? clipDur(cur()) : 0, groundY, scenario: MOCAP && scenarios ? (scenarios.clips[state.clipId] || null) : null };
+    },
+    setView(v) { setView(v); },
+    setRender(v) { setRender(v); },
+    seek(t) { setTime(t, true); draw(); },
+    // verification: current prop world transforms vs palm positions
+    propsDebug() {
+      return propRuntime.list.map((g) => ({
+        kind: g.userData.kind,
+        visible: g.visible && propRoot.visible,
+        position: g.position.toArray().map((v) => +v.toFixed(3)),
+        palmL: palmWorld('wristL').map((v) => +v.toFixed(3)),
+        palmR: palmWorld('wristR').map((v) => +v.toFixed(3)),
+      }));
+    },
+    // Deterministic verification hook: renders NOW and reads pixels in the same
+    // JS turn (valid even in background tabs). Returns geometry stats of the
+    // presented frame: content bbox, white-model coverage, ground band, plus a
+    // character column profile so cropped feet are detectable.
+    snapshotStats() {
+      renderer.render(scene, camera);
+      const cv = renderer.domElement;
+      const w = cv.width, h = cv.height;
+      const two = document.createElement('canvas');
+      two.width = w; two.height = h;
+      const ctx = two.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(cv, 0, 0);
+      const img = ctx.getImageData(0, 0, w, h).data;
+      const bg = [16, 21, 27];
+      let fg = 0, white = 0, shadowish = 0;
+      const rows = new Array(h).fill(0), cols = new Array(w).fill(0);
+      for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+        const i = (y * w + x) * 4;
+        const d = Math.abs(img[i] - bg[0]) + Math.abs(img[i + 1] - bg[1]) + Math.abs(img[i + 2] - bg[2]);
+        if (d > 36) { fg++; rows[y]++; cols[x]++; }
+        const mx = Math.max(img[i], img[i + 1], img[i + 2]), mn = Math.min(img[i], img[i + 1], img[i + 2]);
+        if (mx > 170 && mx - mn < 30) white++;
+      }
+      let top = -1, bot = -1, left = -1, right = -1;
+      for (let y = 0; y < h; y++) if (rows[y] > 3) { if (top < 0) top = y; bot = y; }
+      for (let x = 0; x < w; x++) if (cols[x] > 3) { if (left < 0) left = x; right = x; }
+      const px = (fx, fy) => { const i = (Math.round(h * fy) * w + Math.round(w * fx)) * 4; return [img[i], img[i + 1], img[i + 2]]; };
+      return { w, h, fgFrac: +(fg / (w * h)).toFixed(4), whiteFrac: +(white / (w * h)).toFixed(4), content: { top, bottom: bot, left, right }, bottomMarginPx: h - 1 - bot, rightMarginPx: w - 1 - right, samples: { chest: px(0.5, 0.45), leg: px(0.48, 0.75), groundRow: px(0.5, 0.97), corner: px(0.02, 0.02) }, nonEmpty: fg > 500 };
+    },
+  };
+
+  const pos = geometry.getAttribute('position');
+  function draw(skipProps) {
+    const c = cur();
+    let out;
+    if (!c) { out = rig.pose(null, 0); }
+    else if (mocapClips) out = rig.poseMocap(c, Math.min(state.time, clipDur(c)), state.inPlace);
+    else out = rig.pose(c, state.time);
+    for (let i = 0; i < V; i++) pos.setXYZ(i, out.vertices[i][0], out.vertices[i][1], out.vertices[i][2]);
+    pos.needsUpdate = true;
+    geometry.computeVertexNormals();
+    geometry.computeBoundingSphere();
+    for (let i = 0; i < boneDots.length; i++) boneDots[i].position.fromArray(out.joints[i]);
+    window.motionState = { time: state.time, clip: state.clipId, vertices: out.vertices, joints: out.joints };
+    if (!skipProps) updateProps(out);
+  }
+
+  function updateProps(out) {
+    const box = propRuntime.box;
+    const cfg = box && box.userData.cfg;
+    if (box && cfg) {
+      const st = propRuntime.boxState;
+      const jIdx = (jid) => asset.rig.joints.findIndex((j) => j.id === jid);
+      const palmIds = (jid) => {
+        const idx = jIdx(jid);
+        const ids = [];
+        for (let vi = 0; vi < asset.rig.vertexJoint.length; vi++) if (asset.rig.vertexJoint[vi] === idx) ids.push(vi);
+        return ids;
+      };
+      const centroid = (verts, ids) => {
+        const c = [0, 0, 0];
+        for (const vi of ids) { c[0] += verts[vi][0]; c[1] += verts[vi][1]; c[2] += verts[vi][2]; }
+        return [c[0] / ids.length, c[1] / ids.length, c[2] / ids.length];
+      };
+      const palmCentroid = (jid) => centroid(out.vertices, palmIds(jid));
+      const carriedPose = (t) => {
+        // deterministic: evaluate the clip at ANY time (scrub-safe)
+        const c2 = cur();
+        const o2 = c2 ? rig.poseMocap(c2, Math.min(Math.max(0, t), clipDur(c2)), state.inPlace) : out;
+        const L2 = centroid(o2.vertices, palmIds('wristL')), R2 = centroid(o2.vertices, palmIds('wristR'));
+        return [(L2[0] + R2[0]) / 2, (L2[1] + R2[1]) / 2 + cfg.size[1] * 0.55, (L2[2] + R2[2]) / 2];
+      };
+      // scrub back before pickup (or loop restart): box returns to its support
+      if (state.time < st.followFrom) { st.phase = 'rest'; box.position.fromArray(cfg.worldPose.position); }
+      else if (st.releaseAt === null || state.time <= st.releaseAt) {
+        st.phase = 'carried';
+        const mid = carriedPose(state.time);
+        box.position.set(mid[0], mid[1], mid[2]);
+      } else {
+        // released: deterministic gravity drop computed from CLIP TIME
+        st.phase = 'dropped';
+        const at = carriedPose(st.releaseAt);
+        const fall = 0.5 * 9.8 * Math.pow(state.time - st.releaseAt, 2);
+        const floor = groundY + cfg.size[1] / 2;
+        box.position.set(at[0], Math.max(floor, at[1] - fall), at[2]);
+        if (box.position.y <= floor) st.phase = 'resting';
+      }
+    }
+    // sword follows the wielding wrist every frame
+    for (const g of propRuntime.list) {
+      if (g.userData.kind !== 'sword') continue;
+      const cfg = g.userData.cfg;
+      const at = cfg.attachAtSeconds || 0;
+      const gone = cfg.detachAtSeconds !== null && cfg.detachAtSeconds !== undefined && state.time > cfg.detachAtSeconds;
+      g.visible = state.time >= at && !gone;
+      if (!g.visible) continue;
+      const jIdx = asset.rig.joints.findIndex((j) => j.id === cfg.alignFrom);
+      const wristPos = out.joints[jIdx];
+      const distalIdx = asset.rig.joints.findIndex((j) => j.id === (cfg.alignTo === 'palmR' ? 'wristR' : 'wristL'));
+      // forearm direction = wrist joint -> palm plate centroid
+      const ids = [];
+      for (let vi = 0; vi < asset.rig.vertexJoint.length; vi++) if (asset.rig.vertexJoint[vi] === distalIdx) ids.push(vi);
+      const c = [0, 0, 0];
+      for (const vi of ids) { c[0] += out.vertices[vi][0]; c[1] += out.vertices[vi][1]; c[2] += out.vertices[vi][2]; }
+      const palm = ids.length ? [c[0] / ids.length, c[1] / ids.length, c[2] / ids.length] : wristPos;
+      const u = new THREE.Vector3(palm[0] - wristPos[0], palm[1] - wristPos[1], palm[2] - wristPos[2]).normalize();
+      g.position.set(palm[0] - u.x * 0.03, palm[1] - u.y * 0.03, palm[2] - u.z * 0.03);
+      const q = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 1, 0), u);
+      g.quaternion.copy(q);
+    }
+  }
+
+  // ---- UI wiring -----------------------------------------------------------
+  const timeSlider = $('time');
+  const timeinfo = $('timeinfo');
+  function setTime(t, fromSlider) {
+    const c = cur(); if (!c) return;
+    const d = clipDur(c);
+    state.time = Math.max(0, Math.min(d, t));
+    if (!fromSlider) timeSlider.value = String(state.time / d);
+    const fps = c.fps || 120;
+    timeinfo.textContent = state.time.toFixed(3) + 's f' + Math.round(state.time * fps) + '/' + Math.round(d * fps);
+  }
+  function setClip(id, keepTime) {
+    state.clipId = id;
+    sel.value = id;
+    const c = cur();
+    $('clipTag').textContent = c ? (c.id + ' · ' + (c.label || '') + ' · ' + clipDur(c).toFixed(2) + 's') : '';
+    timeSlider.max = String(clipDur(c));
+    if (!keepTime) state.time = 0;
+    setTime(state.time, false);
+    if (MOCAP) buildProps(id); // segment switch resets the scene per action
+    draw();
+  }
+  sel.addEventListener('change', () => setClip(sel.value, false));
+  timeSlider.addEventListener('input', () => setTime(parseFloat(timeSlider.value), true));
+  $('play').addEventListener('click', () => {
+    state.playing = !state.playing;
+    $('play').textContent = state.playing ? '⏸ 暂停' : '▶ 播放';
+    $('play').classList.toggle('on', state.playing);
+    if (state.playing && cur() && state.time >= clipDur(cur()) - 1e-6) setTime(0, false);
+  });
+  $('first').addEventListener('click', () => { setTime(0, false); draw(); });
+  $('last').addEventListener('click', () => { const d = cur() ? clipDur(cur()) : 0; setTime(d, false); draw(); });
+  $('prev').addEventListener('click', () => { const fps = cur() && cur().fps || 30; setTime(state.time - 1 / fps, false); draw(); });
+  $('next').addEventListener('click', () => { const fps = cur() && cur().fps || 30; setTime(state.time + 1 / fps, false); draw(); });
+  $('rest').addEventListener('click', () => { state.playing = false; $('play').textContent = '▶ 播放'; $('play').classList.remove('on'); state.time = 0; setTime(0, false); drawRest(); });
+  function drawRest() {
+    const out = rig.pose(null, 0);
+    for (let i = 0; i < V; i++) pos.setXYZ(i, out.vertices[i][0], out.vertices[i][1], out.vertices[i][2]);
+    pos.needsUpdate = true;
+    geometry.computeVertexNormals();
+    for (let i = 0; i < boneDots.length; i++) boneDots[i].position.fromArray(out.joints[i]);
+    window.motionState = { time: 0, clip: null, vertices: out.vertices, joints: out.joints };
+    if (MOCAP) { propRoot.clear(); propRuntime.list = []; propRuntime.box = null; propRuntime.boxState = null; }
+  }
+  function seg(id, cb) {
+    const el = $(id);
+    el.addEventListener('click', (e) => {
+      const b = e.target.closest('button'); if (!b) return;
+      el.querySelectorAll('button').forEach((x) => x.classList.toggle('on', x === b));
+      cb(b.dataset.v);
+    });
+  }
+  // 渲染切换：同一网格对象、同一帧、同一变形顶点 —— 只换材质，绝不重置相机/时间/播放
+  function setRender(v) {
+    state.render = v;
+    meshObj.material = v === 'white' ? whiteMat : wireMat;
+    meshObj.castShadow = v === 'white'; // wireframe study mode does not cast a solid shadow
+    $('render').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
+  }
+  seg('render', setRender);
+  // 视角切换只动相机，不动状态
+  function setView(v) {
+    state.view = v;
+    $('view').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === v));
+    if (v === 'front') { cam.yaw = 0; cam.pitch = 0.08; cam.dist = 3.4; }
+    else if (v === 'side') { cam.yaw = Math.PI / 2; cam.pitch = 0.08; cam.dist = 3.4; }
+    else if (v === 'back') { cam.yaw = Math.PI; cam.pitch = 0.08; cam.dist = 3.4; }
+    applyCamera();
+  }
+  seg('view', setView);
+  seg('speed', (v) => { state.speed = parseFloat(v); });
+  $('ground').addEventListener('change', (e) => { state.ground = e.target.checked; groundGroup.visible = state.ground; });
+  $('bones').addEventListener('change', (e) => { state.bones = e.target.checked; boneDots.forEach((d) => (d.visible = state.bones)); });
+  $('props').addEventListener('change', (e) => { state.props = e.target.checked; propRoot.visible = state.props; });
+  $('inplace').addEventListener('change', (e) => { state.inPlace = e.target.checked; draw(); });
+  $('loop').addEventListener('change', (e) => { state.loop = e.target.checked; });
+  $('sequence').addEventListener('change', (e) => { state.sequence = e.target.checked; });
+
+  // ---- camera drag (自由视角) ----------------------------------------------
+  let dragging = false, lastX = 0, lastY = 0;
+  renderer.domElement.addEventListener('pointerdown', (e) => { dragging = true; lastX = e.clientX; lastY = e.clientY; });
+  window.addEventListener('pointerup', () => (dragging = false));
+  window.addEventListener('pointermove', (e) => {
+    if (!dragging) return;
+    cam.yaw -= (e.clientX - lastX) * 0.008;
+    cam.pitch = Math.max(-0.5, Math.min(1.1, cam.pitch + (e.clientY - lastY) * 0.005));
+    lastX = e.clientX; lastY = e.clientY;
+    state.view = 'free';
+    $('view').querySelectorAll('button').forEach((b) => b.classList.toggle('on', b.dataset.v === 'free'));
+    applyCamera();
+  });
+  renderer.domElement.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    cam.dist = Math.max(1.2, Math.min(9, cam.dist * (e.deltaY > 0 ? 1.08 : 0.93)));
+    applyCamera();
+  }, { passive: false });
+
+  // ---- resize --------------------------------------------------------------
+  function resize() {
+    const w = stage.clientWidth, h = stage.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    // portrait / small screens: widen fov a touch so feet are never cropped
+    camera.fov = w / h < 0.8 ? 50 : 40;
+    camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(stage);
+  resize();
+
+  // ---- main loop -----------------------------------------------------------
+  let last = performance.now();
+  function tick(now) {
+    const dt = Math.min(0.05, (now - last) / 1000);
+    last = now;
+    if (state.playing && cur()) {
+      const d = clipDur(cur());
+      let nt = state.time + dt * state.speed;
+      if (nt >= d) {
+        if (state.loop) nt = nt % d;
+        else if (state.sequence) {
+          const i = clips.findIndex((c) => c.id === state.clipId);
+          const nx = clips[(i + 1) % clips.length];
+          setClip(nx.id, false);
+          nt = 0;
+        } else { nt = d; state.playing = false; $('play').textContent = '▶ 播放'; $('play').classList.remove('on'); }
+      }
+      setTime(nt, false);
+      draw();
+    }
+    const st = window.motionReview.status();
+    $('stats').textContent =
+      st.mode + ' · ' + (st.clipId || '静止姿态') + '\n'
+      + 't=' + st.time.toFixed(3) + 's / ' + st.duration.toFixed(3) + 's · ' + (state.playing ? '播放中 ' + state.speed + '×' : '已暂停') + '\n'
+      + '渲染=' + (state.render === 'white' ? '平滑白模' : '线框') + ' · 视角=' + state.view + '\n'
+      + '地面=' + (state.ground ? '开' : '关') + ' · 骨骼=' + (state.bones ? '开' : '关') + ' · 道具=' + (MOCAP ? (state.props ? '开' : '纯人体') : '—') + '\n'
+      + '顶点=' + V + ' (随帧更新)';
+    renderer.render(scene, camera);
+    requestAnimationFrame(tick);
+  }
+
+  // init: paused at first frame
+  setClip(state.clipId, false);
+  setTime(0, false);
+  draw();
+  requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>

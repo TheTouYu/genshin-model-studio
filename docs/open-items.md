@@ -64,3 +64,11 @@
 - 样本：deepseek-v4-flash ×1、gpt-5.6-sol ×1（串行，浏览器单 daemon）
 - 任务文件：.bh/baseline-task.md；结果：.bh/baseline-*-out/
 - 下一步：基于基线错误模式合成"画法铁律权威文档 v1"（模型画之前必须读），再跑基线 v2 对照
+## 未闭合项（2026-09-06 R0·踝凸包复盘登记）
+
+- O-2026-09-06-01：游戏“初始空模型尺寸”公式未从 `docs/gia-format.md` 完全闭合（f7[6] 500.0 常量；root=0.1 已实测=空模型 0.1，但 500×root 的标定关系待格式文档回填证据）。
+- O-2026-09-06-02：旧导出器 `scripts/export-mesh-gia.js`（已标注弃用）与现行 `src/mesh/panelize.ts + src/cli/export-mesh.ts` 并存；**已闭合：`scripts/export-mesh-gia.js` 已删除，现行管线唯一**（export-mesh / contour-model 共用 `src/cli/gia-common.ts` + `panelizeMesh`）。
+- O-2026-09-06-03：网页端整体优化（用户明确暂缓，后续再做；含预览取景/局部对比 UI）。
+- O-2026-09-06-04：趾部算法（下一任务）：以 v12 基线（自适应细分+平面单元+root 双补偿）实现五趾表达并走网页→GIA→游戏验证。
+- O-2026-09-06-05：`panelize` 默认 `normalTolerance=0.999` 对高曲率区域拆三角的行为是否应改默认（当前仅在导出侧以 0.2 覆盖）——留待其他曲面项目反馈后在 panelize 默认值决策。
+- O-2026-09-07-01：人体粗骨架已接入前后不对称截面与 shared-ring 分支尝试；`seamCheck` 新增 components/nonManifoldEdges/onePiece 后发现中间环重复挤出会产生 24 条非流形边。必须实现“环子集分支/端环重构”后才能继续升面与网页/GIA验证。

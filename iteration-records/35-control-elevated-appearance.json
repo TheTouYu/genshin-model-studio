@@ -1,0 +1,86 @@
+{
+  "iteration": 35,
+  "stage": "control-points+elevated-surface+appearance",
+  "model": "ganyu-football-10-final",
+  "body": {
+    "subdivLevels": 1,
+    "vertices": 2656,
+    "faces": 5296
+  },
+  "parts": 71,
+  "appearance": [
+    "hair-gradient",
+    "black-red-horns",
+    "red-gold-tassels",
+    "white-blue-jersey",
+    "GANYU-10",
+    "black-gloves",
+    "striped-socks",
+    "white-blue-cleats"
+  ],
+  "meshCheck": {
+    "faces": 5296,
+    "deg": 0,
+    "skinny": 0,
+    "skinnyPct": 0,
+    "areaRatio": 16.2
+  },
+  "seamCheck": {
+    "openEdges": 0,
+    "nonManifoldEdges": 0,
+    "seamEdges": 0,
+    "components": 1,
+    "onePiece": true,
+    "watertight": true,
+    "seams": []
+  },
+  "verify": {
+    "ok": true,
+    "checkedFaces": 9640,
+    "checks": {
+      "watertight": {
+        "pass": true,
+        "openEdges": 0,
+        "nonManifold": 0,
+        "samplePositions": []
+      },
+      "seams": {
+        "pass": true,
+        "seamCount": 0,
+        "samplePositions": []
+      },
+      "normals": {
+        "pass": true,
+        "invertedCount": 0,
+        "sampleFaces": []
+      },
+      "degenerate": {
+        "count": 0,
+        "pass": true
+      },
+      "skinny": {
+        "count": 0,
+        "pct": 0,
+        "pass": true
+      },
+      "areaRatio": {
+        "value": 16.2,
+        "pass": true
+      },
+      "budget": {
+        "requested": null,
+        "used": 4902,
+        "exceeded": false,
+        "pass": true
+      },
+      "selfIntersections": {
+        "pass": true,
+        "intersectingPairs": 0,
+        "samplePairs": []
+      }
+    },
+    "failures": []
+  },
+  "visualAcceptance": "pending",
+  "gameAcceptance": "pending"
+}\n

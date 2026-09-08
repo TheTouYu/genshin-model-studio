@@ -1,0 +1,26 @@
+{
+  "iteration": 20,
+  "round": "R0 前置·游戏实测后快速修复（配色/尺寸）+ 面数优化候选",
+  "problem": "游戏实测可正常显示。问题：① 面数多、加载微卡（待研究）；② 游戏内过亮；③ 模型过小（游戏缩放上限 50×，需避免依赖极端缩放）。",
+  "priority": "②③快速修复先行；①面数优化作为研究项推进。",
+  "action": [
+    "颜色：item.color = {rgb:0x9aa2ab, opacity:90}（灰蓝调、略降不透明度）→ 避免白亮",
+    "尺寸：全部单元 position/scale 乘以 WORLD=24 → 模型约 1.7m 高，游戏内无需 50× 上限",
+    "导出器参数化：node scripts/export-mesh-gia.js <outName> <nFine> <nCoarse> <denseMult> <worldScale>",
+    "生成 v6（原密度+修复）与 v7（降面数+修复）供游戏 A/B"
+  ],
+  "stats": {
+    "v6": {"units": 1322, "faces": 2728, "bytes": 269395, "fix": "灰+×24, 原密度", "file": "delivery/r0-toes/ankle-bump-min-v6.gia"},
+    "v7": {"units": 702, "faces": 1456, "bytes": 142890, "fix": "灰+×24, nFine12/nCoarse16/mult2", "area_mm2": "7.6~22.2", "file": "delivery/r0-toes/ankle-bump-min-v7.gia"}
+  },
+  "web_preview": "delivery/r0-toes/units-v6-gray-preview.png（灰度单元预览，页面已同步）",
+  "face_optimization_proposal": [
+    "a) v7：粗管段+细凸包（已实现候选：702 单元 ≈ 减半）",
+    "b) 直筒段环向合并大列（stops 更少→面板更大）",
+    "c) u 向自适应（平直段少环，凸包区多环）",
+    "d) 端盖每端 1 个圆盘单元（当前板片 1×2）",
+    "e) LOD：游戏用低密度版，网页核验用高密度版"
+  ],
+  "decision": "待用户游戏实测 v6/v7：确认 2/3 修复 + 比较加载与精度；随后确定 #1 面数路线",
+  "next": "按实测反馈定密度；随后进入趾部算法（同族自适应细分+三角/圆盘单元混用）。"
+}

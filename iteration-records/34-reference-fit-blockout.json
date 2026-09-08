@@ -1,0 +1,89 @@
+{
+  "iteration": 34,
+  "stage": "reference-fit+blockout",
+  "source": "reference/ganyu-landmarks.json",
+  "reference": "reference/ganyu-3view.png",
+  "method": "orthographic overlay calibration; body wire front/side/quarter/back consulted",
+  "status": "provisional-overlay-reviewed",
+  "target": {
+    "heightM": 1.6,
+    "crownY": 1.6,
+    "chinY": 1.36,
+    "jerseyHemY": 0.89,
+    "shortsHemY": 0.735,
+    "sockTopY": 0.59,
+    "soleY": 0.008
+  },
+  "measured": {
+    "heightM": 1.596,
+    "minY": 0.003969988209186703,
+    "maxY": 1.6000000000000003
+  },
+  "landmarks": "pixel picks retained with uncertaintyPx in reference/ganyu-landmarks.json",
+  "limitations": [
+    "hair and garment depth are fit independently",
+    "hands/fingers remain a topology follow-up; glove silhouette is present",
+    "game acceptance requires user import check"
+  ],
+  "body": {
+    "vertices": 670,
+    "faces": 1324,
+    "seam": {
+      "openEdges": 0,
+      "nonManifoldEdges": 0,
+      "seamEdges": 0,
+      "components": 1,
+      "onePiece": true,
+      "watertight": true,
+      "seams": []
+    }
+  },
+  "gate": {
+    "ok": true,
+    "checkedFaces": 1324,
+    "checks": {
+      "watertight": {
+        "pass": true,
+        "openEdges": 0,
+        "nonManifold": 0,
+        "samplePositions": []
+      },
+      "seams": {
+        "pass": true,
+        "seamCount": 0,
+        "samplePositions": []
+      },
+      "normals": {
+        "pass": true,
+        "invertedCount": 0,
+        "sampleFaces": []
+      },
+      "degenerate": {
+        "count": 0,
+        "pass": true
+      },
+      "skinny": {
+        "count": 0,
+        "pct": 0,
+        "pass": true
+      },
+      "areaRatio": {
+        "value": 17.5,
+        "pass": true
+      },
+      "budget": {
+        "requested": null,
+        "used": 1324,
+        "exceeded": false,
+        "pass": true
+      },
+      "selfIntersections": {
+        "pass": true,
+        "intersectingPairs": 0,
+        "samplePairs": []
+      }
+    },
+    "failures": []
+  },
+  "visualAcceptance": "pending"
+}\n

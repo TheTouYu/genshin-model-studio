@@ -1,0 +1,287 @@
+{
+  "schemaVersion": 2,
+  "status": "converted",
+  "source": "CMU Graphics Lab Motion Capture Database",
+  "catalog": "http://mocap.cs.cmu.edu/search.php?subjectnumber=2",
+  "skeletonFile": "02.asf",
+  "skeletonSha256": "c9f5ff45b4437b279f58b95dacf017afd3135373096274df69436a9354d796cf",
+  "fps": 120,
+  "scale": 0.045740657395652966,
+  "coordinateSystem": "target rig: +Y up, +Z front",
+  "retargetModel": {
+    "method": "source world-delta transfer with TWO-VECTOR rest alignment",
+    "fk": "R_world(bone)=R_world(parent) * (C * R_dof * C^-1); C=R_axis(ASF axis); tail=head + R_world(bone) * (direction * length)",
+    "transfer": "q_local(j,f)=Qt(parent)^-1 * Qt(j); Qt(j)=mirror(Q_s(d_j,f)*Q_s(d_j,rest)^-1)*A_j; A_j=alignTwoVectors(u_t,n_t, mirror(u_s_rest), mirror(n_s_rest)) — aligns the target primary direction (toe centroid / palm centroid / child pivot) AND the secondary (sole normal / palm normal / sagittal +Z), so the twist about the primary is pinned, not free",
+    "frameMap": "F=diag(-1,1,1): CMU subject-02 left=+X <-> target rig left=-X (both +Y up, +Z forward)",
+    "scale": "source-ASF-unit -> metre via reference hip->ankle length match, not an arbitrary constant",
+    "groundCalibration": "per-clip CONSTANT root-Y offset so source-evidenced support frames put the lowest sole at the ground plane; per-frame dynamics preserved",
+    "skinning": "boundary-ring blend weights (web/draw/mocap-assets/bind-weights.json), rest pose bit-identical"
+  },
+  "perClip": [
+    {
+      "id": "02_01",
+      "file": "02_01.amc",
+      "label": "walk",
+      "frameCount": 343,
+      "durationSeconds": 2.85,
+      "rootMotion": "preserved"
+    },
+    {
+      "id": "02_02",
+      "file": "02_02.amc",
+      "label": "walk",
+      "frameCount": 298,
+      "durationSeconds": 2.475,
+      "rootMotion": "preserved"
+    },
+    {
+      "id": "02_03",
+      "file": "02_03.amc",
+      "label": "run/jog",
+      "frameCount": 173,
+      "durationSeconds": 1.4333333333333333,
+      "rootMotion": "preserved"
+    },
+    {
+      "id": "02_04",
+      "file": "02_04.amc",
+      "label": "jump, balance",
+      "frameCount": 483,
+      "durationSeconds": 4.016666666666667,
+      "rootMotion": "preserved"
+    },
+    {
+      "id": "02_05",
+      "file": "02_05.amc",
+      "label": "punch/strike",
+      "frameCount": 1854,
+      "durationSeconds": 15.441666666666666,
+      "rootMotion": "preserved"
+    },
+    {
+      "id": "02_06",
+      "file": "02_06.amc",
+      "label": "bend over, scoop up, rise, lift arm",
+      "frameCount": 2235,
+      "durationSeconds": 18.616666666666667,
+      "rootMotion": "preserved"
+    },
+    {
+      "id": "02_07",
+      "file": "02_07.amc",
+      "label": "swordplay",
+      "frameCount": 2251,
+      "durationSeconds": 18.75,
+      "rootMotion": "preserved"
+    },
+    {
+      "id": "02_08",
+      "file": "02_08.amc",
+      "label": "swordplay",
+      "frameCount": 1500,
+      "durationSeconds": 12.491666666666667,
+      "rootMotion": "preserved"
+    },
+    {
+      "id": "02_09",
+      "file": "02_09.amc",
+      "label": "swordplay",
+      "frameCount": 1033,
+      "durationSeconds": 8.6,
+      "rootMotion": "preserved"
+    },
+    {
+      "id": "02_10",
+      "file": "02_10.amc",
+      "label": "wash self",
+      "frameCount": 2645,
+      "durationSeconds": 22.033333333333335,
+      "rootMotion": "preserved"
+    }
+  ],
+  "validation": [
+    {
+      "id": "02_01",
+      "file": "02_01.amc",
+      "status": "parse-ok",
+      "frames": 343,
+      "framesReported": 343,
+      "shaMatches": true,
+      "numericAcceptance": {
+        "parserDof": "pass",
+        "frameSequence": "pass",
+        "fk": "pass",
+        "quaternionUnitNorm": "pass",
+        "maxQuaternionNormDev": 6.661338147750939e-16,
+        "rootMotion": "preserved"
+      }
+    },
+    {
+      "id": "02_02",
+      "file": "02_02.amc",
+      "status": "parse-ok",
+      "frames": 298,
+      "framesReported": 298,
+      "shaMatches": true,
+      "numericAcceptance": {
+        "parserDof": "pass",
+        "frameSequence": "pass",
+        "fk": "pass",
+        "quaternionUnitNorm": "pass",
+        "maxQuaternionNormDev": 6.661338147750939e-16,
+        "rootMotion": "preserved"
+      }
+    },
+    {
+      "id": "02_03",
+      "file": "02_03.amc",
+      "status": "parse-ok",
+      "frames": 173,
+      "framesReported": 173,
+      "shaMatches": true,
+      "numericAcceptance": {
+        "parserDof": "pass",
+        "frameSequence": "pass",
+        "fk": "pass",
+        "quaternionUnitNorm": "pass",
+        "maxQuaternionNormDev": 6.661338147750939e-16,
+        "rootMotion": "preserved"
+      }
+    },
+    {
+      "id": "02_04",
+      "file": "02_04.amc",
+      "status": "parse-ok",
+      "frames": 483,
+      "framesReported": 483,
+      "shaMatches": true,
+      "numericAcceptance": {
+        "parserDof": "pass",
+        "frameSequence": "pass",
+        "fk": "pass",
+        "quaternionUnitNorm": "pass",
+        "maxQuaternionNormDev": 6.661338147750939e-16,
+        "rootMotion": "preserved"
+      }
+    },
+    {
+      "id": "02_05",
+      "file": "02_05.amc",
+      "status": "parse-ok",
+      "frames": 1854,
+      "framesReported": 1854,
+      "shaMatches": true,
+      "numericAcceptance": {
+        "parserDof": "pass",
+        "frameSequence": "pass",
+        "fk": "pass",
+        "quaternionUnitNorm": "pass",
+        "maxQuaternionNormDev": 8.881784197001252e-16,
+        "rootMotion": "preserved"
+      }
+    },
+    {
+      "id": "02_06",
+      "file": "02_06.amc",
+      "status": "parse-ok",
+      "frames": 2235,
+      "framesReported": 2235,
+      "shaMatches": true,
+      "numericAcceptance": {
+        "parserDof": "pass",
+        "frameSequence": "pass",
+        "fk": "pass",
+        "quaternionUnitNorm": "pass",
+        "maxQuaternionNormDev": 8.881784197001252e-16,
+        "rootMotion": "preserved"
+      }
+    },
+    {
+      "id": "02_07",
+      "file": "02_07.amc",
+      "status": "parse-ok",
+      "frames": 2251,
+      "framesReported": 2251,
+      "shaMatches": true,
+      "numericAcceptance": {
+        "parserDof": "pass",
+        "frameSequence": "pass",
+        "fk": "pass",
+        "quaternionUnitNorm": "pass",
+        "maxQuaternionNormDev": 8.881784197001252e-16,
+        "rootMotion": "preserved"
+      }
+    },
+    {
+      "id": "02_08",
+      "file": "02_08.amc",
+      "status": "parse-ok",
+      "frames": 1500,
+      "framesReported": 1500,
+      "shaMatches": true,
+      "numericAcceptance": {
+        "parserDof": "pass",
+        "frameSequence": "pass",
+        "fk": "pass",
+        "quaternionUnitNorm": "pass",
+        "maxQuaternionNormDev": 8.881784197001252e-16,
+        "rootMotion": "preserved"
+      }
+    },
+    {
+      "id": "02_09",
+      "file": "02_09.amc",
+      "status": "parse-ok",
+      "frames": 1033,
+      "framesReported": 1033,
+      "shaMatches": true,
+      "numericAcceptance": {
+        "parserDof": "pass",
+        "frameSequence": "pass",
+        "fk": "pass",
+        "quaternionUnitNorm": "pass",
+        "maxQuaternionNormDev": 8.881784197001252e-16,
+        "rootMotion": "preserved"
+      }
+    },
+    {
+      "id": "02_10",
+      "file": "02_10.amc",
+      "status": "parse-ok",
+      "frames": 2645,
+      "framesReported": 2645,
+      "shaMatches": true,
+      "numericAcceptance": {
+        "parserDof": "pass",
+        "frameSequence": "pass",
+        "fk": "pass",
+        "quaternionUnitNorm": "pass",
+        "maxQuaternionNormDev": 8.881784197001252e-16,
+        "rootMotion": "preserved"
+      }
+    }
+  ],
+  "limitations": [
+    "This asset uses quaternion local rotations, not per-axis Euler keyframes: motion-runtime.js pose() (per-axis euler tracks) does not consume these clips; poseMocap()/poseTransforms() do.",
+    "The source ASF \"axis\" euler is interpreted as the joint rest frame and AMC \"dof\" rotations are composed in that frame (intrinsic, listed order); the exact CMU twist convention is documented, not empirically certified.",
+    "Retarget transfers orientation deltas with a two-vector rest alignment; residual sole error is bounded by mesh structure (0.8deg ankle, 6.3deg palm) and cannot be reduced further without changing the mesh.",
+    "Source absolute scale is not used; root motion is rescaled to the target rig metre scale via a reference-bone match.",
+    "Numeric acceptance is auto-validated (parser DOF, frame sequence, FK, quaternion unit norm, sole tracking, ground contact). Human acceptance (natural coordination, joint deformation, foot contact, combined transitions) remains pending per the acceptance policy.",
+    "Multiple source bones are grouped per target joint (e.g. spine<-lowerback/upperback/thorax) using the distal-most source bone; some source articulation is collapsed."
+  ],
+  "acceptedForRegression": false,
+  "acceptancePolicy": {
+    "numeric": [
+      "binding validity",
+      "geometry defects",
+      "rest reset"
+    ],
+    "human": [
+      "natural coordination",
+      "joint deformation",
+      "foot contact",
+      "combined transitions"
+    ],
+    "completion": "Both routes required; source validity is not retarget acceptance"
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "ok": true,
+  "base": "lowpoly-ganyu-whitemodel-scene",
+  "dir": "/home/h/genshin-model-studio/delivery/lowpoly-whitemodel/gate",
+  "checks": {
+    "id": {
+      "pass": true,
+      "issues": []
+    },
+    "resources": {
+      "pass": true,
+      "uncalibrated": [
+        {
+          "resourceId": 10009003,
+          "name": "平面",
+          "status": "未校准",
+          "count": 848,
+          "index": 0
+        }
+      ],
+      "unknown": [],
+      "issues": []
+    },
+    "budget": {
+      "pass": true,
+      "detail": {
+        "requested": null,
+        "used": 848,
+        "exceeded": false,
+        "gateState": "passed"
+      },
+      "issues": []
+    },
+    "readback": {
+      "pass": true,
+      "detail": {
+        "gil": {
+          "prefabId": 1077936129,
+          "templateResourceId": 10005018,
+          "items": 848,
+          "closureComplete": true
+        },
+        "gia": {
+          "items": 848,
+          "idRange": [
+            1073741825,
+            1073742672
+          ],
+          "resourceIds": [
+            10009003
+          ],
+          "structureId": 1077936129,
+          "templatePrefabId": 10005018,
+          "name": "lowpoly-ganyu-whitemodel-scene"
+        }
+      },
+      "issues": []
+    },
+    "artifacts": {
+      "pass": true,
+      "detail": {
+        "artifacts": [
+          {
+            "path": "/home/h/genshin-model-studio/delivery/lowpoly-whitemodel/gate/lowpoly-ganyu-whitemodel-scene.structure.json",
+            "exists": true,
+            "size": 280928
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/lowpoly-whitemodel/gate/lowpoly-ganyu-whitemodel-scene.summary.json",
+            "exists": true,
+            "size": 15999
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/lowpoly-whitemodel/gate/lowpoly-ganyu-whitemodel-scene.gil",
+            "exists": true,
+            "size": 268844
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/lowpoly-whitemodel/gate/lowpoly-ganyu-whitemodel-scene.gia",
+            "exists": true,
+            "size": 175050
+          }
+        ],
+        "items": 848,
+        "units": 848,
+        "meshFaces": null
+      },
+      "issues": []
+    }
+  },
+  "failures": [],
+  "notes": [
+    "资源覆盖：存在 1 类未校准基元（候选/待校准）：平面(10009003)×848"
+  ]
+}

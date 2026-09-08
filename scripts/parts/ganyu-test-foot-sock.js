@@ -38,8 +38,8 @@
         { rx:0.038+off, ry:0.039+off, cy:-0.007 }, { rx:0.035+off, ry:0.036+off, cy:-0.006 }
       ].concat(secs);
     }
-    return profileLoft(path, secs, 46, 48, colFn, {
-      cap:'none', dataOnly:true,
+    return profileLoft(path, secs, 52, 64, colFn, {
+      cap:'both', dataOnly:true,
       toes:{ frac:0.30, amp:0.24, list:[
         { c:Math.PI*1.62, w:0.42, len:1.00, dy:0.012 },
         { c:Math.PI*1.34, w:0.34, len:0.94, dy:0.008 },

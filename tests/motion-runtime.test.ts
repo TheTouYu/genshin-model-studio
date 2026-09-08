@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {createRequire} from 'node:module';
+const require=createRequire(import.meta.url);
+const THREE=require('three');
+const ctx=vm.createContext({});vm.runInContext(fs.readFileSync('web/draw/motion-runtime.js','utf8'),ctx);
+const baseline=()=>JSON.parse(fs.readFileSync('delivery/motion-regression-v2/bundle.json','utf8'));
+test('rig transforms preserve rest pose and parent-child motion',()=>{const a=baseline(),rig=ctx.createMotionRig(THREE,a);const rest=rig.pose(null,0);assert.deepEqual(JSON.parse(JSON.stringify(rest.vertices)),a.mesh.vertices);const q=new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0,1,0),.2).toArray();const moved=rig.poseTransforms({neck:q});assert.ok(moved.vertices.some((p:number[],i:number)=>p.some((v,k)=>v!==a.mesh.vertices[i][k])));assert.deepEqual(JSON.parse(JSON.stringify(moved.vertices.slice(0,24))),a.mesh.vertices.slice(0,24));assert.deepEqual(JSON.parse(JSON.stringify(rig.pose(null,0).vertices)),a.mesh.vertices);});
+test('mocap interpolation uses root offsets and finite normalized quaternions',()=>{const a=baseline(),rig=ctx.createMotionRig(THREE,a);const clip={fps:1,frameCount:2,joints:a.rig.joints.map((j:any)=>({joint:j.id,samples:[[0,0,0,1],[0,0,0,1]]})),rootPosition:{pivot:[0,.8,0],samples:[[0,.8,0],[1,.8,2]]}};const p=rig.poseMocap(clip,.5,false);assert.ok(Math.abs(p.vertices[0][0]-a.mesh.vertices[0][0]-.5)<1e-12);assert.ok(Math.abs(p.vertices[0][2]-a.mesh.vertices[0][2]-1)<1e-12);assert.deepEqual(JSON.parse(JSON.stringify(rig.poseMocap(clip,.5,true).vertices)),a.mesh.vertices);});
+test('invalid binding is rejected before playback',()=>{const a=baseline();a.rig.vertexWeights=a.rig.vertexJoint.map((j:number)=>[[j,1]]);a.rig.vertexWeights[0]=[[0,.8]];assert.throws(()=>ctx.createMotionRig(THREE,a),/Invalid skin weights/);});

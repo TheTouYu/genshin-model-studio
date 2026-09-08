@@ -1,25 +1,41 @@
 {
   "name": "genshin-model-studio",
   "version": "0.1.0",
-  "description": "\u8f93\u5165\u63cf\u8ff0\uff08structure.json \u8d85\u96c6\uff09\u2192 \u5343\u661f\u6c99\u7bb1\u9759\u6001\u6a21\u578b .gil \u5019\u9009 \u7684\u72ec\u7acb\u5de5\u5177\u5305\uff08\u4e00\u671f\u9aa8\u67b6\uff09",
+  "description": "输入描述（structure.json 超集）→ 千星沙箱静态模型 .gil 候选 的独立工具包（一期骨架）",
   "type": "module",
   "license": "MIT",
   "engines": {
     "node": ">=20"
   },
   "bin": {
-    "gen-model": "./dist/src/cli/gen-model.js"
+    "gen-model": "./dist/src/cli/gen-model.js",
+    "export-mesh": "./dist/src/cli/export-mesh.js",
+    "contour-model": "./dist/src/cli/contour-model.js"
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "gen-model": "npm run build --silent && node dist/src/cli/gen-model.js",
+    "export-mesh": "npm run build --silent && node dist/src/cli/export-mesh.js",
+    "contour-model": "npm run build --silent && node dist/src/cli/contour-model.js",
+    "export-qa": "npm run build --silent && node scripts/export-qa.mjs",
+    "quality-plan": "npm run build --silent && node scripts/quality-plan.mjs",
+    "run-scenarios": "npm run build --silent && node scripts/run-scenarios.mjs",
+    "render-contact-sheet": "./.venv/bin/python scripts/render-contact-sheet.py",
+    "reference-fit": "./.venv/bin/python scripts/reference-fit.py",
     "gen-gia": "npm run build --silent && node dist/src/gia/gia-encoder.js",
+    "gen-resource-table": "npm run build --silent && node scripts/gen-resource-table.mjs",
+    "gen-calibration": "npm run build --silent && node scripts/gen-calibration-package.mjs",
+    "capabilities": "npm run build --silent && node scripts/list-capabilities.mjs",
     "test": "npm run build --silent && node --test \"dist/tests/*.test.js\"",
     "benchmark": "npm run build --silent && node dist/src/benchmark/runner.js",
     "web": "npm run build --silent && node scripts/web-server.js"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
+    "@types/three": "^0.160.0",
     "typescript": "^5.5.0"
+  },
+  "dependencies": {
+    "three": "0.160.0"
   }
 }

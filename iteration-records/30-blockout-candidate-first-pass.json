@@ -1,0 +1,27 @@
+{
+  "iteration": 30,
+  "status": "first_gate_passing_panelized_blockout_candidate_pipeline_validated",
+  "mesh": "delivery/r0-toes/body-r2.mesh.json",
+  "geometry": {
+    "vertices": 570,
+    "tris": 1124,
+    "heightM": 1.598,
+    "gate": "ok=true, selfIntersections 0, watertight one piece, mirror 1.19e-16"
+  },
+  "candidate": {
+    "dir": "delivery/r0-toes/blockout-candidate",
+    "gil": { "bytes": 188596, "sha256": "98152569951141575940e973bb45e9105248f9aeed753222f131cb74c07df030" },
+    "gia": { "bytes": 114919, "sha256": "1cc9246e67c2a9e1ab9f75152bd4883b79b6848ebcfb5aba8461c9bfbbc539a6" },
+    "units": 576,
+    "quads": 548,
+    "tris": 28,
+    "degenerate": 0,
+    "qa": "ok (gil readback verified)"
+  },
+  "lesson": "export-mesh CLI gate result must be re-run after npm test rebuilds dist; a stale dist briefly reported 3 phantom intersections",
+  "stage": "blockout only; palms missing, head chin still 1.40 vs reference 1.3595, appearance not started",
+  "panelPreview": { "captures": ["panel-front.png","panel-side.png","panel-back.png","panel-iso.png"], "itemsStaged": 576, "review": "delegated to deepseek vision agent (docs agent session)" },
+  "visualAcceptance": "pending image review and user confirmation",
+  "gameAcceptance": "pending user in-game confirmation",
+  "notFinal": true
+}

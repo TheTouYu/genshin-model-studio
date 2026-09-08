@@ -1,0 +1,29 @@
+{
+  "source": "body-r2.mesh.json",
+  "api": "characterProportionReport",
+  "chinY": 1.4,
+  "chinStatus": "current cage lower head landmark, provisional anatomical interpretation",
+  "measurements": {
+    "shoulderWidth": 0.366,
+    "waistWidth": 0.24,
+    "hipWidth": 0.31,
+    "headBody": 7.989955832299067,
+    "shoulderWaist": 1.525,
+    "hipWaist": 1.2916666666666667,
+    "palmFingerLen": null,
+    "fingerSpread": null,
+    "chestAsym": 1.35,
+    "hipAsym": 1.25
+  },
+  "missing": [
+    "palmFingerLen",
+    "fingerSpread"
+  ],
+  "referenceFit": false,
+  "comparison": {
+    "referenceCrownToChinPixels": 164,
+    "referenceCrownToSolePixels": 1091,
+    "referenceEnvelopeHeadBody": 6.652439024390244,
+    "limitation": "Reference head envelope includes hair crown; compare after separating hair thickness. Current approximate eight-head cage versus roughly 6.65-head clothed/hair envelope is a warning, not a fitted error metric."
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "source": "reference/ganyu-3view.png",
+  "method": "visual reading by DeepSeek vision reviewer; approximations, to be refined by exact sampling",
+  "palette": {
+    "hair": {
+      "bright": "#A8D8F0",
+      "mid": "#6FA5D5",
+      "deep": "#3E6FA8",
+      "bangsPurple": "#6C79C9",
+      "alternative": "#8FC6E8"
+    },
+    "skin": {
+      "light": "#F5C9A6",
+      "shadow": "#E2AB82"
+    },
+    "jersey": {
+      "white": "#F3F5F7",
+      "blueGradient": "#2F5F9E",
+      "blueGradientEnd": "#3A6DB0",
+      "number": "#2C5FA8",
+      "trim": "#2E5F9C"
+    },
+    "shorts": {
+      "white": "#F2F4F6",
+      "trim": "#3A6DAE"
+    },
+    "socks": {
+      "white": "#F0F2F4",
+      "band": "#2F5F9E",
+      "emblem": "#3A6DAE"
+    },
+    "gloves": "#1A1A1C",
+    "boots": {
+      "blue": "#2E5F9E",
+      "white": "#F0F2F4",
+      "studs": "#1C1C1E",
+      "sole": "#F5F6F8"
+    },
+    "horns": {
+      "outer": "#2A2A2E",
+      "inner": "#7A1F2B",
+      "base": "#C9A66B"
+    },
+    "tassel": {
+      "band": "#33508E",
+      "red": "#A93B46",
+      "gold": "#C9A66B"
+    }
+  },
+  "notes": "Number prints use negative-space white on blue or blue text on white per reference view; confirm final page colors when composing."
+}

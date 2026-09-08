@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "kind": "genshin-model-studio.contour-model.summary",
+  "tool": {
+    "name": "genshin-model-studio",
+    "version": "0.1.0"
+  },
+  "input": {
+    "file": "/home/h/genshin-model-studio/delivery/reference-fit-demo/rings-ellipse.json",
+    "sha256": "e5ce9db0921c1c07148a576e31e9eb502bfe1102e6e95895159cf5c821589c9c"
+  },
+  "model": {
+    "name": "sock-foot",
+    "mesh": {
+      "faces": 2048,
+      "quads": 1024,
+      "tris": 0,
+      "degenerate": 0,
+      "units": 1024
+    }
+  },
+  "output": {
+    "mesh": "/home/h/genshin-model-studio/delivery/reference-fit-demo/contour/sock-foot.mesh.json",
+    "meshSha256": "f5554e549a434c1445d3ed8b27a310a5ef4c26e1a083f291b40980cb80620b82",
+    "structure": "/home/h/genshin-model-studio/delivery/reference-fit-demo/contour/sock-foot.structure.json",
+    "gil": "/home/h/genshin-model-studio/delivery/reference-fit-demo/contour/sock-foot.gil",
+    "gia": "/home/h/genshin-model-studio/delivery/reference-fit-demo/contour/sock-foot.gia",
+    "summary": "/home/h/genshin-model-studio/delivery/reference-fit-demo/contour/sock-foot.summary.json"
+  },
+  "budget": {
+    "requested": null,
+    "used": 1024,
+    "exceeded": false
+  },
+  "gate": {
+    "invoked": false,
+    "state": "skipped",
+    "reason": "SKIPPED_GATE"
+  }
+}

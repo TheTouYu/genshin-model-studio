@@ -19,6 +19,12 @@
   .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
   #status { color: #ffd479; font-size: 12px; margin-top: 6px; }
   #status.err { color: #ff7b7b; }
+  #toggleWireframe { cursor: pointer; padding: 6px 10px; background: #24343b; color: #dfe6ee; border: 1px solid #77929b; border-radius: 4px; }
+  @media (max-width: 600px) {
+    #hud { top: auto; bottom: 8px; left: 8px; right: 8px; max-width: none; padding: 6px 10px; }
+    #hud > h1, #hud > div:not(#status) { display: none; }
+    #status { display: inline; margin-left: 8px; }
+  }
 </style>
 </head>
 <body>
@@ -27,11 +33,12 @@
   <h1>当前作品 · 3D 预览独立页</h1>
   <div>🖱 左键拖拽旋转 · 滚轮缩放 · 移动端单指拖拽 / 双指捏合</div>
   <div class="hint">与主页面（localhost:8787）共用同一份作品数据（localStorage），刷新本页即同步最新作品。地面网格：y=0 地面；坐标轴 x=红 / y=绿 / z=蓝。</div>
+  <button id="toggleWireframe" type="button" aria-pressed="true" disabled>线框：开</button>
   <div id="legend"></div>
   <div id="status">加载 Three.js（CDN）…</div>
 </div>
 
-<script src="./preview.js"></script>
+<script src="./preview.js?v=wireframe-default-3"></script>
 <script>
 (function () {
   'use strict'
@@ -77,6 +84,14 @@
     try {
       var preview = window.createPreview(document.getElementById('canvas'))
       window.__preview = preview // 供脚本/调试访问
+      window.gmsPreview = preview
+      var toggle = document.getElementById('toggleWireframe')
+      toggle.disabled = false
+      toggle.addEventListener('click', function () {
+        preview.setWireframe(!preview.getWireframe())
+        toggle.setAttribute('aria-pressed', String(preview.getWireframe()))
+        toggle.textContent = preview.getWireframe() ? '线框：开' : '线框：关'
+      })
       var work = loadWork()
       if (!work) {
         preview.setItems([])
@@ -97,7 +112,10 @@
         })
         .then(function (data) {
           preview.setItems(data.items || [])
-          statusEl.textContent = '✓ 已加载当前作品：' + work.strokes.length + ' 笔笔画 · ' + (data.items || []).length + ' 个元件（与主页面一致）'
+          var stats = preview.getMeshStats()
+          var vertices = stats.reduce(function (n, s) { return n + s.vertices }, 0)
+          var triangles = stats.reduce(function (n, s) { return n + s.triangles }, 0)
+          statusEl.textContent = (data.items || []).length + ' 个元件 · ' + vertices + ' 顶点 · ' + triangles + ' 三角面'
         })
         .catch(function (err) {
           statusEl.className = 'err'
@@ -123,6 +141,9 @@
     document.head.appendChild(s)
   }
 
+  window.addEventListener('storage', function (event) {
+    if (event.key === LS_KEY) location.reload()
+  })
   loadCdn()
 })()
 </script>

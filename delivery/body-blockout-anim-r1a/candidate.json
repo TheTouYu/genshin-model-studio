@@ -1,0 +1,252 @@
+{
+ "schemaVersion": 1,
+ "id": "body-blockout-anim-r1a",
+ "baseline": {
+  "dir": "delivery/body-blockout-r1",
+  "meshSha256": "4634692fd8f8ecbd4e9cfadb0d7a237c515a96a101a266b3867119299337e21b",
+  "controlsSha256": "5b570c58d5016403a0d994e1d00482d848171f6a51e23ae5f0a4e3f5a7ad74b2",
+  "vertexCount": 113,
+  "faceCount": 222
+ },
+ "rationale": [
+  "Foot plates y 0.035->0.075: r1 ankle pivot is 8.5cm above the sole plate while the CMU subject-02 ankle joint sits 4.3cm above its sole; with toe-centroid primary the structural sole residual is 10.0deg and with whole-plate centroid 36.5deg (the reported constant toes-up). At 0.075 the ankle->sole height is 4.5cm and the structural residual drops to 0.8deg, letting direction AND sole both track the source.",
+  "Palm plates horizontal->vertical blade (palm faces body): a real palm normal is perpendicular to the hand direction (source T-pose angle 90deg); the horizontal plate gives 6.3deg -> 83.8deg structural twist mismatch (grips/props would roll ~90deg). Vertical blade: 96deg, residual 6.3deg."
+ ],
+ "diffs": [
+  {
+   "vertex": 76,
+   "region": "footL",
+   "before": [
+    -0.152,
+    0.035,
+    -0.05
+   ],
+   "after": [
+    -0.152,
+    0.075,
+    -0.05
+   ]
+  },
+  {
+   "vertex": 77,
+   "region": "footL",
+   "before": [
+    -0.057999999999999996,
+    0.035,
+    -0.05
+   ],
+   "after": [
+    -0.057999999999999996,
+    0.075,
+    -0.05
+   ]
+  },
+  {
+   "vertex": 78,
+   "region": "footL",
+   "before": [
+    -0.057999999999999996,
+    0.035,
+    0.19
+   ],
+   "after": [
+    -0.057999999999999996,
+    0.075,
+    0.19
+   ]
+  },
+  {
+   "vertex": 79,
+   "region": "footL",
+   "before": [
+    -0.152,
+    0.035,
+    0.19
+   ],
+   "after": [
+    -0.152,
+    0.075,
+    0.19
+   ]
+  },
+  {
+   "vertex": 108,
+   "region": "footR",
+   "before": [
+    0.057999999999999996,
+    0.035,
+    -0.05
+   ],
+   "after": [
+    0.057999999999999996,
+    0.075,
+    -0.05
+   ]
+  },
+  {
+   "vertex": 109,
+   "region": "footR",
+   "before": [
+    0.152,
+    0.035,
+    -0.05
+   ],
+   "after": [
+    0.152,
+    0.075,
+    -0.05
+   ]
+  },
+  {
+   "vertex": 110,
+   "region": "footR",
+   "before": [
+    0.152,
+    0.035,
+    0.19
+   ],
+   "after": [
+    0.152,
+    0.075,
+    0.19
+   ]
+  },
+  {
+   "vertex": 111,
+   "region": "footR",
+   "before": [
+    0.057999999999999996,
+    0.035,
+    0.19
+   ],
+   "after": [
+    0.057999999999999996,
+    0.075,
+    0.19
+   ]
+  },
+  {
+   "vertex": 60,
+   "region": "palmL",
+   "before": [
+    -0.272,
+    0.67,
+    0.018
+   ],
+   "after": [
+    -0.305804,
+    0.707768,
+    0.018
+   ]
+  },
+  {
+   "vertex": 61,
+   "region": "palmL",
+   "before": [
+    -0.272,
+    0.67,
+    -0.018
+   ],
+   "after": [
+    -0.305804,
+    0.707768,
+    -0.018
+   ]
+  },
+  {
+   "vertex": 62,
+   "region": "palmL",
+   "before": [
+    -0.348,
+    0.67,
+    -0.018
+   ],
+   "after": [
+    -0.314196,
+    0.632232,
+    -0.018
+   ]
+  },
+  {
+   "vertex": 63,
+   "region": "palmL",
+   "before": [
+    -0.348,
+    0.67,
+    0.018
+   ],
+   "after": [
+    -0.314196,
+    0.632232,
+    0.018
+   ]
+  },
+  {
+   "vertex": 92,
+   "region": "palmR",
+   "before": [
+    0.272,
+    0.67,
+    -0.018
+   ],
+   "after": [
+    0.305804,
+    0.707768,
+    -0.018
+   ]
+  },
+  {
+   "vertex": 93,
+   "region": "palmR",
+   "before": [
+    0.272,
+    0.67,
+    0.018
+   ],
+   "after": [
+    0.305804,
+    0.707768,
+    0.018
+   ]
+  },
+  {
+   "vertex": 94,
+   "region": "palmR",
+   "before": [
+    0.348,
+    0.67,
+    0.018
+   ],
+   "after": [
+    0.314196,
+    0.632232,
+    0.018
+   ]
+  },
+  {
+   "vertex": 95,
+   "region": "palmR",
+   "before": [
+    0.348,
+    0.67,
+    -0.018
+   ],
+   "after": [
+    0.314196,
+    0.632232,
+    -0.018
+   ]
+  }
+ ],
+ "invariants": {
+  "vertexCount": 113,
+  "faceCount": 222,
+  "vertexCountUnchanged": true,
+  "facesUntouched": true,
+  "watertight": true,
+  "edgeCount": 333,
+  "mirrorMaxAsymmetry": 0,
+  "nonTargetIdentical": true,
+  "restSelfIntersections": 0
+ }
+}

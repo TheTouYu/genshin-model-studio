@@ -16,7 +16,7 @@ import { createHash } from 'node:crypto'
 import { encodeStructure, TOUCHED_TOP_LEVEL_FIELDS } from '../core/encoder.js'
 import { closureSummary, readBackAssemblies } from '../core/readback.js'
 import { loadStructureFile, resolveStructure } from '../core/structure.js'
-import { officialPrefabName } from '../core/official-resources.js'
+import { canonicalResourceRows } from '../core/resource-meta.js'
 
 const VERSION = '0.1.0'
 
@@ -39,25 +39,20 @@ function usage(): string {
   ].join('\n')
 }
 
-const RESOURCE_TABLE: readonly [number, string, string][] = [
-  [10005018, '空模型', '无可见几何；宿主模板（保存局部原点）'],
-  [10009001, '长方体', 'scale=1 = 1×1×1（边长 1 米）；scale=[宽, 高, 长]；长轴=局部 Z'],
-  [10009002, '球体', 'scale=1 = 直径 1（统一设计语言）'],
-  [10009003, '平面', 'scale=1 = 1×1（一期未校准，按 1×1 语义使用）'],
-  [10009004, '三棱柱', '高=Y；底面正三角形外接圆直径 1 @ scale=1；顶点朝 -Z；X/Z 同比例'],
-  [10009005, '五棱柱', '高=Y；底面正五边形外接圆直径 1 @ scale=1；顶点朝 -Z；X/Z 同比例'],
-  [10009006, '三棱锥', '未校准（一期仅登记，可编码不保证视觉语义）'],
-  [10009008, '圆柱', '零旋转轴向 Y；scale=[截面直径, 轴向长度, 截面直径]'],
-  [10009009, '圆锥', '未校准（一期仅登记，可编码不保证视觉语义）'],
-  [10009010, '线框长方体', '未校准（一期仅登记，可编码不保证视觉语义）'],
-  [10009011, '线框圆柱', '未校准（一期仅登记，可编码不保证视觉语义）']
-]
+function resourceSemantics(row: ReturnType<typeof canonicalResourceRows>[number]): string {
+  if (row.status === '未校准') {
+    return row.scaleSemantics === '—'
+      ? '未校准（一期仅登记，可编码不保证视觉语义）'
+      : `${row.scaleSemantics}；未校准`
+  }
+  return `${row.scaleSemantics}（${row.status}）`
+}
 
 function listResources(): void {
   console.log('官方基础元件速查表（详细语义见 docs/input-format.md §资源速查表）')
   console.log('')
-  for (const [id, name, semantics] of RESOURCE_TABLE) {
-    console.log(`  ${id}  ${name}  ${semantics}`)
+  for (const row of canonicalResourceRows()) {
+    console.log(`  ${row.resourceId}  ${row.name}  ${resourceSemantics(row)}`)
   }
 }
 

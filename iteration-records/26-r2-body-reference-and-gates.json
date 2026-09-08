@@ -1,0 +1,57 @@
+{
+  "iteration": 26,
+  "status": "in_progress_not_accepted",
+  "reference": "reference/body-reference-provenance.json",
+  "changes": [
+    "Recovered four original structural reference attachments",
+    "Added elliptical branch sections and ankle bend controls",
+    "Revised shoulder/neck/pelvis and elbow/knee/calf/foot controls",
+    "Mirrored branch columns by shared boundary correspondence",
+    "Fixed CSS color conversion at panel export boundary",
+    "Replaced centroid normal heuristic with winding and component volume checks",
+    "Added limited local triangle intersection gate"
+  ],
+  "checkpoint": {
+    "mesh": "delivery/r0-toes/body-r2.mesh.json",
+    "work": "delivery/r0-toes/body-r2.work.json",
+    "controls": "delivery/r0-toes/body-r2.controls.json",
+    "report": "delivery/r0-toes/body-r2.report.json",
+    "vertices": 534,
+    "triangles": 1060,
+    "heightMeters": 1.598,
+    "components": 1,
+    "openEdges": 0,
+    "nonManifoldEdges": 0,
+    "seamEdges": 0,
+    "degenerate": 0,
+    "skinny": 0,
+    "mirrorMaxDistance": 1.2e-16,
+    "selfIntersectingPairs": 67
+  },
+  "browser": {
+    "url": "http://localhost:8787/?t=bodycage-r1",
+    "tool": "browser-harness",
+    "images": [
+      "delivery/r0-toes/body-r2-front.png",
+      "delivery/r0-toes/body-r2-side.png",
+      "delivery/r0-toes/body-r2-back.png",
+      "delivery/r0-toes/body-r2-iso.png"
+    ],
+    "readImageReviewed": true,
+    "acceptance": "failed: shoulder/hip transition still visibly hard; local crossings detected"
+  },
+  "tests": {
+    "lastParentCollected": 193,
+    "lastAgentReported": 197
+  },
+  "exports": {
+    "giaProduced": false,
+    "reason": "Geometry gate failed; no bypass permitted"
+  },
+  "next": [
+    "Fix 59 shoulder and 8 hip crossing pairs",
+    "Strengthen adjacent/coplanar intersection coverage",
+    "Refit visible landmarks and hand structure",
+    "Review updated skill evidence claims"
+  ]
+}

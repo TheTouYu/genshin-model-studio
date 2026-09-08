@@ -1,0 +1,36 @@
+{
+  "model": "ganyu-blockout-minimal",
+  "config": {
+    "sides": 8,
+    "armK": 3,
+    "legK": 3
+  },
+  "out": "delivery/blockout-minimal",
+  "metrics": {
+    "vertices": 126,
+    "tris": 244,
+    "rings": 6,
+    "sides": 8,
+    "armStations": 3,
+    "legStations": 3,
+    "height": 1.585,
+    "halfWidth": 0.317,
+    "front": 0.13,
+    "back": -0.12,
+    "limbs": 4
+  },
+  "seam": {
+    "components": 1,
+    "openEdges": 0,
+    "nonManifoldEdges": 0,
+    "seamEdges": 0,
+    "onePiece": true,
+    "watertight": true
+  },
+  "gateOk": false,
+  "failures": [
+    "存在 56 处局部自交（面 #132 与 #134）",
+    "瘦长三角 20 个，占比 8.2%（阈值 ≤ 5%）",
+    "面积比率 p95/p5 = 30.9（阈值 ≤ 20）"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "kind": "genshin-model-studio.calibration-mesh.summary",
+  "sample": "b1-tri-equilateral",
+  "name": "三棱锥_压扁正三角",
+  "primitive": "10009006 三棱锥(压扁三角)",
+  "resourceIds": [
+    10009006
+  ],
+  "unitCount": 1,
+  "output": {
+    "gil": 1533,
+    "gia": 824,
+    "structure": 1
+  },
+  "observe": [
+    "压扁语义：scale.y→0 是否得到一个三角形的面（正三角形）",
+    "朝向：三角面应落在 XZ 平面（法线 ±Y）",
+    "穿透：被压扁后是否仍为一个可见三角面"
+  ],
+  "sampleFamily": "b-tri"
+}

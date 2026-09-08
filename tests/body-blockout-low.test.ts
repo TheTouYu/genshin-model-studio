@@ -1,0 +1,24 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+import {execFileSync} from 'node:child_process';
+test('complete low-point body uses one closed shared mesh and passes actual geometry gates',()=>{
+ execFileSync(process.execPath,['scripts/parts/tool-body-blockout.mjs']);
+ const mesh=JSON.parse(fs.readFileSync('delivery/body-blockout-low/mesh.json','utf8'));
+ const report=JSON.parse(fs.readFileSync('delivery/body-blockout-low/report.json','utf8'));
+ assert.equal(mesh.vertices.length,113); assert.equal(mesh.faces.length/3,222);
+ assert.equal(report.gate.ok,true); assert.equal(report.connected,true);
+ const ctx=vm.createContext({Math,Set,Map,console});
+ vm.runInContext(fs.readFileSync('scripts/parts/lib/ganyu-seam-check.js','utf8'),ctx);
+ assert.equal(ctx.seamCheck(mesh).onePiece,true);
+ assert.equal(report.referenceFit,false);
+ execFileSync(process.execPath,['scripts/parts/tool-body-blockout.mjs','delivery/body-blockout-low/head-control-edits.json','delivery/body-blockout-r1']);
+ const moved=JSON.parse(fs.readFileSync('delivery/body-blockout-r1/mesh.json','utf8'));
+ assert.deepEqual(moved.faces,mesh.faces);
+ assert.equal(moved.vertices.length,mesh.vertices.length);
+ assert.notDeepEqual(moved.vertices,mesh.vertices);
+ const changed=moved.vertices.flatMap((p:number[],i:number)=>JSON.stringify(p)!==JSON.stringify(mesh.vertices[i])?[i]:[]);
+ assert.equal(changed.length,13);
+ assert.equal(JSON.parse(fs.readFileSync('delivery/body-blockout-r1/report.json','utf8')).gate.ok,true);
+});

@@ -1,0 +1,74 @@
+{
+ "bands": {
+  "count": 9
+ },
+ "inputs": {
+  "front": "reference/details/07-sock-shin.png",
+  "gtMask": null,
+  "side": "reference/details/08-shoe.png",
+  "top": null
+ },
+ "iou": {
+  "computed": false,
+  "gtMask": null,
+  "value": null
+ },
+ "method": {
+  "bandColorTol": 28,
+  "bgPatch": 4,
+  "bgThresh": 40,
+  "cap": "both",
+  "colorBandsMode": "auto",
+  "heightM": 0.4,
+  "minComponentFrac": 0.01,
+  "morphK": 3,
+  "points": 64,
+  "ringCount": 16,
+  "topApprox": "ellipse(width x depth)"
+ },
+ "name": "sock-foot",
+ "rings": {
+  "hasTopOutline": false,
+  "heightM": 0.4,
+  "points": 64,
+  "ringCount": 16,
+  "topHalfDepthM": 0.07818,
+  "topHalfWidthM": 0.06074
+ },
+ "views": [
+  {
+   "bbox": [
+    44,
+    0,
+    203,
+    483
+   ],
+   "bboxHeightPx": 484,
+   "componentCount": 2,
+   "image": "reference/details/07-sock-shin.png",
+   "imageHeightPx": 484,
+   "imageWidthPx": 594,
+   "maskAreaPx": 56735,
+   "partCount": 2,
+   "refWidthPx": 147,
+   "role": "front"
+  },
+  {
+   "bbox": [
+    2,
+    0,
+    155,
+    306
+   ],
+   "bboxHeightPx": 307,
+   "componentCount": 14,
+   "image": "reference/details/08-shoe.png",
+   "imageHeightPx": 341,
+   "imageWidthPx": 605,
+   "maskAreaPx": 25759,
+   "partCount": 4,
+   "refWidthPx": 120,
+   "role": "side"
+  }
+ ]
+}

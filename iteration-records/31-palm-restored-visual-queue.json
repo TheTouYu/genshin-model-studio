@@ -1,0 +1,32 @@
+{
+  "iteration": 31,
+  "status": "palm_restored_visual_review_queued",
+  "geometry": {
+    "vertices": 586,
+    "tris": 1156,
+    "heightM": 1.598,
+    "gate": "ok, selfIntersections 0, areaRatio 17.7, one piece, mirror 1.19e-16",
+    "independentRebuild": true
+  },
+  "palm": {
+    "singleHandVertices": 25,
+    "lengthMM": 92,
+    "widthMM": 80,
+    "thicknessMM": 32,
+    "note": "flat palm block from wrist shared boundary; fingers pending"
+  },
+  "captures": {
+    "dir": "delivery/r0-toes",
+    "fullBody": ["full-render-front.png","full-render-side.png","full-render-back.png","full-render-iso.png"],
+    "panel": ["blockout-candidate/panel-front.png","blockout-candidate/panel-side.png","blockout-candidate/panel-back.png","blockout-candidate/panel-iso.png"],
+    "framing": "radius 1.45 target y0.85 includes head (earlier radius 1.05 cropped it)"
+  },
+  "queued": [
+    "head chin 1.40 to 1.36 (approved based on robust front/side landmark signal)",
+    "torso front midline crease smoothing",
+    "foot bend transition softening",
+    "five fingers after head stabilized"
+  ],
+  "blockoutVisualReview": { "reviewer": "deepseek vision agent", "images": 4, "result": "structure complete, symmetric, panel coverage continuous, no scattered fragments", "head": "block head in frame, no facial features (expected)", "hands": "palm blocks continuous with arms, no fingers (expected)", "crease": "front midline green seam chest-to-legs, gray zigzag band side view", "feet": "sole near y0, small forward angle", "limitation": "UI-resolution previews; micro intersection or asymmetry judged by gate not pixels" },
+  "acceptance": "character appearance and game acceptance remain pending"
+}

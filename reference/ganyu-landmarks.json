@@ -1,0 +1,217 @@
+{
+  "schemaVersion": 1,
+  "reference": "reference/ganyu-3view.png",
+  "imageSize": [
+    1254,
+    1254
+  ],
+  "method": "Manual visual landmark picks from read_image; approximate pixels, not automated segmentation",
+  "status": "initial_measurements_pending_overlay_review",
+  "coordinateConvention": "Image x right, y down. Body world +Y up, +Z front.",
+  "scale": {
+    "heightMeters": 1.6,
+    "status": "provisional",
+    "topPixel": 93,
+    "bottomPixel": 1184,
+    "excludes": "ahoge and horns",
+    "note": "Hair crown to shoe sole envelope; not bare anatomical crown."
+  },
+  "front": {
+    "centerX": 249,
+    "landmarks": [
+      {
+        "name": "hair_crown",
+        "pixel": [
+          249,
+          93
+        ],
+        "uncertaintyPx": 5
+      },
+      {
+        "name": "chin",
+        "pixel": [
+          249,
+          257
+        ],
+        "uncertaintyPx": 6
+      },
+      {
+        "name": "neck_base",
+        "pixel": [
+          249,
+          290
+        ],
+        "uncertaintyPx": 7
+      },
+      {
+        "name": "shoulder_left",
+        "pixel": [
+          177,
+          314
+        ],
+        "uncertaintyPx": 12
+      },
+      {
+        "name": "shoulder_right",
+        "pixel": [
+          321,
+          314
+        ],
+        "uncertaintyPx": 12
+      },
+      {
+        "name": "waist_left_cloth",
+        "pixel": [
+          165,
+          502
+        ],
+        "uncertaintyPx": 10
+      },
+      {
+        "name": "waist_right_cloth",
+        "pixel": [
+          333,
+          502
+        ],
+        "uncertaintyPx": 10
+      },
+      {
+        "name": "jersey_hem",
+        "pixel": [
+          249,
+          582
+        ],
+        "uncertaintyPx": 5
+      },
+      {
+        "name": "shorts_hem",
+        "pixel": [
+          249,
+          692
+        ],
+        "uncertaintyPx": 8
+      },
+      {
+        "name": "knee_left",
+        "pixel": [
+          177,
+          833
+        ],
+        "uncertaintyPx": 14
+      },
+      {
+        "name": "knee_right",
+        "pixel": [
+          314,
+          833
+        ],
+        "uncertaintyPx": 14
+      },
+      {
+        "name": "sock_top",
+        "pixel": [
+          166,
+          887
+        ],
+        "uncertaintyPx": 5
+      },
+      {
+        "name": "ankle_left",
+        "pixel": [
+          154,
+          1100
+        ],
+        "uncertaintyPx": 8
+      },
+      {
+        "name": "shoe_sole",
+        "pixel": [
+          150,
+          1184
+        ],
+        "uncertaintyPx": 5
+      }
+    ]
+  },
+  "side": {
+    "frontDirection": "image -X",
+    "landmarks": [
+      {
+        "name": "nose_tip",
+        "pixel": [
+          549,
+          220
+        ],
+        "uncertaintyPx": 4
+      },
+      {
+        "name": "chin",
+        "pixel": [
+          568,
+          253
+        ],
+        "uncertaintyPx": 5
+      },
+      {
+        "name": "chest_cloth_front",
+        "pixel": [
+          531,
+          375
+        ],
+        "uncertaintyPx": 7
+      },
+      {
+        "name": "waist_cloth_front",
+        "pixel": [
+          556,
+          482
+        ],
+        "uncertaintyPx": 9
+      },
+      {
+        "name": "jersey_hem",
+        "pixel": [
+          550,
+          580
+        ],
+        "uncertaintyPx": 5
+      },
+      {
+        "name": "knee_front",
+        "pixel": [
+          555,
+          830
+        ],
+        "uncertaintyPx": 12
+      },
+      {
+        "name": "shoe_toe",
+        "pixel": [
+          521,
+          1155
+        ],
+        "uncertaintyPx": 5
+      },
+      {
+        "name": "shoe_heel",
+        "pixel": [
+          678,
+          1150
+        ],
+        "uncertaintyPx": 5
+      }
+    ]
+  },
+  "limitations": [
+    "Clothing masks torso skin boundaries; do not fit body directly to cloth extent",
+    "Hair masks rear head, neck and much of back",
+    "Image front and side are separate rendered views; perspective and pose mismatch require per-view alignment",
+    "No finger-base landmarks yet; missing measurements must remain null"
+  ],
+  "next": [
+    "Render orthographic silhouette overlays using these landmarks",
+    "Normalize each view by visible crown and sole separately",
+    "Fit body control landmarks and separately fit clothing clearance",
+    "Replace ambiguous points or broaden uncertainty rather than invent hidden measurements"
+  ]
+}

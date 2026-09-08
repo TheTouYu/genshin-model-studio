@@ -1,0 +1,35 @@
+{
+  "iteration": 29,
+  "status": "gate_and_tool_increments_body_still_failing",
+  "tests": { "command": "npm test", "parentCollected": 216, "pass": 216, "fail": 0 },
+  "verifyHardening": {
+    "owner": "72ccdf4d",
+    "delivered": [
+      "facesShareEdge replaces share-vertex adjacency skip",
+      "coplanar non-adjacent 2D overlap detection",
+      "dimension-correct per-pair epsilons",
+      "componentSignedVolume local centroid origin",
+      "per-component bbox epsilon"
+    ],
+    "regressions": 11,
+    "note": "R2 rejection unchanged, no GIA produced"
+  },
+  "bodyProgress": {
+    "owner": "1e1fb581",
+    "selfIntersectionsFrom": 67,
+    "selfIntersectionsCurrent": 25,
+    "residualRegion": "hip/pelvis around y 0.83-0.86",
+    "areaRatio": 21.5,
+    "areaRatioLimit": 20,
+    "failures": ["25 local self-intersections", "area ratio p95/p5 21.5"],
+    "repairOngoing": true
+  },
+  "referenceFitTool": {
+    "script": "scripts/fit-check.mjs",
+    "test": "tests/fit-check.test.ts",
+    "outputs": ["delivery/r0-toes/reference-overlay-deltas.json", "delivery/r0-toes/current-check/fit.json"],
+    "robustSignals": { "chinFrontDeltaM": -0.0405, "chinSideDeltaM": -0.0346, "kneeMatch": true, "waistWidthMatch": true },
+    "uncertainSignals": ["shoulder width picks likely inside hair silhouette"],
+    "acceptance": "none; visual and game axes remain pending"
+  }
+}

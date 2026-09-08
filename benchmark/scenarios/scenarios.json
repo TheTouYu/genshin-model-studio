@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "description": "Genshin Model Studio 场景验证集：任何网格/导出改动后跑 run-scenarios 做回归。",
+  "scenarios": [
+    {
+      "id": "contour-foot",
+      "title": "角色-脚（顶视+侧视轮廓放样，64 点 cap both）",
+      "route": "mesh",
+      "command": [
+        "node",
+        "dist/src/cli/contour-model.js",
+        "{input}",
+        "--name",
+        "{name}",
+        "--out-dir",
+        "{outDir}",
+        "--force"
+      ],
+      "inputs": ["examples/contour-foot.json"],
+      "assertions": {
+        "unitsRange": [300, 1000],
+        "gate": "pass",
+        "qa": "ok"
+      },
+      "status": "auto"
+    },
+    {
+      "id": "basic-cylinder",
+      "title": "基础圆柱（24 边圆环放样，cap both）",
+      "route": "mesh",
+      "command": [
+        "node",
+        "dist/src/cli/contour-model.js",
+        "{input}",
+        "--points",
+        "24",
+        "--name",
+        "{name}",
+        "--out-dir",
+        "{outDir}",
+        "--force"
+      ],
+      "inputs": ["benchmark/scenarios/inputs/cylinder.json"],
+      "assertions": {
+        "unitsRange": [1, 200],
+        "gate": "pass",
+        "qa": "ok"
+      },
+      "status": "auto"
+    },
+    {
+      "id": "cup",
+      "title": "水杯（mesh 等价=圆柱+盖；或经典画线 stroke 手动）",
+      "route": "mesh",
+      "inputs": [],
+      "assertions": {},
+      "status": "manual"
+    },
+    {
+      "id": "fan",
+      "title": "电风扇（mesh 近似=环+叶片多 mesh 拼装；或标手动）",
+      "route": "mesh",
+      "inputs": [],
+      "assertions": {},
+      "status": "pending"
+    },
+    {
+      "id": "football",
+      "title": "足球（球体拼接，标手动）",
+      "route": "mesh",
+      "inputs": [],
+      "assertions": {},
+      "status": "pending"
+    }
+  ]
+}

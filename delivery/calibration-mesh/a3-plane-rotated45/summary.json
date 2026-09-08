@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "kind": "genshin-model-studio.calibration-mesh.summary",
+  "sample": "a3-plane-rotated45",
+  "name": "平面_斜45度",
+  "primitive": "10009003 平面",
+  "resourceIds": [
+    10009003
+  ],
+  "unitCount": 1,
+  "output": {
+    "gil": 1524,
+    "gia": 806,
+    "structure": 1
+  },
+  "observe": [
+    "朝向：绕 Y 转 45° 后平面是否斜置",
+    "尺寸：斜置后是否仍为 1×1 平面"
+  ],
+  "sampleFamily": "a-plane"
+}

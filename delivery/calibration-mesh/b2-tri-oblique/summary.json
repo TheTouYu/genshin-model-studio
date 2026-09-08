@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "kind": "genshin-model-studio.calibration-mesh.summary",
+  "sample": "b2-tri-oblique",
+  "name": "三棱锥_任意斜三角",
+  "primitive": "10009006 三棱锥(压扁三角)",
+  "resourceIds": [
+    10009006
+  ],
+  "unitCount": 1,
+  "output": {
+    "gil": 1544,
+    "gia": 830,
+    "structure": 1
+  },
+  "observe": [
+    "任意形状：缩放+旋转后是否得到不等边三角形",
+    "比例：不等边是否随 scale.x/z 精确可控"
+  ],
+  "sampleFamily": "b-tri"
+}

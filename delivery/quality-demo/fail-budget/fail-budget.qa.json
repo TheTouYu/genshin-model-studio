@@ -1,0 +1,104 @@
+{
+  "ok": false,
+  "base": "fail-budget",
+  "dir": "/home/h/genshin-model-studio/delivery/quality-demo/fail-budget",
+  "checks": {
+    "id": {
+      "pass": true,
+      "issues": []
+    },
+    "resources": {
+      "pass": true,
+      "uncalibrated": [
+        {
+          "resourceId": 10009003,
+          "name": "平面",
+          "status": "未校准",
+          "count": 576,
+          "index": 0
+        }
+      ],
+      "unknown": [],
+      "issues": []
+    },
+    "budget": {
+      "pass": false,
+      "detail": {
+        "requested": 10,
+        "used": 576,
+        "exceeded": true,
+        "gateState": "skipped"
+      },
+      "issues": [
+        "单元预算超限：需要 576 个单元，预算 10，超出 566"
+      ]
+    },
+    "readback": {
+      "pass": true,
+      "detail": {
+        "gil": {
+          "prefabId": 1077936129,
+          "templateResourceId": 10005018,
+          "items": 576,
+          "closureComplete": true
+        },
+        "gia": {
+          "items": 576,
+          "idRange": [
+            1073741825,
+            1073742400
+          ],
+          "resourceIds": [
+            10009003
+          ],
+          "structureId": 1077936129,
+          "templatePrefabId": 10005018,
+          "name": "fail-budget"
+        }
+      },
+      "issues": []
+    },
+    "artifacts": {
+      "pass": true,
+      "detail": {
+        "artifacts": [
+          {
+            "path": "/home/h/genshin-model-studio/delivery/quality-demo/fail-budget/fail-budget.structure.json",
+            "exists": true,
+            "size": 299103
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/quality-demo/fail-budget/fail-budget.summary.json",
+            "exists": true,
+            "size": 1268
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/quality-demo/fail-budget/fail-budget.gil",
+            "exists": true,
+            "size": 193075
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/quality-demo/fail-budget/fail-budget.gia",
+            "exists": true,
+            "size": 117169
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/quality-demo/fail-budget/fail-budget.mesh.json",
+            "exists": true,
+            "size": 94923
+          }
+        ],
+        "items": 576,
+        "units": 576,
+        "meshFaces": 1152
+      },
+      "issues": []
+    }
+  },
+  "failures": [
+    "单元预算超限：需要 576 个单元，预算 10，超出 566"
+  ],
+  "notes": [
+    "资源覆盖：存在 1 类未校准基元（候选/待校准）：平面(10009003)×576"
+  ]
+}

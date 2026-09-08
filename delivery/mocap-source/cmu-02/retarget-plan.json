@@ -1,0 +1,82 @@
+{
+  "status": "source-downloaded-retarget-pending",
+  "source": "http://mocap.cs.cmu.edu/search.php?subjectnumber=2",
+  "fps": 120,
+  "clips": [
+    {
+      "file": "02_01.amc",
+      "label": "walk"
+    },
+    {
+      "file": "02_03.amc",
+      "label": "run/jog"
+    }
+  ],
+  "skeleton": "02.asf",
+  "mapping": {
+    "root": [
+      "root"
+    ],
+    "spine": [
+      "lowerback",
+      "upperback",
+      "thorax"
+    ],
+    "neck": [
+      "lowerneck",
+      "upperneck",
+      "head"
+    ],
+    "shoulderL": [
+      "lclavicle",
+      "lhumerus"
+    ],
+    "elbowL": [
+      "lradius"
+    ],
+    "wristL": [
+      "lwrist",
+      "lhand"
+    ],
+    "hipL": [
+      "lfemur"
+    ],
+    "kneeL": [
+      "ltibia"
+    ],
+    "ankleL": [
+      "lfoot"
+    ],
+    "shoulderR": [
+      "rclavicle",
+      "rhumerus"
+    ],
+    "elbowR": [
+      "rradius"
+    ],
+    "wristR": [
+      "rwrist",
+      "rhand"
+    ],
+    "hipR": [
+      "rfemur"
+    ],
+    "kneeR": [
+      "rtibia"
+    ],
+    "ankleR": [
+      "rfoot"
+    ]
+  },
+  "requirements": [
+    "Validate source bone names and DOF order against ASF",
+    "Compose source chain rotations in correct coordinate frames; do not add Euler angles",
+    "Convert bind frames before retargeting",
+    "Preserve root motion and provide explicit in-place mode",
+    "Compare original skeleton playback against retargeted skeleton before judging mesh",
+    "Keep original clips, mapping, scale policy and derived clips separately"
+  ],
+  "downloadTransport": "Official HTTP endpoint used after HTTPS issuer validation failed; no TLS bypass",
+  "licenseEvidence": "source-page.html: dataset of motions is free for all uses; retain CMU attribution",
+  "acceptedForRegression": false
+}

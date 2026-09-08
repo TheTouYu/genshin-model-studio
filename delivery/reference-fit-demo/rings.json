@@ -1,0 +1,134 @@
+{
+ "cap": "both",
+ "colorBands": [
+  {
+   "color": "0xDAB3A7",
+   "t0": 0.8592,
+   "t1": 1.0
+  },
+  {
+   "color": "0xC2C3D2",
+   "t0": 0.8261,
+   "t1": 0.8571
+  },
+  {
+   "color": "0x909BC1",
+   "t0": 0.8116,
+   "t1": 0.824
+  },
+  {
+   "color": "0x5A73AF",
+   "t0": 0.7847,
+   "t1": 0.8095
+  },
+  {
+   "color": "0x9AA2C4",
+   "t0": 0.766,
+   "t1": 0.7826
+  },
+  {
+   "color": "0x4C63A3",
+   "t0": 0.7433,
+   "t1": 0.764
+  },
+  {
+   "color": "0x828DB3",
+   "t0": 0.735,
+   "t1": 0.7412
+  },
+  {
+   "color": "0xCDCFDE",
+   "t0": 0.4886,
+   "t1": 0.7329
+  },
+  {
+   "color": "0xC7CBDC",
+   "t0": 0.0,
+   "t1": 0.4865
+  }
+ ],
+ "name": "sock-foot",
+ "points": 64,
+ "sideProfile": [
+  {
+   "centerZ": 0.0098,
+   "widthScale": 0.4966,
+   "y": 0.0
+  },
+  {
+   "centerZ": -0.0215,
+   "widthScale": 0.5238,
+   "y": 0.0267
+  },
+  {
+   "centerZ": -0.0085,
+   "widthScale": 0.5714,
+   "y": 0.0533
+  },
+  {
+   "centerZ": 0.002,
+   "widthScale": 0.619,
+   "y": 0.08
+  },
+  {
+   "centerZ": 0.0254,
+   "widthScale": 0.6735,
+   "y": 0.1067
+  },
+  {
+   "centerZ": 0.0287,
+   "widthScale": 0.7279,
+   "y": 0.1333
+  },
+  {
+   "centerZ": 0.0254,
+   "widthScale": 0.7891,
+   "y": 0.16
+  },
+  {
+   "centerZ": 0.0319,
+   "widthScale": 0.8707,
+   "y": 0.1867
+  },
+  {
+   "centerZ": 0.0319,
+   "widthScale": 0.9456,
+   "y": 0.2133
+  },
+  {
+   "centerZ": 0.0332,
+   "widthScale": 0.9864,
+   "y": 0.24
+  },
+  {
+   "centerZ": 0.0339,
+   "widthScale": 0.9932,
+   "y": 0.2667
+  },
+  {
+   "centerZ": 0.0345,
+   "widthScale": 0.9864,
+   "y": 0.2933
+  },
+  {
+   "centerZ": 0.0352,
+   "widthScale": 0.9524,
+   "y": 0.32
+  },
+  {
+   "centerZ": 0.0352,
+   "widthScale": 0.9116,
+   "y": 0.3467
+  },
+  {
+   "centerZ": 0.0352,
+   "widthScale": 0.8503,
+   "y": 0.3733
+  },
+  {
+   "centerZ": 0.0358,
+   "widthScale": 0.8639,
+   "y": 0.4
+  }
+ ]
+}

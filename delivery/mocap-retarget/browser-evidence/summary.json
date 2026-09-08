@@ -1,0 +1,55 @@
+{
+  "page": "http://localhost:8787/draw/motion-review.html?mocap=1",
+  "generated": "2026-10-09",
+  "renderModes": {
+    "white": "MeshStandardMaterial 0xf2f4f5, per-pose computeVertexNormals, hemisphere+key+fill lights, PCFSoft contact shadow; verified chest RGB ~[173,177,181] (well above mid-gray)",
+    "wire": "MeshBasicMaterial 0xbdd5df; verified via 02_01-wire-front.png + 02_07-sword-grip-WIRE-front.png"
+  },
+  "realPlayback": "see fullplay-results.json — 02_02 full clean rAF playback PASS (4 distinct vertex checksums, natural pause at end); 02_01 realtime advance + loop wrap verified earlier; mobile emulation rAF playback t=0->1.503 @1x",
+  "timelineSweep": "see timeline-sweep.json — all 10 clips x 61 samples via same poseMocap+draw pipeline, 60/60 changing frames, all finite, foot min heights sane (02_09 -0.013 within 20mm penetration tolerance)",
+  "controlsMatrix": {
+    "play/pause": "PASS",
+    "firstFrame/lastFrame": "PASS (末帧 button verified)",
+    "frameStep": "PASS (+-1/120s exact)",
+    "restPose": "PASS (静止姿态 draws bind pose, clears props)",
+    "timeSliderDrag": "PASS (seek+clamp, redraws immediately)",
+    "speeds": "PASS 0.25/0.5/1",
+    "views": "PASS 正/侧/背/自由 presets; drag orbits in free; presets preserve time/clip/playback",
+    "renderToggle": "PASS (preserves time 0.5s verified)",
+    "groundToggle": "PASS",
+    "bonesToggle": "PASS (02_10-basin-bonesOn-front.png shows cyan joint dots)",
+    "propsToggle/purebody": "PASS (sword visible true->false)",
+    "inPlace": "PASS (centroid z 2.588 -> 0.022)",
+    "loop": "PASS (wrap 2.85->0 verified)",
+    "sequence": "PASS (02_10->02_01 advance, scene reset basin->none)",
+    "clipSwitch": "PASS (scene reset per clip)",
+    "refreshReloadDefaults": "PASS (white/ground/bones-off/02_01/paused/speed1/front)"
+  },
+  "props": {
+    "sword_02_07_08_09": "grip ~3cm from palmR at t=0.5, tracks through swing at t=6.0 (propsDebug); vision: plausibly held, dark grip+guard+blade angled",
+    "box_02_06": "support-rest: box ON pedestal, stand reaches ground (vision OK after stand-parent fix); carried: mid-palm offset 0.55*sizeY documented; deterministic drop t>=14.31 -> floor 0.205=groundY+halfbox, scrub-safe",
+    "basin_02_10": "tub+water+stand static at evidenced (−0.093,0.721,0.204); vision: hand reaches into basin"
+  },
+  "bugsFoundAndFixedDuringVerification": [
+    "seek() did not redraw (stale motionState) — fixed",
+    "stats showed 'rest' (st.clip vs st.clipId) — fixed",
+    "box drop was rAF-driven (froze in background tabs) — replaced with deterministic clip-time physics",
+    "box support stand was child of moving box group: double-offset (floated high) + rode along when carried — reparented to static propRoot",
+    "propsDebug visible flag ignored propRoot.visibility — fixed",
+    "mobile 390px page exceeded viewport (feet cropped in screenshot) — tightened mobile CSS, page now fits 100dvh (docH 844 = viewport 844), vision confirms no cropping"
+  ],
+  "visionReview": {
+    "model": "zai-coding-cn / glm-5.3-flash via workflow agents",
+    "pass": ["02_01 walk front/side (stance flat, rear toe-off heel-raise = source-matching gait)", "02_02 heel-strike (rear toe-off push-off)", "02_03 run (support near ground, swing airborne)", "02_04 apex airborne + landing crouch no penetration", "02_05 punch intact", "02_06 support-rest (box on stand)", "02_07 sword grip white+wire", "02_10 basin hands + bonesOn dots + purebody", "02_01 wireframe", "mobile-390 no cropping"],
+    "documentedLimitations": [
+      "02_06 carry t=8: box near right hand but grip contact not visually tight (two-hand mid-palm heuristic; one hand low at this phase) — config documented, offsets adjustable in mocap-scenarios.json",
+      "02_06 t=16: dropped box x/z frozen at release; right foot visually overlaps box edge in final stance (no body-box collision in kinematic drop)"
+    ],
+    "falsePositivesResolved": [
+      "02_06/02_10 'tiptoe' flagged by vision = source-true: sole tilt 8-24 deg in SOURCE at those frames (bend/scoop/wash weight-shift), target follows within 2.3 deg (probe-06-sole.mjs)",
+      "02_04 first apex shot was wrong frame + landing shot captured wrong tab (harness context drift) — retaken correctly"
+    ]
+  },
+  "console": "0 page errors across all sessions (err div never shown, no Runtime.exceptionThrown/console.error)",
+  "files": ["fullplay-results.json", "timeline-sweep.json", "*.png (23 screenshots)"]
+}

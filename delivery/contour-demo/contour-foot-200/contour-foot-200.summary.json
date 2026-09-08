@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "kind": "genshin-model-studio.contour-model.summary",
+  "tool": {
+    "name": "genshin-model-studio",
+    "version": "0.1.0"
+  },
+  "input": {
+    "file": "/home/h/genshin-model-studio/examples/contour-foot.json",
+    "sha256": "2c75111626507e662ae1054fa98563a5f3460796ede3fb733ebdac7ee4a90192"
+  },
+  "model": {
+    "name": "contour-foot-200",
+    "mesh": {
+      "faces": 3600,
+      "quads": 1800,
+      "tris": 0,
+      "degenerate": 0,
+      "units": 1800
+    }
+  },
+  "output": {
+    "mesh": "/home/h/genshin-model-studio/delivery/contour-demo/contour-foot-200/contour-foot-200.mesh.json",
+    "meshSha256": "e9910b7866d953ed76fcbdc8cceb8860b970cf7eab568f0a9aeb510c6c17472a",
+    "structure": "/home/h/genshin-model-studio/delivery/contour-demo/contour-foot-200/contour-foot-200.structure.json",
+    "gil": "/home/h/genshin-model-studio/delivery/contour-demo/contour-foot-200/contour-foot-200.gil",
+    "gia": "/home/h/genshin-model-studio/delivery/contour-demo/contour-foot-200/contour-foot-200.gia",
+    "views": [
+      "/home/h/genshin-model-studio/delivery/contour-demo/contour-foot-200/view-iso.svg",
+      "/home/h/genshin-model-studio/delivery/contour-demo/contour-foot-200/view-front.svg",
+      "/home/h/genshin-model-studio/delivery/contour-demo/contour-foot-200/view-side.svg",
+      "/home/h/genshin-model-studio/delivery/contour-demo/contour-foot-200/view-top.svg",
+      "/home/h/genshin-model-studio/delivery/contour-demo/contour-foot-200/view-back.svg"
+    ],
+    "summary": "/home/h/genshin-model-studio/delivery/contour-demo/contour-foot-200/contour-foot-200.summary.json"
+  },
+  "budget": {
+    "requested": null,
+    "used": 1800,
+    "exceeded": false
+  },
+  "gate": {
+    "invoked": false,
+    "state": "skipped",
+    "reason": "SKIPPED_GATE"
+  }
+}

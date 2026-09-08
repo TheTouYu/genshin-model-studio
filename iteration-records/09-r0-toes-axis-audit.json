@@ -1,0 +1,25 @@
+{
+  "iteration": 9,
+  "round": "R0 趾列可见性专项（轴向与环索引审计）",
+  "problem": "用户复核仍判定趾头不可见；截图中脚端轮廓不能稳定读出五趾，且此前正/顶/侧命名曾与球坐标轴混淆。",
+  "priority": "L1/L2/L3 联合审计，暂停参数堆叠；R5 前不处理袜材质/褶皱。",
+  "reference": "用户四组参考图要求正/顶/侧三视角五趾清晰、软体连续、大趾最大、长度阶梯、圆钝趾尖、浅沟槽。",
+  "explanation": "校正 setCamera 球坐标语义并对 profileLoft 运行时环索引做数值探针，区分取景错误、坐标错误和几何错误。",
+  "hypothesis": "单一末端截面角域高斯瓣不足以形成五个纵向趾尖；同时脚端环索引与 path 重采样关系尚未明确。",
+  "tools": ["browser-harness CDP", "setTarget/setCamera", "meshCheck", "运行时顶点包围盒探针", "read_image"],
+  "action": [
+    "尝试重新分布 toes.c 到横向中心",
+    "尝试 front/yaw、top/pitch、side/yaw 轴向校准",
+    "执行末端 ring 数值探针"
+  ],
+  "result": {
+    "staticSyntax": "PASS",
+    "browserInjection": "PASS",
+    "meshCheck": {"base": {"faces": 6784, "deg": 0, "skinnyPct": 4.55, "areaRatio": 23.4}, "sock": {"faces": 6784, "deg": 0, "skinnyPct": 4.19, "areaRatio": 13.3}},
+    "visual": "FAIL: 用户截图仍看不到五个独立趾尖；相机/环索引审计显示当前证据不足以判定局部几何。",
+    "probe": "按固定 ring 公式读取到 y=0.26 的腿段点，证明此前末端环索引假设不成立。"
+  },
+  "decision": "reject/continue",
+  "next": "先为 profileLoft 暴露稳定的 ring/path 局部索引或生成脚端专用测试切片，再重做正/顶/侧三特写；未通过前不调用 delivery_check。",
+  "uncertainty": "当前坐标轴方向、相机标签与 profileLoft 重采样后的 ring 对应关系仍需以运行时对象验证。"
+}

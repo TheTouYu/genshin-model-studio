@@ -1,0 +1,168 @@
+{
+  "checkpoint": "body-now",
+  "fingerprints": {
+    "sources": {
+      "scripts/parts/lib/ganyu-lib.js": "c035914396e2262365b6115a8510bcc7f6ef0f6ea70ed7cc36b5fa3a85d1a082",
+      "scripts/parts/lib/ganyu-cage-branch.js": "6ea75f1f0f351372d4920ec54c588a579388b392f6a068af1d2c48f33685949b",
+      "scripts/parts/lib/ganyu-seam-check.js": "cf08969b60aaf425c47d376a8a86209a3dbe451236255561751594f0d8d328c6",
+      "scripts/parts/ganyu-body-cage.js": "773e95311b551315fea87c448017252a886adac1e2101848b64974dad0efb222"
+    },
+    "mesh": "c2f42c686a2edf7e2bcaff710ff55ae9ffb5e640173d0523b94db2db69810fd1",
+    "geometryNanometres": "792a6aa38d70ec17c9d1edb3efc9a2651157caee74a83931138cf30bc22309dc",
+    "verifier": "a7a01d68bc914a466e1219bb35b6d918275b8d16efdce6ba97f000dce96583a4"
+  },
+  "stage": "blockout",
+  "referenceFit": {
+    "status": "provisional",
+    "references": [
+      "reference/ganyu-3view.png",
+      "reference/body-wire-front.png",
+      "reference/body-wire-side.png",
+      "reference/body-wire-quarter.png",
+      "reference/body-wire-back.png"
+    ],
+    "reason": "References recovered; landmark fitting and clothing clearance remain unverified"
+  },
+  "metrics": {
+    "vertices": 550,
+    "tris": 1092,
+    "limbs": 4
+  },
+  "scale": {
+    "height": 1.598,
+    "unit": "m",
+    "front": "+Z"
+  },
+  "seam": {
+    "openEdges": 0,
+    "nonManifoldEdges": 0,
+    "seamEdges": 0,
+    "components": 1,
+    "onePiece": true,
+    "watertight": true,
+    "seams": []
+  },
+  "gate": {
+    "ok": false,
+    "checkedFaces": 1092,
+    "checks": {
+      "watertight": {
+        "pass": true,
+        "openEdges": 0,
+        "nonManifold": 0,
+        "samplePositions": []
+      },
+      "seams": {
+        "pass": true,
+        "seamCount": 0,
+        "samplePositions": []
+      },
+      "normals": {
+        "pass": true,
+        "invertedCount": 0,
+        "sampleFaces": []
+      },
+      "degenerate": {
+        "count": 0,
+        "pass": true
+      },
+      "skinny": {
+        "count": 0,
+        "pct": 0,
+        "pass": true
+      },
+      "areaRatio": {
+        "value": 21.5,
+        "pass": false
+      },
+      "budget": {
+        "requested": null,
+        "used": 1092,
+        "exceeded": false,
+        "pass": true
+      },
+      "selfIntersections": {
+        "pass": false,
+        "intersectingPairs": 25,
+        "samplePairs": [
+          {
+            "faceA": 0,
+            "faceB": 699,
+            "positionA": [
+              0.06518,
+              0.856687,
+              -0.092861
+            ],
+            "positionB": [
+              0.079808,
+              0.826667,
+              -0.081782
+            ]
+          },
+          {
+            "faceA": 1,
+            "faceB": 699,
+            "positionA": [
+              0.085769,
+              0.88537,
+              -0.091528
+            ],
+            "positionB": [
+              0.079808,
+              0.826667,
+              -0.081782
+            ]
+          },
+          {
+            "faceA": 6,
+            "faceB": 905,
+            "positionA": [
+              -0.081942,
+              0.856687,
+              -0.083829
+            ],
+            "positionB": [
+              -0.091008,
+              0.826667,
+              -0.068264
+            ]
+          },
+          {
+            "faceA": 358,
+            "faceB": 696,
+            "positionA": [
+              0.045408,
+              0.835021,
+              -0.054366
+            ],
+            "positionB": [
+              0.078313,
+              0.838703,
+              -0.074363
+            ]
+          },
+          {
+            "faceA": 358,
+            "faceB": 699,
+            "positionA": [
+              0.045408,
+              0.835021,
+              -0.054366
+            ],
+            "positionB": [
+              0.079808,
+              0.826667,
+              -0.081782
+            ]
+          }
+        ]
+      }
+    },
+    "failures": [
+      "存在 25 处局部自交（面 #0 与 #699）",
+      "面积比率 p95/p5 = 21.5（阈值 ≤ 20）"
+    ]
+  },
+  "visualAcceptance": "pending",
+  "gameAcceptance": "pending"
+}

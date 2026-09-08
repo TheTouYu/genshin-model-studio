@@ -1,0 +1,17 @@
+{
+  "iteration": 33,
+  "status": "finger_design_decision_parent_approved",
+  "agentFindings": {
+    "singleFingerMechanism": "extrudePatch from palm distal quad works, onePiece/watertight/seam0",
+    "conflicts": ["mirror map mismatch (2.71e-2)", "80 self-intersections from 8-vertex palm crowding", "area ratio 58.4 vs limit 20"],
+    "rootCause": "palm distal ring only 8 vertices; finger radius 0.0075 makes triangles below head cap p5"
+  },
+  "parentDecision": {
+    "areaRatio": "keep <=20, do not relax (delivery gate)",
+    "fingers": "radius 0.008, >=2mm gaps, palm width up to 0.09, palm distal resolution increased so each finger gets independent non-adjacent root block",
+    "areaRatioFix": "reduce p95 by adding rings at largest faces (head cap) instead of enlarging p5",
+    "mirror": "per-finger left-to-right reflection using boundary map",
+    "escalate": "report exact p5/p95 and largest face sources if still over"
+  },
+  "base": "614 vertices, 1212 tris, gate ok, headBody 6.65, palm blocks stable"
+}

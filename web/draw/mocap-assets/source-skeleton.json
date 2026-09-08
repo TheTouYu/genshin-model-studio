@@ -1,0 +1,901 @@
+{
+  "schemaVersion": 1,
+  "source": "CMU Graphics Lab Motion Capture Database",
+  "catalog": "http://mocap.cs.cmu.edu/search.php?subjectnumber=2",
+  "file": "02.asf",
+  "sha256": "c9f5ff45b4437b279f58b95dacf017afd3135373096274df69436a9354d796cf",
+  "units": {
+    "mass": 1,
+    "length": 0.45,
+    "angle": "deg"
+  },
+  "root": {
+    "order": [
+      "tx",
+      "ty",
+      "tz",
+      "rx",
+      "ry",
+      "rz"
+    ],
+    "axis": "XYZ",
+    "position": [
+      0,
+      0,
+      0
+    ],
+    "orientation": [
+      0,
+      0,
+      0
+    ]
+  },
+  "fps": 120,
+  "coordinateSystemNote": "CMU subject-02 frame: +Y up, +Z forward, LEFT side at +X (mirror of the target rig)",
+  "bones": [
+    {
+      "id": 1,
+      "name": "lhipjoint",
+      "parent": "root",
+      "direction": [
+        0.655637,
+        -0.713449,
+        0.247245
+      ],
+      "length": 2.52691,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "axisOrder": "XYZ",
+      "dof": [],
+      "dofCount": 0,
+      "limits": []
+    },
+    {
+      "id": 2,
+      "name": "lfemur",
+      "parent": "lhipjoint",
+      "direction": [
+        0.34202,
+        -0.939693,
+        0
+      ],
+      "length": 7.59371,
+      "axis": [
+        0,
+        0,
+        20
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "ry",
+        "rz"
+      ],
+      "dofCount": 3,
+      "limits": [
+        [
+          -70,
+          -60
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "id": 3,
+      "name": "ltibia",
+      "parent": "lfemur",
+      "direction": [
+        0.34202,
+        -0.939693,
+        0
+      ],
+      "length": 7.28717,
+      "axis": [
+        0,
+        0,
+        20
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx"
+      ],
+      "dofCount": 1,
+      "limits": [
+        null
+      ]
+    },
+    {
+      "id": 4,
+      "name": "lfoot",
+      "parent": "ltibia",
+      "direction": [
+        0.0886837,
+        -0.243657,
+        0.965798
+      ],
+      "length": 2.2218,
+      "axis": [
+        -90,
+        7.62852e-16,
+        20
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "rz"
+      ],
+      "dofCount": 2,
+      "limits": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": 5,
+      "name": "ltoes",
+      "parent": "lfoot",
+      "direction": [
+        1.53547e-11,
+        -4.22004e-11,
+        1
+      ],
+      "length": 1.11249,
+      "axis": [
+        -90,
+        7.62852e-16,
+        20
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx"
+      ],
+      "dofCount": 1,
+      "limits": [
+        null
+      ]
+    },
+    {
+      "id": 6,
+      "name": "rhipjoint",
+      "parent": "root",
+      "direction": [
+        -0.645062,
+        -0.722004,
+        0.250209
+      ],
+      "length": 2.49697,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "axisOrder": "XYZ",
+      "dof": [],
+      "dofCount": 0,
+      "limits": []
+    },
+    {
+      "id": 7,
+      "name": "rfemur",
+      "parent": "rhipjoint",
+      "direction": [
+        -0.34202,
+        -0.939693,
+        0
+      ],
+      "length": 7.58734,
+      "axis": [
+        0,
+        0,
+        -20
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "ry",
+        "rz"
+      ],
+      "dofCount": 3,
+      "limits": [
+        [
+          -70,
+          -70
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "id": 8,
+      "name": "rtibia",
+      "parent": "rfemur",
+      "direction": [
+        -0.34202,
+        -0.939693,
+        0
+      ],
+      "length": 7.21538,
+      "axis": [
+        0,
+        0,
+        -20
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx"
+      ],
+      "dofCount": 1,
+      "limits": [
+        null
+      ]
+    },
+    {
+      "id": 9,
+      "name": "rfoot",
+      "parent": "rtibia",
+      "direction": [
+        -0.102907,
+        -0.282735,
+        0.953662
+      ],
+      "length": 2.23735,
+      "axis": [
+        -90,
+        -7.62852e-16,
+        -20
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "rz"
+      ],
+      "dofCount": 2,
+      "limits": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": 10,
+      "name": "rtoes",
+      "parent": "rfoot",
+      "direction": [
+        -1.5354e-11,
+        -4.21751e-11,
+        1
+      ],
+      "length": 1.11569,
+      "axis": [
+        -90,
+        -7.62852e-16,
+        -20
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx"
+      ],
+      "dofCount": 1,
+      "limits": [
+        null
+      ]
+    },
+    {
+      "id": 11,
+      "name": "lowerback",
+      "parent": "root",
+      "direction": [
+        0.00952301,
+        0.997604,
+        -0.0685217
+      ],
+      "length": 2.05943,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "ry",
+        "rz"
+      ],
+      "dofCount": 3,
+      "limits": [
+        [
+          -30,
+          -30
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "id": 12,
+      "name": "upperback",
+      "parent": "lowerback",
+      "direction": [
+        0.00494399,
+        0.999577,
+        -0.0286701
+      ],
+      "length": 2.06523,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "ry",
+        "rz"
+      ],
+      "dofCount": 3,
+      "limits": [
+        [
+          -30,
+          -30
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "id": 13,
+      "name": "thorax",
+      "parent": "upperback",
+      "direction": [
+        0.000729686,
+        0.999992,
+        0.00388603
+      ],
+      "length": 2.06807,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "ry",
+        "rz"
+      ],
+      "dofCount": 3,
+      "limits": [
+        [
+          -30,
+          -30
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "id": 14,
+      "name": "lowerneck",
+      "parent": "thorax",
+      "direction": [
+        0.00452882,
+        0.995459,
+        0.0950816
+      ],
+      "length": 1.57426,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "ry",
+        "rz"
+      ],
+      "dofCount": 3,
+      "limits": [
+        [
+          -30,
+          -30
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "id": 15,
+      "name": "upperneck",
+      "parent": "lowerneck",
+      "direction": [
+        0.021922,
+        0.997711,
+        -0.0639762
+      ],
+      "length": 1.56399,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "ry",
+        "rz"
+      ],
+      "dofCount": 3,
+      "limits": [
+        [
+          -30,
+          -30
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "id": 16,
+      "name": "head",
+      "parent": "upperneck",
+      "direction": [
+        0.008024,
+        0.999444,
+        -0.0323691
+      ],
+      "length": 1.6265,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "ry",
+        "rz"
+      ],
+      "dofCount": 3,
+      "limits": [
+        [
+          -30,
+          -30
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "id": 17,
+      "name": "lclavicle",
+      "parent": "thorax",
+      "direction": [
+        0.967826,
+        0.247107,
+        -0.0474446
+      ],
+      "length": 3.6598,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "ry",
+        "rz"
+      ],
+      "dofCount": 2,
+      "limits": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": 18,
+      "name": "lhumerus",
+      "parent": "lclavicle",
+      "direction": [
+        1,
+        -4.48971e-11,
+        -2.90544e-27
+      ],
+      "length": 4.86513,
+      "axis": [
+        180,
+        -30,
+        -90
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "ry",
+        "rz"
+      ],
+      "dofCount": 3,
+      "limits": [
+        [
+          -90,
+          -90
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "id": 19,
+      "name": "lradius",
+      "parent": "lhumerus",
+      "direction": [
+        1,
+        -4.48958e-11,
+        1.79638e-26
+      ],
+      "length": 3.35554,
+      "axis": [
+        180,
+        -30,
+        -90
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx"
+      ],
+      "dofCount": 1,
+      "limits": [
+        null
+      ]
+    },
+    {
+      "id": 20,
+      "name": "lwrist",
+      "parent": "lradius",
+      "direction": [
+        1,
+        -4.48952e-11,
+        3.34345e-26
+      ],
+      "length": 1.67777,
+      "axis": [
+        -2.22354e-14,
+        90,
+        90
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "ry"
+      ],
+      "dofCount": 1,
+      "limits": [
+        null
+      ]
+    },
+    {
+      "id": 21,
+      "name": "lhand",
+      "parent": "lwrist",
+      "direction": [
+        1,
+        -4.49055e-11,
+        6.6869e-26
+      ],
+      "length": 0.661175,
+      "axis": [
+        -4.26681e-14,
+        90,
+        90
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "rz"
+      ],
+      "dofCount": 2,
+      "limits": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": 22,
+      "name": "lfingers",
+      "parent": "lhand",
+      "direction": [
+        1,
+        -4.48731e-11,
+        1.33738e-25
+      ],
+      "length": 0.533057,
+      "axis": [
+        -8.53362e-14,
+        90,
+        90
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx"
+      ],
+      "dofCount": 1,
+      "limits": [
+        null
+      ]
+    },
+    {
+      "id": 23,
+      "name": "lthumb",
+      "parent": "lwrist",
+      "direction": [
+        0.707107,
+        -6.35005e-11,
+        0.707107
+      ],
+      "length": 0.765366,
+      "axis": [
+        -90,
+        45,
+        2.85299e-15
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "rz"
+      ],
+      "dofCount": 2,
+      "limits": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": 24,
+      "name": "rclavicle",
+      "parent": "thorax",
+      "direction": [
+        -0.973174,
+        0.211421,
+        -0.0907389
+      ],
+      "length": 3.59444,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "ry",
+        "rz"
+      ],
+      "dofCount": 2,
+      "limits": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": 25,
+      "name": "rhumerus",
+      "parent": "rclavicle",
+      "direction": [
+        -1,
+        -4.48964e-11,
+        1.56311e-27
+      ],
+      "length": 5.02649,
+      "axis": [
+        180,
+        30,
+        90
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "ry",
+        "rz"
+      ],
+      "dofCount": 3,
+      "limits": [
+        [
+          -90,
+          -90
+        ],
+        null,
+        null
+      ]
+    },
+    {
+      "id": 26,
+      "name": "rradius",
+      "parent": "rhumerus",
+      "direction": [
+        -1,
+        -4.48948e-11,
+        2.01724e-26
+      ],
+      "length": 3.36431,
+      "axis": [
+        180,
+        30,
+        90
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx"
+      ],
+      "dofCount": 1,
+      "limits": [
+        null
+      ]
+    },
+    {
+      "id": 27,
+      "name": "rwrist",
+      "parent": "rradius",
+      "direction": [
+        -1,
+        -4.49008e-11,
+        3.34345e-26
+      ],
+      "length": 1.68216,
+      "axis": [
+        -2.22354e-14,
+        -90,
+        -90
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "ry"
+      ],
+      "dofCount": 1,
+      "limits": [
+        null
+      ]
+    },
+    {
+      "id": 28,
+      "name": "rhand",
+      "parent": "rwrist",
+      "direction": [
+        -1,
+        -4.49013e-11,
+        6.6869e-26
+      ],
+      "length": 0.730406,
+      "axis": [
+        -4.26681e-14,
+        -90,
+        -90
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "rz"
+      ],
+      "dofCount": 2,
+      "limits": [
+        null,
+        null
+      ]
+    },
+    {
+      "id": 29,
+      "name": "rfingers",
+      "parent": "rhand",
+      "direction": [
+        -1,
+        -4.48867e-11,
+        1.33738e-25
+      ],
+      "length": 0.588872,
+      "axis": [
+        -8.53362e-14,
+        -90,
+        -90
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx"
+      ],
+      "dofCount": 1,
+      "limits": [
+        null
+      ]
+    },
+    {
+      "id": 30,
+      "name": "rthumb",
+      "parent": "rwrist",
+      "direction": [
+        -0.707107,
+        -6.34907e-11,
+        0.707107
+      ],
+      "length": 0.845506,
+      "axis": [
+        -90,
+        -45,
+        -2.85299e-15
+      ],
+      "axisOrder": "XYZ",
+      "dof": [
+        "rx",
+        "rz"
+      ],
+      "dofCount": 2,
+      "limits": [
+        null,
+        null
+      ]
+    }
+  ],
+  "hierarchyOrder": [
+    "root",
+    "lhipjoint",
+    "lfemur",
+    "ltibia",
+    "lfoot",
+    "ltoes",
+    "rhipjoint",
+    "rfemur",
+    "rtibia",
+    "rfoot",
+    "rtoes",
+    "lowerback",
+    "upperback",
+    "thorax",
+    "lowerneck",
+    "upperneck",
+    "head",
+    "lclavicle",
+    "lhumerus",
+    "lradius",
+    "lwrist",
+    "lhand",
+    "lfingers",
+    "lthumb",
+    "rclavicle",
+    "rhumerus",
+    "rradius",
+    "rwrist",
+    "rhand",
+    "rfingers",
+    "rthumb"
+  ],
+  "dofCounts": {
+    "lhipjoint": 0,
+    "lfemur": 3,
+    "ltibia": 1,
+    "lfoot": 2,
+    "ltoes": 1,
+    "rhipjoint": 0,
+    "rfemur": 3,
+    "rtibia": 1,
+    "rfoot": 2,
+    "rtoes": 1,
+    "lowerback": 3,
+    "upperback": 3,
+    "thorax": 3,
+    "lowerneck": 3,
+    "upperneck": 3,
+    "head": 3,
+    "lclavicle": 2,
+    "lhumerus": 3,
+    "lradius": 1,
+    "lwrist": 1,
+    "lhand": 2,
+    "lfingers": 1,
+    "lthumb": 2,
+    "rclavicle": 2,
+    "rhumerus": 3,
+    "rradius": 1,
+    "rwrist": 1,
+    "rhand": 2,
+    "rfingers": 1,
+    "rthumb": 2,
+    "root": 6
+  }
+}

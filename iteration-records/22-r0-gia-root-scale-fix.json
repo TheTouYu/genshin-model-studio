@@ -1,0 +1,17 @@
+{
+  "iteration": 22,
+  "round": "R0 前置·GIA 导出根缩放修复（0.1 空模型）+ 新面板化管线接入",
+  "problem": "用户反馈：导入游戏后初始空模型尺寸显示 50×50×50（rootTransform.scale=0.1 时），应为 0.1×0.1×0.1。",
+  "root_cause": "文档 f7[6] 配置记录含常量 500.0（未闭合语义）→ 游戏初始尺寸 = 500 × rootTransform.scale：0.1→50。要得 0.1：scale=0.0002。",
+  "action": [
+    "src/cli/export-mesh.ts：makeGiaInput 补 rootTransform（scale=[0.0002,0.0002,0.0002]）+ 返回类型",
+    "修复 panelize.ts 四边形配对（共享顶点集改用索引）与 export-mesh 日志字段两个 TS 错误，npm run build 通过",
+    "生成 v9（新管线 panelize：四边形→10009003 平面 / 未配对三角→10009006 / 退化→10009001）",
+    "校验：v9 二进制含 3 处 float 0.0002（rootTransform xyz）与 skin/gray 颜色 varint"
+  ],
+  "v9": {"items": 835, "stats": {"faces": 1456, "quads": 621, "tris": 214, "degenerate": 0}, "bytes": 168392, "file": "delivery/r0-toes/ankle-bump-v9.gia"},
+  "expected": "游戏初始空模型尺寸 = 500 × 0.0002 = 0.1×0.1×0.1",
+  "note": "工作区发现旧 scripts/export-mesh-gia.js 已被标记弃用，现行管线为 src/mesh/panelize.ts + src/cli/export-mesh.ts（npm run export-mesh）；根缩放修复落在现行管线。",
+  "decision": "待用户重新导入游戏验证 0.1 尺寸",
+  "next": "确认后返回趾部算法（同族自适应细分 + 平面/三角/盒单元）。"
+}

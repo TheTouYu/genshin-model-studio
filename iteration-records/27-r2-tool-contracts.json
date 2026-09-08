@@ -1,0 +1,59 @@
+{
+  "iteration": 27,
+  "status": "tool_increment_verified_character_not_accepted",
+  "changes": {
+    "proportions": [
+      "Actual mesh height and explicit chin landmark replace constant head ratio",
+      "Missing hand measurements remain null",
+      "Distinct characterProportionReport avoids global name collision"
+    ],
+    "camera": [
+      "Orthographic and perspective projection selection",
+      "Serializable getCamera state",
+      "Same web/public artifact"
+    ],
+    "cage": [
+      "Separate periodic angular and open longitudinal Catmull-Rom interpolation",
+      "Colors align with triangles, not vertices",
+      "Subdivision endpoint/opposite weights fixed after tetrahedron collapse regression"
+    ]
+  },
+  "tests": {
+    "command": "npm test",
+    "parentCollected": 207,
+    "pass": 207,
+    "fail": 0
+  },
+  "browser": {
+    "url": "http://localhost:8787/?t=body-r2-camera",
+    "screenshots": [
+      "delivery/r0-toes/body-r2-ortho-front.png",
+      "delivery/r0-toes/body-r2-ortho-mobile.png"
+    ],
+    "readImageReviewed": true,
+    "canvas": {
+      "width": 1148,
+      "height": 528,
+      "thresholdedNonbackgroundPixels": 34748
+    },
+    "projectionRoundTrip": true,
+    "invalidProjectionRejected": true,
+    "mobileWidth": 390,
+    "viewportRestored": true
+  },
+  "formalExport": {
+    "command": "node dist/src/cli/export-mesh.js delivery/r0-toes/body-r2.mesh.json --out-dir delivery/r0-toes/r2-rejected --format gia",
+    "exitCode": 1,
+    "status": "correctly_rejected",
+    "reason": "67 local self-intersecting triangle pairs",
+    "candidateGenerated": false
+  },
+  "referenceMeasurements": "reference/ganyu-landmarks.json",
+  "referenceFit": "pending_overlay_review",
+  "remaining": [
+    "Shoulder/hip crossing geometry repair in progress",
+    "Adjacent/coplanar crossing gate coverage in progress",
+    "Hands and final character appearance incomplete",
+    "No accepted GIA candidate"
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "schemaVersion": 1,
+  "kind": "genshin-model-studio.contour-model.summary",
+  "tool": {
+    "name": "genshin-model-studio",
+    "version": "0.1.0"
+  },
+  "input": {
+    "file": "/home/h/genshin-model-studio/examples/contour-foot.json",
+    "sha256": "2c75111626507e662ae1054fa98563a5f3460796ede3fb733ebdac7ee4a90192"
+  },
+  "model": {
+    "name": "fail-200points",
+    "mesh": {
+      "faces": 3600,
+      "quads": 1800,
+      "tris": 0,
+      "degenerate": 0,
+      "units": 1800
+    }
+  },
+  "output": {
+    "mesh": "/home/h/genshin-model-studio/delivery/quality-demo/fail-200points/fail-200points.mesh.json",
+    "meshSha256": "e9910b7866d953ed76fcbdc8cceb8860b970cf7eab568f0a9aeb510c6c17472a",
+    "summary": "/home/h/genshin-model-studio/delivery/quality-demo/fail-200points/fail-200points.summary.json"
+  },
+  "budget": {
+    "requested": null,
+    "used": 1800,
+    "exceeded": false
+  },
+  "gate": {
+    "invoked": true,
+    "state": "failed",
+    "ok": false,
+    "checkedFaces": 3600,
+    "failures": [
+      "瘦长三角 675 个，占比 18.75%（阈值 ≤ 5%）"
+    ],
+    "checks": {
+      "watertight": {
+        "pass": true,
+        "openEdges": 0,
+        "nonManifold": 0,
+        "samplePositions": []
+      },
+      "seams": {
+        "pass": true,
+        "seamCount": 0,
+        "samplePositions": []
+      },
+      "normals": {
+        "pass": true,
+        "invertedCount": 0,
+        "sampleFaces": []
+      },
+      "degenerate": {
+        "count": 0,
+        "pass": true
+      },
+      "skinny": {
+        "count": 675,
+        "pct": 18.75,
+        "pass": false
+      },
+      "areaRatio": {
+        "value": 10.3,
+        "pass": true
+      },
+      "budget": {
+        "requested": null,
+        "used": 1800,
+        "exceeded": false,
+        "pass": true
+      }
+    }
+  }
+}

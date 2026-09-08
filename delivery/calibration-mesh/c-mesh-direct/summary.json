@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "kind": "genshin-model-studio.calibration-mesh.summary",
+  "sample": "c-mesh-direct",
+  "name": "网格元件_直出",
+  "primitive": "10009019 网格(直出)",
+  "resourceIds": [
+    10009019
+  ],
+  "unitCount": 1,
+  "output": {
+    "gil": 1511,
+    "gia": 817,
+    "structure": 1
+  },
+  "observe": [
+    "直出字节：.gia/.gil 仅含 resourceId+变换（不携几何）",
+    "游戏侧：是否按 vertices/faces 渲染几何（需确认）",
+    "若渲染为空壳：走「面板化」路径导出官方面片"
+  ],
+  "sampleFamily": "c-mesh-direct",
+  "carriesGeometry": false,
+  "note": "直出仅 resourceId+变换，不携几何"
+}

@@ -1,0 +1,40 @@
+{
+  "iteration": 14,
+  "round": "R0 前置·工具表达能力严格验证：脚踝凸包（4/5 多边形）单独复原",
+  "problem": "用户要求：先单独复原由 4～5 个多边形构成的脚踝凸起，严格验证工具的多边形表达能力；用户参与核验。",
+  "priority": "工具表达能力验证（非趾部算法）；本项验收门：多边形数量可控、尺寸/高度可控、逐面属性可注入、多视角可复核、meshCheck 干净。",
+  "reference": "用户线框局部：脚踝凸起由中心扇+少量多边形表达（约 4～5 边），非贴球。",
+  "explanation": "用 polyDomePatch（中心顶点+径向环+扇形）生成 A=5 边、B=4 边、C=15 边三种凸包；另将 A 旋转贴到本工具放样的踝段侧面做上下文复原。",
+  "hypothesis": "polyDomePatch rings=1 即可表达 4～5 边鼓包；同工具可控制尺寸（r/h）、逐面颜色与更高细分（rings=2）。",
+  "action": [
+    "新增 scripts/parts/tool-ankle-bump.js 独立验证台（不依赖预览器相机）",
+    "单 WebGL 渲染器 + 2D 拷贝：20 个视角不丢上下文",
+    "着色+线框叠加渲染 top/sideX/sideY/iso/sideX-zoom & ctx-iso/ctx-front/ctx-zoom",
+    "逐面颜色展开到顶点色验证 faceProps/colorFn 数据链"
+  ],
+  "tools": ["polyDomePatch", "profileLoft(踝段)", "meshCheck", "THREE r160 独立渲染", "read_image"],
+  "views": {
+    "bench_full": "delivery/r0-toes/ankle-bump-bench-v5.png",
+    "ctx_zoom": "delivery/r0-toes/ankle-bump-ctx-close.png"
+  },
+  "result": {
+    "A": {"faces": 40, "deg": 0, "skinnyPct": 0, "areaRatio": 3.1, "rings": 3, "sides": 8, "r": "10mm", "h": "2.8mm"},
+    "B": {"faces": 56, "deg": 0, "skinnyPct": 0, "areaRatio": 4.3, "rings": 4, "sides": 8},
+    "C": {"faces": 70, "deg": 0, "skinnyPct": 0, "areaRatio": 4.3, "rings": 4, "sides": 10},
+    "CTX": {"leg_faces": 288, "patch_faces": 56, "total_faces": 344, "deg": 0, "skinnyPct": 0, "areaRatio": 6.3, "patch_rings": 4, "patch_sides": 8},
+    "user_verdict_1": "4~5 面太少 → 至少 40 面以上真正刻画脚踝凸起",
+    "user_verdict_2": "① 太对称不对，应为曲线/曲面表达；② 要作为独立模型放浏览器里任意角度查看",
+    "asymmetry_added": "polyDomePatch 新增 lean/leanY（顶点侧倾）与 irr/seed（低频径向不规则）",
+    "interactive_model": {
+      "submitted": true,
+      "part": "window.gms.part('mesh', {mesh}) → 页面 3D 预览可拖拽旋转/滚轮缩放",
+      "leg_faces": 396, "bump_faces": 56, "bump": {"r": "11mm", "h": "3mm", "rings": 4, "sides": 8, "lean": 0.35, "leanY": 0.15, "irr": 0.10, "seed": 2.2},
+      "checks": {"leg": {"deg": 0, "skinnyPct": 0, "areaRatio": 2.5}, "bump": {"deg": 0, "skinnyPct": 0, "areaRatio": 10.6}, "total": {"faces": 452, "deg": 0, "skinnyPct": 0, "areaRatio": 6.3}},
+      "views": ["delivery/r0-toes/ankle-bump-interactive-front.png", "delivery/r0-toes/ankle-bump-interactive-sidez.png", "delivery/r0-toes/ankle-bump-interactive-top.png"]
+    },
+    "visual": "PASS（几何）：A=40 面/ B=56 面/ C=70 面均为圆顶多环鼓包（顶视放射线+环清晰）；ctx-zoom 中 56 面蓝色凸包明显隆起于踝段侧面；交互式模型已提交，可在浏览器任意角度查看。"
+  },
+  "decision": "待用户核验：A/B/C 哪个更接近参考；工具表达能力是否达标。",
+  "next": "用户确认表达方式后，再进入趾部算法设计（同族多边形分割：趾区小多边形+趾间浅槽+趾根连续）。",
+  "note": "验证中发现并修正：一次 18 个 WebGL 上下文会被浏览器回收导致画布空白 → 改为单渲染器+2D 拷贝，全 20 视角稳定输出。"
+}

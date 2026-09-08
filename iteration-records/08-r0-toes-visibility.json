@@ -1,0 +1,34 @@
+{
+  "iteration": 8,
+  "round": "R0 趾列可见性专项（第1轮）",
+  "problem": "用户终审反馈趾头不可见，且浏览器三视图出现脚端错位/尖裂；初始 toes 分支存在变量时序缺陷。",
+  "priority": "L3 拓扑/曲率优先，随后 L1 轮廓与 L2 趾掌连续；R5 前不处理袜材质与褶皱。",
+  "reference": "用户提供袜+脚多角度图：大趾最大、外侧趾长度阶梯、趾尖圆钝、趾间浅连续沟槽；袜内骨骼位置不确定。",
+  "explanation": "先修复工具执行顺序，再将 toes 从单一截面鼓包改为平滑包络、同拓扑前伸与横向偏移；不使用贴球或独立装饰件。",
+  "hypothesis": "当前不可见由 toes 分支未正确执行、dyLift 初始化晚、dataOnly 提前返回导致封口缺失，以及纵向趾区采样不足共同造成。",
+  "tools": ["profileLoft(toes)", "meshCheck", "browser-harness CDP", "setTarget/setCamera", "read_image"],
+  "action": [
+    "将 toeF2 与 dyLift 初始化移到使用前",
+    "使 dataOnly 保留 cap:'both' 封口",
+    "使用 smoothstep 趾包络并加入 toeShift/toeLat 连续前伸与横移",
+    "R0 参数调整为 frac 0.40、amp 0.22、五趾 len 阶梯与 dx 横向错位",
+    "网格提高到 52x64"
+  ],
+  "views": {
+    "front": "delivery/r0-toes/front-r5.png",
+    "top": "delivery/r0-toes/top-r5.png",
+    "side": "delivery/r0-toes/side-r5.png"
+  },
+  "result": {
+    "staticSyntax": "PASS",
+    "browserInjection": "PASS",
+    "meshCheck": {
+      "base": {"faces": 6784, "deg": 0, "skinnyPct": 4.29, "areaRatio": 23.3},
+      "sock": {"faces": 6784, "deg": 0, "skinnyPct": 3.95, "areaRatio": 12.9}
+    },
+    "visual": "FAIL: 当前视图仍无法稳定读出五个独立趾尖，且取景尺度/坐标约定仍需校准；不提交用户终审。"
+  },
+  "decision": "reject/continue",
+  "next": "增加前掌至趾尖的纵向控制点并降低末端瘦长三角；锁定脚部局部相机后重新拍正/顶/侧三特写。",
+  "uncertainty": "参考图不能确定袜内真实骨骼与脚趾埋入深度，本轮只承诺外轮廓与连续性。"
+}

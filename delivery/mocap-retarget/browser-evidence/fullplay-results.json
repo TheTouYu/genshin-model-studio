@@ -1,0 +1,18 @@
+{
+  "method": "CDP-driven real rAF playback (tab foreground required; Edge window minimized throttles rAF - browser behavior, not page defect)",
+  "realPlayback": {
+    "02_01": {"verified": "earlier session", "evidence": "play advanced ~realtime at 1x, loop wrap 2.85->0 observed twice; frame-step +-1/120s exact"},
+    "02_02": {"verified": "this session, clean PASS", "dur": 2.475, "endT": 2.475, "playingAfterEnd": false, "vertexSums": [106.5824, 177.0351, 332.0702, 477.4016], "finite": true, "note": "4 samples at 0/20%/60%/end all distinct -> vertices change over real playback; natural pause at end (loop+sequence off)"}
+  },
+  "fullTimelineViaSeek": "timeline-sweep.json - all 10 clips x 61 samples (t=0..dur incl. pre-wrap boundary), same poseMocap+draw pipeline as playback, 60/60 changing frames each, all finite",
+  "controlsVerified": {
+    "speeds_0.25_0.5_1": "PASS (status.speed follows buttons)",
+    "inPlace": "PASS (walk 02_01 t=2.7 centroid z: 2.588 normal -> 0.022 inPlace; x collapses too)",
+    "sequence": "PASS (02_10 end -> 02_01 advance, playing continues, props scene reset basin 1 -> 0)",
+    "loopPriority": "loop takes precedence over sequence when both checked (matches original page behavior)",
+    "purebody": "PASS (02_07 sword visible true -> false via props checkbox)",
+    "boxDrop": "PASS deterministic (02_06: t=14.0 y=1.052 carried; 14.4 y=0.940 falling; 14.7 y=0.228; >=15.0 y=0.205=groundY+halfbox resting; scrub-safe)",
+    "swordGrip": "PASS (02_07 sword ~3cm from palmR at t=0.5 and tracks at t=6.0)",
+    "refreshReloadDefaults": "PASS (v=9/v=10 reloads: white render, ground on, bones off, clip 02_01, paused t=0, speed 1, view front)"
+  }
+}

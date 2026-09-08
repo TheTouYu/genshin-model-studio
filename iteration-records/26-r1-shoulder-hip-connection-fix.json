@@ -1,0 +1,81 @@
+{
+  "id": 26,
+  "title": "R1 body-cage 肩髋连接几何修复（67自交→0）",
+  "date": "2026-09-06T18:53:18.921Z",
+  "objective": "消除body-cage一体化网格在肩(59)/髋(8)的自交；保持水密单component、左右精确镜像、前掌>=35mm、有向边一致；verifyMesh+全部测试通过",
+  "filesChanged": [
+    "scripts/parts/lib/ganyu-cage-branch.js",
+    "scripts/parts/ganyu-body-cage.js"
+  ],
+  "rootCause": "extrudePatch用固定全局axis的均匀角向圆环去连接躯干侧面的竖向边界环；竖向矩形边界环(肩y1.16~1.30/髋y0.80~0.92)与水平圆环呈90°平面失配，band面扫掠折叠；髋部腿带横扫过裆部cap扇",
+  "toolCapabilitiesAdded": "extrudePatch逐环局部frame：dir(局部轴向basis)/frame(显式u,v)/conform(复制边界环同面推挤)/mix(0=边界形→1=圆环的位置插值)/radial(按边界顶点自身方位角投影到圆，保角向不扫掠)；保留满圆分布与颜色对齐，默认行为不变",
+  "bodyChanges": [
+    "肩窝：首几环dir=+X(与肩部边界同面)把边界形圆化，mix渐增，再逐环dir转到-Y(下垂)",
+    "髋窝：把裆部cap顶点(tip=208)并入两腿面片，删掉腿根下多余的cap扇三角，避免腿带横扫裆部",
+    "腿管髋/膝环用radial(保角向投影)，消除带面扫掠折叠",
+    "大腿/小腿加密环(0.72/0.60)压面积比 p95/p5"
+  ],
+  "metrics": {
+    "vertices": 614,
+    "facesTri": 1212,
+    "heightM": 1.596,
+    "limbs": 4,
+    "front": "+Z"
+  },
+  "gate": {
+    "ok": true,
+    "selfIntersections": 0,
+    "watertight": true,
+    "openEdges": 0,
+    "nonManifold": 0,
+    "seams": 0,
+    "components": 1,
+    "onePiece": true,
+    "normals": {
+      "pass": true,
+      "inverted": 0
+    },
+    "degenerate": 0,
+    "skinny": 0,
+    "areaRatio": 19.4,
+    "budget": true
+  },
+  "quality": {
+    "maxMirrorDist": 1.19e-16,
+    "forefoot": {
+      "count": 15,
+      "thicknessMM": 43.6
+    },
+    "badDirectedEdges": 0
+  },
+  "tests": "npm test 217/217",
+  "referenceFit": {
+    "status": "provisional",
+    "note": "肢体轮廓已自然；衣发鞋分件/清隙与landmark拟合未做"
+  },
+  "evidence": [
+    "delivery/r0-toes/body-r2.mesh.json",
+    "delivery/r0-toes/body-r2.report.json",
+    "delivery/r0-toes/_body_final.png"
+  ],
+  "risks": [
+    "低模blockout：肩/髋为受控过渡，面数低(1124tris)，轮廓较方，后续升面/细分可柔化",
+    "躯干前后体块(锁骨/胸骨/骨盆/臀)的landmark拟合与衣发鞋清隙未做(referenceFit provisional)",
+    "手臂下垂贴靠躯干较近，后续需按参考拉开腋下间隙给衣壳",
+    "verify为网格剪枝+严格内部相交判定；已用当前(含共面检测)verify通过，网格本身无真实自交"
+  ],
+  "palmRestore": {
+    "status": "restored-nested",
+    "note": "掌盘从腕开放边界以extrudePatch(opts.loop)长成,先方形化(superellipse exp)再压平:宽0.083/厚0.024/长0.085,掌心朝+Z略前倾,五指留后续;与臂共享腕边界,onePiece,seam 0"
+  },
+  "headLower": {
+    "status": "done",
+    "note": "头部profile下移:chin 1.40->1.36(匹配参考1.3595),crown保持1.60,头高0.24;颈衔接无自交"
+  },
+  "mirrorBug": {
+    "note": "arm cap:false 使 mirrorBranch 误覆盖腿首点→伪腿自交+巨三角;已修为 hasCap 参数跳过盖帽镜像"
+  },
+  "footBend": {
+    "note": "bend -0.65→-π/2 生硬过渡改为 0→-0.30→-0.62→-0.98→-1.32→-1.50→-1.57 渐平滑; 趾z0.205/sole y0.004; 门禁保持0自交/areaRatio19.4/前掌43.6mm"
+  }
+}

@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 1,
+  "note": "Per-joint target REST directions (normalized) driving the source->target rest-direction alignment A_j. Non-leaf bones use the child-child pivot vector; TERMINAL (leaf) bones use ANATOMICAL region-centroid vectors so the mesh terminal points correctly (foot forward +Z, palm/hand, head).",
+  "units": "meters",
+  "coordinateSystem": "+Y up +Z front",
+  "meshRef": "delivery/body-blockout-anim-r1a/mesh.json",
+  "regionsRef": "delivery/body-blockout-anim-r1a/controls.json",
+  "centroids": {
+    "footL": [
+      -0.105,
+      0.075,
+      0.19
+    ],
+    "footR": [
+      0.105,
+      0.075,
+      0.19
+    ],
+    "palmL": [
+      -0.31,
+      0.67,
+      0
+    ],
+    "palmR": [
+      0.31,
+      0.67,
+      0
+    ],
+    "head": [
+      0,
+      1.4967,
+      0.002
+    ]
+  },
+  "restDirections": {
+    "root": [
+      0,
+      1,
+      0
+    ],
+    "spine": [
+      0,
+      1,
+      0
+    ],
+    "neck": [
+      0,
+      0.9999,
+      0.0128
+    ],
+    "shoulderL": [
+      -0.2813,
+      -0.9596,
+      0
+    ],
+    "elbowL": [
+      -0.1724,
+      -0.985,
+      0
+    ],
+    "wristL": [
+      -0.1104,
+      -0.9939,
+      0
+    ],
+    "hipL": [
+      -0.0779,
+      -0.997,
+      0
+    ],
+    "kneeL": [
+      -0.0139,
+      -0.9999,
+      0
+    ],
+    "ankleL": [
+      0,
+      -0.2305,
+      0.9731
+    ],
+    "shoulderR": [
+      0.2813,
+      -0.9596,
+      0
+    ],
+    "elbowR": [
+      0.1724,
+      -0.985,
+      0
+    ],
+    "wristR": [
+      0.1104,
+      -0.9939,
+      0
+    ],
+    "hipR": [
+      0.0779,
+      -0.997,
+      0
+    ],
+    "kneeR": [
+      0.0139,
+      -0.9999,
+      0
+    ],
+    "ankleR": [
+      0,
+      -0.2305,
+      0.9731
+    ]
+  },
+  "restFrames": {
+    "root": {
+      "primary": [
+        0,
+        1,
+        0
+      ],
+      "secondary": [
+        0,
+        0,
+        1
+      ],
+      "secondaryBasis": "sagittal +Z"
+    },
+    "spine": {
+      "primary": [
+        0,
+        1,
+        0
+      ],
+      "secondary": [
+        0,
+        0,
+        1
+      ],
+      "secondaryBasis": "sagittal +Z"
+    },
+    "neck": {
+      "primary": [
+        0,
+        0.9999,
+        0.0128
+      ],
+      "secondary": [
+        0,
+        -0.0128,
+        0.9999
+      ],
+      "secondaryBasis": "sagittal +Z"
+    },
+    "shoulderL": {
+      "primary": [
+        -0.2813,
+        -0.9596,
+        0
+      ],
+      "secondary": [
+        0,
+        0,
+        1
+      ],
+      "secondaryBasis": "sagittal +Z"
+    },
+    "elbowL": {
+      "primary": [
+        -0.1724,
+        -0.985,
+        0
+      ],
+      "secondary": [
+        0,
+        0,
+        1
+      ],
+      "secondaryBasis": "sagittal +Z"
+    },
+    "wristL": {
+      "primary": [
+        -0.1104,
+        -0.9939,
+        0
+      ],
+      "secondary": [
+        0.9939,
+        -0.1104,
+        0
+      ],
+      "secondaryBasis": "palm normal (inward)"
+    },
+    "hipL": {
+      "primary": [
+        -0.0779,
+        -0.997,
+        0
+      ],
+      "secondary": [
+        0,
+        0,
+        1
+      ],
+      "secondaryBasis": "sagittal +Z"
+    },
+    "kneeL": {
+      "primary": [
+        -0.0139,
+        -0.9999,
+        0
+      ],
+      "secondary": [
+        0,
+        0,
+        1
+      ],
+      "secondaryBasis": "sagittal +Z"
+    },
+    "ankleL": {
+      "primary": [
+        0,
+        -0.2305,
+        0.9731
+      ],
+      "secondary": [
+        0,
+        -0.9731,
+        -0.2305
+      ],
+      "secondaryBasis": "sole normal (0,-1,0)"
+    },
+    "shoulderR": {
+      "primary": [
+        0.2813,
+        -0.9596,
+        0
+      ],
+      "secondary": [
+        0,
+        0,
+        1
+      ],
+      "secondaryBasis": "sagittal +Z"
+    },
+    "elbowR": {
+      "primary": [
+        0.1724,
+        -0.985,
+        0
+      ],
+      "secondary": [
+        0,
+        0,
+        1
+      ],
+      "secondaryBasis": "sagittal +Z"
+    },
+    "wristR": {
+      "primary": [
+        0.1104,
+        -0.9939,
+        0
+      ],
+      "secondary": [
+        -0.9939,
+        -0.1104,
+        0
+      ],
+      "secondaryBasis": "palm normal (inward)"
+    },
+    "hipR": {
+      "primary": [
+        0.0779,
+        -0.997,
+        0
+      ],
+      "secondary": [
+        0,
+        0,
+        1
+      ],
+      "secondaryBasis": "sagittal +Z"
+    },
+    "kneeR": {
+      "primary": [
+        0.0139,
+        -0.9999,
+        0
+      ],
+      "secondary": [
+        0,
+        0,
+        1
+      ],
+      "secondaryBasis": "sagittal +Z"
+    },
+    "ankleR": {
+      "primary": [
+        0,
+        -0.2305,
+        0.9731
+      ],
+      "secondary": [
+        0,
+        -0.9731,
+        -0.2305
+      ],
+      "secondaryBasis": "sole normal (0,-1,0)"
+    }
+  },
+  "terminalAnatomical": {
+    "ankleL": {
+      "sourceBone": "lfoot",
+      "direction": [
+        0,
+        -0.2305,
+        0.9731
+      ],
+      "basis": "foot toe centroid (z>=0.10)"
+    },
+    "ankleR": {
+      "sourceBone": "rfoot",
+      "direction": [
+        0,
+        -0.2305,
+        0.9731
+      ],
+      "basis": "foot toe centroid (z>=0.10)"
+    },
+    "wristL": {
+      "sourceBone": "lhand",
+      "direction": [
+        -0.1104,
+        -0.9939,
+        0
+      ],
+      "basis": "palm region centroid"
+    },
+    "wristR": {
+      "sourceBone": "rhand",
+      "direction": [
+        0.1104,
+        -0.9939,
+        0
+      ],
+      "basis": "palm region centroid"
+    },
+    "neck": {
+      "sourceBone": "head",
+      "direction": [
+        0,
+        0.9999,
+        0.0128
+      ],
+      "basis": "head (head+jaw+crown) centroid"
+    }
+  }
+}

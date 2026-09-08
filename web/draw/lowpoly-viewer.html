@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>低面数白模预览 · wireframe / smooth — Genshin Model Studio</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #10151c; font-family: system-ui, sans-serif; }
+  #view { position: fixed; inset: 0; }
+  #view canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+  #hud {
+    position: fixed; top: 12px; left: 12px; z-index: 2; max-width: 380px;
+    color: #dfe6ee; background: rgba(16, 21, 28, 0.82); border: 1px solid #2b3542;
+    border-radius: 8px; padding: 10px 14px; font-size: 13px; line-height: 1.7;
+  }
+  #hud h1 { font-size: 14px; margin: 0 0 6px; }
+  #hud .hint { color: #93a1b0; font-size: 12px; }
+  .btn-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 4px; }
+  .btn-row button {
+    cursor: pointer; padding: 5px 9px; background: #24343b; color: #dfe6ee;
+    border: 1px solid #77929b; border-radius: 4px; font-size: 12px;
+  }
+  .btn-row button.on { background: #2b6cb0; border-color: #7fb3e8; }
+  #status { color: #ffd479; font-size: 12px; margin-top: 6px; white-space: pre-wrap; }
+  #status.err { color: #ff7b7b; }
+</style>
+</head>
+<body>
+<div id="view"><canvas id="canvas"></canvas></div>
+<div id="hud">
+  <h1>低面数完整白模（人物 ≤200 quads + 场景/道具）</h1>
+  <div>🖱 左键拖拽旋转 · 滚轮缩放 · 移动端单指拖拽 / 双指捏合</div>
+  <div class="hint">同一套几何：框线（wireframe）↔ 平滑（smooth/实体着色）可在下方切换。</div>
+  <div class="btn-row" id="modeRow">
+    <button id="btnWire" class="on">▧ 框线</button>
+    <button id="btnSmooth">● 平滑</button>
+  </div>
+  <div class="btn-row" id="viewRow">
+    <button data-yaw="0" data-pitch="1.57">前 Front</button>
+    <button data-yaw="1.5708" data-pitch="1.57">侧 Side</button>
+    <button data-yaw="0.65" data-pitch="0.12">顶 Top</button>
+    <button data-yaw="3.14159" data-pitch="1.57">后 Back</button>
+    <button data-yaw="0.65" data-pitch="0.85">等距 Iso</button>
+  </div>
+  <div id="status">加载模型数据…</div>
+</div>
+
+<script src="./preview.js?v=lowpoly-1"></script>
+<script>
+(function () {
+  'use strict'
+  var statusEl = document.getElementById('status')
+  var canvas = document.getElementById('canvas')
+  var CDNS = [
+    'https://unpkg.com/three@0.160.0/build/three.min.js',
+    'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js',
+  ]
+  var cdnIdx = 0
+
+  function loadCdn() {
+    if (cdnIdx >= CDNS.length) {
+      statusEl.className = 'err'
+      statusEl.textContent = 'Three.js CDN 加载失败'
+      return
+    }
+    var s = document.createElement('script')
+    s.src = CDNS[cdnIdx++]
+    s.onload = boot
+    s.onerror = loadCdn
+    document.head.appendChild(s)
+  }
+
+  function boot() {
+    if (typeof window.createPreview !== 'function') {
+      statusEl.className = 'err'
+      statusEl.textContent = 'preview.js 未加载'
+      return
+    }
+    fetch('./lowpoly-model.json?t=' + Date.now())
+      .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json() })
+      .then(function (data) {
+        var preview = window.createPreview(canvas)
+        window.gmsPreview = preview
+        window.__MODEL__ = data
+        var focus = new URLSearchParams(location.search).get('focus')
+        var items = (!focus || focus === 'all') ? (data.items || [])
+          : (focus === 'character' ? (data.groups.character || []).map(function (i) { return data.items[i] })
+          : (focus === 'scene' ? (data.groups.scene || []).map(function (i) { return data.items[i] }) : data.items || []))
+        preview.setItems(items)
+        var s = data.summary || {}
+        var c = s.character || {}, sc = s.scene || {}
+        statusEl.textContent =
+          '框线/平滑均可查看；人物：' + c.quads + ' quads · ' + c.tris + ' tris(单位) · 合计 ≈' + c.trisTotal + ' tris\n' +
+          '场景：' + sc.quads + ' quads · ' + sc.tris + ' tris(单位)\n' +
+          'seamCheck: ' + (s.seam && s.seam.watertight ? '水密' : '有缝/开边') +
+          ' · 导出gate: ' + (s.gate && s.gate.ok ? 'PASS' : 'FAIL')
+        if (s.gate && !s.gate.ok) statusEl.textContent += '\n' + s.gate.failures.join('\n')
+
+        var btnWire = document.getElementById('btnWire')
+        var btnSmooth = document.getElementById('btnSmooth')
+        function setMode(wire) {
+          preview.setWireframe(wire)
+          btnWire.className = wire ? 'on' : ''
+          btnSmooth.className = wire ? '' : 'on'
+        }
+        btnWire.onclick = function () { setMode(true) }
+        btnSmooth.onclick = function () { setMode(false) }
+
+        document.querySelectorAll('#viewRow button').forEach(function (b) {
+          b.onclick = function () {
+            preview.setCamera({ yaw: Number(b.dataset.yaw), pitch: Number(b.dataset.pitch) })
+          }
+        })
+        setMode(false) // 默认平滑；用户可切框线
+        window.__PREVIEW_READY__ = true
+      })
+      .catch(function (err) {
+        statusEl.className = 'err'
+        statusEl.textContent = '模型加载失败：' + err.message
+      })
+  }
+
+  loadCdn()
+})()
+</script>
+</body>
+</html>

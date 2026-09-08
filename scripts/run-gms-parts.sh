@@ -77,7 +77,12 @@ import json, time, os
 OUT=os.environ['OUT']
 composed=json.load(open(OUT+'/work.json'))
 tabs=list_tabs(); switch_tab(tabs[0])
-r=js("window.gms.import(%s)" % json.dumps(composed))
+import base64
+b64=base64.b64encode(json.dumps(composed).encode()).decode()
+js('window.__w=""')
+for _i in range(0, len(b64), 60000):
+    js('window.__w += atob("%s")' % b64[_i:_i+60000])
+js("window.gms.import(JSON.parse(window.__w))")
 time.sleep(3.0)
 for _ in range(60):
     time.sleep(1.0)

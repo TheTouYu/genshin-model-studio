@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "name": "平面_缩放0.5x0.3",
+  "template": "空模型",
+  "templatePrefabId": 10005018,
+  "templateInstanceId": 10005018,
+  "prefabId": 1077936129,
+  "definitionAuxiliaryIds": [
+    1073741830
+  ],
+  "instanceAuxiliaryIds": [
+    1073741831
+  ],
+  "position": [
+    0,
+    0,
+    0
+  ],
+  "rotation": [
+    0,
+    0,
+    0
+  ],
+  "scale": [
+    1,
+    1,
+    1
+  ],
+  "items": [
+    {
+      "resourceId": 10009003,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        0.5,
+        1,
+        0.3
+      ],
+      "color": {
+        "enabled": true,
+        "rgb": 4630360,
+        "opacity": 100,
+        "overlay": "overwrite"
+      }
+    }
+  ]
+}

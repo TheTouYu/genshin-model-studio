@@ -1,0 +1,94 @@
+{
+  "checkpoint": "body-r2",
+  "fingerprints": {
+    "sources": {
+      "scripts/parts/lib/ganyu-lib.js": "c035914396e2262365b6115a8510bcc7f6ef0f6ea70ed7cc36b5fa3a85d1a082",
+      "scripts/parts/lib/ganyu-cage-branch.js": "7980db090b172caf30ec2d29e91460c171307dfe3e77d883fc288cf51d8211b1",
+      "scripts/parts/lib/ganyu-seam-check.js": "cf08969b60aaf425c47d376a8a86209a3dbe451236255561751594f0d8d328c6",
+      "scripts/parts/ganyu-body-cage.js": "83c34bac94e0dd58534b44437649463de230ea308e7b76620fcd098847f26068"
+    },
+    "mesh": "dde523db9405923bf41b40251a9df437af58e5cc6de1aac14e106cc21a265ca8",
+    "geometryNanometres": "10c2b8612503e41447736e329e5949729ec948fdfc10af8c76d2db3a1df1e884",
+    "verifier": "a7a01d68bc914a466e1219bb35b6d918275b8d16efdce6ba97f000dce96583a4"
+  },
+  "stage": "blockout",
+  "referenceFit": {
+    "status": "provisional",
+    "references": [
+      "reference/ganyu-3view.png",
+      "reference/body-wire-front.png",
+      "reference/body-wire-side.png",
+      "reference/body-wire-quarter.png",
+      "reference/body-wire-back.png"
+    ],
+    "reason": "References recovered; landmark fitting and clothing clearance remain unverified"
+  },
+  "metrics": {
+    "vertices": 614,
+    "tris": 1212,
+    "limbs": 4
+  },
+  "scale": {
+    "height": 1.596,
+    "unit": "m",
+    "front": "+Z"
+  },
+  "seam": {
+    "openEdges": 0,
+    "nonManifoldEdges": 0,
+    "seamEdges": 0,
+    "components": 1,
+    "onePiece": true,
+    "watertight": true,
+    "seams": []
+  },
+  "gate": {
+    "ok": true,
+    "checkedFaces": 1212,
+    "checks": {
+      "watertight": {
+        "pass": true,
+        "openEdges": 0,
+        "nonManifold": 0,
+        "samplePositions": []
+      },
+      "seams": {
+        "pass": true,
+        "seamCount": 0,
+        "samplePositions": []
+      },
+      "normals": {
+        "pass": true,
+        "invertedCount": 0,
+        "sampleFaces": []
+      },
+      "degenerate": {
+        "count": 0,
+        "pass": true
+      },
+      "skinny": {
+        "count": 0,
+        "pct": 0,
+        "pass": true
+      },
+      "areaRatio": {
+        "value": 19.4,
+        "pass": true
+      },
+      "budget": {
+        "requested": null,
+        "used": 1212,
+        "exceeded": false,
+        "pass": true
+      },
+      "selfIntersections": {
+        "pass": true,
+        "intersectingPairs": 0,
+        "samplePairs": []
+      }
+    },
+    "failures": []
+  },
+  "visualAcceptance": "pending",
+  "gameAcceptance": "pending"
+}

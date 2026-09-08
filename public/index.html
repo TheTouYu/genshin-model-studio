@@ -247,6 +247,7 @@
       <canvas id="previewCanvas"></canvas>
       <div class="preview-hint">3D 预览：拖拽旋转 · 滚轮缩放 · 移动端单指拖拽 / 双指捏合
         <button type="button" class="tool-btn" id="openPreview" title="在新页面打开独立大预览（可全屏/放大）" style="margin-left: 8px;">⛶ 独立预览</button>
+        <button type="button" class="tool-btn" id="toggleWireframe" title="仅切换当前 3D 预览的网格边，不改变作品或导出" style="margin-left: 6px;" aria-pressed="true">▧ 线框：开</button>
       </div>
     </div>
   </div>
@@ -458,7 +459,7 @@ $('docFile').onchange = () => {
 loadExamples()
 </script>
 
-<script src="/draw/preview.js"></script>
+<script src="/draw/preview.js?v=wireframe-default-3"></script>
 <script>
 // ============ 二期：画线建模（画布 + 拟合叠加 + 3D 预览 + localStorage + 导出） ============
 (function () {
@@ -1797,8 +1798,21 @@ loadExamples()
   /* ---------- 四期：旋转复制（选中笔画 → 点旋转中心 → 份数 → N-1 副本） ---------- */
 
   el('openPreview').addEventListener('click', () => {
-    saveLocal() // 独立预览页从 localStorage 读作品：点击时立即落盘
+    clearTimeout(saveTimer)
+    writeLocal() // 同步保存，并拒绝旧标签页覆盖新版本
     window.open('/draw/preview-demo.html', '_blank')
+  })
+
+  el('toggleWireframe').addEventListener('click', () => {
+    if (!state.preview || typeof state.preview.setWireframe !== 'function') {
+      setStatus('线框预览尚未初始化', 'err')
+      return
+    }
+    const enabled = !state.preview.getWireframe()
+    state.preview.setWireframe(enabled)
+    el('toggleWireframe').setAttribute('aria-pressed', String(enabled))
+    el('toggleWireframe').textContent = enabled ? '▧ 线框：开' : '▧ 线框：关'
+    setStatus(enabled ? '已显示 3D 网格线框（仅预览）' : '已恢复实体预览')
   })
 
   el('rotateCopy').addEventListener('click', () => {
@@ -1941,8 +1955,10 @@ loadExamples()
 
   /* ---------- localStorage 自动保存 / 恢复 ---------- */
 
+  let observedWork = localStorage.getItem(LS_KEY)
   function writeLocal() {
     try {
+      if (localStorage.getItem(LS_KEY) !== observedWork) { restoreLocal(); return }
       // v3：{ version, strokes, options }；新字段仅在非缺省时写入（由笔画对象自身保证）。
       // 二十一期：components（命名注册表）/ links（受力连接）为可选侧边字段，不进入 strokes 语义字段。
       localStorage.setItem(LS_KEY, JSON.stringify({
@@ -1952,6 +1968,7 @@ loadExamples()
         ...(Object.keys(state.componentNames).length ? { components: state.componentNames } : {}),
         ...(state.gmsLinks.length ? { links: state.gmsLinks } : {}),
       }))
+      observedWork = localStorage.getItem(LS_KEY)
     } catch (e) { /* 隐私模式等场景忽略 */ }
   }
 
@@ -2021,8 +2038,11 @@ loadExamples()
         if (typeof s.height === 'number' && Number.isFinite(s.height) && s.height > 0) out.height = s.height
         // v3.3：size（笔画级粗细，十六期）必须原样保留——否则刷新/导入即丢失退回全局粗细（铁律 #1 第三次违反）
         if (typeof s.size === 'number' && Number.isFinite(s.size) && s.size > 0) out.size = s.size
-        // v3.5：resourceId（基础元件覆盖，球体 10009002 / 圆锥 10009009 / 三棱锥 10009006 / 平面 10009003）原样保留——否则刷新/导入丢失退回默认元件
-        if (s.resourceId === 10009002 || s.resourceId === 10009009 || s.resourceId === 10009006 || s.resourceId === 10009003) out.resourceId = s.resourceId
+        // v3.5：resourceId（基础元件覆盖，球体 10009002 / 圆锥 10009009 / 三棱锥 10009006 / 平面 10009003 / 网格 10009019）原样保留——否则刷新/导入丢失退回默认元件
+        if (s.resourceId === 10009002 || s.resourceId === 10009009 || s.resourceId === 10009006 || s.resourceId === 10009003 || s.resourceId === 10009019) out.resourceId = s.resourceId
+        // v3.6：mesh（10009019 参数化网格：顶点+面+颜色）与 material 必须原样保留——否则 gms.part('mesh') 模型刷新即丢（2026-09 脚踝凸包验证发现）
+        if (s.resourceId === 10009019 && s.mesh && typeof s.mesh === 'object' && !Array.isArray(s.mesh)) out.mesh = s.mesh
+        if (typeof s.material === 'string') out.material = s.material
         if (out.render === 'solid' && (s.axis === 'front' || s.axis === 'side')) out.axis = s.axis // 'up'=缺省不写
         // v3.1：lift（solid 离地抬升）与 transform（3D 变换）必须原样保留，否则刷新/导入即丢失（ADR-0001）
         if (typeof s.lift === 'number' && Number.isFinite(s.lift) && s.lift >= 0) out.lift = s.lift
@@ -2080,8 +2100,15 @@ loadExamples()
     let raw = null
     try { raw = localStorage.getItem(LS_KEY) } catch (e) { return false }
     if (!raw) return false
-    try { return applyWork(JSON.parse(raw), true) } catch (e) { return false }
+    try { const ok = applyWork(JSON.parse(raw), true); if (ok) observedWork = raw; return ok } catch (e) { return false }
   }
+
+  window.addEventListener('storage', (event) => {
+    if (event.key !== LS_KEY || !event.newValue) return
+    clearTimeout(saveTimer)
+    ++genSeq
+    restoreLocal()
+  })
 
   /* ---------- 作品 JSON 导入 / 导出 ---------- */
 

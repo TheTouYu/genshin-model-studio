@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "units": "meters",
+  "coordinateSystem": "+Y up +Z front",
+  "binding": "rigid per-region, inspection prototype",
+  "joints": [
+    {
+      "id": "root",
+      "parent": null,
+      "pivot": [
+        0,
+        0.8,
+        0
+      ]
+    },
+    {
+      "id": "shoulderL",
+      "parent": "root",
+      "pivot": [
+        -0.18,
+        1.25,
+        0
+      ]
+    },
+    {
+      "id": "elbowL",
+      "parent": "shoulderL",
+      "pivot": [
+        -0.265,
+        0.96,
+        0
+      ]
+    },
+    {
+      "id": "wristL",
+      "parent": "elbowL",
+      "pivot": [
+        -0.3,
+        0.76,
+        0
+      ]
+    },
+    {
+      "id": "hipL",
+      "parent": "root",
+      "pivot": [
+        -0.075,
+        0.8,
+        0
+      ]
+    },
+    {
+      "id": "kneeL",
+      "parent": "hipL",
+      "pivot": [
+        -0.1,
+        0.48,
+        0
+      ]
+    },
+    {
+      "id": "ankleL",
+      "parent": "kneeL",
+      "pivot": [
+        -0.10500000000000001,
+        0.12,
+        0
+      ]
+    },
+    {
+      "id": "shoulderR",
+      "parent": "root",
+      "pivot": [
+        0.18,
+        1.25,
+        0
+      ]
+    },
+    {
+      "id": "elbowR",
+      "parent": "shoulderR",
+      "pivot": [
+        0.265,
+        0.96,
+        0
+      ]
+    },
+    {
+      "id": "wristR",
+      "parent": "elbowR",
+      "pivot": [
+        0.3,
+        0.76,
+        0
+      ]
+    },
+    {
+      "id": "hipR",
+      "parent": "root",
+      "pivot": [
+        0.075,
+        0.8,
+        0
+      ]
+    },
+    {
+      "id": "kneeR",
+      "parent": "hipR",
+      "pivot": [
+        0.1,
+        0.48,
+        0
+      ]
+    },
+    {
+      "id": "ankleR",
+      "parent": "kneeR",
+      "pivot": [
+        0.10500000000000001,
+        0.12,
+        0
+      ]
+    }
+  ],
+  "vertexJoint": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    1,
+    1,
+    1,
+    1,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+    3,
+    3,
+    3,
+    3,
+    4,
+    4,
+    4,
+    4,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    5,
+    6,
+    6,
+    6,
+    6,
+    7,
+    7,
+    7,
+    7,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    8,
+    9,
+    9,
+    9,
+    9,
+    10,
+    10,
+    10,
+    10,
+    11,
+    11,
+    11,
+    11,
+    11,
+    11,
+    11,
+    11,
+    12,
+    12,
+    12,
+    12,
+    0
+  ],
+  "sourceSha256": "33c56417051c5df598b7bc16a1a628ad0fed90f109a178a41c6ea6d666842360"
+}

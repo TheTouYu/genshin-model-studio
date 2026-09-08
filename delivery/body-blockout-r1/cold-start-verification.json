@@ -1,0 +1,41 @@
+{
+  "checks": [
+    {
+      "url": "http://localhost:8787/",
+      "stats": [
+        {
+          "resourceId": 10009019,
+          "vertices": 113,
+          "triangles": 222
+        }
+      ],
+      "loadedMeshSha256": "6bcb8110bf4f04f6850adc9b80fa03cf7a18f86622c67a5c9fe557479c8e9165",
+      "savedMeshSha256": "6bcb8110bf4f04f6850adc9b80fa03cf7a18f86622c67a5c9fe557479c8e9165"
+    },
+    {
+      "url": "http://localhost:8787/draw/preview-demo.html?body-blockout-low=1",
+      "stats": [
+        {
+          "resourceId": 10009019,
+          "vertices": 113,
+          "triangles": 222
+        }
+      ],
+      "loadedMeshSha256": "6bcb8110bf4f04f6850adc9b80fa03cf7a18f86622c67a5c9fe557479c8e9165",
+      "savedMeshSha256": "6bcb8110bf4f04f6850adc9b80fa03cf7a18f86622c67a5c9fe557479c8e9165"
+    },
+    {
+      "url": "http://localhost:8787/draw/preview-demo.html?blockout-r1=1",
+      "stats": [
+        {
+          "resourceId": 10009019,
+          "vertices": 113,
+          "triangles": 222
+        }
+      ],
+      "loadedMeshSha256": "6bcb8110bf4f04f6850adc9b80fa03cf7a18f86622c67a5c9fe557479c8e9165",
+      "savedMeshSha256": "6bcb8110bf4f04f6850adc9b80fa03cf7a18f86622c67a5c9fe557479c8e9165"
+    }
+  ],
+  "browserProcessRestarted": false
+}

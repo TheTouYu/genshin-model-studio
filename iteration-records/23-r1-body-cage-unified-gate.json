@@ -1,0 +1,28 @@
+{
+  "iteration": 23,
+  "round": "R1 人体粗骨架：一体拓扑门禁与前后不对称接入",
+  "reference": [
+    "user supplied front 278x724",
+    "user supplied side 210x801",
+    "user supplied 3/4 248x831",
+    "user supplied back 234x789"
+  ],
+  "actions": [
+    "seamCheck 增加 connected components、onePiece 与 nonManifoldEdges",
+    "新增 tests/seam-check.test.ts，覆盖断开的封闭块与真正单体网格",
+    "profileLoft getSec 与截面偏移接入 ryF/cyF/ryB/cyB",
+    "ganyu-body-cage.js 改为前后不对称主干 + extrudeRing 分支尝试"
+  ],
+  "results": {
+    "tests": { "passed": 172, "failed": 0 },
+    "initial_old_cage": { "components": 10, "watertight": true, "onePiece": false },
+    "current_cage": { "vertices": 269, "faces": 564, "components": 1, "openEdges": 0, "seamEdges": 0, "nonManifoldEdges": 24, "watertight": false, "onePiece": false },
+    "asymmetry": "profileLoft now carries front/back fields; visual multi-view fit remains pending"
+  },
+  "decision": "保留门禁失败，不宣称完成人体粗骨架。下一步必须扩展 branch/extrudeRing 支持部分环或重新设计骨盆/肩带端环，消除中间环重复挤出造成的非流形边。",
+  "openItems": [
+    "branch segment attachment from a subset of a trunk ring",
+    "canonical scale alignment with four reference views",
+    "browser preview and five-view evidence"
+  ]
+}

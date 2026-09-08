@@ -1,0 +1,255 @@
+{
+ "schemaVersion": 1,
+ "groundY": 0.075,
+ "rules": {
+  "handToHandTwoHanded": 0.22,
+  "graspBandPalmDistance": 0.45,
+  "graspBandRelHeight": 0.12,
+  "graspSustain": 0.2,
+  "releaseSeparation": 0.6,
+  "boxReleaseSeparation": 0.9,
+  "basinFrontZ": 0.15
+ },
+ "coordinateSystem": "target rig: +Y up, +Z front",
+ "clips": {
+  "02_01": {
+   "label": "walk",
+   "evidence": {
+    "medianHandDistance": 0.58,
+    "palmTravelL": 2.743,
+    "palmTravelR": 2.789,
+    "sourceDescription": "http://mocap.cs.cmu.edu/subjects/02/02_01.amc"
+   },
+   "props": [],
+   "scene": {
+    "ground": true,
+    "groundY": 0.075,
+    "humanScaleRef": true
+   }
+  },
+  "02_02": {
+   "label": "walk",
+   "evidence": {
+    "medianHandDistance": 0.495,
+    "palmTravelL": 3.27,
+    "palmTravelR": 3.309,
+    "sourceDescription": "http://mocap.cs.cmu.edu/subjects/02/02_02.amc"
+   },
+   "props": [],
+   "scene": {
+    "ground": true,
+    "groundY": 0.075,
+    "humanScaleRef": true
+   }
+  },
+  "02_03": {
+   "label": "run/jog",
+   "evidence": {
+    "medianHandDistance": 0.382,
+    "palmTravelL": 2.933,
+    "palmTravelR": 3.109,
+    "sourceDescription": "http://mocap.cs.cmu.edu/subjects/02/02_03.amc"
+   },
+   "props": [],
+   "scene": {
+    "ground": true,
+    "groundY": 0.075,
+    "humanScaleRef": true
+   }
+  },
+  "02_04": {
+   "label": "jump, balance",
+   "evidence": {
+    "medianHandDistance": 0.487,
+    "palmTravelL": 1.073,
+    "palmTravelR": 1.032,
+    "sourceDescription": "http://mocap.cs.cmu.edu/subjects/02/02_04.amc"
+   },
+   "props": [],
+   "scene": {
+    "ground": true,
+    "groundY": 0.075,
+    "humanScaleRef": true
+   }
+  },
+  "02_05": {
+   "label": "punch/strike",
+   "evidence": {
+    "medianHandDistance": 0.527,
+    "palmTravelL": 0.526,
+    "palmTravelR": 0.944,
+    "sourceDescription": "http://mocap.cs.cmu.edu/subjects/02/02_05.amc"
+   },
+   "props": [],
+   "scene": {
+    "ground": true,
+    "groundY": 0.075,
+    "humanScaleRef": true
+   }
+  },
+  "02_06": {
+   "label": "bend over, scoop up, rise, lift arm",
+   "evidence": {
+    "medianHandDistance": 0.765,
+    "palmTravelL": 0.724,
+    "palmTravelR": 1.198,
+    "sourceDescription": "http://mocap.cs.cmu.edu/subjects/02/02_06.amc"
+   },
+   "props": [
+    {
+     "type": "box",
+     "id": "box",
+     "size": [
+      0.34,
+      0.26,
+      0.26
+     ],
+     "worldPose": {
+      "position": [
+       0.008,
+       0.845,
+       0.14
+      ]
+     },
+     "withSupport": true,
+     "supportTopY": 0.715,
+     "followPalmsFromSeconds": 0,
+     "releaseAtSeconds": 14.308,
+     "evidence": "palm-height minimum 0.715m; both palms within 0.12m of it and <0.45m apart for >=0.2s from t=0.00s; released at t=14.31s"
+    }
+   ],
+   "scene": {
+    "ground": true,
+    "groundY": 0.075,
+    "humanScaleRef": true
+   }
+  },
+  "02_07": {
+   "label": "swordplay",
+   "evidence": {
+    "medianHandDistance": 0.922,
+    "palmTravelL": 1.723,
+    "palmTravelR": 2.008,
+    "sourceDescription": "http://mocap.cs.cmu.edu/subjects/02/02_07.amc"
+   },
+   "props": [
+    {
+     "type": "sword",
+     "id": "sword",
+     "grip": "one-hand (R, palm travel 2.008m vs 1.723m)",
+     "attachJoint": "wristR",
+     "followJoint2": null,
+     "alignFrom": "wristR",
+     "alignTo": "palmR",
+     "offsetAlongForearm": -0.03,
+     "handleLength": 0.26,
+     "bladeLength": 0.78,
+     "guardWidth": 0.14,
+     "attachAtSeconds": 0,
+     "detachAtSeconds": null,
+     "evidence": "blade axis follows the forearm (wrist->palm centroid) at every frame; held for the whole clip after attach (no sustained >0.60m hand separation)"
+    }
+   ],
+   "scene": {
+    "ground": true,
+    "groundY": 0.075,
+    "humanScaleRef": true
+   }
+  },
+  "02_08": {
+   "label": "swordplay",
+   "evidence": {
+    "medianHandDistance": 0.806,
+    "palmTravelL": 1.425,
+    "palmTravelR": 2.289,
+    "sourceDescription": "http://mocap.cs.cmu.edu/subjects/02/02_08.amc"
+   },
+   "props": [
+    {
+     "type": "sword",
+     "id": "sword",
+     "grip": "one-hand (R, palm travel 2.289m vs 1.425m)",
+     "attachJoint": "wristR",
+     "followJoint2": null,
+     "alignFrom": "wristR",
+     "alignTo": "palmR",
+     "offsetAlongForearm": -0.03,
+     "handleLength": 0.26,
+     "bladeLength": 0.78,
+     "guardWidth": 0.14,
+     "attachAtSeconds": 0,
+     "detachAtSeconds": null,
+     "evidence": "blade axis follows the forearm (wrist->palm centroid) at every frame; held for the whole clip after attach (no sustained >0.60m hand separation)"
+    }
+   ],
+   "scene": {
+    "ground": true,
+    "groundY": 0.075,
+    "humanScaleRef": true
+   }
+  },
+  "02_09": {
+   "label": "swordplay",
+   "evidence": {
+    "medianHandDistance": 0.829,
+    "palmTravelL": 1.568,
+    "palmTravelR": 2.477,
+    "sourceDescription": "http://mocap.cs.cmu.edu/subjects/02/02_09.amc"
+   },
+   "props": [
+    {
+     "type": "sword",
+     "id": "sword",
+     "grip": "one-hand (R, palm travel 2.477m vs 1.568m)",
+     "attachJoint": "wristR",
+     "followJoint2": null,
+     "alignFrom": "wristR",
+     "alignTo": "palmR",
+     "offsetAlongForearm": -0.03,
+     "handleLength": 0.26,
+     "bladeLength": 0.78,
+     "guardWidth": 0.14,
+     "attachAtSeconds": 0,
+     "detachAtSeconds": null,
+     "evidence": "blade axis follows the forearm (wrist->palm centroid) at every frame; held for the whole clip after attach (no sustained >0.60m hand separation)"
+    }
+   ],
+   "scene": {
+    "ground": true,
+    "groundY": 0.075,
+    "humanScaleRef": true
+   }
+  },
+  "02_10": {
+   "label": "wash self",
+   "evidence": {
+    "medianHandDistance": 0.691,
+    "palmTravelL": 1.258,
+    "palmTravelR": 1.692,
+    "sourceDescription": "http://mocap.cs.cmu.edu/subjects/02/02_10.amc"
+   },
+   "props": [
+    {
+     "type": "basin",
+     "id": "basin",
+     "radius": 0.24,
+     "height": 0.14,
+     "worldPose": {
+      "position": [
+       -0.093,
+       0.721,
+       0.204
+      ]
+     },
+     "withStand": true,
+     "evidence": "486 low-front palm samples cluster at (-0.09, 0.80, 0.20); basin top set at P25 palm height - 4cm so hands visibly enter the water line; stand reaches the ground"
+    }
+   ],
+   "scene": {
+    "ground": true,
+    "groundY": 0.075,
+    "humanScaleRef": true
+   }
+  }
+ }
+}

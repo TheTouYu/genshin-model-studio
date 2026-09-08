@@ -1,0 +1,28 @@
+{
+  "iteration": 18,
+  "round": "R0 前置·最小版本 v2/v3：裂缝消除 + 不规则多边形表达",
+  "problem": "用户网页实测 50~60 分；两点优化：① 明显裂缝/间隙/穿视必须先修；② 学习参考图的不规则多边形（每格有差异）增强深度/景深感。",
+  "priority": "单元装配质量（裂缝）+ 视觉表达（不规则细分）；两者是游戏导入前的网页收口。",
+  "explanation": "① 单元重叠 1.15 倍 + 厚度 3mm 消除接缝/穿视；② 新增 jitterMesh：每环独立角度/径向/高度扰动（确定性相位），凸包区 dense 加密（mult=3）→ 每个四边形尺寸/角度/位置各异（宽度 13 种、面积 3.4~16.7mm²）。",
+  "action": [
+    "ganyu-lib 新增 jitterMesh(data,{sides,ampA,ampR,ampY,seed})",
+    "腿网格 dense 加密 [0.40,0.62,mult3] + reliefYTube + jitterMesh(seed7)",
+    "单元化：quad 面板 w/h ×1.15、厚 3mm，端盖板片放大贴合",
+    "页面重建 1202 单元预览（iso/顶/凸包特写）并 read_image 复核",
+    "导出器同步 v3 参数，生成候选 GIA"
+  ],
+  "stats": {
+    "mesh": {"faces": 2480, "deg": 0, "skinnyPct": 0, "areaRatio": 5.7},
+    "units": {"quads": 1200, "caps": 2, "total": 1202},
+    "diversity": {"uniqueW": 13, "area_mm2_min": 3.44, "avg": 9.01, "max": 16.69}
+  },
+  "views": {
+    "bump": "delivery/r0-toes/units-v3-preview-bump.png",
+    "iso": "delivery/r0-toes/units-v3-preview-iso.png",
+    "top": "delivery/r0-toes/units-v3-preview-top.png"
+  },
+  "gia_candidate": "delivery/r0-toes/ankle-bump-min-v3.gia（244799 字节，1202 单元）",
+  "observations": "裂缝大幅减少、表面连续且不规则（每环粗细/形状不同）；凸包区加密后深度更真实；端盖与顶圈仍有细微贴合感，属可接受范围。",
+  "decision": "待用户网页复核：裂缝是否达标 + 不规则表达是否贴合参考",
+  "next": "网页通过后应用导出正式 GIA（与预览同源）供游戏导入；随后进入趾部算法。"
+}

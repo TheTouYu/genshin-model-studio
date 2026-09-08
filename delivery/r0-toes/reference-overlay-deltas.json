@@ -1,0 +1,91 @@
+{
+  "pxPerMeter": 681.875,
+  "provisional": true,
+  "comparisons": {
+    "chin": {
+      "referencePixelY": 257,
+      "referenceWorld": 1.35948670944088,
+      "meshWorld": 1.4,
+      "deltaM": -0.0405132905591199,
+      "note": "mesh lower head landmark interpretation"
+    },
+    "knee": {
+      "referencePixelY": 833,
+      "referenceWorld": 0.5147571035747023,
+      "meshKneeControl": 0.515
+    },
+    "ankle": {
+      "referencePixelY": 1100,
+      "referenceWorld": 0.12318973418881773,
+      "mesh": "needs explicit ankle y"
+    },
+    "shoulderHeight": {
+      "referencePixelY": 314,
+      "referenceWorld": 1.2758936755270396,
+      "meshShoulderBandY": [
+        1.23,
+        1.28
+      ]
+    },
+    "shoulderWidth": {
+      "referencePx": 144,
+      "referenceM": 0.21118240146654446,
+      "meshM": 0.366,
+      "caveat": "reference cloth boundary, mesh bare cage"
+    },
+    "waistWidth": {
+      "referencePx": 168,
+      "referenceM": 0.2463794683776352,
+      "meshM": 0.24
+    },
+    "headEnvelope": {
+      "referencePx": 164,
+      "referenceM": 0.24051329055912007,
+      "meshHeadM": 0.19800000000000018
+    },
+    "sockTop": {
+      "referencePixelY": 887,
+      "referenceWorld": 0.4355637030247481
+    },
+    "jerseyHem": {
+      "referencePixelY": 582,
+      "referenceWorld": 0.8828597616865262
+    },
+    "shortsHem": {
+      "referencePixelY": 692,
+      "referenceWorld": 0.7215398716773603
+    },
+    "shoeToe": {
+      "referencePixelY": 1155,
+      "referenceWorld": 0.04252978918423467
+    },
+    "shoeHeel": {
+      "referencePixelY": 1150,
+      "referenceWorld": 0.049862511457378744
+    }
+  },
+  "measuredMeshWidths": {
+    "y1_276": 0.352,
+    "y1_25": 0.387,
+    "y1_23": 0.472,
+    "y0_95": 0.603,
+    "y0_72": 0.653,
+    "y0_05": 0.288,
+    "y0": 0.276,
+    "note": "At shoulder height widths include outward arm splay; torso-only profile half-widths are 0.172-0.183 per cage profiles."
+  },
+  "interpretation": {
+    "robustSignals": [
+      "chin solid pick: mesh head short by ~0.04m; head should extend toward chin y=1.36",
+      "knee matches (0.5148 vs 0.515)",
+      "waist matches (0.246 vs 0.24)"
+    ],
+    "uncertainSignals": [
+      "shoulder picks 144px=0.211m likely inside hair silhouette (narrower than waist cloth); do not drive torso narrowing from them alone"
+    ],
+    "nextChecks": [
+      "visual overlay review of ortho-front against reference front when image review available",
+      "side-view deltas after head growth"
+    ]
+  }
+}

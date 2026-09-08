@@ -1,0 +1,30 @@
+{
+  "iteration": 13,
+  "round": "R0 前置·工具层补全：不同大小/不同性质的多边形生成",
+  "problem": "用户指导：工具必须先支持生成不同大小、不同性质的多边形，然后才谈趾部算法；参考线框中脚踝鼓包由中心扇+径向环+逐环放大的多边形表达。",
+  "priority": "工具能力优先（L3 生成原语），算法阶段顺延；R5 前不处理袜材质/褶皱。",
+  "reference": "用户提供的局部线框：鼓包=多边形本身分割（中心小多边形、外围放大、环状过渡），不是贴球。",
+  "explanation": "先补生成原语，让多边形具备尺寸可变性与逐面属性注入能力；趾部/鼓包算法下一轮基于这些原语设计。",
+  "action": [
+    "profileLoft 新增 dense[{t0,t1,mult}]：纵向非均匀细分（同模型不同尺寸多边形）",
+    "profileLoft 全部特征位置改用路径时间 pT（bumps/rings/creases/micro/toes 不受 dense 影响）",
+    "profileLoft 新增 faceProps(i,j,t)：逐面属性 {color,mat,flat,...}，dataOnly 返回 props",
+    "新增 polyGrid：rows×cols 多边形面片，rowStops/colStops 非均匀（不同尺寸）、逐格 pos/color/props",
+    "新增 polyDomePatch：局域鼓包（中心顶点+径向环+扇形），环内小外大，可设 r/h/sx/sy/profileF/colorFn/faceProps"
+  ],
+  "tools": ["profileLoft(dense/faceProps)", "polyGrid", "polyDomePatch", "meshCheck", "browser-harness", "read_image"],
+  "views": {
+    "polyGrid_nonuniform": "delivery/r0-toes/tool-polygrid-close3.png",
+    "dense_loft": "delivery/r0-toes/tool-dense-loft2.png",
+    "dome_patches": "delivery/r0-toes/tool-domepatch.png"
+  },
+  "result": {
+    "polyGrid": {"faces":48,"deg":0,"skinnyPct":0,"props":48},
+    "dense": {"uniform":{"faces":1008,"verts":506},"dense":{"faces":1872,"verts":938},"deg":0,"skinnyPct":0},
+    "dome": {"d1":{"faces":112,"deg":0,"skinnyPct":0},"d2":{"faces":180,"deg":0,"skinnyPct":0},"d3":{"faces":60,"deg":0,"skinnyPct":0,"props":60}},
+    "visual": "PASS（工具证据）：polyGrid 非均匀列宽可见；dome 中心扇+径向环可见；逐面属性注入成功"
+  },
+  "decision": "accept（工具层）；算法阶段待下一轮",
+  "next": "基于 polyGrid/polyDomePatch/dense 设计趾部与踝部多边形表达算法：趾区用小尺寸多边形、趾间浅槽、趾根连续；完成后按十段方法论进入三视角+meshCheck 验收。",
+  "uncertainty": "这些原语尚为数据层能力；是否被 gms.part 消费并如实渲染由本页验收，用户签字前不宣称 R0 完成。"
+}

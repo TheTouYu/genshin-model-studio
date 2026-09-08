@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "kind": "genshin-model-studio.calibration-mesh.summary",
+  "sample": "a1-plane-unit",
+  "name": "平面_单位1x1",
+  "primitive": "10009003 平面",
+  "resourceIds": [
+    10009003
+  ],
+  "unitCount": 1,
+  "output": {
+    "gil": 1506,
+    "gia": 797,
+    "structure": 1
+  },
+  "observe": [
+    "朝向：零旋转平躺、法线应朝 +Y",
+    "双面性：背面/正面是否同色可见",
+    "尺寸：scale=[1,1,1] 是否呈现 1×1"
+  ],
+  "sampleFamily": "a-plane"
+}

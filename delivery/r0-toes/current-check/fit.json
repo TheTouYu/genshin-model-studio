@@ -1,0 +1,176 @@
+{
+  "mesh": "delivery/r0-toes/current-check/body-now.mesh.json",
+  "landmarks": "reference/ganyu-landmarks.json",
+  "pxPerMeter": 681.875,
+  "provisional": true,
+  "comparisons": [
+    {
+      "view": "front",
+      "name": "hair_crown",
+      "referencePixelY": 93,
+      "referenceWorldY": 1.6,
+      "uncertaintyM": 0.007332722273143905,
+      "meshWidthAtReferenceHeight": 0.086
+    },
+    {
+      "view": "front",
+      "name": "chin",
+      "referencePixelY": 257,
+      "referenceWorldY": 1.35948670944088,
+      "uncertaintyM": 0.008799266727772686,
+      "meshWorldY": 1.4,
+      "deltaM": -0.0405132905591199
+    },
+    {
+      "view": "front",
+      "name": "neck_base",
+      "referencePixelY": 290,
+      "referenceWorldY": 1.3110907424381302,
+      "uncertaintyM": 0.010265811182401467,
+      "meshWidthAtReferenceHeight": 0.344
+    },
+    {
+      "view": "front",
+      "name": "shoulder_left",
+      "referencePixelY": 314,
+      "referenceWorldY": 1.2758936755270396,
+      "uncertaintyM": 0.017598533455545372,
+      "meshWidthAtReferenceHeight": 0.3718961785378035
+    },
+    {
+      "view": "front",
+      "name": "shoulder_right",
+      "referencePixelY": 314,
+      "referenceWorldY": 1.2758936755270396,
+      "uncertaintyM": 0.017598533455545372,
+      "meshWidthAtReferenceHeight": 0.3718961785378035
+    },
+    {
+      "view": "front",
+      "name": "waist_left_cloth",
+      "referencePixelY": 502,
+      "referenceWorldY": 1.0001833180568287,
+      "uncertaintyM": 0.01466544454628781
+    },
+    {
+      "view": "front",
+      "name": "waist_right_cloth",
+      "referencePixelY": 502,
+      "referenceWorldY": 1.0001833180568287,
+      "uncertaintyM": 0.01466544454628781
+    },
+    {
+      "view": "front",
+      "name": "jersey_hem",
+      "referencePixelY": 582,
+      "referenceWorldY": 0.8828597616865262,
+      "uncertaintyM": 0.007332722273143905
+    },
+    {
+      "view": "front",
+      "name": "shorts_hem",
+      "referencePixelY": 692,
+      "referenceWorldY": 0.7215398716773603,
+      "uncertaintyM": 0.011732355637030248,
+      "meshWidthAtReferenceHeight": 0.6530142168338315
+    },
+    {
+      "view": "front",
+      "name": "knee_left",
+      "referencePixelY": 833,
+      "referenceWorldY": 0.5147571035747023,
+      "uncertaintyM": 0.020531622364802934
+    },
+    {
+      "view": "front",
+      "name": "knee_right",
+      "referencePixelY": 833,
+      "referenceWorldY": 0.5147571035747023,
+      "uncertaintyM": 0.020531622364802934
+    },
+    {
+      "view": "front",
+      "name": "sock_top",
+      "referencePixelY": 887,
+      "referenceWorldY": 0.4355637030247481,
+      "uncertaintyM": 0.007332722273143905
+    },
+    {
+      "view": "front",
+      "name": "ankle_left",
+      "referencePixelY": 1100,
+      "referenceWorldY": 0.12318973418881773,
+      "uncertaintyM": 0.011732355637030248
+    },
+    {
+      "view": "front",
+      "name": "shoe_sole",
+      "referencePixelY": 1184,
+      "referenceWorldY": 0,
+      "uncertaintyM": 0.007332722273143905,
+      "meshWidthAtReferenceHeight": 0.27605387601556275
+    },
+    {
+      "view": "side",
+      "name": "nose_tip",
+      "referencePixelY": 220,
+      "referenceWorldY": 1.413748854262145,
+      "uncertaintyM": 0.005866177818515124
+    },
+    {
+      "view": "side",
+      "name": "chin",
+      "referencePixelY": 253,
+      "referenceWorldY": 1.3653528872593952,
+      "uncertaintyM": 0.007332722273143905,
+      "meshWorldY": 1.4,
+      "deltaM": -0.034647112740604724
+    },
+    {
+      "view": "side",
+      "name": "chest_cloth_front",
+      "referencePixelY": 375,
+      "referenceWorldY": 1.1864344637946838,
+      "uncertaintyM": 0.010265811182401467,
+      "meshWidthAtReferenceHeight": 0.4416252863868875
+    },
+    {
+      "view": "side",
+      "name": "waist_cloth_front",
+      "referencePixelY": 482,
+      "referenceWorldY": 1.0295142071494043,
+      "uncertaintyM": 0.013198900091659029,
+      "meshWidthAtReferenceHeight": 0.24
+    },
+    {
+      "view": "side",
+      "name": "jersey_hem",
+      "referencePixelY": 580,
+      "referenceWorldY": 0.8857928505957837,
+      "uncertaintyM": 0.007332722273143905
+    },
+    {
+      "view": "side",
+      "name": "knee_front",
+      "referencePixelY": 830,
+      "referenceWorldY": 0.5191567369385885,
+      "uncertaintyM": 0.017598533455545372
+    },
+    {
+      "view": "side",
+      "name": "shoe_toe",
+      "referencePixelY": 1155,
+      "referenceWorldY": 0.04252978918423467,
+      "uncertaintyM": 0.007332722273143905,
+      "meshWidthAtReferenceHeight": 0.3019674925721233
+    },
+    {
+      "view": "side",
+      "name": "shoe_heel",
+      "referencePixelY": 1150,
+      "referenceWorldY": 0.049862511457378744,
+      "uncertaintyM": 0.007332722273143905,
+      "meshWidthAtReferenceHeight": 0.2879724393546263
+    }
+  ]
+}

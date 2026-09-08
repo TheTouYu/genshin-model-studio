@@ -1,0 +1,285 @@
+{
+  "coverage": [
+    {
+      "joint": "spine",
+      "axes": [
+        "x",
+        "y",
+        "z"
+      ],
+      "clips": [
+        "spine-sweep",
+        "bow",
+        "torso-turn",
+        "side-bend",
+        "squat-study",
+        "walk-in-place-study"
+      ]
+    },
+    {
+      "joint": "neck",
+      "axes": [
+        "x",
+        "y",
+        "z"
+      ],
+      "clips": [
+        "neck-sweep",
+        "head-look",
+        "head-nod",
+        "bow",
+        "torso-turn",
+        "side-bend",
+        "walk-in-place-study"
+      ]
+    },
+    {
+      "joint": "shoulderL",
+      "axes": [
+        "z",
+        "x"
+      ],
+      "clips": [
+        "shoulderL-sweep",
+        "arm-raise",
+        "walk-in-place-study"
+      ]
+    },
+    {
+      "joint": "elbowL",
+      "axes": [
+        "x"
+      ],
+      "clips": [
+        "elbowL-sweep",
+        "elbow-curl",
+        "walk-in-place-study"
+      ]
+    },
+    {
+      "joint": "wristL",
+      "axes": [
+        "x"
+      ],
+      "clips": [
+        "wristL-sweep",
+        "elbow-curl"
+      ]
+    },
+    {
+      "joint": "hipL",
+      "axes": [
+        "x"
+      ],
+      "clips": [
+        "hipL-sweep",
+        "squat-study",
+        "walk-in-place-study"
+      ]
+    },
+    {
+      "joint": "kneeL",
+      "axes": [
+        "x"
+      ],
+      "clips": [
+        "kneeL-sweep",
+        "squat-study",
+        "walk-in-place-study"
+      ]
+    },
+    {
+      "joint": "ankleL",
+      "axes": [
+        "x"
+      ],
+      "clips": [
+        "ankleL-sweep",
+        "squat-study",
+        "walk-in-place-study"
+      ]
+    },
+    {
+      "joint": "shoulderR",
+      "axes": [
+        "z",
+        "x"
+      ],
+      "clips": [
+        "shoulderR-sweep",
+        "arm-raise",
+        "walk-in-place-study"
+      ]
+    },
+    {
+      "joint": "elbowR",
+      "axes": [
+        "x"
+      ],
+      "clips": [
+        "elbowR-sweep",
+        "elbow-curl",
+        "walk-in-place-study"
+      ]
+    },
+    {
+      "joint": "wristR",
+      "axes": [
+        "x"
+      ],
+      "clips": [
+        "wristR-sweep",
+        "elbow-curl"
+      ]
+    },
+    {
+      "joint": "hipR",
+      "axes": [
+        "x"
+      ],
+      "clips": [
+        "hipR-sweep",
+        "squat-study",
+        "walk-in-place-study"
+      ]
+    },
+    {
+      "joint": "kneeR",
+      "axes": [
+        "x"
+      ],
+      "clips": [
+        "kneeR-sweep",
+        "squat-study",
+        "walk-in-place-study"
+      ]
+    },
+    {
+      "joint": "ankleR",
+      "axes": [
+        "x"
+      ],
+      "clips": [
+        "ankleR-sweep",
+        "squat-study",
+        "walk-in-place-study"
+      ]
+    }
+  ],
+  "visualAcceptance": false,
+  "invariantFailures": [],
+  "resetExact": true,
+  "samples": 759,
+  "passed": 747,
+  "failed": [
+    {
+      "clip": "shoulderL-sweep",
+      "time": 3,
+      "moved": 16,
+      "ok": false,
+      "failures": [
+        "存在 7 处局部自交（面 #23 与 #94）"
+      ]
+    },
+    {
+      "clip": "arm-raise",
+      "time": 2.375,
+      "moved": 32,
+      "ok": false,
+      "failures": [
+        "存在 14 处局部自交（面 #23 与 #94）"
+      ]
+    },
+    {
+      "clip": "arm-raise",
+      "time": 2.5,
+      "moved": 32,
+      "ok": false,
+      "failures": [
+        "存在 28 处局部自交（面 #110 与 #134）"
+      ]
+    },
+    {
+      "clip": "arm-raise",
+      "time": 2.625,
+      "moved": 32,
+      "ok": false,
+      "failures": [
+        "存在 46 处局部自交（面 #102 与 #126）"
+      ]
+    },
+    {
+      "clip": "arm-raise",
+      "time": 2.75,
+      "moved": 32,
+      "ok": false,
+      "failures": [
+        "存在 52 处局部自交（面 #10 与 #102）"
+      ]
+    },
+    {
+      "clip": "arm-raise",
+      "time": 2.875,
+      "moved": 32,
+      "ok": false,
+      "failures": [
+        "存在 48 处局部自交（面 #10 与 #102）"
+      ]
+    },
+    {
+      "clip": "arm-raise",
+      "time": 3,
+      "moved": 32,
+      "ok": false,
+      "failures": [
+        "存在 44 处局部自交（面 #10 与 #104）"
+      ]
+    },
+    {
+      "clip": "arm-raise",
+      "time": 3.125,
+      "moved": 32,
+      "ok": false,
+      "failures": [
+        "存在 48 处局部自交（面 #10 与 #102）"
+      ]
+    },
+    {
+      "clip": "arm-raise",
+      "time": 3.25,
+      "moved": 32,
+      "ok": false,
+      "failures": [
+        "存在 52 处局部自交（面 #10 与 #102）"
+      ]
+    },
+    {
+      "clip": "arm-raise",
+      "time": 3.375,
+      "moved": 32,
+      "ok": false,
+      "failures": [
+        "存在 46 处局部自交（面 #102 与 #126）"
+      ]
+    },
+    {
+      "clip": "arm-raise",
+      "time": 3.5,
+      "moved": 32,
+      "ok": false,
+      "failures": [
+        "存在 28 处局部自交（面 #110 与 #134）"
+      ]
+    },
+    {
+      "clip": "arm-raise",
+      "time": 3.625,
+      "moved": 32,
+      "ok": false,
+      "failures": [
+        "存在 14 处局部自交（面 #23 与 #94）"
+      ]
+    }
+  ],
+  "deletionAllowed": false
+}

@@ -1,0 +1,223 @@
+{
+  "checkpoint": "blockout-minimal",
+  "config": {
+    "sides": 8,
+    "armK": 3,
+    "legK": 3
+  },
+  "fingerprints": {
+    "sources": {
+      "scripts/parts/lib/ganyu-lib.js": "c035914396e2262365b6115a8510bcc7f6ef0f6ea70ed7cc36b5fa3a85d1a082",
+      "scripts/parts/lib/ganyu-cage-branch.js": "7980db090b172caf30ec2d29e91460c171307dfe3e77d883fc288cf51d8211b1",
+      "scripts/parts/lib/ganyu-seam-check.js": "cf08969b60aaf425c47d376a8a86209a3dbe451236255561751594f0d8d328c6",
+      "scripts/parts/lib/ganyu-blockout-minimal.js": "70380d9566ed6ff12b9d2695a0a0bdc06cc2080dbe1063d78f8c64372cc08a0a"
+    },
+    "mesh": "dad00e76455849b3008cf7ad1660b29436d360707d7c9f8ccfee60badc19e082",
+    "geometryNanometres": "77b59f9564ce3363410ce1358c1388fa96738f9beb7006eba7391f666cee06aa",
+    "verifier": "a7a01d68bc914a466e1219bb35b6d918275b8d16efdce6ba97f000dce96583a4"
+  },
+  "stage": "blockout-minimal",
+  "topology": "closed-manifold-shared-vertex (profileLoft trunk + extrudePatch limbs, shared root boundary)",
+  "componentsExpected": 1,
+  "metrics": {
+    "vertices": 126,
+    "tris": 244,
+    "rings": 6,
+    "sides": 8,
+    "armStations": 3,
+    "legStations": 3,
+    "height": 1.585,
+    "halfWidth": 0.317,
+    "front": 0.13,
+    "back": -0.12,
+    "limbs": 4
+  },
+  "scale": {
+    "height": 1.585,
+    "unit": "m",
+    "front": "+Z"
+  },
+  "referenceFit": {
+    "status": "not-fitted",
+    "reason": "low-poly visual iteration cage; no reference landmark fitting performed"
+  },
+  "seam": {
+    "components": 1,
+    "openEdges": 0,
+    "nonManifoldEdges": 0,
+    "seamEdges": 0,
+    "onePiece": true,
+    "watertight": true
+  },
+  "gate": {
+    "ok": false,
+    "checkedFaces": 244,
+    "watertight": {
+      "pass": true,
+      "openEdges": 0,
+      "nonManifold": 0,
+      "samplePositions": []
+    },
+    "seams": {
+      "pass": true,
+      "seamCount": 0,
+      "samplePositions": []
+    },
+    "normals": {
+      "pass": true,
+      "invertedCount": 0,
+      "sampleFaces": []
+    },
+    "degenerate": {
+      "count": 0,
+      "pass": true
+    },
+    "skinny": {
+      "count": 20,
+      "pct": 8.2,
+      "pass": false
+    },
+    "areaRatio": {
+      "value": 30.9,
+      "pass": false
+    },
+    "budget": {
+      "requested": 300,
+      "used": 244,
+      "exceeded": false,
+      "pass": true
+    },
+    "selfIntersections": {
+      "pass": false,
+      "intersectingPairs": 56,
+      "samplePairs": [
+        {
+          "faceA": 132,
+          "faceB": 134,
+          "positionA": [
+            -0.176552,
+            1.179849,
+            0.00216
+          ],
+          "positionB": [
+            -0.157614,
+            1.194107,
+            0.016711
+          ]
+        },
+        {
+          "faceA": 132,
+          "faceB": 137,
+          "positionA": [
+            -0.176552,
+            1.179849,
+            0.00216
+          ],
+          "positionB": [
+            -0.179659,
+            1.148598,
+            0.004062
+          ]
+        },
+        {
+          "faceA": 132,
+          "faceB": 138,
+          "positionA": [
+            -0.176552,
+            1.179849,
+            0.00216
+          ],
+          "positionB": [
+            -0.172242,
+            1.216817,
+            0.004435
+          ]
+        },
+        {
+          "faceA": 132,
+          "faceB": 141,
+          "positionA": [
+            -0.176552,
+            1.179849,
+            0.00216
+          ],
+          "positionB": [
+            -0.200248,
+            1.157133,
+            0.012956
+          ]
+        },
+        {
+          "faceA": 133,
+          "faceB": 138,
+          "positionA": [
+            -0.219219,
+            1.140853,
+            -0.015136
+          ],
+          "positionB": [
+            -0.172242,
+            1.216817,
+            0.004435
+          ]
+        },
+        {
+          "faceA": 133,
+          "faceB": 141,
+          "positionA": [
+            -0.219219,
+            1.140853,
+            -0.015136
+          ],
+          "positionB": [
+            -0.200248,
+            1.157133,
+            0.012956
+          ]
+        },
+        {
+          "faceA": 135,
+          "faceB": 137,
+          "positionA": [
+            -0.192312,
+            1.131201,
+            -0.006595
+          ],
+          "positionB": [
+            -0.179659,
+            1.148598,
+            0.004062
+          ]
+        },
+        {
+          "faceA": 136,
+          "faceB": 138,
+          "positionA": [
+            -0.165296,
+            1.212591,
+            0.014785
+          ],
+          "positionB": [
+            -0.172242,
+            1.216817,
+            0.004435
+          ]
+        }
+      ]
+    },
+    "failures": [
+      "存在 56 处局部自交（面 #132 与 #134）",
+      "瘦长三角 20 个，占比 8.2%（阈值 ≤ 5%）",
+      "面积比率 p95/p5 = 30.9（阈值 ≤ 20）"
+    ]
+  },
+  "limitations": [
+    "<=300-tri clean (zero self-intersection) human is not achievable with the shared-vertex branch tools at this resolution: SIDES must be >=16 to make shoulder-root sockets planar, which raises total faces well above 300 (see tool sweep).",
+    "This draft targets <=300 tris and therefore reports nonzero shoulder self-intersections (see gate.selfIntersections) — it is a visual-iteration cage, not a final export gate pass.",
+    "wrist/ankle are compressed into a single band (no dedicated ring); no fingers (per spec); chest/waist/front-back sections preserved as control sections.",
+    "referenceFit: not fitted; proportions are a soft manual skeleton, no reference landmark overlay."
+  ],
+  "visualAcceptance": "pending-browser-capture",
+  "gameAcceptance": "pending",
+  "exportAllowed": false
+}

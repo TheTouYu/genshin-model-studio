@@ -1,0 +1,240 @@
+{
+  "generatedAt": "2026-09-07T16:18:03.004Z",
+  "meshFingerprint": "114be35ccb88459c3379a9fcc621f2a3dafa6a72f01dacd192d0bf76a9ec798e",
+  "metrics": {
+    "vertices": 66,
+    "tris": 128,
+    "rings": 8,
+    "sides": 8
+  },
+  "seam": {
+    "openEdges": 0,
+    "nonManifoldEdges": 0,
+    "seamEdges": 0,
+    "components": 1,
+    "onePiece": true,
+    "watertight": true,
+    "seams": []
+  },
+  "panelize": [
+    {
+      "faces": 128,
+      "quads": 64,
+      "tris": 0,
+      "degenerate": 0,
+      "budget": {
+        "requested": null,
+        "used": 64,
+        "exceeded": false
+      }
+    },
+    {
+      "faces": 24,
+      "quads": 12,
+      "tris": 0,
+      "degenerate": 0,
+      "budget": {
+        "requested": null,
+        "used": 12,
+        "exceeded": false
+      }
+    },
+    {
+      "faces": 24,
+      "quads": 12,
+      "tris": 0,
+      "degenerate": 0,
+      "budget": {
+        "requested": null,
+        "used": 12,
+        "exceeded": false
+      }
+    },
+    {
+      "faces": 24,
+      "quads": 12,
+      "tris": 0,
+      "degenerate": 0,
+      "budget": {
+        "requested": null,
+        "used": 12,
+        "exceeded": false
+      }
+    },
+    {
+      "faces": 24,
+      "quads": 12,
+      "tris": 0,
+      "degenerate": 0,
+      "budget": {
+        "requested": null,
+        "used": 12,
+        "exceeded": false
+      }
+    },
+    {
+      "faces": 24,
+      "quads": 12,
+      "tris": 0,
+      "degenerate": 0,
+      "budget": {
+        "requested": null,
+        "used": 12,
+        "exceeded": false
+      }
+    },
+    {
+      "faces": 24,
+      "quads": 12,
+      "tris": 0,
+      "degenerate": 0,
+      "budget": {
+        "requested": null,
+        "used": 12,
+        "exceeded": false
+      }
+    },
+    {
+      "faces": 24,
+      "quads": 12,
+      "tris": 0,
+      "degenerate": 0,
+      "budget": {
+        "requested": null,
+        "used": 12,
+        "exceeded": false
+      }
+    },
+    {
+      "faces": 18,
+      "quads": 8,
+      "tris": 2,
+      "degenerate": 0,
+      "budget": {
+        "requested": null,
+        "used": 10,
+        "exceeded": false
+      }
+    },
+    {
+      "faces": 18,
+      "quads": 8,
+      "tris": 2,
+      "degenerate": 0,
+      "budget": {
+        "requested": null,
+        "used": 10,
+        "exceeded": false
+      }
+    },
+    {
+      "faces": 32,
+      "quads": 16,
+      "tris": 0,
+      "degenerate": 0,
+      "budget": {
+        "requested": null,
+        "used": 16,
+        "exceeded": false
+      }
+    },
+    {
+      "faces": 32,
+      "quads": 16,
+      "tris": 0,
+      "degenerate": 0,
+      "budget": {
+        "requested": null,
+        "used": 16,
+        "exceeded": false
+      }
+    }
+  ],
+  "characterQuads": 196,
+  "characterUnits": 200,
+  "gate": {
+    "ok": true,
+    "failures": []
+  },
+  "anatomy": {
+    "stats": {
+      "vertices": 142,
+      "faces": 264,
+      "controlPoints": 30,
+      "edges": 37,
+      "targetFaces": 300,
+      "withinBudget": true
+    },
+    "report": {
+      "measurements": {
+        "shoulderWidth": 0.41,
+        "upperArmWidth": 0.38,
+        "shoulderDepth": 0.07,
+        "axillaDrop": 0.09000000000000008
+      },
+      "checks": {
+        "shoulderWiderThanArm": true,
+        "shoulderHasDepth": true,
+        "axillaHasDrop": true,
+        "shoulderSymmetric": true,
+        "acromionToArmConnected": true
+      },
+      "pass": true,
+      "referenceFit": false,
+      "notes": [
+        "Structural cage checks are not final mesh gates."
+      ]
+    }
+  },
+  "sceneGate": {
+    "ok": true,
+    "checkedFaces": 1696,
+    "checks": {
+      "watertight": {
+        "pass": true,
+        "openEdges": 0,
+        "nonManifold": 0,
+        "samplePositions": []
+      },
+      "seams": {
+        "pass": true,
+        "seamCount": 0,
+        "samplePositions": []
+      },
+      "normals": {
+        "pass": true,
+        "invertedCount": 0,
+        "sampleFaces": []
+      },
+      "degenerate": {
+        "count": 0,
+        "pass": true
+      },
+      "skinny": {
+        "count": 0,
+        "pct": 0,
+        "pass": true
+      },
+      "areaRatio": {
+        "value": 12.8,
+        "pass": true
+      },
+      "budget": {
+        "requested": null,
+        "used": 848,
+        "exceeded": false,
+        "pass": true
+      },
+      "selfIntersections": {
+        "pass": true,
+        "intersectingPairs": 0,
+        "samplePairs": []
+      }
+    },
+    "failures": []
+  },
+  "sceneMeshCount": 35,
+  "sceneUnits": 848,
+  "visualAcceptance": "pending",
+  "gameAcceptance": "pending"
+}

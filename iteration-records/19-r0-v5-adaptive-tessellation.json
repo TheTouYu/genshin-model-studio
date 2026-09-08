@@ -1,0 +1,23 @@
+{
+  "iteration": 19,
+  "round": "R0 前置·算法级优化：自适应细分（光滑曲面 + 不规则多边形）",
+  "problem": "用户指正：扰动应在算法本身——曲面须光滑连续，但用不同大小/形状的多边形表达；不是调整单元旋转（会造成不连续）。v4 交用户先导入游戏实测，本项为后台优化。",
+  "priority": "算法正确性：多边形差异来自“细分”，不来自扰动顶点/旋转。",
+  "explanation": "新增 adaptiveAngularStops：按曲率（凸包中心 σ 扇区）加密列、平坦段放宽，列宽叠加平滑低频波形（相邻环共享同一停靠点 → 曲面严格连续）；顶点全部落在光滑曲面参数上，只有细分不同。",
+  "action": [
+    "profileLoft 支持 angularStops（非均匀角向采样，全部环共享）",
+    "新增 adaptiveAngularStops（细区 nFine=18 + 粗区 nCoarse=26 + wave 平滑列宽差异）",
+    "v5 重建：44 列 / u 向 dense / reliefYTube；无 jitterMesh、无旋转扰动",
+    "页面预览 + meshCheck + 导出器同步（v5 GIA）"
+  ],
+  "stats": {
+    "mesh": {"faces": 2728, "deg": 0, "skinnyPct": 0, "areaRatio": 6.8},
+    "units": {"quads": 1320, "caps": 2, "total": 1322},
+    "nonuniform": {"angularStops": 44, "uniqueW": 12, "area_mm2": {"min": 3.15, "avg": 7.08, "max": 12.6}}
+  },
+  "views": {"bump": "delivery/r0-toes/units-v5-preview-bump.png", "iso": "delivery/r0-toes/units-v5-preview-iso.png", "front": "delivery/r0-toes/units-v5-preview-front.png"},
+  "gia_candidate": "delivery/r0-toes/ankle-bump-min-v5.gia（269399 字节，1322 单元）",
+  "design_note": "多边形差异=自适应采样（曲率驱动+平滑波形），曲面连续；与 v3/v4 的顶点/旋转扰动完全不同。后续可混入基础三角形/圆盘（端盖换 disc 元件）深化单元组合。",
+  "decision": "待用户 v4 游戏实测反馈；v5 供下一轮网页核验",
+  "next": "游戏实测后按反馈调整；随后进入趾部算法（同族自适应细分表达五趾）。"
+}

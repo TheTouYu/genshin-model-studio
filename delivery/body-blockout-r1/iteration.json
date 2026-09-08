@@ -1,0 +1,21 @@
+{
+  "stage": "low-point-control-edit",
+  "baseline": "delivery/body-blockout-low/mesh.json",
+  "edits": "delivery/body-blockout-low/head-control-edits.json",
+  "vertices": 113,
+  "triangles": 222,
+  "changedVertices": 13,
+  "faceIndicesUnchanged": true,
+  "gatePassed": true,
+  "browserVerifiedCrown": [
+    -0.0264,
+    1.6,
+    -0.039
+  ],
+  "screenshot": "quarter.png",
+  "visualReview": "head crown less boxy; chest/palm/feet remain blockout",
+  "referenceFit": false,
+  "structuralApproval": "preliminary-user-accepted",
+  "approvalScope": "113-vertex static blockout only; simplification and motion remain unverified",
+  "exportAllowed": false
+}

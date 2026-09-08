@@ -1,0 +1,76 @@
+[
+  {
+    "id": "contour-foot",
+    "title": "角色-脚（顶视+侧视轮廓放样，64 点 cap both）",
+    "route": "mesh",
+    "status": "pass",
+    "metrics": {
+      "units": 576,
+      "gate": "passed",
+      "qa": "ok",
+      "bytes": 688089,
+      "sha256": "13b2581539d295d2470528691e0c47e03332a824807e96bc5cee6b18f0eaf49f"
+    },
+    "assertions": {
+      "unitsRange": [
+        300,
+        1000
+      ],
+      "gate": "pass",
+      "qa": "ok"
+    },
+    "assertFailures": []
+  },
+  {
+    "id": "basic-cylinder",
+    "title": "基础圆柱（24 边圆环放样，cap both）",
+    "route": "mesh",
+    "status": "pass",
+    "metrics": {
+      "units": 48,
+      "gate": "passed",
+      "qa": "ok",
+      "bytes": 50399,
+      "sha256": "3ded0fce06dceb48f29e3e980d870c829dec1b15fe834128f0b287df352ac327"
+    },
+    "assertions": {
+      "unitsRange": [
+        1,
+        200
+      ],
+      "gate": "pass",
+      "qa": "ok"
+    },
+    "assertFailures": []
+  },
+  {
+    "id": "cup",
+    "title": "水杯（mesh 等价=圆柱+盖；或经典画线 stroke 手动）",
+    "route": "mesh",
+    "status": "manual",
+    "metrics": null,
+    "assertions": {},
+    "assertFailures": [],
+    "reason": "手动标定（未自动运行）"
+  },
+  {
+    "id": "fan",
+    "title": "电风扇（mesh 近似=环+叶片多 mesh 拼装；或标手动）",
+    "route": "mesh",
+    "status": "pending",
+    "metrics": null,
+    "assertions": {},
+    "assertFailures": [],
+    "reason": "待实现（依赖浏览器/经典 stroke 链路）"
+  },
+  {
+    "id": "football",
+    "title": "足球（球体拼接，标手动）",
+    "route": "mesh",
+    "status": "pending",
+    "metrics": null,
+    "assertions": {},
+    "assertFailures": [],
+    "reason": "待实现（依赖浏览器/经典 stroke 链路）"
+  }
+]

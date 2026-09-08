@@ -1,0 +1,25 @@
+{
+  "stage": "preview-integration-only",
+  "observedBrowserMesh": {
+    "id": "fresh-body-r1",
+    "vertices": 670,
+    "triangles": 1324
+  },
+  "previousCoarseImportVerified": false,
+  "mainDefaultWireframe": true,
+  "standaloneDefaultWireframe": true,
+  "standaloneMouseToggleVerified": true,
+  "cameraPreserved": true,
+  "repeatedToggleCount": 20,
+  "pixelCheck": {"wireBrightPixels":65694,"solidBrightPixels":123817,"webglError":0,"storageUnchanged":true},
+  "mobile": {"width":390,"height":844,"horizontalOverflow":false,"controlsCoverHead":false},
+  "regressionTests": {"passed":225,"failed":0},
+  "structuralApproval": false,
+  "issues": [
+    "shoulder-arm transition",
+    "chest volume and topology",
+    "palm and fingers",
+    "foot structure"
+  ],
+  "nextStage": "complete shared-vertex low-point body before details or export"
+}

@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "kind": "genshin-model-studio.calibration-mesh.summary",
+  "sample": "d2-cylinder-panelized",
+  "name": "网格_4段开口圆柱_面板化",
+  "primitive": "10009003 平面(面板化)",
+  "resourceIds": [
+    10009003,
+    10009003,
+    10009003,
+    10009003
+  ],
+  "unitCount": 4,
+  "output": {
+    "gil": 2574,
+    "gia": 1460,
+    "structure": 4
+  },
+  "observe": [
+    "单元数：4 个四边 → 4 个平面元件（三角配对；法线一致）",
+    "朝向：各面法线沿径向外指，rotation 由显式局部基 → YXZ 欧拉计算",
+    "滚转：用显式局部基消除滚转歧义（widthDir×normal 补全深度轴）"
+  ],
+  "sampleFamily": "d-panelized",
+  "panelizeStats": {
+    "faces": 8,
+    "quads": 4,
+    "tris": 0,
+    "degenerate": 0,
+    "budget": {
+      "requested": null,
+      "used": 4,
+      "exceeded": false
+    }
+  },
+  "sourceMesh": {
+    "vertices": 16,
+    "triangles": 8,
+    "quads": 4
+  }
+}

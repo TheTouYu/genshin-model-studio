@@ -1,0 +1,25 @@
+{
+  "iteration": 28,
+  "status": "evidence_contract_increment",
+  "outputs": [
+    "scripts/build-body-cage.mjs",
+    "tests/body-checkpoint.test.ts",
+    "docs/body-checkpoint-build.md"
+  ],
+  "browserComparison": {
+    "vertices": 534,
+    "triangles": 1060,
+    "facesEqual": true,
+    "colorsEqual": true,
+    "rawVertexDifference": "Floating point final bits in branch trigonometric calculations",
+    "normalizedPrecisionMetres": 1e-9,
+    "normalizedSha256": "6d504bd98dd620955832abb7a1c7c76ab6afcc19e225c706e27871d9385c4886",
+    "browserAndNodeMatch": true
+  },
+  "acceptance": {
+    "geometry": "R2 still fails 67 self-intersections",
+    "visual": "not accepted",
+    "game": "not exported"
+  },
+  "note": "Fingerprints identify evidence provenance only. They do not assert visual quality or waive topology gates."
+}

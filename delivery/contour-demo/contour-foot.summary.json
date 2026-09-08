@@ -1,0 +1,86 @@
+{
+  "schemaVersion": 1,
+  "kind": "genshin-model-studio.contour-model.summary",
+  "tool": {
+    "name": "genshin-model-studio",
+    "version": "0.1.0"
+  },
+  "input": {
+    "file": "/home/h/genshin-model-studio/examples/contour-foot.json",
+    "sha256": "2c75111626507e662ae1054fa98563a5f3460796ede3fb733ebdac7ee4a90192"
+  },
+  "model": {
+    "name": "contour-foot",
+    "mesh": {
+      "faces": 1152,
+      "quads": 576,
+      "tris": 0,
+      "degenerate": 0,
+      "units": 576
+    }
+  },
+  "output": {
+    "mesh": "/home/h/genshin-model-studio/delivery/contour-demo/contour-foot.mesh.json",
+    "meshSha256": "353093c25eb3467a25de55f6a0b1a73a6915bafe60af87f728511c2df707d9d8",
+    "structure": "/home/h/genshin-model-studio/delivery/contour-demo/contour-foot.structure.json",
+    "gil": "/home/h/genshin-model-studio/delivery/contour-demo/contour-foot.gil",
+    "gia": "/home/h/genshin-model-studio/delivery/contour-demo/contour-foot.gia",
+    "views": [
+      "/home/h/genshin-model-studio/delivery/contour-demo/view-iso.svg",
+      "/home/h/genshin-model-studio/delivery/contour-demo/view-front.svg",
+      "/home/h/genshin-model-studio/delivery/contour-demo/view-side.svg",
+      "/home/h/genshin-model-studio/delivery/contour-demo/view-top.svg",
+      "/home/h/genshin-model-studio/delivery/contour-demo/view-back.svg"
+    ],
+    "summary": "/home/h/genshin-model-studio/delivery/contour-demo/contour-foot.summary.json"
+  },
+  "budget": {
+    "requested": null,
+    "used": 576,
+    "exceeded": false
+  },
+  "gate": {
+    "invoked": true,
+    "state": "passed",
+    "ok": true,
+    "checkedFaces": 1152,
+    "failures": [],
+    "checks": {
+      "watertight": {
+        "pass": true,
+        "openEdges": 0,
+        "nonManifold": 0,
+        "samplePositions": []
+      },
+      "seams": {
+        "pass": true,
+        "seamCount": 0,
+        "samplePositions": []
+      },
+      "normals": {
+        "pass": true,
+        "invertedCount": 0,
+        "sampleFaces": []
+      },
+      "degenerate": {
+        "count": 0,
+        "pass": true
+      },
+      "skinny": {
+        "count": 32,
+        "pct": 2.78,
+        "pass": true
+      },
+      "areaRatio": {
+        "value": 10.3,
+        "pass": true
+      },
+      "budget": {
+        "requested": null,
+        "used": 576,
+        "exceeded": false,
+        "pass": true
+      }
+    }
+  }
+}

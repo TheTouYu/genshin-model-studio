@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "kind": "genshin-model-studio.calibration-mesh.summary",
+  "sample": "d1-grid-panelized",
+  "name": "网格_3x3方格面_面板化",
+  "primitive": "10009003 平面(面板化)",
+  "resourceIds": [
+    10009003,
+    10009003,
+    10009003,
+    10009003,
+    10009003,
+    10009003,
+    10009003,
+    10009003,
+    10009003
+  ],
+  "unitCount": 9,
+  "output": {
+    "gil": 3992,
+    "gia": 2333,
+    "structure": 9
+  },
+  "observe": [
+    "单元数：9 个四边 → 9 个平面元件（三角配对；法线一致）",
+    "朝向：均为水平面（法线 +Y）",
+    "双面性：平面是否双面可见；相邻格是否无缝/重叠"
+  ],
+  "sampleFamily": "d-panelized",
+  "panelizeStats": {
+    "faces": 18,
+    "quads": 9,
+    "tris": 0,
+    "degenerate": 0,
+    "budget": {
+      "requested": null,
+      "used": 9,
+      "exceeded": false
+    }
+  },
+  "sourceMesh": {
+    "vertices": 16,
+    "triangles": 18,
+    "quads": 9
+  }
+}

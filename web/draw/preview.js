@@ -45,7 +45,7 @@
     cylinder: 0x6fc3c9, // 圆柱 · 青（已闭合）
     cylinderOpen: 0x6fc3c9, // 开口薄壁圆柱 · 青（五期旋转成型）
     cone: 0xe87a7a, // 圆锥 · 红（未校准）
-    wire: 0x5b6672, // 线框类（未校准）
+    wire: 0xb9d5dc, // 线框类（未校准）
     placeholder: 0xff3d9e, // 未知资源 ID 占位 · 提示色
   }
 
@@ -115,7 +115,7 @@
    * 单个 item → 场景对象（Mesh 或 LineSegments）。
    * 几何体每 item 独立 new 一份：scale 要原地作用于几何（geometry.scale）。
    */
-  function buildItemMesh(item, mats, warnedIds) {
+  function buildItemMesh(item, mats, warnedIds, wireframeMode) {
     var id = item.resourceId
     var geo = null
     var kind = null
@@ -212,6 +212,15 @@
         kind = 'placeholder'
     }
 
+    if (kind === 'mesh' && wireframeMode) {
+      var sourceGeometry = geo
+      geo = new THREE.WireframeGeometry(sourceGeometry)
+      sourceGeometry.dispose()
+      kind = 'wire'
+      isLine = true
+      customVertexColors = false
+    }
+
     if (uncalibrated && !warnedIds[id]) {
       // 未校准元件只提醒一次（抑制刷屏）：预览形状为近似，不代表游戏内最终视觉
       console.warn(
@@ -298,6 +307,7 @@
     scene.background = new THREE.Color(0x141a23)
 
     var camera = new THREE.PerspectiveCamera(50, 1, 0.1, 500)
+    var projection = "perspective", viewportAspect = 1
 
     // ---- 光照（PRD §5.3）：环境光 + 方向光（加一盏弱补光避免背光面全黑）----
     var ambientLight = new THREE.AmbientLight(0xffffff, 0.65)
@@ -342,7 +352,16 @@
       renderer.render(scene, camera)
     }
 
+    function updateProjection() {
+      if (projection === "orthographic") {
+        var half = orbit.radius * Math.tan(25 * Math.PI / 180)
+        camera.left = -half * viewportAspect; camera.right = half * viewportAspect
+        camera.top = half; camera.bottom = -half
+      } else camera.aspect = viewportAspect
+      camera.updateProjectionMatrix()
+    }
     function applyCamera() {
+      updateProjection()
       var phi = clamp(orbit.pitch, 0.05, Math.PI - 0.05) // 防止越过天顶/地底导致翻转
       var offset = new THREE.Vector3().setFromSpherical(new THREE.Spherical(orbit.radius, phi, orbit.yaw))
       camera.position.copy(orbit.target).add(offset)
@@ -404,8 +423,8 @@
       var h = canvasEl.clientHeight
       if (!w || !h) return
       renderer.setSize(w, h, false)
-      camera.aspect = w / h
-      camera.updateProjectionMatrix()
+      viewportAspect = w / h
+      updateProjection()
     }
 
     var ro = null
@@ -440,6 +459,8 @@
     // ---- 内容管理 ----
     var mats = new Map() // kind → 共享 MeshStandardMaterial
     var lineMats = [] // LineBasicMaterial（每 item 独立，单独跟踪释放）
+    var wireframeMode = true // 显式显示状态：不改变导出 items，只改变预览材质
+    var currentItems = null // 用于切换模式后确定性重建场景
     var warnedIds = {} // 未校准警告去重
 
     function clearItems() {
@@ -447,6 +468,7 @@
         var child = itemsGroup.children[0]
         itemsGroup.remove(child)
         if (child.geometry) child.geometry.dispose()
+        if (child.isMesh && !Array.from(mats.values()).includes(child.material)) child.material.dispose()
       }
       // 共享材质统一在 dispose() 释放；线框材质这里随重建一起释放
       for (var i = 0; i < lineMats.length; i++) lineMats[i].dispose()
@@ -454,6 +476,7 @@
     }
 
     function setItems(items) {
+      currentItems = Array.isArray(items) ? items.slice() : null
       clearItems()
       if (!Array.isArray(items)) {
         // 清空场景的正常路径（index.html applyPreview(null)），静默
@@ -467,7 +490,7 @@
           console.warn('[preview] setItems: 跳过无效 item #' + i + '（缺少 resourceId）')
           continue
         }
-        var obj = buildItemMesh(item, mats, warnedIds)
+        var obj = buildItemMesh(item, mats, warnedIds, wireframeMode)
         if (obj.isLineSegments) lineMats.push(obj.material)
         else used.add(obj.material)
         itemsGroup.add(obj)
@@ -533,11 +556,25 @@
     // resetView()：恢复默认方位角并重新自动取景。
     function setCamera(opts) {
       if (!opts || typeof opts !== 'object') return
+      if (opts.projection && opts.projection !== projection) {
+        if (opts.projection !== "perspective" && opts.projection !== "orthographic") throw new Error("Unknown camera projection")
+        projection = opts.projection
+        camera = projection === "orthographic" ? new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 500) : new THREE.PerspectiveCamera(50, viewportAspect, 0.1, 500)
+      }
       if (Number.isFinite(opts.yaw)) orbit.yaw = opts.yaw
       if (Number.isFinite(opts.pitch)) orbit.pitch = opts.pitch
       if (Number.isFinite(opts.radius)) orbit.radius = clamp(opts.radius, MIN_RADIUS, MAX_RADIUS)
       applyCamera()
       renderer.render(scene, camera) // 同步渲染一帧：后台标签页 rAF 冻结时截图/核验仍可用
+    }
+    function setWireframe(enabled) {
+      if (wireframeMode === !!enabled) return
+      var saved = { projection: projection, yaw: orbit.yaw, pitch: orbit.pitch, radius: orbit.radius, target: orbit.target.toArray() }
+      wireframeMode = !!enabled
+      if (currentItems) setItems(currentItems)
+      orbit.target.set(saved.target[0], saved.target[1], saved.target[2])
+      setCamera(saved)
+      renderer.render(scene, camera)
     }
     function resetView() {
       orbit.yaw = 0.65
@@ -548,7 +585,16 @@
     }
 
     return {
-      setItems: setItems, setCamera: setCamera, resetView: resetView, dispose: dispose,
+      getMeshSnapshot: function () {
+        return JSON.parse(JSON.stringify((currentItems || []).filter(function (item) { return Array.isArray(item.vertices) }).map(function (item) { return {vertices:item.vertices,faces:item.faces,colors:item.colors} })))
+      },
+      getMeshStats: function () {
+        return (currentItems || []).map(function (item) {
+          return { resourceId: item.resourceId, vertices: Array.isArray(item.vertices) ? item.vertices.length : 0, triangles: Array.isArray(item.faces) ? item.faces.length / 3 : 0 }
+        })
+      },
+      setItems: setItems, setCamera: setCamera, setWireframe: setWireframe, getWireframe: function () { return wireframeMode }, resetView: resetView, dispose: dispose,
+      getCamera: function () { return { projection: projection, yaw: orbit.yaw, pitch: orbit.pitch, radius: orbit.radius, target: orbit.target.toArray(), aspect: viewportAspect } },
       setTarget: function (x, y, z) { orbit.target.set(x, y, z); applyCamera(); renderer.render(scene, camera) },
       // 2026-09-06 剪影量化：隐藏网格/坐标轴 + 纯色背景，供 readPixels 分割（避免网格线干扰 IoU）
       setGridVisible: function (v) { grid.visible = !!v; axes.visible = !v; renderer.render(scene, camera) },

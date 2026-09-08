@@ -1,0 +1,103 @@
+{
+  "ok": true,
+  "base": "lowpoly-ganyu-whitemodel-character",
+  "dir": "/home/h/genshin-model-studio/delivery/lowpoly-whitemodel/gate",
+  "checks": {
+    "id": {
+      "pass": true,
+      "issues": []
+    },
+    "resources": {
+      "pass": true,
+      "uncalibrated": [
+        {
+          "resourceId": 10009003,
+          "name": "平面",
+          "status": "未校准",
+          "count": 196,
+          "index": 0
+        },
+        {
+          "resourceId": 10009006,
+          "name": "三棱锥",
+          "status": "未校准",
+          "count": 4,
+          "index": 155
+        }
+      ],
+      "unknown": [],
+      "issues": []
+    },
+    "budget": {
+      "pass": true,
+      "detail": {
+        "requested": null,
+        "used": 200,
+        "exceeded": false,
+        "gateState": "passed"
+      },
+      "issues": []
+    },
+    "readback": {
+      "pass": true,
+      "detail": {
+        "gil": {
+          "prefabId": 1077936129,
+          "templateResourceId": 10005018,
+          "items": 200,
+          "closureComplete": true
+        },
+        "gia": {
+          "items": 200,
+          "idRange": [
+            1073741825,
+            1073742024
+          ],
+          "resourceIds": [
+            10009003,
+            10009006
+          ],
+          "structureId": 1077936129,
+          "templatePrefabId": 10005018,
+          "name": "lowpoly-ganyu-whitemodel-character"
+        }
+      },
+      "issues": []
+    },
+    "artifacts": {
+      "pass": true,
+      "detail": {
+        "artifacts": [
+          {
+            "path": "/home/h/genshin-model-studio/delivery/lowpoly-whitemodel/gate/lowpoly-ganyu-whitemodel-character.structure.json",
+            "exists": true,
+            "size": 82613
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/lowpoly-whitemodel/gate/lowpoly-ganyu-whitemodel-character.summary.json",
+            "exists": true,
+            "size": 5650
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/lowpoly-whitemodel/gate/lowpoly-ganyu-whitemodel-character.gil",
+            "exists": true,
+            "size": 64936
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/lowpoly-whitemodel/gate/lowpoly-ganyu-whitemodel-character.gia",
+            "exists": true,
+            "size": 41230
+          }
+        ],
+        "items": 200,
+        "units": 200,
+        "meshFaces": null
+      },
+      "issues": []
+    }
+  },
+  "failures": [],
+  "notes": [
+    "资源覆盖：存在 2 类未校准基元（候选/待校准）：平面(10009003)×196、三棱锥(10009006)×4"
+  ]
+}

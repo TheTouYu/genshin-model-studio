@@ -1,0 +1,78 @@
+{
+  "checks": [
+    {
+      "id": "02_01",
+      "time": 2.85,
+      "duration": 2.85,
+      "finite": true
+    },
+    {
+      "id": "02_02",
+      "time": 2.475,
+      "duration": 2.475,
+      "finite": true
+    },
+    {
+      "id": "02_03",
+      "time": 1.4333333333333333,
+      "duration": 1.4333333333333333,
+      "finite": true
+    },
+    {
+      "id": "02_04",
+      "time": 4.016666666666667,
+      "duration": 4.016666666666667,
+      "finite": true
+    },
+    {
+      "id": "02_05",
+      "time": 15.441666666666666,
+      "duration": 15.441666666666666,
+      "finite": true
+    },
+    {
+      "id": "02_06",
+      "time": 18.616666666666667,
+      "duration": 18.616666666666667,
+      "finite": true
+    },
+    {
+      "id": "02_07",
+      "time": 18.75,
+      "duration": 18.75,
+      "finite": true
+    },
+    {
+      "id": "02_08",
+      "time": 12.491666666666667,
+      "duration": 12.491666666666667,
+      "finite": true
+    },
+    {
+      "id": "02_09",
+      "time": 8.6,
+      "duration": 8.6,
+      "finite": true
+    },
+    {
+      "id": "02_10",
+      "time": 22.033333333333335,
+      "duration": 22.033333333333335,
+      "finite": true
+    }
+  ],
+  "restExact": true,
+  "stopAtEnd": {
+    "playing": false,
+    "time": 2.85,
+    "clip": "02_01",
+    "duration": 2.85
+  },
+  "sequenceTransition": {
+    "playing": true,
+    "time": 0.32750000000000007,
+    "clip": "02_02",
+    "duration": 2.475
+  },
+  "humanAcceptanceReady": false
+}

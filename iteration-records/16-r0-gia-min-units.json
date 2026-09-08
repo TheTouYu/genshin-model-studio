@@ -1,0 +1,30 @@
+{
+  "iteration": 16,
+  "round": "R0 前置·脚踝浮雕实现说明 + 多边形面数可视化 + GIA 最小版本单元导出",
+  "problem": "用户确认 3D 深度已成立，现要求：① 解答实现方式；② 具体展示多边形面数；③ 由于 GIA 最小单位是缩放长方形/三角形组合，导出最小版本供游戏内查看。",
+  "priority": "交付证据与可导入最小版本；GIA 单元化是进入游戏验证的关键前提。",
+  "reference": "用户：GIA 最小单位 = 缩放层面的长方形或三角形组合。",
+  "explanation": "实现=profileLoft（沿 Y 轴的 20×40 均匀四边形放样网格）+ reliefYTube（对顶点位移：按中心 (y0=0.055,th=0) 表面弧长距离 d，位移 h·cos(d/r·π/2)·wobble·asym 沿径向，影响半径 r=10mm，鼓出 h=2.8mm）——凸包即腿面本身，无独立面片/贴球。",
+  "action": [
+    "新增 scripts/parts/tool-relief-facecount.js：面数统计 + 三种视图（平滑+线框 / GIA 单元平铺 / 前视单元平铺）",
+    "新增 scripts/export-mesh-gia.js：网格四边形 → 10009001 缩放盒板单元（按面法线旋转）+ 端盖板片，encodeGia 编码",
+    "产出 delivery/r0-toes/ankle-bump-min.gia（802 单元 / 163185 字节）"
+  ],
+  "face_stats": {
+    "verts": 842, "tris": 1680, "quads": 1600, "capTris": 80,
+    "bumpTris": 94, "bumpQuads_approx": 47,
+    "triAreaMin": "2.84mm²", "triAreaAvg": "4.12mm²", "triAreaMax": "15.33mm²"
+  },
+  "views": {
+    "facecount_i": "delivery/r0-toes/relief-facecount-v2.png",
+    "facecount_ii": "delivery/r0-toes/relief-facecount-v2b.png"
+  },
+  "gia_min_units": {
+    "file": "delivery/r0-toes/ankle-bump-min.gia", "items": 802, "bytes": 163185,
+    "unit_type": "10009001 单位盒缩面板（scale=[宽,高,厚=1.5mm]，旋转按面法线）",
+    "caveat": "旧单笔 10009019 直出 .gia（820B）仅含 resourceId+变换，不携几何——最小版本用单元化文件。旋转约定沿用 10009003 面板推导公式，游戏内首看后按反馈调。"
+  },
+  "meshCheck": {"faces": 1680, "deg": 0, "skinnyPct": 0, "areaRatio": 1.4},
+  "decision": "待用户：查看面数可视化并导入游戏验证最小版本效果",
+  "next": "游戏内验证反馈后：调单元密度/旋转/厚度，再进入趾部多边形表达算法。"
+}

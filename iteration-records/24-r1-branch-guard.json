@@ -1,0 +1,11 @@
+{
+  "iteration": 24,
+  "round": "R1 分支拓扑约束",
+  "action": "extrudeRing 默认拒绝在已被主干两侧使用的完整内部环上分支；allowInterior 仅保留为诊断开关",
+  "evidence": {
+    "bodyCageWithoutOverride": "拒绝：full-ring branch requires an open boundary ring",
+    "reason": "中间环重复挤出会产生非流形边",
+    "bodyCageCurrent": "仍以 allowInterior=true 运行，仅用于暴露当前粗骨架问题"
+  },
+  "decision": "下一步实现 ring-subset branch 或预留肩/髋端环布局；当前版本不作为正式导出模型。"
+}

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "artifact": {
+    "path": "/home/h/genshin-model-studio/delivery/quality-demo/fail-budget",
+    "checksum": "49aa815297d99c098d61d991d7930bbe398cea6149faa3b50a94df74701dc145",
+    "sources": [
+      "fail-budget.mesh.json",
+      "fail-budget.qa.json",
+      "fail-budget.summary.json"
+    ]
+  },
+  "dimensions": {
+    "L1": {
+      "count": 0,
+      "items": []
+    },
+    "L2": {
+      "count": 1,
+      "items": [
+        {
+          "source": "summary.budget",
+          "text": "单元预算超限：需要 576 个单元，预算 10，超出 566",
+          "value": "used=576 / requested=10"
+        }
+      ]
+    },
+    "L3": {
+      "count": 0,
+      "items": []
+    },
+    "L4": {
+      "count": 0,
+      "items": []
+    },
+    "unclassified": []
+  },
+  "repairQueue": [
+    {
+      "order": 1,
+      "dimension": "L2",
+      "evidence": "summary.budget：单元预算超限：需要 576 个单元，预算 10，超出 566",
+      "minimalFix": "降低 --budget，或减小分辨率/简化形体使单元数 ≤ 预算；可调参数 budget / points / ringCountLimit",
+      "verifyHint": "重跑 export-mesh/contour-model（含 --budget/QA），断言 qa.ok=true"
+    }
+  ],
+  "sedimentation": {
+    "suggestedRules": [
+      "L2 结构/规格缺陷（ID/资源/预算/回读/产物）→ 在切形体前先定 budget 与资源档位，导出后用 qa.json 预检"
+    ],
+    "trace": {
+      "artifactHash": "49aa815297d99c098d61d991d7930bbe398cea6149faa3b50a94df74701dc145",
+      "sources": [
+        "fail-budget.mesh.json",
+        "fail-budget.qa.json",
+        "fail-budget.summary.json"
+      ]
+    }
+  }
+}

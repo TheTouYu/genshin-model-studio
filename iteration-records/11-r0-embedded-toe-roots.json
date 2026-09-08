@@ -1,0 +1,31 @@
+{
+  "iteration": 11,
+  "round": "R0 趾列可见性专项（趾根埋入与局部取景）",
+  "problem": "纵向趾列已出现，但用户复核显示趾根像挂在前掌边缘，正/侧视不清晰，整腿场景进一步缩小脚部。",
+  "priority": "L2 趾掌连接 + L1 三视角可读性；不进入袜材质/褶皱。",
+  "reference": "参考图要求五趾软体连续、大趾最大、长度阶梯、圆钝尖端与浅沟槽。",
+  "hypothesis": "趾列根部需要更深埋入前掌，趾体需要由饱满根部连续渐缩到小圆端面；正式验证应使用隔离脚部取景。",
+  "action": [
+    "toeBaseZ 从末端后退 0.050 调整为 0.025",
+    "增加根部 taper 1.28→0.80 的渐缩",
+    "端部由单点锥顶改为小圆端面",
+    "保留五趾独立 list 与同一 profileLoft mesh 数据"
+  ],
+  "tools": ["profileLoft.lofted", "meshCheck", "browser-harness", "setTarget/setCamera", "read_image"],
+  "views": {
+    "isolated_front": "delivery/r0-toes/isolated-front-r15.png",
+    "isolated_top": "delivery/r0-toes/isolated-top-r15.png",
+    "isolated_side": "delivery/r0-toes/isolated-side-r15.png"
+  },
+  "result": {
+    "meshCheck": {
+      "base": {"faces": 8324, "deg": 0, "skinnyPct": 3.08, "areaRatio": 13.0},
+      "sock": {"faces": 8324, "deg": 0, "skinnyPct": 2.96, "areaRatio": 12.5}
+    },
+    "visual": "PARTIAL FAIL: 隔离顶视可辨五趾，正/侧视与整腿场景仍不足以满足用户三视角验收。",
+    "syntax": "PASS",
+    "browser_injection": "PASS"
+  },
+  "decision": "reject/continue",
+  "next": "继续改善趾根与前掌曲面融合，并建立不受整腿包围盒影响的正式局部正/顶/侧证据；用户签字前不宣称完成。"
+}

@@ -15,7 +15,7 @@
  *   GET  /docs?file=...          文档页（Markdown 渲染）
  */
 import { createServer } from 'node:http';
-import { readFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { resolveStructure } from '../dist/src/core/structure.js';
 import { encodeStructure } from '../dist/src/core/encoder.js';
@@ -23,6 +23,9 @@ import { encodeGia } from '../dist/src/gia/gia-encoder.js';
 import { DOCS_FILES, exampleMeta, toGiaInput, attachmentName, docsPage, parseDrawModelRequest, drawModelResult, validateModelResult, } from '../dist/src/web-shared.js';
 const ROOT = process.cwd();
 const PORT = Number(process.env.PORT || 8787);
+// 默认导出目录（用户游戏导出根）：网页"导出 .gif/.gia"会同步写一份到这里。
+const EXPORT_DIR = process.env.GMS_EXPORT_DIR
+    || '/mnt/c/Users/touyu/AppData/LocalLow/miHoYo/原神/BeyondLocal/Beyond_Local_Export';
 const MIME = {
     '.js': 'text/javascript; charset=utf-8',
     '.mjs': 'text/javascript; charset=utf-8',
@@ -149,6 +152,17 @@ const server = createServer((req, res) => {
                     bytes = encodeStructure(resolved);
                     filename = `${resolved.name}.gil`;
                     contentType = 'application/octet-stream';
+                }
+                // 默认导出目录（游戏）：GMS_EXPORT_DIR 可覆盖；成功产出时同步写一份到该目录。
+                // 与浏览器下载并行；失败仅告警不影响下载。
+                try {
+                    mkdirSync(EXPORT_DIR, { recursive: true });
+                    const outPath = join(EXPORT_DIR, filename);
+                    writeFileSync(outPath, Buffer.from(bytes));
+                    console.log(`export-dir: ${outPath} (${bytes.length} bytes)`);
+                }
+                catch (e) {
+                    console.warn(`export-dir write skipped: ${e.message}`);
                 }
                 res.writeHead(200, {
                     'Content-Type': contentType,

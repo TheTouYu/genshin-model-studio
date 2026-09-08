@@ -1,0 +1,100 @@
+{
+  "ok": true,
+  "base": "basic-cylinder",
+  "dir": "/home/h/genshin-model-studio/delivery/scenario-results/basic-cylinder",
+  "checks": {
+    "id": {
+      "pass": true,
+      "issues": []
+    },
+    "resources": {
+      "pass": true,
+      "uncalibrated": [
+        {
+          "resourceId": 10009003,
+          "name": "平面",
+          "status": "未校准",
+          "count": 48,
+          "index": 0
+        }
+      ],
+      "unknown": [],
+      "issues": []
+    },
+    "budget": {
+      "pass": true,
+      "detail": {
+        "requested": null,
+        "used": 48,
+        "exceeded": false,
+        "gateState": "passed"
+      },
+      "issues": []
+    },
+    "readback": {
+      "pass": true,
+      "detail": {
+        "gil": {
+          "prefabId": 1077936129,
+          "templateResourceId": 10005018,
+          "items": 48,
+          "closureComplete": true
+        },
+        "gia": {
+          "items": 48,
+          "idRange": [
+            1073741825,
+            1073741872
+          ],
+          "resourceIds": [
+            10009003
+          ],
+          "structureId": 1077936129,
+          "templatePrefabId": 10005018,
+          "name": "basic-cylinder"
+        }
+      },
+      "issues": []
+    },
+    "artifacts": {
+      "pass": true,
+      "detail": {
+        "artifacts": [
+          {
+            "path": "/home/h/genshin-model-studio/delivery/scenario-results/basic-cylinder/basic-cylinder.structure.json",
+            "exists": true,
+            "size": 16073
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/scenario-results/basic-cylinder/basic-cylinder.summary.json",
+            "exists": true,
+            "size": 2073
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/scenario-results/basic-cylinder/basic-cylinder.gil",
+            "exists": true,
+            "size": 16217
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/scenario-results/basic-cylinder/basic-cylinder.gia",
+            "exists": true,
+            "size": 10364
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/scenario-results/basic-cylinder/basic-cylinder.mesh.json",
+            "exists": true,
+            "size": 5672
+          }
+        ],
+        "items": 48,
+        "units": 48,
+        "meshFaces": 96
+      },
+      "issues": []
+    }
+  },
+  "failures": [],
+  "notes": [
+    "资源覆盖：存在 1 类未校准基元（候选/待校准）：平面(10009003)×48"
+  ]
+}

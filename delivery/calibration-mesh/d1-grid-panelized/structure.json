@@ -1,0 +1,263 @@
+{
+  "schemaVersion": 1,
+  "name": "网格_3x3方格面_面板化",
+  "template": "空模型",
+  "templatePrefabId": 10005018,
+  "templateInstanceId": 10005018,
+  "prefabId": 1077936129,
+  "definitionAuxiliaryIds": [
+    1073741830,
+    1073741832,
+    1073741834,
+    1073741836,
+    1073741838,
+    1073741840,
+    1073741842,
+    1073741844,
+    1073741846
+  ],
+  "instanceAuxiliaryIds": [
+    1073741831,
+    1073741833,
+    1073741835,
+    1073741837,
+    1073741839,
+    1073741841,
+    1073741843,
+    1073741845,
+    1073741847
+  ],
+  "position": [
+    0,
+    0,
+    0
+  ],
+  "rotation": [
+    0,
+    0,
+    0
+  ],
+  "scale": [
+    1,
+    1,
+    1
+  ],
+  "items": [
+    {
+      "resourceId": 10009003,
+      "position": [
+        0.5,
+        0,
+        0.5
+      ],
+      "rotation": [
+        0,
+        -90,
+        0
+      ],
+      "scale": [
+        1,
+        0.005,
+        1
+      ],
+      "color": {
+        "enabled": true,
+        "rgb": 4088797,
+        "opacity": 100,
+        "overlay": "overwrite"
+      }
+    },
+    {
+      "resourceId": 10009003,
+      "position": [
+        0.5,
+        0,
+        1.5
+      ],
+      "rotation": [
+        0,
+        -90,
+        0
+      ],
+      "scale": [
+        1,
+        0.005,
+        1
+      ],
+      "color": {
+        "enabled": true,
+        "rgb": 4630360,
+        "opacity": 100,
+        "overlay": "overwrite"
+      }
+    },
+    {
+      "resourceId": 10009003,
+      "position": [
+        0.5,
+        0,
+        2.5
+      ],
+      "rotation": [
+        0,
+        -90,
+        0
+      ],
+      "scale": [
+        1,
+        0.005,
+        1
+      ],
+      "color": {
+        "enabled": true,
+        "rgb": 4088797,
+        "opacity": 100,
+        "overlay": "overwrite"
+      }
+    },
+    {
+      "resourceId": 10009003,
+      "position": [
+        1.5,
+        0,
+        0.5
+      ],
+      "rotation": [
+        0,
+        -90,
+        0
+      ],
+      "scale": [
+        1,
+        0.005,
+        1
+      ],
+      "color": {
+        "enabled": true,
+        "rgb": 4630360,
+        "opacity": 100,
+        "overlay": "overwrite"
+      }
+    },
+    {
+      "resourceId": 10009003,
+      "position": [
+        1.5,
+        0,
+        1.5
+      ],
+      "rotation": [
+        0,
+        -90,
+        0
+      ],
+      "scale": [
+        1,
+        0.005,
+        1
+      ],
+      "color": {
+        "enabled": true,
+        "rgb": 4088797,
+        "opacity": 100,
+        "overlay": "overwrite"
+      }
+    },
+    {
+      "resourceId": 10009003,
+      "position": [
+        1.5,
+        0,
+        2.5
+      ],
+      "rotation": [
+        0,
+        -90,
+        0
+      ],
+      "scale": [
+        1,
+        0.005,
+        1
+      ],
+      "color": {
+        "enabled": true,
+        "rgb": 4630360,
+        "opacity": 100,
+        "overlay": "overwrite"
+      }
+    },
+    {
+      "resourceId": 10009003,
+      "position": [
+        2.5,
+        0,
+        0.5
+      ],
+      "rotation": [
+        0,
+        -90,
+        0
+      ],
+      "scale": [
+        1,
+        0.005,
+        1
+      ],
+      "color": {
+        "enabled": true,
+        "rgb": 4088797,
+        "opacity": 100,
+        "overlay": "overwrite"
+      }
+    },
+    {
+      "resourceId": 10009003,
+      "position": [
+        2.5,
+        0,
+        1.5
+      ],
+      "rotation": [
+        0,
+        -90,
+        0
+      ],
+      "scale": [
+        1,
+        0.005,
+        1
+      ],
+      "color": {
+        "enabled": true,
+        "rgb": 4630360,
+        "opacity": 100,
+        "overlay": "overwrite"
+      }
+    },
+    {
+      "resourceId": 10009003,
+      "position": [
+        2.5,
+        0,
+        2.5
+      ],
+      "rotation": [
+        0,
+        -90,
+        0
+      ],
+      "scale": [
+        1,
+        0.005,
+        1
+      ],
+      "color": {
+        "enabled": true,
+        "rgb": 4088797,
+        "opacity": 100,
+        "overlay": "overwrite"
+      }
+    }
+  ]
+}

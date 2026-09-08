@@ -1,0 +1,30 @@
+{
+  "iteration": 17,
+  "round": "R0 前置·GIA 最小版本网页 1:1 预览核验层",
+  "problem": "用户要求：导入游戏前先在网页 1:1 预览（网页预览渲染 state.items，与 GIA 导出/游戏导入同源）核验；通过后才亲自导入游戏。",
+  "priority": "网页预览核验层 = GIA 前置门；单元化模型必须先在网页层验收。",
+  "explanation": "用应用自身画线管线生成最小版本：每个放样四边形 → gms.part('quad')（10009003 面板，含位置/法线旋转/尺寸），两端盖 → 面板片；共 802 笔/802 元件，网页预览即游戏渲染内容。",
+  "action": [
+    "清除旧模型，批量生成 802 个 quad 单元（__gmsBatch）",
+    "预览渲染（iso/front/top + 整页）并 read_image 复核",
+    "抓取应用导出的 .gia（168021 字节）保存到工作区"
+  ],
+  "views": {
+    "iso": "delivery/r0-toes/units-web-preview-caps.png",
+    "front": "delivery/r0-toes/units-web-preview-front.png",
+    "top": "delivery/r0-toes/units-web-preview-top.png",
+    "final": "delivery/r0-toes/units-web-preview-final.png"
+  },
+  "gia": {
+    "file": "delivery/r0-toes/ankle-bump-app.gia",
+    "bytes": 168021,
+    "source": "应用画线建模管线 POST /api/export?format=gia（页面按钮，同 state.items 同源），非自建编码器",
+    "note": "第一版抓取误点顶部一期的导出按钮（导出了 box 示例 984B）；已修正为画线建模区按钮"
+  },
+  "web_preview_observations": {
+    "ok": "凸包深度保留，踝段单元可读，802 单元全部渲染",
+    "issues": "单元面板间有可见缝隙/接缝；端盖与管体存在间隙；顶部开口看穿（视线角度）。"
+  },
+  "decision": "待用户网页核验：旋转检查接缝/端盖/凸包深度；通过后亲自导入游戏",
+  "next": "按用户反馈修单元装配（面板重叠/端盖贴合/密度），再导出正式 GIA。"
+}

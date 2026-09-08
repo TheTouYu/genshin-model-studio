@@ -1,0 +1,422 @@
+[
+  {
+    "id": "shoulderL-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "shoulderL",
+        "axis": "z",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "elbowL-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "elbowL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "wristL-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "wristL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "hipL-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "hipL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "kneeL-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "kneeL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ankleL-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "ankleL",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "shoulderR-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "shoulderR",
+        "axis": "z",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "elbowR-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "elbowR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "wristR-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "wristR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "hipR-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "hipR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "kneeR-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "kneeR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ankleR-sweep",
+    "duration": 4,
+    "loop": true,
+    "tracks": [
+      {
+        "joint": "ankleR",
+        "axis": "x",
+        "unit": "radians",
+        "interpolation": "linear",
+        "keys": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            -0.3
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0.15
+          ],
+          [
+            4,
+            0
+          ]
+        ]
+      }
+    ]
+  }
+]

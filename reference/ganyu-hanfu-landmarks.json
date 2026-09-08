@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "reference": "古风甘雨三视图.png",
+  "imageSize": [1065, 600],
+  "method": "Manual visual landmark picks from read_image of /mnt/c/Users/touyu/Downloads/古风甘雨三视图.png; approximate pixels, not automated segmentation",
+  "status": "initial_provisional",
+  "coordinateConvention": "Image x right, y down. Body world +Y up, +Z front.",
+  "scale": {
+    "heightMeters": 1.6,
+    "status": "provisional",
+    "topPixel": 52,
+    "bottomPixel": 575,
+    "excludes": "horns and ahoge",
+    "note": "hair crown to dress hem/floor envelope; 古风裙摆长，脚部被裙遮住，以裙摆着地点为底."
+  },
+  "front": {
+    "centerX": 218,
+    "landmarks": [
+      { "name": "hair_crown", "pixel": [218, 52], "uncertaintyPx": 5 },
+      { "name": "chin", "pixel": [218, 132], "uncertaintyPx": 6 },
+      { "name": "neck_base", "pixel": [218, 150], "uncertaintyPx": 7 },
+      { "name": "shoulder_left", "pixel": [158, 176], "uncertaintyPx": 12 },
+      { "name": "shoulder_right", "pixel": [278, 176], "uncertaintyPx": 12 },
+      { "name": "chest_cloth_front", "pixel": [218, 225], "uncertaintyPx": 8 },
+      { "name": "waist_cloth_left", "pixel": [155, 300], "uncertaintyPx": 10 },
+      { "name": "waist_cloth_right", "pixel": [281, 300], "uncertaintyPx": 10 },
+      { "name": "hip_left", "pixel": [162, 355], "uncertaintyPx": 12 },
+      { "name": "hip_right", "pixel": [274, 355], "uncertaintyPx": 12 },
+      { "name": "dress_hem", "pixel": [218, 575], "uncertaintyPx": 6 }
+    ]
+  },
+  "side": {
+    "frontDirection": "image -X",
+    "landmarks": [
+      { "name": "nose_tip", "pixel": [540, 100], "uncertaintyPx": 4 },
+      { "name": "chin", "pixel": [548, 132], "uncertaintyPx": 5 },
+      { "name": "chest_cloth_front", "pixel": [530, 220], "uncertaintyPx": 7 },
+      { "name": "waist_cloth_front", "pixel": [560, 300], "uncertaintyPx": 9 },
+      { "name": "hip_front", "pixel": [570, 350], "uncertaintyPx": 12 },
+      { "name": "dress_hem_front", "pixel": [560, 575], "uncertaintyPx": 6 },
+      { "name": "hair_back_extent", "pixel": [640, 340], "uncertaintyPx": 14 }
+    ]
+  },
+  "pose": {
+    "stance": "回眸持剑 3/4 背身",
+    "source": "原图立绘 /mnt/c/Users/touyu/Downloads/甘雨.png（三视图仅量体量，不取姿态）",
+    "headYawDeg": 30,
+    "headYawDir": "看向画面左（-X）",
+    "chestYawDeg": 18,
+    "spineSideBendDeg": 4,
+    "swordArm": {
+      "shoulderDir": [0.9, -0.35, 0.10],
+      "elbowDir": [0.35, -0.9, 0.12],
+      "wristDir": [0.05, -0.99, 0.25]
+    },
+    "offArm": {
+      "shoulderDir": [-0.85, -0.40, 0.10],
+      "elbowDir": [-0.2, -0.95, -0.1],
+      "wristDir": [-0.05, -0.99, -0.2]
+    },
+    "weightLeg": "left",
+    "skirtFlowDir": [-0.72, -0.28, -0.63]
+  },
+  "limitations": [
+    "古风裙摆遮住膝/踝/脚，三视图只能量到裙摆体积包络，腿侧地标缺失",
+    "正面服饰点为生成图低置信度，主结构以原图可见碎片延续",
+    "头发遮挡后颈与背部，头发边界仅取包络"
+  ],
+  "next": [
+    "用本表驱动 createAnatomyControlGraph/moveAnatomyControlPoint 摆点",
+    "前后剖面用 ganyu-asym-loft（ryF/cyF vs ryB/cyB）",
+    "裙从腰环共享顶点长出、臂从肩环挤出"
+  ]
+}

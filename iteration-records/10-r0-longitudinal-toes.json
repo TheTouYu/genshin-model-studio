@@ -1,0 +1,13 @@
+{
+  "iteration": 10,
+  "round": "R0 趾列可见性专项（纵向趾列原型）",
+  "problem": "角域瓣无法形成五个纵向趾尖，用户持续反馈趾头不可见/错位。",
+  "priority": "L2 趾掌连接、L3 连续网格。",
+  "reference": "五趾需独立可读、圆钝、长度阶梯、浅槽且根部连续。",
+  "hypothesis": "在同一 profileLoft 返回索引网格中增加五条共享前掌根部的纵向渐缩趾体，比单截面角域瓣更符合可见轮廓。",
+  "action": ["新增 opts.toes.lofted 纵向趾列生成", "五趾圆截面、根部埋入、渐缩、圆端面", "增加 angularList/list 兼容字段"],
+  "tools": ["profileLoft", "meshCheck", "browser-harness", "read_image"],
+  "result": {"base":{"faces":8324,"deg":0,"skinnyPct":3.08,"areaRatio":13},"sock":{"faces":8324,"deg":0,"skinnyPct":2.96,"areaRatio":12.5},"visual":"FAIL/partial: 顶视可见五个分离趾体，但根部仍偏直、整腿视图取景过远。"},
+  "decision": "continue",
+  "next": "修正趾列与前掌的交叠/过渡，建立脚部局部正式相机证据；未获用户签字前不交付。"
+}

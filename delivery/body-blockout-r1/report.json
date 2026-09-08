@@ -1,0 +1,57 @@
+{
+  "vertices": 113,
+  "triangles": 222,
+  "polygonFaces": 109,
+  "connected": true,
+  "closed": true,
+  "gate": {
+    "ok": true,
+    "checkedFaces": 222,
+    "checks": {
+      "watertight": {
+        "pass": true,
+        "openEdges": 0,
+        "nonManifold": 0,
+        "samplePositions": []
+      },
+      "seams": {
+        "pass": true,
+        "seamCount": 0,
+        "samplePositions": []
+      },
+      "normals": {
+        "pass": true,
+        "invertedCount": 0,
+        "sampleFaces": []
+      },
+      "degenerate": {
+        "count": 0,
+        "pass": true
+      },
+      "skinny": {
+        "count": 0,
+        "pct": 0,
+        "pass": true
+      },
+      "areaRatio": {
+        "value": 15.2,
+        "pass": true
+      },
+      "budget": {
+        "requested": null,
+        "used": 222,
+        "exceeded": false,
+        "pass": true
+      },
+      "selfIntersections": {
+        "pass": true,
+        "intersectingPairs": 0,
+        "samplePairs": []
+      }
+    },
+    "failures": []
+  },
+  "referenceFit": false,
+  "fingers": "palm block only",
+  "stage": "editable blockout, not export"
+}

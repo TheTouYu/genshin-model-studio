@@ -1,0 +1,51 @@
+{
+  "appearance": {
+    "path": "reference/ganyu-3view.png",
+    "role": "User-confirmed final appearance: soccer uniform Ganyu, front/side/back",
+    "note": "Local image visually matches current user target; encoded bytes differ from newly attached image."
+  },
+  "structure": {
+    "session": "session-70912f92-8b8a-403b-80c1-3af6fad42769",
+    "event": "user first message, seq 8",
+    "images": [
+      {
+        "view": "side",
+        "path": "reference/body-wire-side.png",
+        "sha256": "e72e9f79163f0f63584a1691aa534f4495d7f63bc8c09db55b397931ac3e7d26",
+        "source": "/home/h/.dsh/attachments/v1/objects/e7/e72e9f79163f0f63584a1691aa534f4495d7f63bc8c09db55b397931ac3e7d26"
+      },
+      {
+        "view": "front",
+        "path": "reference/body-wire-front.png",
+        "sha256": "c4c704d879c7d39fe0009d33f4894cf85d5d08f580eb3b426ec5ac4f8a086d55",
+        "source": "/home/h/.dsh/attachments/v1/objects/c4/c4c704d879c7d39fe0009d33f4894cf85d5d08f580eb3b426ec5ac4f8a086d55"
+      },
+      {
+        "view": "quarter",
+        "path": "reference/body-wire-quarter.png",
+        "sha256": "83c3bcbd7b16df871b5e8796561b323af71ea595fb9700c461061548dc138f5b",
+        "source": "/home/h/.dsh/attachments/v1/objects/83/83c3bcbd7b16df871b5e8796561b323af71ea595fb9700c461061548dc138f5b"
+      },
+      {
+        "view": "back",
+        "path": "reference/body-wire-back.png",
+        "sha256": "92033b7b3a5769304ec2644f9e9e83b4c0165e87e92fc58cb50ff721068bd6b7",
+        "source": "/home/h/.dsh/attachments/v1/objects/92/92033b7b3a5769304ec2644f9e9e83b4c0165e87e92fc58cb50ff721068bd6b7"
+      }
+    ],
+    "limitation": "Clothed character wireframes include hair, shorts, jersey and shoes. Hidden anatomical surface cannot be directly measured."
+  },
+  "scale": {
+    "heightMeters": 1.6,
+    "status": "provisional project convention, not measured absolute size from image"
+  },
+  "fitting": {
+    "status": "pending",
+    "required": [
+      "visible landmark pixel measurements per view",
+      "separate hair/clothes envelope from body",
+      "normalized landmark and silhouette error",
+      "uncertainty for hidden anatomy"
+    ]
+  }
+}

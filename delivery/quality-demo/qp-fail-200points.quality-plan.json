@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "artifact": {
+    "path": "/home/h/genshin-model-studio/delivery/quality-demo/fail-200points",
+    "checksum": "044a0e7c83d6485b4202f37fa63ca52504ce7b7c579bcb8db5a4c61012fdbb19",
+    "sources": [
+      "fail-200points.mesh.json",
+      "fail-200points.summary.json"
+    ]
+  },
+  "dimensions": {
+    "L1": {
+      "count": 0,
+      "items": []
+    },
+    "L2": {
+      "count": 0,
+      "items": []
+    },
+    "L3": {
+      "count": 1,
+      "items": [
+        {
+          "source": "gate.skinny",
+          "text": "瘦长三角 675 个，占比 18.75%（阈值 ≤ 5%）",
+          "value": "675 个 / 18.75%"
+        }
+      ]
+    },
+    "L4": {
+      "count": 0,
+      "items": []
+    },
+    "unclassified": []
+  },
+  "repairQueue": [
+    {
+      "order": 1,
+      "dimension": "L3",
+      "evidence": "gate.skinny：瘦长三角 675 个，占比 18.75%（阈值 ≤ 5%）",
+      "minimalFix": "提升环分辨率（points）或改进盖扇三角剖分，使瘦长三角占比降到阈值内；可调参数 points / maxSkinnyPct（默认 5%）",
+      "verifyHint": "重跑 export-mesh/contour-model，断言该拓扑检查项 gate=passed"
+    }
+  ],
+  "sedimentation": {
+    "suggestedRules": [
+      "L3 拓扑/曲率缺陷（如水密/瘦三角/面积比）→ 应把 points/盖扇剖分调到能过 maxSkinnyPct 的档位，而非绕过门禁"
+    ],
+    "trace": {
+      "artifactHash": "044a0e7c83d6485b4202f37fa63ca52504ce7b7c579bcb8db5a4c61012fdbb19",
+      "sources": [
+        "fail-200points.mesh.json",
+        "fail-200points.summary.json"
+      ]
+    }
+  }
+}

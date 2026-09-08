@@ -1,0 +1,4689 @@
+{
+  "schemaVersion": 1,
+  "model": "ganyu-football-10-final",
+  "referenceFit": {
+    "source": "reference/ganyu-landmarks.json",
+    "reference": "reference/ganyu-3view.png",
+    "method": "orthographic overlay calibration; body wire front/side/quarter/back consulted",
+    "status": "provisional-overlay-reviewed",
+    "target": {
+      "heightM": 1.6,
+      "crownY": 1.6,
+      "chinY": 1.36,
+      "jerseyHemY": 0.89,
+      "shortsHemY": 0.735,
+      "sockTopY": 0.59,
+      "soleY": 0.008
+    },
+    "measured": {
+      "heightM": 1.596,
+      "minY": 0.003969988209186703,
+      "maxY": 1.6000000000000003
+    },
+    "landmarks": "pixel picks retained with uncertaintyPx in reference/ganyu-landmarks.json",
+    "limitations": [
+      "hair and garment depth are fit independently",
+      "hands/fingers remain a topology follow-up; glove silhouette is present",
+      "game acceptance requires user import check"
+    ]
+  },
+  "sequence": [
+    "blockout",
+    "control-points",
+    "elevated-surface",
+    "appearance",
+    "verify",
+    "browser-orthographic",
+    "export"
+  ],
+  "blockout": {
+    "source": "scripts/parts/ganyu-body-cage.js",
+    "bodyVertices": 670,
+    "bodyFaces": 1324,
+    "componentsExpected": 1
+  },
+  "controls": {
+    "path": [
+      [
+        0,
+        0.8,
+        0
+      ],
+      [
+        0,
+        0.92,
+        0
+      ],
+      [
+        0,
+        1.04,
+        0
+      ],
+      [
+        0,
+        1.16,
+        0
+      ],
+      [
+        0,
+        1.25,
+        0
+      ],
+      [
+        0,
+        1.3,
+        0
+      ],
+      [
+        0,
+        1.32,
+        0
+      ],
+      [
+        0,
+        1.34,
+        0
+      ],
+      [
+        0,
+        1.36,
+        0
+      ],
+      [
+        0,
+        1.47,
+        0
+      ],
+      [
+        0,
+        1.54,
+        0
+      ],
+      [
+        0,
+        1.58,
+        0
+      ],
+      [
+        0,
+        1.6,
+        0
+      ]
+    ],
+    "profiles": [
+      [
+        0.125,
+        0.085,
+        0.1
+      ],
+      [
+        0.155,
+        0.1,
+        0.125
+      ],
+      [
+        0.12,
+        0.085,
+        0.085
+      ],
+      [
+        0.165,
+        0.135,
+        0.1
+      ],
+      [
+        0.183,
+        0.102,
+        0.092
+      ],
+      [
+        0.172,
+        0.077,
+        0.08
+      ],
+      [
+        0.062,
+        0.052,
+        0.05
+      ],
+      [
+        0.044,
+        0.043,
+        0.045
+      ],
+      [
+        0.061,
+        0.068,
+        0.067
+      ],
+      [
+        0.087,
+        0.087,
+        0.101
+      ],
+      [
+        0.082,
+        0.078,
+        0.092
+      ],
+      [
+        0.043,
+        0.043,
+        0.05
+      ],
+      [
+        0.018,
+        0.02,
+        0.025
+      ]
+    ],
+    "arms": [
+      {
+        "c": [
+          0.186,
+          1.238,
+          0.002
+        ],
+        "dir": [
+          1,
+          -0.08,
+          0
+        ],
+        "ru": 0.046,
+        "rv": 0.064,
+        "mix": 0.3
+      },
+      {
+        "c": [
+          0.212,
+          1.235,
+          0.002
+        ],
+        "dir": [
+          1,
+          -0.08,
+          0
+        ],
+        "ru": 0.048,
+        "rv": 0.062,
+        "mix": 0.58
+      },
+      {
+        "c": [
+          0.232,
+          1.228,
+          0.001
+        ],
+        "dir": [
+          1,
+          -0.1,
+          0
+        ],
+        "ru": 0.05,
+        "rv": 0.058,
+        "mix": 0.8
+      },
+      {
+        "c": [
+          0.25,
+          1.195,
+          0
+        ],
+        "dir": [
+          0.75,
+          -0.66,
+          0
+        ],
+        "ru": 0.05,
+        "rv": 0.048,
+        "mix": 1
+      },
+      {
+        "c": [
+          0.27,
+          1.075,
+          -0.006
+        ],
+        "dir": [
+          0.3,
+          -0.93,
+          0
+        ],
+        "ru": 0.039,
+        "rv": 0.034,
+        "mix": 1
+      },
+      {
+        "c": [
+          0.279,
+          0.95,
+          0
+        ],
+        "dir": [
+          0.1,
+          -0.995,
+          0
+        ],
+        "ru": 0.038,
+        "rv": 0.031,
+        "mix": 1
+      },
+      {
+        "c": [
+          0.287,
+          0.82,
+          0.008
+        ],
+        "dir": [
+          0.05,
+          -0.999,
+          0
+        ],
+        "ru": 0.027,
+        "rv": 0.024,
+        "mix": 1
+      },
+      {
+        "c": [
+          0.29,
+          0.775,
+          0.01
+        ],
+        "dir": [
+          0.05,
+          -0.999,
+          0
+        ],
+        "ru": 0.026,
+        "rv": 0.025,
+        "mix": 1
+      }
+    ],
+    "legs": [
+      {
+        "c": [
+          0.095,
+          0.78,
+          0
+        ],
+        "ru": 0.093,
+        "rv": 0.08,
+        "radial": true
+      },
+      {
+        "c": [
+          0.098,
+          0.72,
+          0
+        ],
+        "ru": 0.091,
+        "rv": 0.077,
+        "radial": true
+      },
+      {
+        "c": [
+          0.1,
+          0.67,
+          0
+        ],
+        "ru": 0.088,
+        "rv": 0.075,
+        "radial": true
+      },
+      {
+        "c": [
+          0.102,
+          0.6,
+          0.004
+        ],
+        "ru": 0.073,
+        "rv": 0.062,
+        "radial": true
+      },
+      {
+        "c": [
+          0.102,
+          0.54,
+          0.008
+        ],
+        "ru": 0.064,
+        "rv": 0.055
+      },
+      {
+        "c": [
+          0.102,
+          0.505,
+          0.012
+        ],
+        "ru": 0.06,
+        "rv": 0.051
+      },
+      {
+        "c": [
+          0.103,
+          0.48,
+          0.015
+        ],
+        "ru": 0.056,
+        "rv": 0.048
+      },
+      {
+        "c": [
+          0.104,
+          0.435,
+          -0.002
+        ],
+        "ru": 0.061,
+        "rv": 0.05
+      },
+      {
+        "c": [
+          0.104,
+          0.39,
+          -0.009
+        ],
+        "ru": 0.066,
+        "rv": 0.052
+      },
+      {
+        "c": [
+          0.105,
+          0.345,
+          -0.012
+        ],
+        "ru": 0.062,
+        "rv": 0.049
+      },
+      {
+        "c": [
+          0.105,
+          0.3,
+          -0.014
+        ],
+        "ru": 0.059,
+        "rv": 0.046
+      },
+      {
+        "c": [
+          0.105,
+          0.235,
+          -0.01
+        ],
+        "ru": 0.047,
+        "rv": 0.037
+      },
+      {
+        "c": [
+          0.105,
+          0.17,
+          -0.005
+        ],
+        "ru": 0.036,
+        "rv": 0.029
+      },
+      {
+        "c": [
+          0.105,
+          0.1,
+          0
+        ],
+        "ru": 0.036,
+        "rv": 0.029
+      },
+      {
+        "c": [
+          0.105,
+          0.078,
+          0.01
+        ],
+        "ru": 0.04,
+        "rv": 0.033,
+        "bend": -0.3
+      },
+      {
+        "c": [
+          0.105,
+          0.06,
+          0.03
+        ],
+        "ru": 0.045,
+        "rv": 0.04,
+        "bend": -0.62
+      },
+      {
+        "c": [
+          0.105,
+          0.045,
+          0.068
+        ],
+        "ru": 0.04,
+        "rv": 0.046,
+        "bend": -0.98
+      },
+      {
+        "c": [
+          0.105,
+          0.034,
+          0.12
+        ],
+        "ru": 0.031,
+        "rv": 0.048,
+        "bend": -1.32
+      },
+      {
+        "c": [
+          0.105,
+          0.027,
+          0.168
+        ],
+        "ru": 0.023,
+        "rv": 0.042,
+        "bend": -1.5
+      },
+      {
+        "c": [
+          0.105,
+          0.025,
+          0.205
+        ],
+        "ru": 0.018,
+        "rv": 0.033,
+        "bend": -1.57
+      }
+    ]
+  },
+  "elevated": {
+    "subdivLevels": 1,
+    "vertices": 2656,
+    "faces": 5296
+  },
+  "appearance": {
+    "parts": 71,
+    "items": [
+      {
+        "id": "body",
+        "material": "body",
+        "vertices": 2656,
+        "faces": 5296
+      },
+      {
+        "id": "hair",
+        "material": "hair",
+        "vertices": 218,
+        "faces": 432
+      },
+      {
+        "id": "horn-left",
+        "material": "horn",
+        "vertices": 162,
+        "faces": 320
+      },
+      {
+        "id": "horn-right",
+        "material": "horn",
+        "vertices": 162,
+        "faces": 320
+      },
+      {
+        "id": "face-details",
+        "material": "face",
+        "vertices": 40,
+        "faces": 60
+      },
+      {
+        "id": "jersey",
+        "material": "jersey",
+        "vertices": 194,
+        "faces": 384
+      },
+      {
+        "id": "shorts-left",
+        "material": "shorts",
+        "vertices": 130,
+        "faces": 256
+      },
+      {
+        "id": "shorts-right",
+        "material": "shorts",
+        "vertices": 130,
+        "faces": 256
+      },
+      {
+        "id": "sleeve-left",
+        "material": "jersey",
+        "vertices": 26,
+        "faces": 48
+      },
+      {
+        "id": "sleeve-right",
+        "material": "jersey",
+        "vertices": 26,
+        "faces": 48
+      },
+      {
+        "id": "glove-left",
+        "material": "glove",
+        "vertices": 66,
+        "faces": 128
+      },
+      {
+        "id": "glove-right",
+        "material": "glove",
+        "vertices": 66,
+        "faces": 128
+      },
+      {
+        "id": "sock-left",
+        "material": "sock",
+        "vertices": 162,
+        "faces": 320
+      },
+      {
+        "id": "sock-right",
+        "material": "sock",
+        "vertices": 162,
+        "faces": 320
+      },
+      {
+        "id": "shoe-upper-left",
+        "material": "shoe",
+        "vertices": 102,
+        "faces": 200
+      },
+      {
+        "id": "shoe-upper-right",
+        "material": "shoe",
+        "vertices": 102,
+        "faces": 200
+      },
+      {
+        "id": "shoe-sole-left",
+        "material": "shoe",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "shoe-sole-right",
+        "material": "shoe",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "shoe-stud-left-front",
+        "material": "shoe",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "shoe-stud-left-mid",
+        "material": "shoe",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "shoe-stud-left-back",
+        "material": "shoe",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "shoe-stud-right-front",
+        "material": "shoe",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "shoe-stud-right-mid",
+        "material": "shoe",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "shoe-stud-right-back",
+        "material": "shoe",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "tail-left",
+        "material": "hair",
+        "vertices": 74,
+        "faces": 144
+      },
+      {
+        "id": "tail-right",
+        "material": "hair",
+        "vertices": 74,
+        "faces": 144
+      },
+      {
+        "id": "tassel-left-gold",
+        "material": "ornament",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "tassel-left-red",
+        "material": "ornament",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "tassel-left-blue",
+        "material": "ornament",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "tassel-right-gold",
+        "material": "ornament",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "tassel-right-red",
+        "material": "ornament",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "tassel-right-blue",
+        "material": "ornament",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "front-mark-0",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "front-mark-1",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "front-mark-2",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "front-mark-3",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "front-mark-4",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "front-mark-5",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "front-mark-6",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "front-mark-7",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "front-mark-8",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "front-mark-9",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "front-mark-10",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "front-mark-11",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-0",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-1",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-2",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-3",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-4",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-5",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-6",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-7",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-8",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-9",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-10",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-11",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-12",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-13",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-14",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-15",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-16",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-17",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-18",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-19",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-20",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-21",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-22",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-23",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "back-mark-24",
+        "material": "decal",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "face-accent-69",
+        "material": "face",
+        "vertices": 8,
+        "faces": 12
+      },
+      {
+        "id": "face-accent-70",
+        "material": "face",
+        "vertices": 8,
+        "faces": 12
+      }
+    ]
+  },
+  "meshCheck": {
+    "faces": 5296,
+    "deg": 0,
+    "skinny": 0,
+    "skinnyPct": 0,
+    "areaRatio": 16.2
+  },
+  "seamCheck": {
+    "openEdges": 0,
+    "nonManifoldEdges": 0,
+    "seamEdges": 0,
+    "components": 1,
+    "onePiece": true,
+    "watertight": true,
+    "seams": []
+  },
+  "verify": {
+    "ok": true,
+    "checkedFaces": 9640,
+    "checks": {
+      "watertight": {
+        "pass": true,
+        "openEdges": 0,
+        "nonManifold": 0,
+        "samplePositions": []
+      },
+      "seams": {
+        "pass": true,
+        "seamCount": 0,
+        "samplePositions": []
+      },
+      "normals": {
+        "pass": true,
+        "invertedCount": 0,
+        "sampleFaces": []
+      },
+      "degenerate": {
+        "count": 0,
+        "pass": true
+      },
+      "skinny": {
+        "count": 0,
+        "pct": 0,
+        "pass": true
+      },
+      "areaRatio": {
+        "value": 16.2,
+        "pass": true
+      },
+      "budget": {
+        "requested": null,
+        "used": 4902,
+        "exceeded": false,
+        "pass": true
+      },
+      "selfIntersections": {
+        "pass": true,
+        "intersectingPairs": 0,
+        "samplePairs": []
+      }
+    },
+    "failures": []
+  },
+  "perPart": [
+    {
+      "id": "body",
+      "vertices": 2656,
+      "faces": 5296,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 5296,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 16.2,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 5296,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "hair",
+      "vertices": 218,
+      "faces": 432,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 432,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 2.9,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 432,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "horn-left",
+      "vertices": 162,
+      "faces": 320,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 320,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 9,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 320,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "horn-right",
+      "vertices": 162,
+      "faces": 320,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 320,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 9,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 320,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "face-details",
+      "vertices": 40,
+      "faces": 60,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 60,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 8.7,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 60,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "jersey",
+      "vertices": 194,
+      "faces": 384,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 384,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 3.7,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 384,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "shorts-left",
+      "vertices": 130,
+      "faces": 256,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 256,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 3.4,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 256,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "shorts-right",
+      "vertices": 130,
+      "faces": 256,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 256,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 3.4,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 256,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "sleeve-left",
+      "vertices": 26,
+      "faces": 48,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 48,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 6.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 48,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "sleeve-right",
+      "vertices": 26,
+      "faces": 48,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 48,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 6.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 48,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "glove-left",
+      "vertices": 66,
+      "faces": 128,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 128,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 1.7,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 128,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "glove-right",
+      "vertices": 66,
+      "faces": 128,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 128,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 1.7,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 128,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "sock-left",
+      "vertices": 162,
+      "faces": 320,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 320,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 3,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 320,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "sock-right",
+      "vertices": 162,
+      "faces": 320,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 320,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 3,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 320,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "shoe-upper-left",
+      "vertices": 102,
+      "faces": 200,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 200,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 2.9,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 200,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "shoe-upper-right",
+      "vertices": 102,
+      "faces": 200,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 200,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 2.9,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 200,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "shoe-sole-left",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 8.8,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "shoe-sole-right",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 8.8,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "shoe-stud-left-front",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 1.5,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "shoe-stud-left-mid",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 1.5,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "shoe-stud-left-back",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 1.5,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "shoe-stud-right-front",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 1.5,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "shoe-stud-right-mid",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 1.5,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "shoe-stud-right-back",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 1.5,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "tail-left",
+      "vertices": 74,
+      "faces": 144,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 144,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 6.2,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 144,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "tail-right",
+      "vertices": 74,
+      "faces": 144,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 144,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 6.2,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 144,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "tassel-left-gold",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 5,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "tassel-left-red",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 5,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "tassel-left-blue",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 2.9,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "tassel-right-gold",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 5,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "tassel-right-red",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 5,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "tassel-right-blue",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 2.9,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "front-mark-0",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 7.5,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "front-mark-1",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 3,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "front-mark-2",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 7.5,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "front-mark-3",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 7.5,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "front-mark-4",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 3.7,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "front-mark-5",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 3.7,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "front-mark-6",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 5.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "front-mark-7",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 2.2,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "front-mark-8",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 5.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "front-mark-9",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 5.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "front-mark-10",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 2.8,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "front-mark-11",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 2.8,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-0",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 5.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-1",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 5.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-2",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 3.1,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-3",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 1.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-4",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 1.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-5",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 5.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-6",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 5.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-7",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 1.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-8",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 1.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-9",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 5.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-10",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 5.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-11",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 4.2,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-12",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 3.1,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-13",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 3.1,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-14",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 3.2,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-15",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 1.7,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-16",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 5.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-17",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 5.6,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-18",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 2.5,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-19",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 8.2,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-20",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 3.3,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-21",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 8.2,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-22",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 8.2,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-23",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 4.1,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "back-mark-24",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 4.1,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "face-accent-69",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 4.9,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    },
+    {
+      "id": "face-accent-70",
+      "vertices": 8,
+      "faces": 12,
+      "gate": {
+        "ok": true,
+        "checkedFaces": 12,
+        "checks": {
+          "watertight": {
+            "pass": true,
+            "openEdges": 0,
+            "nonManifold": 0,
+            "samplePositions": []
+          },
+          "seams": {
+            "pass": true,
+            "seamCount": 0,
+            "samplePositions": []
+          },
+          "normals": {
+            "pass": true,
+            "invertedCount": 0,
+            "sampleFaces": []
+          },
+          "degenerate": {
+            "count": 0,
+            "pass": true
+          },
+          "skinny": {
+            "count": 0,
+            "pct": 0,
+            "pass": true
+          },
+          "areaRatio": {
+            "value": 4.9,
+            "pass": true
+          },
+          "budget": {
+            "requested": null,
+            "used": 12,
+            "exceeded": false,
+            "pass": true
+          },
+          "selfIntersections": {
+            "pass": true,
+            "intersectingPairs": 0,
+            "samplePairs": []
+          }
+        },
+        "failures": []
+      }
+    }
+  ],
+  "gameAcceptance": "pending-user-import"
+}\n

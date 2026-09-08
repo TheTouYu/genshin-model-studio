@@ -1,0 +1,9 @@
+{
+  "baselineVertices": 113,
+  "baselineTriangles": 222,
+  "candidate": "crown cap center vertex 112",
+  "status": "deferred",
+  "reason": "Dynamic baseline fails shoulderL-sweep at t=3; no vertex deletion can be accepted before motion invariant gate passes.",
+  "deletedVertices": 0,
+  "userBaselinePreserved": true
+}

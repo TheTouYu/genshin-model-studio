@@ -1,0 +1,91 @@
+{
+  "schemaVersion": 1,
+  "name": "网格元件_直出",
+  "template": "空模型",
+  "templatePrefabId": 10005018,
+  "templateInstanceId": 10005018,
+  "prefabId": 1077936129,
+  "definitionAuxiliaryIds": [
+    1073741830
+  ],
+  "instanceAuxiliaryIds": [
+    1073741831
+  ],
+  "position": [
+    0,
+    0,
+    0
+  ],
+  "rotation": [
+    0,
+    0,
+    0
+  ],
+  "scale": [
+    1,
+    1,
+    1
+  ],
+  "items": [
+    {
+      "resourceId": 10009019,
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ],
+      "vertices": [
+        [
+          0,
+          0,
+          0
+        ],
+        [
+          1,
+          0,
+          0
+        ],
+        [
+          0.5,
+          0,
+          1
+        ],
+        [
+          0.5,
+          1,
+          0.5
+        ]
+      ],
+      "faces": [
+        0,
+        1,
+        2,
+        0,
+        2,
+        3,
+        0,
+        3,
+        1,
+        1,
+        2,
+        3
+      ],
+      "colors": [
+        "0x12A594",
+        "0x12A594",
+        "0x12A594",
+        "0x12A594"
+      ]
+    }
+  ]
+}

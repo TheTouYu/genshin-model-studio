@@ -1,0 +1,18 @@
+{
+  "invariantFailures": [],
+  "resetExact": true,
+  "samples": 204,
+  "passed": 203,
+  "failed": [
+    {
+      "clip": "shoulderL-sweep",
+      "time": 3,
+      "moved": 16,
+      "ok": false,
+      "failures": [
+        "存在 7 处局部自交（面 #23 与 #94）"
+      ]
+    }
+  ],
+  "deletionAllowed": false
+}

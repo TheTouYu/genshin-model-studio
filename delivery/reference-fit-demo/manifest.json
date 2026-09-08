@@ -1,0 +1,94 @@
+{
+ "landmarks": {
+  "ankle": {
+   "class": "未知区域",
+   "reason": "前视袜筒无法语义定位踝部（需侧视/顶视或人工标注）；无稳定高对比特征。"
+  },
+  "arch": {
+   "class": "未知区域",
+   "reason": "足弓需顶视/侧视轮廓；前视不可稳定提取。"
+  },
+  "bottomVisibleRow": {
+   "class": "groundOrSole",
+   "heightFrac": 0.0,
+   "pixelRow": 483
+  },
+  "heel": {
+   "class": "未知区域",
+   "reason": "后跟需侧视轮廓；侧视为近鞋/袜近似，不可靠。"
+  },
+  "toe": {
+   "class": "未知区域",
+   "reason": "趾部需顶视轮廓区分；无顶视图素材。"
+  },
+  "topVisibleRow": {
+   "class": "objectTop",
+   "heightFrac": 1.0,
+   "pixelRow": 0
+  },
+  "widestRow": {
+   "class": "widestCrossSection",
+   "heightFrac": 0.6957,
+   "pixelRow": 147,
+   "widthPx": 147
+  }
+ },
+ "method": {
+  "bandColorTol": 28,
+  "bgPatch": 4,
+  "bgThresh": 40,
+  "cap": "both",
+  "colorBandsMode": "auto",
+  "heightM": 0.4,
+  "minComponentFrac": 0.01,
+  "morphK": 3,
+  "points": 64,
+  "ringCount": 16,
+  "topApprox": "ellipse(width x depth)"
+ },
+ "name": "sock-foot",
+ "partCount": 2,
+ "uncertainties": [
+  "无顶视图素材：前后向深度经「椭圆近似（宽×深）」合成，待顶视轮廓后可精确化。",
+  "前视图顶部疑被裁切（前景触及画面上缘）→ 高度被低估，实际物体更高。",
+  "视图 front 检出 2 个部件（多部件/遮挡/细节碎片）→ 以最大连通域为主剪影，宽度/深度为该部件范围；其余部件未纳入剖面。",
+  "视图 side 检出 4 个部件（多部件/遮挡/细节碎片）→ 以最大连通域为主剪影，宽度/深度为该部件范围；其余部件未纳入剖面。",
+  "前视与侧视来自不同图像；若二者为同一对象的不同视角则物理一致，否则组合环为近似（管线不校验两图对象同一性）。"
+ ],
+ "views": [
+  {
+   "bbox": [
+    44,
+    0,
+    203,
+    483
+   ],
+   "componentCount": 2,
+   "file": "reference/details/07-sock-shin.png",
+   "heightPx": 484,
+   "maskAreaPx": 56735,
+   "name": "sock-foot-front",
+   "partCount": 2,
+   "purpose": "宽度剖面（x 向）",
+   "role": "front",
+   "widthPx": 594
+  },
+  {
+   "bbox": [
+    2,
+    0,
+    155,
+    306
+   ],
+   "componentCount": 14,
+   "file": "reference/details/08-shoe.png",
+   "heightPx": 341,
+   "maskAreaPx": 25759,
+   "name": "sock-foot-side",
+   "partCount": 4,
+   "purpose": "深度剖面 + centerZ 偏置（z 向）",
+   "role": "side",
+   "widthPx": 605
+  }
+ ]
+}

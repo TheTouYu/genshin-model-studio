@@ -1,0 +1,13 @@
+{
+  "iteration": 25,
+  "round": "R1 局部连续生长工具",
+  "action": "新增 extrudeFace：从现有三角面共享三条边向法向挤出，源面替换为三侧四边面与顶盖",
+  "intent": "为肩/髋/指根等局部连接提供不依赖完整内部环的连续拓扑原语",
+  "status": "experimental; validation exposed closed-surface seam behavior",
+  "verification": {
+    "single_open_triangle": { "components": 1, "openEdges": 3, "nonManifoldEdges": 0 },
+    "closed_box_face": { "components": 1, "openEdges": 0, "nonManifoldEdges": 0, "seamEdges": 8, "onePiece": false }
+  },
+  "decision": "不接入人体主路径；需要先定义 seam 检测对合法三角对角线的语义，或实现真正的 ring-subset branch。",
+  "next": "实现 ring-subset branch/端环重构，移除 body-cage 的 allowInterior=true，再跑网页四视图。"
+}

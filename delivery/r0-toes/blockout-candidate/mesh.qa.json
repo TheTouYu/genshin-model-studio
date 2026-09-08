@@ -1,0 +1,103 @@
+{
+  "ok": true,
+  "base": "mesh",
+  "dir": "/home/h/genshin-model-studio/delivery/r0-toes/blockout-candidate",
+  "checks": {
+    "id": {
+      "pass": true,
+      "issues": []
+    },
+    "resources": {
+      "pass": true,
+      "uncalibrated": [
+        {
+          "resourceId": 10009003,
+          "name": "平面",
+          "status": "未校准",
+          "count": 548,
+          "index": 0
+        },
+        {
+          "resourceId": 10009006,
+          "name": "三棱锥",
+          "status": "未校准",
+          "count": 28,
+          "index": 199
+        }
+      ],
+      "unknown": [],
+      "issues": []
+    },
+    "budget": {
+      "pass": true,
+      "detail": {
+        "requested": null,
+        "used": 576,
+        "exceeded": false,
+        "gateState": "passed"
+      },
+      "issues": []
+    },
+    "readback": {
+      "pass": true,
+      "detail": {
+        "gil": {
+          "prefabId": 1077936129,
+          "templateResourceId": 10005018,
+          "items": 576,
+          "closureComplete": true
+        },
+        "gia": {
+          "items": 576,
+          "idRange": [
+            1073741825,
+            1073742400
+          ],
+          "resourceIds": [
+            10009003,
+            10009006
+          ],
+          "structureId": 1077936129,
+          "templatePrefabId": 10005018,
+          "name": "mesh"
+        }
+      },
+      "issues": []
+    },
+    "artifacts": {
+      "pass": true,
+      "detail": {
+        "artifacts": [
+          {
+            "path": "/home/h/genshin-model-studio/delivery/r0-toes/blockout-candidate/mesh.structure.json",
+            "exists": true,
+            "size": 292205
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/r0-toes/blockout-candidate/mesh.summary.json",
+            "exists": true,
+            "size": 11522
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/r0-toes/blockout-candidate/mesh.gil",
+            "exists": true,
+            "size": 188596
+          },
+          {
+            "path": "/home/h/genshin-model-studio/delivery/r0-toes/blockout-candidate/mesh.gia",
+            "exists": true,
+            "size": 114919
+          }
+        ],
+        "items": 576,
+        "units": 576,
+        "meshFaces": null
+      },
+      "issues": []
+    }
+  },
+  "failures": [],
+  "notes": [
+    "资源覆盖：存在 2 类未校准基元（候选/待校准）：平面(10009003)×548、三棱锥(10009006)×28"
+  ]
+}
