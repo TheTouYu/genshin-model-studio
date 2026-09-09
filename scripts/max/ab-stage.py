@@ -27,13 +27,14 @@ KEY = os.path.join(ROOT, '.scratch', 'max', 'ab-key.json')
 # （带尺寸标注的规格图不入基准：判官靠标注线即可分辨，计入会虚高误判率）
 NEWREF = '/mnt/e/模型/笔记本/'
 PAIRS = [
-    # 协议 v6：3 张白底 + 3 张暗底，**两侧同分布**——否则判官可仅凭背景色区分（v5 全部白底=我方，官方图全暗底）
-    ('macbook-v6w/p1-closedtop',   NEWREF + '俯视图.png'),
-    ('macbook-v6w/p2-screenfront', NEWREF + '正视图.png'),
-    ('macbook-v6w/p3-kb',          NEWREF + '键盘和触控板.png'),
-    ('macbook-v6d/p2-hero',        'reference/macbook/img/official-mbp14-hero.jpg'),
-    ('macbook-v6d/p3-ports',       'reference/macbook/img/official-mbp14-ports-1.jpg'),
-    ('macbook-v6d/p4-bottom',      'reference/macbook/img/apple-mbp13-bottom-case-official.jpg'),
+    # 协议 v7：6 张**各自不同画布尺寸**（v6 教训：我方 6 张同尺寸 → 判官按尺寸聚类）。
+    # 尺寸与配对参考图的画幅比对齐；背景 3 白 / 2 暗 / 1 灰，两侧同分布。
+    ('macbook-v7w/p1-closedtop',   NEWREF + '俯视图.png'),              # 900x724  AR 1.243（参考 433x348）
+    ('macbook-v7w/p2-screenfront', NEWREF + '正视图.png'),              # 1000x627 AR 1.595（参考 528x331）
+    ('macbook-v7w/p3-kb',          NEWREF + '键盘和触控板.png'),        # 880x680  AR 1.294（参考 490x379）
+    ('macbook-v7d/p4-ports',       'reference/macbook/img/official-mbp14-ports-1.jpg'),   # 1180x395 AR 2.987
+    ('macbook-v7d/p5-hero',        'reference/macbook/img/official-mbp14-hero.jpg'),      # 860x520  AR 1.654
+    ('macbook-v7g/p6-bottom',      'reference/macbook/img/apple-mbp13-bottom-case-official.jpg'),  # 880x600
 ]
 
 
@@ -69,19 +70,20 @@ def stage(seed):
         os.remove(KEY)
     # 源渲染目录/复盘文档改名
     for src, hold in (('macbook-max', '.mhold'), ('macbook-page', '.mhold-page'), ('macbook-gia', '.mhold-gia'),
-                      ('macbook-v6w', '.mhold-v6w'), ('macbook-v6d', '.mhold-v6d'), ('macbook-v6', '.mhold-v6old')):
+                      ('macbook-v7w', '.mhold-v7w'), ('macbook-v7d', '.mhold-v7d'), ('macbook-v7g', '.mhold-v7g'),
+                      ('macbook-v6w', '.mhold-v6w'), ('macbook-v6d', '.mhold-v6d')):
         a, h = os.path.join(ROOT, 'delivery', src), os.path.join(ROOT, 'delivery', hold)
         if os.path.isdir(a) and not os.path.isdir(h):
             os.rename(a, h)
     # 隐藏自查材料（对比图/调色扫描里直接标着哪张是我渲染的）
-    for src, hold in (('.scratch/max', '.scratch/.maxhold'),):
+    for src, hold in (('.scratch/max', '.scratch/.maxhold'), ('.scratch/r6', '.scratch/.r6hold')):
         a, h = os.path.join(ROOT, src), os.path.join(ROOT, hold)
         if os.path.isdir(a) and not os.path.isdir(h):
             os.rename(a, h)
     rub = os.path.join(ROOT, 'docs', 'macbook-max-rubric.md')
     if os.path.exists(rub):
         os.rename(rub, os.path.join(ROOT, 'docs', '.mrubric.md'))
-    for pf in ('AB-PROTOCOL-v6.md', 'AB-PROTOCOL-v5.md', 'AB-PROTOCOL-v4.md'):
+    for pf in ('AB-PROTOCOL-v7.md', 'AB-PROTOCOL-v6.md', 'AB-PROTOCOL-v5.md', 'AB-PROTOCOL-v4.md'):
         a2 = os.path.join(ROOT, 'delivery', pf)
         if os.path.exists(a2):
             os.rename(a2, os.path.join(ROOT, 'delivery', '.' + pf))
@@ -95,6 +97,7 @@ def restore(seed):
     if os.path.isdir(d):
         shutil.rmtree(d)
     for hold, tgt in (('.mhold', 'macbook-max'), ('.mhold-page', 'macbook-page'), ('.mhold-gia', 'macbook-gia'),
+                      ('.mhold-v7w', 'macbook-v7w'), ('.mhold-v7d', 'macbook-v7d'), ('.mhold-v7g', 'macbook-v7g'),
                       ('.mhold-v6w', 'macbook-v6w'), ('.mhold-v6d', 'macbook-v6d')):
         h, t = os.path.join(ROOT, 'delivery', hold), os.path.join(ROOT, 'delivery', tgt)
         if not os.path.isdir(h):
@@ -105,13 +108,14 @@ def restore(seed):
             shutil.rmtree(h)
         else:
             os.rename(h, t)
-    hm = os.path.join(ROOT, '.scratch', '.maxhold')
-    if os.path.isdir(hm) and not os.path.isdir(os.path.join(ROOT, '.scratch', 'max')):
-        os.rename(hm, os.path.join(ROOT, '.scratch', 'max'))
+    for hn, tn in (('.maxhold', 'max'), ('.r6hold', 'r6')):
+        hm = os.path.join(ROOT, '.scratch', hn)
+        if os.path.isdir(hm) and not os.path.isdir(os.path.join(ROOT, '.scratch', tn)):
+            os.rename(hm, os.path.join(ROOT, '.scratch', tn))
     rub = os.path.join(ROOT, 'docs', '.mrubric.md')
     if os.path.exists(rub):
         os.rename(rub, os.path.join(ROOT, 'docs', 'macbook-max-rubric.md'))
-    for pf in ('AB-PROTOCOL-v6.md', 'AB-PROTOCOL-v5.md', 'AB-PROTOCOL-v4.md'):
+    for pf in ('AB-PROTOCOL-v7.md', 'AB-PROTOCOL-v6.md', 'AB-PROTOCOL-v5.md', 'AB-PROTOCOL-v4.md'):
         a2 = os.path.join(ROOT, 'delivery', '.' + pf)
         if os.path.exists(a2):
             os.rename(a2, os.path.join(ROOT, 'delivery', pf))

@@ -96,7 +96,12 @@ for (const v of VIEWS) {
   // 每视角可覆写预设（背景/地面多样化 → 去聚类），但整组仍在**同一页面会话**里拍
   // —— 屏幕贴图只加载一次，跨视角内容必然同源（用户点名的硬伤）。
   if (TUNEMAP[v] && TUNEMAP[v].preset) { await evalJS(`window.__photo.preset(${JSON.stringify(TUNEMAP[v].preset)})`); await sleep(900) }
-  await evalJS(`window.__photo.shoot('${v}', ${W}, ${H}, ${JSON.stringify(o)})`)
+  // 每视角可覆写后处理（噪声幅度按参考图实测标定：亮底产品照 3x3 残差 SD≈0.5-0.8，暗底≈5-12）
+  if (TUNEMAP[v] && TUNEMAP[v].post) { await evalJS(`window.__photo.post(${JSON.stringify(TUNEMAP[v].post)})`) }
+  // 每视角可覆写画布尺寸（协议 v7：跨图不同画布，避免裁判按「六张同尺寸」聚类）
+  const VW = (TUNEMAP[v] && TUNEMAP[v].w) || W
+  const VH = (TUNEMAP[v] && TUNEMAP[v].h) || H
+  await evalJS(`window.__photo.shoot('${v}', ${VW}, ${VH}, ${JSON.stringify(o)})`)
   await sleep(900)
   // 直接读 canvas 像素（preserveDrawingBuffer:true）——绕开浏览器缩放/视口几何。
   // 历史 bug：本机浏览器有 1.25× 页面缩放（dpr 0.8），captureScreenshot 的 clip 按设备像素，
