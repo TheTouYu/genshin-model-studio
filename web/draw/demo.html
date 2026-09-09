@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="zh">
+<head><meta charset="utf-8"><title>MacBook Pro 14" · 演示视频</title>
+<style>
+  html,body{margin:0;height:100%;background:#08090b;color:#e6e8ec;font:15px/1.6 "Microsoft YaHei UI",system-ui,sans-serif}
+  .wrap{max-width:1320px;margin:0 auto;padding:18px 20px 40px}
+  h1{font-size:17px;font-weight:600;margin:6px 0 2px;letter-spacing:.02em}
+  .sub{color:#8b9199;font-size:13px;margin-bottom:14px}
+  video{width:100%;height:auto;background:#000;border-radius:10px;display:block;
+        box-shadow:0 10px 40px rgba(0,0,0,.55)}
+  .note{margin-top:14px;color:#9aa1aa;font-size:13px}
+  .note b{color:#d7dbe0;font-weight:600}
+  a{color:#7fb0ff}
+</style></head>
+<body>
+<div class="wrap">
+  <h1>MacBook Pro 14" · 浏览器实时渲染演示</h1>
+  <div class="sub">67.8 s · 1280×720 · 开盖 / 亮屏 / 倒影 / 音效全部实时计算 —— 非 AI 生成视频</div>
+  <video src="./demo-macbook.webm" controls autoplay playsinline></video>
+  <div class="note">
+    <b>这条片子里的每一帧都来自真实浏览器渲染</b>（本页的 three.js 场景 <a href="./photo.html">photo.html</a>
+    被录制下来），模型是本项目生成的网格。开盖是上盖刚体绕转轴旋转，亮屏是屏幕材质发光强度关键帧，
+    台面倒影是镜像组 + 半透明玻璃地面；音乐与音效由 WebAudio 现场合成，没有任何第三方素材。<br>
+    分镜脚本 / 字幕 / 自我介绍文案见 <code>delivery/demo-video/</code>。
+  </div>
+</div>
+</body>
+</html>
