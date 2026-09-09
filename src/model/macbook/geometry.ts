@@ -195,23 +195,9 @@ function portCavity(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz:
     }
     return;
   }
-  b.material(M.PORT_METAL);
-  // 内舌尺寸：USB-C 真机开口 8.34×2.56mm，内舌（PCB）≈0.75mm 厚、6.3mm 宽 →
-  // 旧值 1.15mm 厚 / 6.2mm 宽把开口填掉 44%×75%，渲染出来像"填满的槽"而非"腔+舌"。
-  const mh = kind === 'usbc' ? 0.78 : kind === 'hdmi' ? 3.6 : kind === 'sdxc' ? 1.0 : 1.7;
-  const mw = kind === 'usbc' ? 6.35 : kind === 'hdmi' ? 12.8 : kind === 'sdxc' ? 25.0 : 7.6;
-  const md = Math.min(depth - 0.4, kind === 'magsafe' ? 2.6 : 6.2);
-  const mx0 = wallX - side * 0.35, mx1 = wallX - side * md;
-  const zc0 = cz - mw / 2, zc1 = cz + mw / 2, yc0 = cy - mh / 2, yc1 = cy + mh / 2;
-  const P = (x: number, y: number, z: number, nx: number, ny: number, nz: number): number => b.vertex(v3(x, y, z), v3(nx, ny, nz), 0, 0);
-  b.quad(P(mx0, yc1, zc0, 0, 1, 0), P(mx1, yc1, zc0, 0, 1, 0), P(mx1, yc1, zc1, 0, 1, 0), P(mx0, yc1, zc1, 0, 1, 0));
-  b.quad(P(mx0, yc0, zc0, 0, -1, 0), P(mx0, yc0, zc1, 0, -1, 0), P(mx1, yc0, zc1, 0, -1, 0), P(mx1, yc0, zc0, 0, -1, 0));
-  b.quad(P(mx0, yc0, zc0, 0, 0, -1), P(mx1, yc0, zc0, 0, 0, -1), P(mx1, yc1, zc0, 0, 0, -1), P(mx0, yc1, zc0, 0, 0, -1));
-  b.quad(P(mx0, yc0, zc1, 0, 0, 1), P(mx0, yc1, zc1, 0, 0, 1), P(mx1, yc1, zc1, 0, 0, 1), P(mx1, yc0, zc1, 0, 0, 1));
-  const f1 = P(mx0, yc0, zc0, side, 0, 0), f2 = P(mx0, yc0, zc1, side, 0, 0), f3 = P(mx0, yc1, zc1, side, 0, 0), f4 = P(mx0, yc1, zc0, side, 0, 0);
-  if (side > 0) b.quad(f1, f2, f3, f4); else b.quad(f1, f4, f3, f2);
   if (kind === 'magsafe') {
-    // 5 个金色触点
+    // MagSafe 内腔没有 USB-C 式内舌（真机是 5 个弹性触点），只有深腔
+    b.material(M.PORT_METAL);
     const gold = M.PORT_METAL;
     b.material(gold);
     for (let i = 0; i < 5; i++) {
@@ -224,7 +210,23 @@ function portCavity(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz:
       const e = b.vertex(v3(px, cy - 0.55, zc + 0.8), nf, 0, 0);
       if (side > 0) b.quad(a, c, d, e); else b.quad(a, e, d, c);
     }
+    return;
   }
+  b.material(M.PORT_METAL);
+  // 内舌尺寸：USB-C 真机开口 8.34×2.56mm，内舌（PCB）≈0.75mm 厚、6.3mm 宽 →
+  // 旧值 1.15mm 厚 / 6.2mm 宽把开口填掉 44%×75%，渲染出来像"填满的槽"而非"腔+舌"。
+  const mh = kind === 'usbc' ? 0.78 : kind === 'hdmi' ? 3.6 : kind === 'sdxc' ? 1.0 : 1.7;
+  const mw = kind === 'usbc' ? 6.35 : kind === 'hdmi' ? 12.8 : kind === 'sdxc' ? 25.0 : 7.6;
+  const md = Math.min(depth - 0.4, kind === 'magsafe' ? 2.6 : 6.2);
+  const mx0 = wallX - side * 1.6, mx1 = wallX - side * md;
+  const zc0 = cz - mw / 2, zc1 = cz + mw / 2, yc0 = cy - mh / 2, yc1 = cy + mh / 2;
+  const P = (x: number, y: number, z: number, nx: number, ny: number, nz: number): number => b.vertex(v3(x, y, z), v3(nx, ny, nz), 0, 0);
+  b.quad(P(mx0, yc1, zc0, 0, 1, 0), P(mx1, yc1, zc0, 0, 1, 0), P(mx1, yc1, zc1, 0, 1, 0), P(mx0, yc1, zc1, 0, 1, 0));
+  b.quad(P(mx0, yc0, zc0, 0, -1, 0), P(mx0, yc0, zc1, 0, -1, 0), P(mx1, yc0, zc1, 0, -1, 0), P(mx1, yc0, zc0, 0, -1, 0));
+  b.quad(P(mx0, yc0, zc0, 0, 0, -1), P(mx1, yc0, zc0, 0, 0, -1), P(mx1, yc1, zc0, 0, 0, -1), P(mx0, yc1, zc0, 0, 0, -1));
+  b.quad(P(mx0, yc0, zc1, 0, 0, 1), P(mx0, yc1, zc1, 0, 0, 1), P(mx1, yc1, zc1, 0, 0, 1), P(mx1, yc0, zc1, 0, 0, 1));
+  const f1 = P(mx0, yc0, zc0, side, 0, 0), f2 = P(mx0, yc0, zc1, side, 0, 0), f3 = P(mx0, yc1, zc1, side, 0, 0), f4 = P(mx0, yc1, zc0, side, 0, 0);
+  if (side > 0) b.quad(f1, f2, f3, f4); else b.quad(f1, f4, f3, f2);
 }
 
 function logoPatch(b: MeshBuilder, shape: LogoShape, cx: number, cy: number, cz: number, w: number, h: number, mat: number): void {
@@ -279,8 +281,10 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     const allPorts = [...S.ports.left.map((p) => ({ ...p, side: -1 as const })), ...S.ports.right.map((p) => ({ ...p, side: 1 as const }))];
     const zToU = (z: number, side: number): number => {
       let best = 0, bd = 1e9;
-      for (let i = 0; i <= 1024; i++) {
-        const u = i / 1024, p = pathAt(path, u);
+      // 采样密度决定孔边界精度：旧值 1024 步在 ~1040mm 周长上 = 1mm/步，
+      // 小孔（jack Ø3.44）的 u 断点全被量化到 1mm 栅格 → 圆孔变十字块。
+      for (let i = 0; i <= 16384; i++) {
+        const u = i / 16384, p = pathAt(path, u);
         if (side < 0 ? p.x > -B.w / 2 + 3 : p.x < B.w / 2 - 3) continue;
         const dd = Math.abs(p.z - z);
         if (dd < bd) { bd = dd; best = u; }
@@ -290,12 +294,31 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     const profV = [...lin(0, 1, prof.length - 1)];
     const uBreaks: number[] = [...lin(0, 1, sc(448, 96))];
     for (const p of allPorts) {
-      uBreaks.push(zToU(p.z - p.w / 2, p.side), zToU(p.z + p.w / 2, p.side), zToU(p.z, p.side));
+      const hw = p.w / 2;
+      uBreaks.push(zToU(p.z - hw, p.side), zToU(p.z + hw, p.side), zToU(p.z, p.side));
+      // 孔边界加密：patch 的 mask 按「格心」判定，格子粗 → 圆孔退化成方孔
+      // （实测 jack 渲染成方块、USB-C 两端圆角变直角）。按半宽比例补采样点。
+      const fr = p.kind === 'jack' ? [0.075, 0.15, 0.225, 0.3, 0.375, 0.45, 0.525, 0.6, 0.675, 0.75, 0.825, 0.9, 0.96] : [0.25, 0.5, 0.75];
+      for (const f of fr) {
+        uBreaks.push(zToU(p.z - hw * 2 * f, p.side), zToU(p.z + hw * 2 * f, p.side));
+      }
     }
     uBreaks.sort((a, c) => a - c);
     const snapB = (list: number[], gap: number): number[] => {
       const out: number[] = [];
       for (const v of list) if (!out.length || v - out[out.length - 1] > gap) out.push(v);
+      return out;
+    };
+    /** v → 剖面 y（bodyProfile 折线线性插值） */
+    const yOfV = (v: number): number => {
+      const t = v * (prof.length - 1);
+      const i = Math.min(prof.length - 2, Math.max(0, Math.floor(t)));
+      return prof[i].y + (prof[i + 1].y - prof[i].y) * (t - i);
+    };
+    /** 按「真实 y 距离」去重（v 在圆角段密、平面段稀：用 v 阈值会把平面段内 2.7mm 的端口断点吃掉） */
+    const snapByY = (list: number[], minMm: number): number[] => {
+      const out: number[] = [];
+      for (const v of list) if (!out.length || Math.abs(yOfV(v) - yOfV(out[out.length - 1])) > minMm) out.push(v);
       return out;
     };
     const uB = snapB(uBreaks, 0.02 / 312.6);
@@ -329,10 +352,13 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       const vs = [...profV];
       for (const q of portU) {
         if (um < q.lo - 1e-4 || um > q.hi + 1e-4) continue;
-        vs.push(vForY(prof, S.ports.centerY - q.p.h / 2), vForY(prof, S.ports.centerY + q.p.h / 2));
+        const hh = q.p.h / 2, cy = S.ports.centerY;
+        vs.push(vForY(prof, cy - hh), vForY(prof, cy + hh));
+        const fr = q.p.kind === 'jack' ? [0.075, 0.15, 0.225, 0.3, 0.375, 0.45, 0.525, 0.6, 0.675, 0.75, 0.825, 0.9, 0.96] : [0.25, 0.5, 0.75];
+        for (const f of fr) vs.push(vForY(prof, cy - hh * 2 * f), vForY(prof, cy + hh * 2 * f));
       }
       vs.sort((a, c) => a - c);
-      patch(b, surf, [u0, u1], snapB(vs, 0.02), { mask });
+      patch(b, surf, [u0, u1], snapByY(vs, 0.02), { mask });
     }
   }
 

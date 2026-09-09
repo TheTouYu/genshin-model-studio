@@ -45,8 +45,11 @@
     hero:     { azim: 34,  elev: 24, dist: 0.70, fov: 30, target: [0, 0.085, 0.000] },
     top:      { azim: 0,   elev: 80, dist: 0.56, fov: 32, target: [0, 0.040, 0.000] },
     kb:       { azim: 0,   elev: 86, dist: 0.43, fov: 30, target: [0, 0.012, 0.0015] },
-    ports:    { azim: 270, elev: 3,  dist: 0.19, fov: 24, target: [-0.070, 0.008, 0.020] },
-    side:     { azim: 90,  elev: 3,  dist: 0.30, fov: 24, target: [0.150, 0.008, 0.020] },
+    // 端口特写：配对 official-mbp14-ports-1.jpg（左壁 MagSafe+2×USB-C+jack，z 36.7..82.5）。
+    // 旧机位 target z=0.020 只框住 C2+jack；端口 z 实测后整簇中心在 z=62。
+    ports:    { azim: 270, elev: 3,  dist: 0.26, fov: 24, target: [0, 0.008, -0.060] },
+    // 右壁全景：HDMI(82.7)+USB-C(64.4)+SDXC(39.8)，旧机位把 HDMI 切在画框外。
+    side:     { azim: 90,  elev: 3,  dist: 0.40, fov: 24, target: [0, 0.008, -0.060] },
     screen34: { azim: 20,  elev: 9,  dist: 0.60, fov: 30, target: [0, 0.120, -0.010] },
     lid:      { azim: 10,  elev: 5,  dist: 0.56, fov: 30, target: [0, 0.140, -0.030] },
     // 屏幕特写（配对 `/mnt/e/模型/笔记本/正视图.png`：该参考是屏幕占满画幅的正面近景）
