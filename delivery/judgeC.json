@@ -1,0 +1,12 @@
+[{"file":"img01.png","verdict":"render","confidence":0.85,"reason":"功能键排印成一串重复的『F』、左下角键位印成『in』且空格键中间断开"},
+{"file":"img02.png","verdict":"photo","confidence":0.6,"reason":"正视无透视畸变，屏幕暗部与底座前缘保留细碎噪声和柔和亮度衰减"},
+{"file":"img03.png","verdict":"render","confidence":0.8,"reason":"键帽字标糊成团块、屏幕壁纸与其它 CG 图同一套渐变贴图、棱边是纯白镜面高光条"},
+{"file":"img04.png","verdict":"photo","confidence":0.78,"reason":"逐键字标正确锐利、触控板玻璃有柔和边缘高光、金属面有细微噪声与柔和渐变"},
+{"file":"img05.png","verdict":"photo","confidence":0.72,"reason":"端口形态与布局正确（MagSafe 五针、两个 USB-C、3.5mm 圆孔），金属拉丝有高频纹理"},
+{"file":"img06.png","verdict":"render","confidence":0.6,"reason":"上盖是无任何纹理的纯平滑渐变、Logo 像扁平浅灰贴片、后缘与上角出现与机身脱节的小台阶"},
+{"file":"img07.png","verdict":"photo","confidence":0.65,"reason":"官方规格式 221mm 尺寸标注图：屏框黑边均匀、脚垫与铰链缝细节正确"},
+{"file":"img08.png","verdict":"render","confidence":0.72,"reason":"底盖完全没有激光刻字与螺丝细节，四个脚垫是纯黑无高光无投影的圆片"},
+{"file":"img09.png","verdict":"render","confidence":0.8,"reason":"左侧并排两个 HDMI 式金属舌片端口（真机左侧应为 MagSafe+USB-C）、键帽字标糊化"},
+{"file":"img10.png","verdict":"render","confidence":0.85,"reason":"键盘字标重复糊化（功能排一串 F）、屏框做成银色并挖出黑缺口、壁纸与其它 CG 图同一套"},
+{"file":"img11.png","verdict":"photo","confidence":0.8,"reason":"底盖有铰链区小标签文字、四角螺丝、脚垫高光与投影，铝面呈柔和不规则反射"},
+{"file":"img12.png","verdict":"photo","confidence":0.6,"reason":"上盖有清晰倒角细线与对称圆角，Logo 是亮于盖面的嵌片而非扁平贴片"}]

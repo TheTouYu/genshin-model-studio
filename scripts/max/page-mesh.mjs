@@ -11,8 +11,13 @@ import { buildMacbook14 } from '../../dist/src/model/macbook/geometry.js';
 import { linearToSrgb } from '../../dist/src/render/image.js';
 
 const ROOT = new URL('../..', import.meta.url).pathname;
-const lod = 1.0;                     // 渲染级（页面通道用：低 LOD 的 6 段圆角在 3/4 视角下呈阶梯折面，裁判点名）
-const openAngle = 100, color = 'silver', screenOn = true;
+function arg(name, dflt) {
+  const i = process.argv.indexOf('--' + name);
+  return i >= 0 ? process.argv[i + 1] : dflt;
+}
+const lod = parseFloat(arg('lod', '1.0'));   // 渲染级（页面通道用：低 LOD 的 6 段圆角在 3/4 视角下呈阶梯折面，裁判点名）
+const OUT = arg('out', 'web/draw/macbook-current.json');
+const openAngle = parseFloat(arg('open', '100')), color = arg('color', 'silver'), screenOn = arg('screen', '1') !== '0';
 
 const logo = JSON.parse(readFileSync(ROOT + 'reference/macbook/logo-outline.json', 'utf8'));
 const built = buildMacbook14({ openAngle, screenOn, color, lod, legends: false }, { logo });
@@ -70,8 +75,8 @@ for (let t = 0; t < mesh.mat.length; t++) {
   colors.push(hexOf[mesh.mat[t]]);
 }
 
-const out = { name: 'macbook-pro-14-silver-open-r4', vertices, faces, colors };
+const out = { name: `macbook-pro-14-${color}-${openAngle === 0 ? 'closed' : 'open' + openAngle}-r4`, vertices, faces, colors };
 mkdirSync(ROOT + 'web/draw/', { recursive: true });
-writeFileSync(ROOT + 'web/draw/macbook-current.json', JSON.stringify(out));
+writeFileSync(ROOT + OUT, JSON.stringify(out));
 console.log(`verts ${vertices.length} | tris ${faces.length / 3} | dropped ${dropped} | colors ${new Set(colors).size}`);
-console.log('written: web/draw/macbook-current.json');
+console.log('written: ' + OUT);

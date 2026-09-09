@@ -56,7 +56,9 @@ function baseMaterials(assets: Assets, color: 'silver' | 'spaceblack' = 'silver'
   });
   mats[M.KEY] = makeMaterial({ name: 'keycap', baseColor: [0.0125, 0.0125, 0.0135], metallic: 0, roughness: 0.56 });
   mats[M.LEGEND] = makeMaterial({ name: 'key-legend', baseColor: [0.014, 0.014, 0.015], metallic: 0, roughness: 0.52, baseTex: assets.legendAtlas });
-  mats[M.TRACKPAD] = makeMaterial({ name: 'trackpad-glass', baseColor: [0.030, 0.030, 0.032], metallic: 0, roughness: 0.055, ior: 1.52 });
+  // 触控板玻璃：真机是**浅灰**玻璃（用户参考图 键盘和触控板.png 里触控板比掌托更亮），
+  // 旧值 0.030（近黑）在页面渲染里读作一块黑砖，与参考图完全不符。
+  mats[M.TRACKPAD] = makeMaterial({ name: 'trackpad-glass', baseColor: [0.28, 0.28, 0.29], metallic: 0.10, roughness: 0.085, ior: 1.52 });
   mats[M.LOGO] = makeMaterial({ name: 'logo-mirror', baseColor: [0.965, 0.965, 0.97], metallic: 1, roughness: 0.022 });
   mats[M.PORT_DARK] = makeMaterial({ name: 'port-cavity', baseColor: [0.012, 0.012, 0.013], metallic: 0, roughness: 0.72 });
   mats[M.PORT_METAL] = makeMaterial({ name: 'port-metal', baseColor: [0.62, 0.62, 0.635], metallic: 1, roughness: 0.30 });
@@ -191,8 +193,10 @@ function portCavity(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz:
     return;
   }
   b.material(M.PORT_METAL);
-  const mh = kind === 'usbc' ? 1.15 : kind === 'hdmi' ? 3.6 : kind === 'sdxc' ? 1.0 : 1.7;
-  const mw = kind === 'usbc' ? 6.2 : kind === 'hdmi' ? 12.8 : kind === 'sdxc' ? 25.0 : 7.6;
+  // 内舌尺寸：USB-C 真机开口 8.34×2.56mm，内舌（PCB）≈0.75mm 厚、6.3mm 宽 →
+  // 旧值 1.15mm 厚 / 6.2mm 宽把开口填掉 44%×75%，渲染出来像"填满的槽"而非"腔+舌"。
+  const mh = kind === 'usbc' ? 0.78 : kind === 'hdmi' ? 3.6 : kind === 'sdxc' ? 1.0 : 1.7;
+  const mw = kind === 'usbc' ? 6.35 : kind === 'hdmi' ? 12.8 : kind === 'sdxc' ? 25.0 : 7.6;
   const md = Math.min(depth - 0.4, kind === 'magsafe' ? 2.6 : 6.2);
   const mx0 = wallX - side * 0.35, mx1 = wallX - side * md;
   const zc0 = cz - mw / 2, zc1 = cz + mw / 2, yc0 = cy - mh / 2, yc1 = cy + mh / 2;
@@ -343,7 +347,9 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     ];
     b.material(M.ALU);
     plateWithHoles(b, outline, holes, deckY, { maxCell: mc(24) });
-    b.material(M.KEY);
+    // 键盘井底是**阳极氧化铝**（真机：井底与台面同色，键间阴影来自键帽侧壁）。
+    // 旧值 M.KEY（近黑 0.0125）在俯视/正视里把整个键盘区渲染成一块黑板，与参考图完全不符。
+    b.material(M.ALU);
     plateFill(b, { cx: 0, cz: wellCz, w: wellW, d: wellD, r: 4.0 }, deckY - kb.wellDepth, { nu: sc(56, 8), nt: 2, cornerSegs: sc(6, 4), vertexSampling: true });
     b.material(M.ALU);
     extrudeOutline(b, roundedRectOutline(wellW, wellD, 4.0, 0, wellCz, sc(6, 4), sc(10, 8)), deckY - kb.wellDepth, deckY, { flipWall: true });
@@ -496,6 +502,8 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     if (assets.logo) {
       const lg = S.logo;
       const lcz = L.d / 2 + lg.centerOffsetZ;
+      b.material(M.LOGO);          // 缺这一行 → logo 三角形继承上一个材质（M.SCREEN），
+                                   // 页面按色分组后 logo 被当成屏幕贴上桌面纹理（实测 55 tris 错材质）
       const tmp = new MeshBuilder(); tmp.material(0);
       logoPatch(tmp, assets.logo, 0, L.h + 0.25, lcz, lg.w, lg.h, 0);
       const md = tmp.build(); const idx: number[] = [];

@@ -1,0 +1,53 @@
+{
+ "seed": 20260909,
+ "key": {
+  "img01.png": {
+   "kind": "render",
+   "source": "macbook-v6w/p3-kb"
+  },
+  "img02.png": {
+   "kind": "real",
+   "source": "official-mbp14-hero.jpg"
+  },
+  "img03.png": {
+   "kind": "render",
+   "source": "macbook-v6d/p2-hero"
+  },
+  "img04.png": {
+   "kind": "real",
+   "source": "键盘和触控板.png"
+  },
+  "img05.png": {
+   "kind": "real",
+   "source": "official-mbp14-ports-1.jpg"
+  },
+  "img06.png": {
+   "kind": "render",
+   "source": "macbook-v6w/p1-closedtop"
+  },
+  "img07.png": {
+   "kind": "real",
+   "source": "正视图.png"
+  },
+  "img08.png": {
+   "kind": "render",
+   "source": "macbook-v6d/p4-bottom"
+  },
+  "img09.png": {
+   "kind": "render",
+   "source": "macbook-v6d/p3-ports"
+  },
+  "img10.png": {
+   "kind": "render",
+   "source": "macbook-v6w/p2-screenfront"
+  },
+  "img11.png": {
+   "kind": "real",
+   "source": "apple-mbp13-bottom-case-official.jpg"
+  },
+  "img12.png": {
+   "kind": "real",
+   "source": "俯视图.png"
+  }
+ }
+}

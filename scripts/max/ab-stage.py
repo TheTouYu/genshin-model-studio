@@ -27,12 +27,13 @@ KEY = os.path.join(ROOT, '.scratch', 'max', 'ab-key.json')
 # （带尺寸标注的规格图不入基准：判官靠标注线即可分辨，计入会虚高误判率）
 NEWREF = '/mnt/e/模型/笔记本/'
 PAIRS = [
-    ('p6-top',      NEWREF + '俯视图.png'),
-    ('p2-front',    NEWREF + '正视图.png'),
-    ('p3-kb',       NEWREF + '键盘和触控板.png'),
-    ('p4-ports',    'reference/macbook/img/official-mbp14-ports-1.jpg'),
-    ('p5-screen34', 'reference/macbook/img/apple-mbp14-m3-official.png'),
-    ('p1-hero',     'reference/macbook/img/official-mbp14-hero.jpg'),
+    # 协议 v6：3 张白底 + 3 张暗底，**两侧同分布**——否则判官可仅凭背景色区分（v5 全部白底=我方，官方图全暗底）
+    ('macbook-v6w/p1-closedtop',   NEWREF + '俯视图.png'),
+    ('macbook-v6w/p2-screenfront', NEWREF + '正视图.png'),
+    ('macbook-v6w/p3-kb',          NEWREF + '键盘和触控板.png'),
+    ('macbook-v6d/p2-hero',        'reference/macbook/img/official-mbp14-hero.jpg'),
+    ('macbook-v6d/p3-ports',       'reference/macbook/img/official-mbp14-ports-1.jpg'),
+    ('macbook-v6d/p4-bottom',      'reference/macbook/img/apple-mbp13-bottom-case-official.jpg'),
 ]
 
 
@@ -41,7 +42,7 @@ def build_set(seed):
     rnd = random.Random(seed)
     items = []
     for name, ref in PAIRS:
-        items.append(('render', os.path.join(ROOT, 'delivery', 'macbook-page', name + '.png'), name))
+        items.append(('render', os.path.join(ROOT, 'delivery', name + '.png'), name))
         items.append(('real', os.path.join(ROOT, ref), os.path.basename(ref)))
     rnd.shuffle(items)
     key = {}
@@ -67,13 +68,23 @@ def stage(seed):
     if os.path.exists(KEY):
         os.remove(KEY)
     # 源渲染目录/复盘文档改名
-    for src, hold in (('macbook-max', '.mhold'), ('macbook-page', '.mhold-page'), ('macbook-gia', '.mhold-gia')):
+    for src, hold in (('macbook-max', '.mhold'), ('macbook-page', '.mhold-page'), ('macbook-gia', '.mhold-gia'),
+                      ('macbook-v6w', '.mhold-v6w'), ('macbook-v6d', '.mhold-v6d'), ('macbook-v6', '.mhold-v6old')):
         a, h = os.path.join(ROOT, 'delivery', src), os.path.join(ROOT, 'delivery', hold)
+        if os.path.isdir(a) and not os.path.isdir(h):
+            os.rename(a, h)
+    # 隐藏自查材料（对比图/调色扫描里直接标着哪张是我渲染的）
+    for src, hold in (('.scratch/max', '.scratch/.maxhold'),):
+        a, h = os.path.join(ROOT, src), os.path.join(ROOT, hold)
         if os.path.isdir(a) and not os.path.isdir(h):
             os.rename(a, h)
     rub = os.path.join(ROOT, 'docs', 'macbook-max-rubric.md')
     if os.path.exists(rub):
         os.rename(rub, os.path.join(ROOT, 'docs', '.mrubric.md'))
+    for pf in ('AB-PROTOCOL-v6.md', 'AB-PROTOCOL-v5.md', 'AB-PROTOCOL-v4.md'):
+        a2 = os.path.join(ROOT, 'delivery', pf)
+        if os.path.exists(a2):
+            os.rename(a2, os.path.join(ROOT, 'delivery', '.' + pf))
     print(f'staged {d} ({len(key)} images, re-encoded)')
     print(f'key deleted ({KEY}); regenerate deterministically with: ab-stage.py restore {seed}')
     print('held: delivery/.mhold* , docs/.mrubric.md')
@@ -83,7 +94,8 @@ def restore(seed):
     d = os.path.join(ROOT, f'.blind-{seed}')
     if os.path.isdir(d):
         shutil.rmtree(d)
-    for hold, tgt in (('.mhold', 'macbook-max'), ('.mhold-page', 'macbook-page'), ('.mhold-gia', 'macbook-gia')):
+    for hold, tgt in (('.mhold', 'macbook-max'), ('.mhold-page', 'macbook-page'), ('.mhold-gia', 'macbook-gia'),
+                      ('.mhold-v6w', 'macbook-v6w'), ('.mhold-v6d', 'macbook-v6d')):
         h, t = os.path.join(ROOT, 'delivery', hold), os.path.join(ROOT, 'delivery', tgt)
         if not os.path.isdir(h):
             continue
@@ -93,9 +105,16 @@ def restore(seed):
             shutil.rmtree(h)
         else:
             os.rename(h, t)
+    hm = os.path.join(ROOT, '.scratch', '.maxhold')
+    if os.path.isdir(hm) and not os.path.isdir(os.path.join(ROOT, '.scratch', 'max')):
+        os.rename(hm, os.path.join(ROOT, '.scratch', 'max'))
     rub = os.path.join(ROOT, 'docs', '.mrubric.md')
     if os.path.exists(rub):
         os.rename(rub, os.path.join(ROOT, 'docs', 'macbook-max-rubric.md'))
+    for pf in ('AB-PROTOCOL-v6.md', 'AB-PROTOCOL-v5.md', 'AB-PROTOCOL-v4.md'):
+        a2 = os.path.join(ROOT, 'delivery', '.' + pf)
+        if os.path.exists(a2):
+            os.rename(a2, os.path.join(ROOT, 'delivery', pf))
     key = build_set(seed)
     for v in key.values():
         v.pop('src', None)

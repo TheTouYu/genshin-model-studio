@@ -1,0 +1,12 @@
+[{"file":"img01.png","verdict":"render","confidence":0.85,"reason":"键面是无噪声纯平板、功能键字标错乱重叠（F 键重复、字符发虚），全图无高光与纹理"},
+{"file":"img02.png","verdict":"photo","confidence":0.65,"reason":"屏幕为真实 macOS 壁纸、刘海与边框比例正确，8x8 JPEG 块状痕迹明显"},
+{"file":"img03.png","verdict":"render","confidence":0.9,"reason":"键盘退化成一片无字标的深色块、机身呈无反射平滑灰板、壁纸为合成渐变"},
+{"file":"img04.png","verdict":"photo","confidence":0.8,"reason":"键帽字标锐利且布局正确、铝面有均匀颗粒噪声与不均匀反光、扬声器开孔细节真实"},
+{"file":"img05.png","verdict":"photo","confidence":0.75,"reason":"侧壁金属有真实各向异性反光与明显 8x8 JPEG 块痕，MagSafe 触点/USB-C/耳机孔内腔细节齐备"},
+{"file":"img06.png","verdict":"render","confidence":0.85,"reason":"顶盖无任何噪声颗粒、平坦区呈周期性斜向抖动点阵、转角有几何接缝细线，苹果标为纯色平贴"},
+{"file":"img07.png","verdict":"photo","confidence":0.65,"reason":"屏幕为真实 Big Sur 壁纸、正面比例与刘海正确、附 221 尺寸标注线"},
+{"file":"img08.png","verdict":"render","confidence":0.9,"reason":"底盖是无字标无螺丝的纯色平板（平坦区局部标准差 0.011），四脚为纯黑圆片"},
+{"file":"img09.png","verdict":"render","confidence":0.85,"reason":"机身带 USB-A 口（MacBook 无此口）、键盘退化为无字标深色块、表面零噪声零反射"},
+{"file":"img10.png","verdict":"render","confidence":0.8,"reason":"屏幕四角为直角且渐变出现明显竖向条纹带、键盘无字标细节、机身边缘无高光变化"},
+{"file":"img11.png","verdict":"photo","confidence":0.8,"reason":"底盖有法规刻字与螺丝孔细节、脚垫有立体阴影、平面存在均匀随机颗粒"},
+{"file":"img12.png","verdict":"photo","confidence":0.65,"reason":"顶盖平面有均匀随机颗粒而无周期性抖动点阵、边缘有倒角高光、无接缝伪影"}]
