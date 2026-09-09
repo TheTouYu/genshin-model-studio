@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "operator_contract": "0.1",
+  "version": "0.2.0rc5",
+  "release_channel": "remote-commit",
+  "source_repository": "https://github.com/TheTouYu/portable-knowledge.git",
+  "source_ref": "main",
+  "source_commit": "8a2a083360eeb06c634409a75cab6be9e824de6c",
+  "wheel_sha256": "1ce44c7689d66861c0c284f3af95aaef68fea9b75229b10859adae9934acbc96",
+  "wheel_cache": "/home/h/.local/share/portable-knowledge/wheels/8a2a083360eeb06c634409a75cab6be9e824de6c/e3a3b2c84d3cb31c/portable_knowledge-0.2.0rc5-py3-none-any.whl",
+  "runtime": ".local/pkc/runtimes/8a2a083360eeb06c634409a75cab6be9e824de6c",
+  "python_requirement": ">=3.11"
+}

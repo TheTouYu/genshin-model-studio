@@ -8,6 +8,7 @@ import { cpus } from 'node:os';
 import { Worker } from 'node:worker_threads';
 import { v3 } from '../../dist/src/render/math.js';
 import { encodePngRGB, agxTM, acesTM, denoiseAtrous } from '../../dist/src/render/image.js';
+import { encodeJpegRGB } from '../../dist/src/render/jpeg.js';
 import { jpegSimulate } from '../../dist/src/render/jpeg-sim.js';
 
 const arg = (n, d) => { const i = process.argv.indexOf('--' + n); return i >= 0 ? process.argv[i + 1] : d; };
@@ -191,6 +192,7 @@ const workerDataBase = {
   lod: parseFloat(arg('lod', '1')),
   legends: arg('legends', '1') !== '0',
   seedOffset: parseInt(arg('seed', '0'), 10),
+  screenGain: parseFloat(arg('screen-gain', '1.8')),
 };
 
 const bands = [];
@@ -260,7 +262,10 @@ for (let i = 0; i < W * H; i++) {
 // 关键：噪声必须「亮度主导」(cov(R,G)≈1, chroma/luma≈0.2)，否则是路径追踪采样噪声的指纹
 if (has('sensor') || has('camera')) {
   const ph = parseFloat(arg('photon', '0.0034'));
-  const rd = parseFloat(arg('read', '0.010'));
+  // 读噪底：color 缓冲是**线性**空间，PNG 编码时才做 sRGB 编码 → 黑场处斜率 ×12.92，
+  // rd=0.010 会把纯黑背景抬成 mean 9 / std 8.6 级别的可见颗粒（真机黑底是干净的）。
+  // 0.0003 线性 ≈ 1/255 sRGB，黑场干净；亮面颗粒仍由光子项主导（lum·0.0034）。
+  const rd = parseFloat(arg('read', '0.0003'));
   const chromaFrac = parseFloat(arg('chroma-frac', '0.10'));
   // --- 色度降噪：Y/Cb/Cr 分解 + Cb/Cr 3x3 模糊 ---
   const n = W * H;
@@ -312,6 +317,12 @@ if (has('sensor') || has('camera')) {
     color[i * 3] = Math.max(0, yv + crN);
     color[i * 3 + 1] = Math.max(0, yv - (0.299 * crN + 0.114 * cbN) / 0.587);
     color[i * 3 + 2] = Math.max(0, yv + cbN);
+  }
+  if (process.env.DBG_SENSOR) {
+    let s = 0, s2 = 0; const N = 400;
+    for (let i = 0; i < N; i++) { const v = (color[i * 3] + color[i * 3 + 1] + color[i * 3 + 2]) / 3; s += v; s2 += v * v; }
+    const m = s / N;
+    console.error('DBG after-sensor corner mean', (m * 255).toFixed(3), 'std', (Math.sqrt(s2 / N - m * m) * 255).toFixed(3));
   }
 }
 
@@ -390,7 +401,8 @@ if (bgc) {
 }
 // JPEG 编码伪影模拟（真机参考图全部为 JPEG：8×8 块效应 + 4:2:0 色度子采样）
 // 默认开启（--no-jpeg 关闭）；这是评委法证的主要依据，缺失即"单点判死"。
-if (!has('no-jpeg')) {
+const wantJpegFile = /\.jpe?g$/i.test(outPath);
+if (!has('no-jpeg') && !wantJpegFile) {
   const q = parseFloat(arg('jpeg-quality', '86'));
   jpegSimulate(color, W, H, {
     quality: q,
@@ -400,5 +412,8 @@ if (!has('no-jpeg')) {
 }
 console.error(`phase: post ${((Date.now()-tDown)/1000).toFixed(1)}s`);
 mkdirSync(dirname(outPath), { recursive: true });
-writeFileSync(outPath, encodePngRGB(W, H, color));
+// .jpg/.jpeg 走真基线 JPEG 编码器（4:2:0 + Annex K 霍夫曼）——真机参考图无一例外是 JPEG
+writeFileSync(outPath, wantJpegFile
+  ? encodeJpegRGB(color, W, H, { quality: parseFloat(arg('jpeg-quality', '92')) })
+  : encodePngRGB(W, H, color));
 console.log('wrote', outPath);

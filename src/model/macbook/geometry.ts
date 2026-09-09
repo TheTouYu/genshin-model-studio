@@ -16,6 +16,8 @@ export interface LogoShape { body: number[][]; leaf: number[][] }
 export interface Assets {
   legendAtlas?: Texture;
   legendRects?: Record<string, [number, number, number, number]>;
+  /** 图集坐标下的 px/mm（rects 已含放大倍数；缺省按源图 4.72 会放大 3× 字形） */
+  legendPxPerMm?: number;
   logo?: LogoShape;
   screenTex?: Texture;
   grilleTex?: Texture;
@@ -69,22 +71,25 @@ function baseMaterials(assets: Assets, color: 'silver' | 'spaceblack' = 'silver'
   return mats;
 }
 
-/** 上/下缘圆角 + 侧壁剖面（o=内偏移, y=高度），从顶面内缘到底面内缘 */
+/**
+ * 上/下缘圆角 + 侧壁剖面（o=内偏移, y=高度），从顶面内缘到底面内缘。
+ * 角向均匀采样：早期版本用 a=0.03 的「贴壁点」代替 a=0，会在 y 方向留一段
+ * 0.03·rb（机身 1.55mm → 0.047mm）的窄带——扫掠曲面整圈都变成细针三角，
+ * 是本模型瘦三角的第一大来源。端点去重后段长≈0.71·rb，形状良好。
+ */
 function bodyProfile(yBottom: number, yTop: number, fillet: number, nSeg = 4): { o: number; y: number }[] {
   const p: { o: number; y: number }[] = [];
-  const rb = fillet;
-  p.push({ o: rb, y: yTop });
-  for (let i = 1; i <= nSeg; i++) {
-    const a = (Math.PI / 2) * (1 - i / nSeg) + 0.03;
+  const rb = Math.max(1e-6, Math.min(fillet, (yTop - yBottom) / 2));
+  const seg = Math.max(1, Math.round(nSeg));
+  for (let i = 0; i <= seg; i++) {
+    const a = (Math.PI / 2) * (1 - i / seg);
     p.push({ o: rb - rb * Math.cos(a), y: yTop - rb + rb * Math.sin(a) });
   }
-  p.push({ o: 0, y: yTop - rb });
   p.push({ o: 0, y: yBottom + rb });
-  for (let i = 1; i <= nSeg; i++) {
-    const a = (Math.PI / 2) * (i / nSeg);
+  for (let i = 1; i <= seg; i++) {
+    const a = (Math.PI / 2) * (i / seg);
     p.push({ o: rb - rb * Math.cos(a), y: yBottom + rb - rb * Math.sin(a) });
   }
-  p.push({ o: rb, y: yBottom });
   return p;
 }
 /** y → 剖面参数 v（二分） */
@@ -219,7 +224,8 @@ function logoPatch(b: MeshBuilder, shape: LogoShape, cx: number, cy: number, cz:
   b.material(mat);
   for (const part of [shape.body, shape.leaf]) {
     const pts = part.map(([x, y]) => ({ x: cx + (x - 0.5) * w, z: cz + (y - 0.5) * h }));
-    polygonFill(b, pts, cy);
+    // 轮廓点密达 0.47mm（body 576 点）→ 直接耳切会沿轮廓产出细针；抽稀到 ~1.2mm 再切
+    polygonFill(b, pts, cy, false, { maxSeg: 1.2, keepAngleDeg: 8 });
   }
 }
 
@@ -237,12 +243,14 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
   const sc = (n: number, min = 1): number => Math.max(min, Math.round(n * LOD));
   /** 最大网格边长（mm）——LOD 越小格子越大 */
   const mc = (n: number): number => n / Math.max(0.35, LOD);
+  /** 渲染级细分（引擎级保持既有粗网格：导出线已封存，但不得因渲染优化而回退） */
+  const hq = (hi: number, lo: number): number => (LOD >= 0.5 ? hi : lo);
   const wantLegends = opts.legends !== false;
 
   // ============ 1. 机身主体 ============
   {
-    const path = roundedRectPath(B.w, B.d, B.r, sc(20, 2));
-    const prof = bodyProfile(B.bottomY, deckY, B.fillet, sc(4, 1));
+    const path = roundedRectPath(B.w, B.d, B.r, hq(48, 6));
+    const prof = bodyProfile(B.bottomY, deckY, B.fillet, hq(8, 1));
     const surf0 = sweepSurface(path, prof);
     // 前缘开盖凹槽（宽 50mm、深 1.5mm，前壁中部）
     const GROOVE_W = 50.0, GROOVE_D = 1.5;
@@ -272,35 +280,53 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       }
       return best;
     };
-    const uBreaks = [...lin(0, 1, sc(288, 96))];
-    const vBreaks = [...lin(0, 1, prof.length - 1)];
+    const profV = [...lin(0, 1, prof.length - 1)];
+    const uBreaks: number[] = [...lin(0, 1, sc(448, 96))];
     for (const p of allPorts) {
       uBreaks.push(zToU(p.z - p.w / 2, p.side), zToU(p.z + p.w / 2, p.side), zToU(p.z, p.side));
-      vBreaks.push(vForY(prof, S.ports.centerY - p.h / 2), vForY(prof, S.ports.centerY + p.h / 2));
     }
-    uBreaks.sort((a, c) => a - c); vBreaks.sort((a, c) => a - c);
-    b.material(M.ALU);
-    patch(b, surf, uBreaks, vBreaks, {
-      mask: (u, v) => {
-        const p = surf(u, v);
-        if (Math.abs(p.x) < B.w / 2 - 1.4) return false;
-        const side = p.x > 0 ? 1 : -1;
-        for (const q of allPorts) {
-          if (q.side !== side) continue;
-          if (q.kind === 'jack') {
-            if (Math.hypot(p.z - q.z, p.y - S.ports.centerY) < q.w / 2) return true;
-            continue;
-          }
-          {
-            // 圆角矩形（两端半圆）开孔
-            const dz = Math.abs(p.z - q.z) - (q.w / 2 - q.h / 2);
-            const dy = Math.abs(p.y - S.ports.centerY);
-            if (dz <= 0 ? dy < q.h / 2 : Math.hypot(dz, dy) < q.h / 2) return true;
-          }
+    uBreaks.sort((a, c) => a - c);
+    const snapB = (list: number[], gap: number): number[] => {
+      const out: number[] = [];
+      for (const v of list) if (!out.length || v - out[out.length - 1] > gap) out.push(v);
+      return out;
+    };
+    const uB = snapB(uBreaks, 0.02 / 312.6);
+    const mask = (u: number, v: number): boolean => {
+      const p = surf(u, v);
+      if (Math.abs(p.x) < B.w / 2 - 1.4) return false;
+      const side = p.x > 0 ? 1 : -1;
+      for (const q of allPorts) {
+        if (q.side !== side) continue;
+        if (q.kind === 'jack') {
+          if (Math.hypot(p.z - q.z, p.y - S.ports.centerY) < q.w / 2) return true;
+          continue;
         }
-        return false;
-      },
+        // 圆角矩形（两端半圆）开孔
+        const dz = Math.abs(p.z - q.z) - (q.w / 2 - q.h / 2);
+        const dy = Math.abs(p.y - S.ports.centerY);
+        if (dz <= 0 ? dy < q.h / 2 : Math.hypot(dz, dy) < q.h / 2) return true;
+      }
+      return false;
+    };
+    b.material(M.ALU);
+    // 分段 patch：单个张量网格里，任一端口的高度断点会污染整圈（96 段 × 0.3–1.1mm 窄带
+    // 全是细针）。按 u 区间逐段发射，每段只带「与自己重叠的端口」的 v 断点——
+    // 端口附近保留精确孔边，其余区域只剩剖面本身的 3 个带。
+    const portU = allPorts.map((p) => {
+      const a = zToU(p.z - p.w / 2, p.side), c = zToU(p.z + p.w / 2, p.side);
+      return { lo: Math.min(a, c), hi: Math.max(a, c), p };
     });
+    for (let i = 0; i < uB.length - 1; i++) {
+      const u0 = uB[i], u1 = uB[i + 1], um = (u0 + u1) / 2;
+      const vs = [...profV];
+      for (const q of portU) {
+        if (um < q.lo - 1e-4 || um > q.hi + 1e-4) continue;
+        vs.push(vForY(prof, S.ports.centerY - q.p.h / 2), vForY(prof, S.ports.centerY + q.p.h / 2));
+      }
+      vs.sort((a, c) => a - c);
+      patch(b, surf, [u0, u1], snapB(vs, 0.02), { mask });
+    }
   }
 
   // ============ 2. 台面 ============
@@ -308,7 +334,8 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
   const wellCz = S.deck.kbBackZ + (5 * kb.pitchY + kb.keyH) / 2;
   const grilleCx = kb.blockW / 2 + kb.wellMargin + S.grille.w / 2 + 0.8;
   {
-    const outline: RRect = { cx: 0, cz: 0, w: B.w - 2.2, d: B.d - 2.2, r: B.r - 1.1 };
+    // 内缩必须 ≥ 顶部倒角(B.fillet=1.55)，否则板角穿出圆角管（实测 0.45mm 黑色楔形）
+    const outline: RRect = { cx: 0, cz: 0, w: B.w - 2.7, d: B.d - 2.7, r: B.r - 1.35 };
     const holes: RRect[] = [
       { cx: 0, cz: wellCz, w: wellW, d: wellD, r: 4.0 },
       { cx: -grilleCx, cz: wellCz, w: S.grille.w, d: S.grille.d, r: S.grille.r },
@@ -317,15 +344,16 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     b.material(M.ALU);
     plateWithHoles(b, outline, holes, deckY, { maxCell: mc(24) });
     b.material(M.KEY);
-    plateFill(b, { cx: 0, cz: wellCz, w: wellW, d: wellD, r: 4.0 }, deckY - kb.wellDepth, { nu: sc(56, 8), nt: 2, cornerSegs: sc(6, 1) });
+    plateFill(b, { cx: 0, cz: wellCz, w: wellW, d: wellD, r: 4.0 }, deckY - kb.wellDepth, { nu: sc(56, 8), nt: 2, cornerSegs: sc(6, 4), vertexSampling: true });
     b.material(M.ALU);
     extrudeOutline(b, roundedRectOutline(wellW, wellD, 4.0, 0, wellCz, sc(6, 4), sc(10, 8)), deckY - kb.wellDepth, deckY, { flipWall: true });
     b.material(M.GRILLE);
     for (const sx of [-1, 1]) {
       const gq: RRect = { cx: sx * grilleCx, cz: wellCz, w: S.grille.w, d: S.grille.d, r: S.grille.r };
-      plateFill(b, gq, deckY - S.grille.depth, { nu: sc(40, 6), nt: 1, cornerSegs: sc(4, 1), uv: (x, z) => [x / 0.86, z / 0.86] });
+      plateFill(b, gq, deckY - S.grille.depth, { nu: sc(40, 6), nt: 1, cornerSegs: sc(4, 4), vertexSampling: true, uv: (x, z) => [x / 0.86, z / 0.86] });
       b.material(M.GRILLE_RIM);
-      extrudeOutline(b, roundedRectOutline(S.grille.w, S.grille.d, S.grille.r, sx * grilleCx, wellCz, sc(4, 3), sc(6, 6)), deckY - S.grille.depth, deckY, { flipWall: true });
+      // 深度 0.30mm 的槽壁在任何三角化下都是细针（0.3 × 150mm），游戏内不足 1px → 贴片
+      extrudeOutline(b, roundedRectOutline(S.grille.w, S.grille.d, S.grille.r, sx * grilleCx, wellCz, sc(4, 3), sc(6, 6)), deckY - S.grille.depth, deckY, { flipWall: true, minWall: 0.4 });
       b.material(M.GRILLE);
     }
   }
@@ -335,7 +363,9 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     const blockX0 = -kb.blockW / 2;
     const gapX = kb.pitchX - kb.keyW, gapZ = kb.pitchY - kb.keyH;
     const atlasSize: [number, number] | undefined = assets.legendAtlas ? [assets.legendAtlas.w, assets.legendAtlas.h] : undefined;
-    const pxPerMm = 90 / 19.05;
+    // 图集坐标下的 px/mm。**不是**源图 90px/19.05mm——rects 是放大 3 倍后的坐标，
+    // 用源图比例会让每个字形被放大 3× 并与邻键互串（实测 Q 字高约 5.5mm，应为 2.4mm）。
+    const pxPerMm = assets.legendPxPerMm ?? 90 / 19.05;
     for (let ri = 0; ri < KB_ROWS.length; ri++) {
       const row = KB_ROWS[ri];
       const cz = S.deck.kbBackZ + ri * kb.pitchY + kb.keyH / 2;
@@ -359,14 +389,14 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
   {
     const tp = S.trackpad, cz = (S.deck.tpBackZ + S.deck.tpFrontZ) / 2;
     b.material(M.TRACKPAD);
-    plateFill(b, { cx: 0, cz, w: tp.w, d: tp.d, r: tp.r }, deckY + 0.25, { nu: sc(48, 8), nt: 2, cornerSegs: sc(6, 1) });
+    plateFill(b, { cx: 0, cz, w: tp.w, d: tp.d, r: tp.r }, deckY + 0.25, { nu: sc(48, 8), nt: 2, cornerSegs: sc(6, 4), vertexSampling: true });
   }
 
   // ============ 5. 底面 + 脚垫 + 螺丝 ============
   {
     b.material(M.ALU);
     b.material(M.ALU_GLOSS);
-    plateFill(b, { cx: 0, cz: 0, w: B.w - 2.2, d: B.d - 2.2, r: B.r - 1.1 }, B.bottomY, { nu: sc(64, 8), nt: sc(3, 1), flip: true, cornerSegs: sc(10, 2) });
+    plateFill(b, { cx: 0, cz: 0, w: B.w - 2.7, d: B.d - 2.7, r: B.r - 1.35 }, B.bottomY, { nu: sc(64, 8), nt: sc(3, 1), flip: true, cornerSegs: sc(10, 6), vertexSampling: true });
     b.material(M.ALU);
     const f = S.feet;
     for (const sx of [-1, 1]) for (const sz of [-1, 1]) {
@@ -392,9 +422,9 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
         b.material(M.SCREW);
       }
     }
-    // 激光雕刻区（法规文字，极低对比：比周围略暗的氧化面）
-    b.material(M.ALU_DARK);
-    plateFill(b, { cx: 0, cz: -B.d / 2 + 22, w: 92, d: 7.5, r: 1.0 }, B.bottomY - 0.25, { nu: sc(24, 4), nt: 1, flip: true, cornerSegs: sc(3, 1) });
+    // 激光雕刻区：真机底盖文字极细、对比极低（官方底视图几乎看不见）。
+    // 早期版本用一块 92×7.5mm 深色矩形代表它 → 照片里就是一条"神秘黑条"，
+    // 一眼被识破。改为不生成实体块（材质定义保留，将来可上真实文字纹理）。
   }
 
   // ============ 6. 接口腔体 ============
@@ -413,18 +443,18 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
   const loc = (p: Vec3): Vec3 => p;
   {
     b.material(M.ALU);
-    const path = roundedRectPath(L.w, L.d, L.r, sc(20, 2));
-    const prof = bodyProfile(0, L.h, 1.30, sc(4, 1));
+    const path = roundedRectPath(L.w, L.d, L.r, hq(48, 6));
+    const prof = bodyProfile(0, L.h, 1.30, hq(8, 1));
     const surf0 = sweepSurface(path, prof);
     // path 中心在原点 → 平移到 [0, L.d]（与 plates 的局部坐标一致）
     const surf = (u: number, v: number): Vec3 => { const p = surf0(u, v); return v3(p.x, p.y, p.z + L.d / 2); };
-    patch(b, (u, v) => xf(surf(u, v)), lin(0, 1, sc(256, 96)), lin(0, 1, prof.length - 1));
+    patch(b, (u, v) => xf(surf(u, v)), lin(0, 1, sc(448, 96)), lin(0, 1, prof.length - 1));
 
     const plateLocal = (outline: RRect, holes: RRect[], y: number, flip: boolean, mat: number, opts2: { nu?: number; nt?: number; maxCell?: number; uv?: (x: number, z: number) => [number, number] } = {}): void => {
       const tmp = new MeshBuilder();
       tmp.material(0);
       if (holes.length) plateWithHoles(tmp, outline, holes, y, { maxCell: opts2.maxCell ?? mc(24), flip });
-      else plateFill(tmp, outline, y, { nu: opts2.nu ?? sc(64, 8), nt: opts2.nt ?? sc(3, 1), flip, uv: opts2.uv, cornerSegs: sc(10, 2) });
+      else plateFill(tmp, outline, y, { nu: opts2.nu ?? sc(64, 8), nt: opts2.nt ?? sc(3, 1), flip, uv: opts2.uv, cornerSegs: sc(10, 6), vertexSampling: true });
       const md = tmp.build();
       b.material(mat);
       const idx: number[] = [];
@@ -435,7 +465,7 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       }
       for (let t = 0; t < md.idx.length; t += 3) b.tri(idx[md.idx[t]], idx[md.idx[t + 1]], idx[md.idx[t + 2]]);
     };
-    const outer: RRect = { cx: 0, cz: L.d / 2, w: L.w - 2.2, d: L.d - 2.2, r: L.r - 1.1 };
+    const outer: RRect = { cx: 0, cz: L.d / 2, w: L.w - 2.3, d: L.d - 2.3, r: L.r - 1.15 };
     const inner: RRect = { cx: 0, cz: L.d / 2, w: L.w - 2 * S.screen.glassInset, d: L.d - 2 * S.screen.glassInset, r: S.screen.glassR };
     plateLocal(outer, [], L.h, false, M.ALU_GLOSS);
     plateLocal(outer, [inner], 0, true, M.ALU, { maxCell: mc(24) });

@@ -16,3 +16,4 @@ __pycache__/
 
 # 独立模型评估 trace（体积大，报告留档即可）
 exports/*/eval*/trace.jsonl
+.local/

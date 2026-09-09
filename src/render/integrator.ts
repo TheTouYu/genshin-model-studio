@@ -498,7 +498,9 @@ export function renderSample(
     // 纹理 albedo（每命中点采样；lod 由命中距离估计）
     const base: [number, number, number] = [mat.baseColor[0], mat.baseColor[1], mat.baseColor[2]];
     if (mat.baseTex && mat.kind === 'pbr') {
-      const lod = Math.log2(Math.max(1, hit.t * ctx.pixelAngle * mat.baseTex.w));
+      // 纹理 LOD：不做 max(1,·) 下限——放大时（近景键帽字符）必须用 0 级全分辨率，
+      // 否则字形恒定被 2× 模糊
+      const lod = Math.log2(Math.max(1e-3, hit.t * ctx.pixelAngle * mat.baseTex.w));
       const t = mat.baseTex.sample(hit.uu, hit.vv, lod);
       base[0] = t[0]; base[1] = t[1]; base[2] = t[2];
     }
@@ -538,7 +540,7 @@ export function renderSample(
       // 透射：见到发光面板
       if (mat.emisTex) {
         const tex = mat.emisTex;
-        const lod = Math.log2(Math.max(1, hit.t * ctx.pixelAngle * tex.w));
+        const lod = Math.log2(Math.max(1e-3, hit.t * ctx.pixelAngle * tex.w));
         const c = tex.sample(hit.uu, hit.vv, lod);
         const k = 1 / Math.max(1e-4, 1 - F);
         Lr += tr * c[0] * k; Lg += tg * c[1] * k; Lb += tb * c[2] * k;

@@ -192,13 +192,16 @@ export function jpegSimulate(color: Float32Array, w: number, h: number, opt: Jpe
   planeQuantize(CrS, cw, ch, qc);
 
   // 色度上采样（双线性，与常见解码器一致）+ YCbCr → RGB
+  // 注意：x/2-0.25 在 x=0 处给出 fx=-0.25 → x0=-1，必须夹取到 [0,cw-1]，
+  // 否则索引为负 → undefined → 首行/首列 NaN（曾污染整张图的变差函数）
   const sampleC = (plane: Float64Array, fx: number, fy: number): number => {
-    const x0 = Math.floor(fx), y0 = Math.floor(fy);
+    const cx = Math.min(cw - 1, Math.max(0, fx)), cy = Math.min(ch - 1, Math.max(0, fy));
+    const x0 = Math.floor(cx), y0 = Math.floor(cy);
     const x1 = Math.min(cw - 1, x0 + 1), y1 = Math.min(ch - 1, y0 + 1);
-    const tx = fx - x0, ty = fy - y0;
-    const a = plane[Math.min(ch - 1, y0) * cw + Math.min(cw - 1, x0)];
-    const b = plane[Math.min(ch - 1, y0) * cw + x1];
-    const c = plane[y1 * cw + Math.min(cw - 1, x0)];
+    const tx = cx - x0, ty = cy - y0;
+    const a = plane[y0 * cw + x0];
+    const b = plane[y0 * cw + x1];
+    const c = plane[y1 * cw + x0];
     const d = plane[y1 * cw + x1];
     return (a * (1 - tx) + b * tx) * (1 - ty) + (c * (1 - tx) + d * tx) * ty;
   };

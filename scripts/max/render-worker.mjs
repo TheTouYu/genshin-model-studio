@@ -46,9 +46,11 @@ function loadAssets(wantScreen) {
   const tex = new Texture(atlasImg.w, atlasImg.h, toLin(atlasImg));
   tex.wrapU = 0; tex.wrapV = 0;
   out.legendAtlas = tex;
-  out.legendRects = JSON.parse(readFileSync(`${ROOT}/reference/macbook/legend-atlas.json`, 'utf8')).rects;
+  const atlasMeta = JSON.parse(readFileSync(`${ROOT}/reference/macbook/legend-atlas.json`, 'utf8'));
+  out.legendRects = atlasMeta.rects;
+  out.legendPxPerMm = atlasMeta.atlas_px_per_mm;
   out.logo = JSON.parse(readFileSync(`${ROOT}/reference/macbook/logo-outline.json`, 'utf8'));
-  if (wantScreen) out.screenTex = makeScreenTexture();
+  if (wantScreen) out.screenTex = makeScreenTexture(workerData.screenGain ?? 1.8);
   return out;
 }
 

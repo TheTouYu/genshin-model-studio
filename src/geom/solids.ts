@@ -42,24 +42,83 @@ export function roundedRectPath(w: number, d: number, r: number, segsPerCorner =
   };
   // 右侧直边：从后右角（a1=2π）到前右角（a0=0）
   const hwv = hw, hdv = hd;
-  straight(hwv, -hdv + rr, hwv, hdv - rr, 8);
+  straight(hwv, -hdv + rr, hwv, hdv - rr, 2);
   cornerPts(corners[0], segsPerCorner);
-  straight(hwv - rr, hdv, -hwv + rr, hdv, 12);
+  straight(hwv - rr, hdv, -hwv + rr, hdv, 3);
   cornerPts(corners[1], segsPerCorner);
-  straight(-hwv, hdv - rr, -hwv, -hdv + rr, 8);
+  straight(-hwv, hdv - rr, -hwv, -hdv + rr, 2);
   cornerPts(corners[2], segsPerCorner);
-  straight(-hwv + rr, -hdv, hwv - rr, -hdv, 12);
+  straight(-hwv + rr, -hdv, hwv - rr, -hdv, 3);
   cornerPts(corners[3], segsPerCorner);
+  // 去重：圆弧终点与相邻直边起点重合（4 处零长段）→ 弧长参数化后相邻 u 落在同一点，
+  // 任何扇形/环带镶嵌都会在这里产出细针三角形（实测 0.1–0.2mm 边长）。
+  const out: PathPt[] = [];
+  for (const p of pts) {
+    const q = out[out.length - 1];
+    if (q && Math.hypot(p.x - q.x, p.z - q.z) < 1e-6) continue;
+    out.push(p);
+  }
+  while (out.length > 1) {
+    const a = out[0], b = out[out.length - 1];
+    if (Math.hypot(a.x - b.x, a.z - b.z) < 1e-6) out.pop(); else break;
+  }
   // 弧长参数化
   let total = 0;
   const segs: number[] = [0];
-  for (let i = 1; i <= pts.length; i++) {
-    const a = pts[i - 1], b = pts[i % pts.length];
+  for (let i = 1; i <= out.length; i++) {
+    const a = out[i - 1], b = out[i % out.length];
     total += Math.hypot(b.x - a.x, b.z - a.z);
     segs.push(total);
   }
-  for (let i = 0; i < pts.length; i++) pts[i].u = segs[i] / total;
-  return pts;
+  for (let i = 0; i < out.length; i++) out[i].u = total > 0 ? segs[i] / total : 0;
+  return out;
+}
+
+/** 保角弧长重采样：转角 ≥ keepAngleDeg 的点原样保留，其余按弧长均匀布点（≤ maxSeg）。
+ *  适合「原始点极密但曲率极缓」的轮廓（logo body 576 点、转角中位数 1.05°）——
+ *  只按转角抽稀会把点数掉到 4，必须走弧长重采样。 */
+export function decimatePath(pts: { x: number; z: number }[], keepAngleDeg = 8, maxSeg = 1e9): { x: number; z: number }[] {
+  const n = pts.length;
+  if (n < 4 || !(maxSeg > 0)) return pts.slice();
+  const cum = new Float64Array(n + 1);
+  for (let i = 1; i <= n; i++) {
+    const a = pts[i - 1], b = pts[i % n];
+    cum[i] = cum[i - 1] + Math.hypot(b.x - a.x, b.z - a.z);
+  }
+  const total = cum[n];
+  if (!(total > 0)) return pts.slice();
+  const at = (s: number): { x: number; z: number } => {
+    const ss = ((s % total) + total) % total;
+    let lo = 0, hi = n;
+    while (hi - lo > 1) { const mid = (lo + hi) >> 1; if (cum[mid] <= ss) lo = mid; else hi = mid; }
+    const a = pts[lo], b = pts[(lo + 1) % n];
+    const span = cum[lo + 1] - cum[lo];
+    const t = span > 1e-12 ? (ss - cum[lo]) / span : 0;
+    return { x: a.x + (b.x - a.x) * t, z: a.z + (b.z - a.z) * t };
+  };
+  const corner: number[] = [];
+  for (let i = 0; i < n; i++) {
+    const a = pts[(i - 1 + n) % n], c = pts[i], d = pts[(i + 1) % n];
+    let t = Math.atan2(d.z - c.z, d.x - c.x) - Math.atan2(c.z - a.z, c.x - a.x);
+    if (t > Math.PI) t -= 2 * Math.PI;
+    if (t < -Math.PI) t += 2 * Math.PI;
+    if (Math.abs((t * 180) / Math.PI) >= keepAngleDeg) corner.push(i);
+  }
+  const out: { x: number; z: number }[] = [];
+  if (corner.length < 3) {
+    const k = Math.max(3, Math.round(total / maxSeg));
+    for (let m = 0; m < k; m++) out.push(at((total * m) / k));
+    return out;
+  }
+  for (let ci = 0; ci < corner.length; ci++) {
+    const s0 = cum[corner[ci]];
+    let s1 = cum[corner[(ci + 1) % corner.length]];
+    if (s1 <= s0) s1 += total;
+    out.push(at(s0));
+    const k = Math.floor((s1 - s0) / maxSeg);
+    for (let m = 1; m <= k; m++) out.push(at(s0 + ((s1 - s0) * m) / (k + 1)));
+  }
+  return out;
 }
 
 /** 在路径参数 u 处采样（线性插值 + 法线归一） */
@@ -238,19 +297,44 @@ export function flatRect(
 }
 
 /** 由二维轮廓（x,z 平面）挤出成柱体（用于键帽字符等）——此处提供「平面多边形填充」 */
-export function polygonFill(b: MeshBuilder, pts: { x: number; z: number }[], y: number, flip = false): void {
-  // 耳切三角化（简单凸/凹多边形）
-  const n = pts.length;
+/**
+ * 多边形填充（耳切三角化）。默认只做去重；opts.maxSeg 开启保角重采样
+ * （轮廓点过密时，任何三角化都会沿轮廓产出细针——先抽稀再切）。
+ * 耳选择用「最小内角最大化」而非首个可行耳：同一点集下三角形状显著更好。
+ */
+export function polygonFill(
+  b: MeshBuilder, pts: { x: number; z: number }[], y: number, flip = false,
+  opts: { maxSeg?: number; keepAngleDeg?: number } = {},
+): void {
+  const ded: { x: number; z: number }[] = [];
+  for (const p of pts) {
+    const q = ded[ded.length - 1];
+    if (q && Math.hypot(p.x - q.x, p.z - q.z) < 1e-6) continue;
+    ded.push(p);
+  }
+  while (ded.length > 1) {
+    const a = ded[0], c = ded[ded.length - 1];
+    if (Math.hypot(a.x - c.x, a.z - c.z) < 1e-6) ded.pop(); else break;
+  }
+  const poly = opts.maxSeg ? decimatePath(ded, opts.keepAngleDeg ?? 8, opts.maxSeg) : ded;
+  const n = poly.length;
   if (n < 3) return;
   const idx: number[] = [];
   for (let i = 0; i < n; i++) idx.push(i);
   const area2 = (a: number, c: number, d: number): number =>
-    (pts[c].x - pts[a].x) * (pts[d].z - pts[a].z) - (pts[d].x - pts[a].x) * (pts[c].z - pts[a].z);
+    (poly[c].x - poly[a].x) * (poly[d].z - poly[a].z) - (poly[d].x - poly[a].x) * (poly[c].z - poly[a].z);
+  const cosAt = (a: number, c: number, d: number): number => {
+    const ux = poly[a].x - poly[c].x, uz = poly[a].z - poly[c].z;
+    const vx = poly[d].x - poly[c].x, vz = poly[d].z - poly[c].z;
+    const lu = Math.hypot(ux, uz), lv = Math.hypot(vx, vz);
+    if (lu < 1e-12 || lv < 1e-12) return 1;
+    return (ux * vx + uz * vz) / (lu * lv);
+  };
   let guard = 0;
   const verts: number[] = [];
-  for (const p of pts) verts.push(b.vertex(v3(p.x, y, p.z), v3(0, flip ? -1 : 1, 0), p.x, p.z));
+  for (const p of poly) verts.push(b.vertex(v3(p.x, y, p.z), v3(0, flip ? -1 : 1, 0), p.x, p.z));
   while (idx.length > 3 && guard++ < n * n) {
-    let ear = false;
+    let bestI = -1, bestScore = -2;
     for (let i = 0; i < idx.length; i++) {
       const a = idx[(i - 1 + idx.length) % idx.length], c = idx[i], d = idx[(i + 1) % idx.length];
       if (area2(a, c, d) <= 0) continue;
@@ -260,10 +344,15 @@ export function polygonFill(b: MeshBuilder, pts: { x: number; z: number }[], y: 
         if (area2(a, c, e) >= 0 && area2(c, d, e) >= 0 && area2(d, a, e) >= 0) { ok = false; break; }
       }
       if (!ok) continue;
-      if (flip) b.tri(verts[a], verts[d], verts[c]); else b.tri(verts[a], verts[c], verts[d]);
-      idx.splice(i, 1); ear = true; break;
+      // 分数 = 该耳最小内角的余弦（越小越好 → 分数 = -cos）
+      const score = -Math.max(cosAt(a, c, d), cosAt(c, d, a), cosAt(d, a, c));
+      if (score > bestScore) { bestScore = score; bestI = i; }
     }
-    if (!ear) break;
+    if (bestI < 0) break;
+    const i = bestI;
+    const a = idx[(i - 1 + idx.length) % idx.length], c = idx[i], d = idx[(i + 1) % idx.length];
+    if (flip) b.tri(verts[a], verts[d], verts[c]); else b.tri(verts[a], verts[c], verts[d]);
+    idx.splice(i, 1);
   }
   if (idx.length === 3) {
     if (flip) b.tri(verts[idx[0]], verts[idx[2]], verts[idx[1]]);
@@ -300,26 +389,32 @@ export function roundedRectOutline(w: number, d: number, r: number, cx = 0, cz =
   return out;
 }
 
-/** 把二维轮廓挤出成管壁（沿 y 方向），可选封闭两端 */
+/** 把二维轮廓挤出成管壁（沿 y 方向），可选封闭两端。
+ *  minWall：壁高低于该值（mm）时不出壁——薄片侧壁在任何三角化下都是细针
+ *  （0.3mm × 150mm 的矩形不可能有好形状），而游戏内该壁宽不足 1px，直接降级为贴片。 */
 export function extrudeOutline(
   b: MeshBuilder, pts: { x: number; z: number }[], y0: number, y1: number,
-  opts: { capStart?: boolean; capEnd?: boolean; flipWall?: boolean; nrm?: Vec3 } = {},
+  opts: { capStart?: boolean; capEnd?: boolean; flipWall?: boolean; nrm?: Vec3; minWall?: number } = {},
 ): void {
   const n = pts.length;
   const nx = opts.nrm ?? v3(0, 1, 0);
+  const minWall = opts.minWall ?? 0;
+  const thin = Math.abs(y1 - y0) < minWall;
   const rings: number[][] = [[], []];
-  for (let i = 0; i < n; i++) {
-    const p = pts[i], q = pts[(i + 1) % n];
-    let ex = q.x - p.x, ez = q.z - p.z;
-    const l = Math.hypot(ex, ez) || 1;
-    const nx2 = ez / l, nz2 = -ex / l;
-    rings[0].push(b.vertex(v3(p.x, y0, p.z), v3(nx2, 0, nz2), i / n, 0));
-    rings[1].push(b.vertex(v3(p.x, y1, p.z), v3(nx2, 0, nz2), i / n, 1));
-  }
-  for (let i = 0; i < n; i++) {
-    const j = (i + 1) % n;
-    if (opts.flipWall) b.quad(rings[0][i], rings[1][i], rings[1][j], rings[0][j]);
-    else b.quad(rings[0][i], rings[0][j], rings[1][j], rings[1][i]);
+  if (!thin) {
+    for (let i = 0; i < n; i++) {
+      const p = pts[i], q = pts[(i + 1) % n];
+      let ex = q.x - p.x, ez = q.z - p.z;
+      const l = Math.hypot(ex, ez) || 1;
+      const nx2 = ez / l, nz2 = -ex / l;
+      rings[0].push(b.vertex(v3(p.x, y0, p.z), v3(nx2, 0, nz2), i / n, 0));
+      rings[1].push(b.vertex(v3(p.x, y1, p.z), v3(nx2, 0, nz2), i / n, 1));
+    }
+    for (let i = 0; i < n; i++) {
+      const j = (i + 1) % n;
+      if (opts.flipWall) b.quad(rings[0][i], rings[1][i], rings[1][j], rings[0][j]);
+      else b.quad(rings[0][i], rings[0][j], rings[1][j], rings[1][i]);
+    }
   }
   if (opts.capStart) polygonFill(b, pts, y0, true);
   if (opts.capEnd) polygonFill(b, pts, y1, false);
@@ -348,12 +443,13 @@ export function rrectInterval(q: RRect, z: number): [number, number] | null {
  */
 export function plateWithHoles(
   b: MeshBuilder, outline: RRect, holes: RRect[], y: number,
-  opts: { zBreaks?: number[]; xBreaks?: number[]; uvScale?: [number, number]; uvOffset?: [number, number]; flip?: boolean; mask?: (x: number, z: number) => boolean; maxCell?: number } = {},
+  opts: { zBreaks?: number[]; xBreaks?: number[]; uvScale?: [number, number]; uvOffset?: [number, number]; flip?: boolean; mask?: (x: number, z: number) => boolean; maxCell?: number; snapGap?: number } = {},
 ): void {
   const flip = opts.flip ? -1 : 1;
   const maxCell = opts.maxCell ?? 6;
   const zs = new Set<number>();
-  const addZ = (z: number): void => { if (z > -outline.d / 2 - 1e-9 && z < outline.d / 2 + 1e-9) zs.add(Math.round(z * 1e6) / 1e6); };
+  // 注意：界限必须相对 cz（早期版本按 ±d/2 判绝对 z，偏移轮廓的孔边会被丢弃 → 缺带）
+  const addZ = (z: number): void => { if (z > outline.cz - outline.d / 2 - 1e-9 && z < outline.cz + outline.d / 2 + 1e-9) zs.add(Math.round(z * 1e6) / 1e6); };
   const z0 = outline.cz - outline.d / 2, z1 = outline.cz + outline.d / 2;
   const nz = Math.max(2, Math.ceil(outline.d / maxCell));
   for (let i = 0; i <= nz; i++) zs.add(z0 + ((z1 - z0) * i) / nz);
@@ -362,13 +458,17 @@ export function plateWithHoles(
     for (const z of [h.cz - hd, h.cz + hd, h.cz - hd + rr, h.cz + hd - rr]) addZ(z);
   }
   for (const z of opts.zBreaks ?? []) addZ(z);
-  const zList = [...zs].sort((a, c) => a - c);
+  // 近重合断点吸附：孔边与外轮廓边相差 0.02–0.1mm 时，扫描线会切出同宽的窄带
+  // （0.1mm × 300mm 的条带 → 每条都是细针）。亚像素特征直接并档，肉眼无差。
+  const snap = (list: number[], minGap: number): number[] => {
+    const out: number[] = [];
+    for (const v of list) if (!out.length || v - out[out.length - 1] > minGap) out.push(v);
+    return out;
+  };
+  const SNAP = opts.snapGap ?? 0.3;
+  const zList = snap([...zs].sort((a, c) => a - c), SNAP);
   const xs = new Set<number>();
   for (const x of opts.xBreaks ?? []) xs.add(x);
-  for (const h of holes) {
-    const hw = h.w / 2, rr = Math.min(h.r, Math.min(hw, h.d / 2));
-    for (const x of [h.cx - hw, h.cx + hw, h.cx - hw + rr, h.cx + hw - rr]) xs.add(x);
-  }
   const xList = [...xs].sort((a, c) => a - c);
   const uvS = opts.uvScale ?? [1, 1], uvO = opts.uvOffset ?? [0, 0];
   const emit = (x0: number, x1: number, za: number, zb: number): void => {
@@ -395,11 +495,19 @@ export function plateWithHoles(
       const iv = rrectInterval(h, zm);
       if (iv) cut.push(iv);
     }
-    // 该带的 x 分割点
-    const xsLocal = new Set<number>([oa[0], oa[1], ob[0], ob[1]]);
+    // 该带的 x 分割点：外轮廓用「两端区间的并」而非各自端点——
+    // 否则圆角处两端相差 0.02–0.2mm 会切出一条同宽的针形列（边界倾斜是正常的）
+    const xsLocal = new Set<number>([Math.min(oa[0], ob[0]), Math.max(oa[1], ob[1])]);
     for (const c of cut) { xsLocal.add(c[0]); xsLocal.add(c[1]); }
+    // 孔的 x 断点只在「该孔在本带内存在」时生效：全局生效会在孔不存在的带里
+    // 切出无用窄列（实测 0.8mm 宽的铝条被切成 200+ 片）
+    for (const h of holes) {
+      if (!rrectInterval(h, zm)) continue;
+      const hw = h.w / 2, rr = Math.min(h.r, Math.min(hw, h.d / 2));
+      for (const x of [h.cx - hw, h.cx + hw, h.cx - hw + rr, h.cx + hw - rr]) xsLocal.add(x);
+    }
     for (const x of xList) if (x > Math.min(oa[0], ob[0]) - 1e-9 && x < Math.max(oa[1], ob[1]) + 1e-9) xsLocal.add(x);
-    const xl = [...xsLocal].sort((a, c) => a - c);
+    const xl = snap([...xsLocal].sort((a, c) => a - c), SNAP);
     for (let j = 0; j < xl.length - 1; j++) {
       const xa = xl[j], xb = xl[j + 1];
       const xm = (xa + xb) / 2;
@@ -438,20 +546,30 @@ export function plateWithHoles(
  */
 export function plateFill(
   b: MeshBuilder, q: RRect, y: number,
-  opts: { nu?: number; nt?: number; flip?: boolean; deform?: (x: number, z: number) => number; uv?: (x: number, z: number) => [number, number]; cornerSegs?: number } = {},
+  opts: { nu?: number; nt?: number; flip?: boolean; deform?: (x: number, z: number) => number; uv?: (x: number, z: number) => [number, number]; cornerSegs?: number; vertexSampling?: boolean } = {},
 ): void {
   const nu = opts.nu ?? 48, nt = opts.nt ?? 2;
   const path = roundedRectPath(q.w, q.d, q.r, opts.cornerSegs ?? 8);
   const flip = opts.flip ? -1 : 1;
   const nv = v3(0, flip, 0);
+  // 采样点：默认均匀弧长（nu 段）。**vertexSampling=true 时改用路径自身顶点**——
+  // 低 LOD 下 nu 很小（如 8），均匀弧长会在圆角弧（31mm）上采不到点，整段圆角被一条
+  // 上百毫米的弦切掉（页面预览里盖板顶角出现明显缺口）。用路径顶点则角点必被采到，
+  // 直边仍是弦（本来就直，无误差）。
   const us: number[] = [];
-  for (let i = 0; i < nu; i++) us.push(i / nu);
-  us.push(1);
+  if (opts.vertexSampling) {
+    for (const p of path) us.push(p.u);
+    us.push(1);
+  } else {
+    for (let i = 0; i < nu; i++) us.push(i / nu);
+    us.push(1);
+  }
+  const nU = us.length - 1;
   const grid: number[][] = [];
   for (let j = 0; j <= nt; j++) {
     const t = j / nt;
     const row: number[] = [];
-    for (let i = 0; i <= nu; i++) {
+    for (let i = 0; i <= nU; i++) {
       const p = pathAt(path, us[i]);
       // path 以原点为中心 → 向 (q.cx,q.cz) 收缩
       const x = q.cx + p.x * (1 - t);
@@ -462,7 +580,7 @@ export function plateFill(
     }
     grid.push(row);
   }
-  for (let j = 0; j < nt; j++) for (let i = 0; i < nu; i++) {
+  for (let j = 0; j < nt; j++) for (let i = 0; i < nU; i++) {
     if (flip > 0) b.quad(grid[j][i], grid[j][i + 1], grid[j + 1][i + 1], grid[j + 1][i]);
     else b.quad(grid[j][i], grid[j + 1][i], grid[j + 1][i + 1], grid[j][i + 1]);
   }

@@ -192,6 +192,9 @@ def main():
         'note': '真实键帽字符图集（灰度，0=键帽底 1=字符）；键名 ri:name / f:name',
         'pitch_mm': 19.05,
         'px_per_mm': round(PITCH_PX / 19.05, 4),
+        # 图集坐标下的 px/mm：rects 是「放大 SC 倍后」的坐标，几何侧必须用这个值，
+        # 用源图 px_per_mm 会把字形放大 SC 倍（v1 的 3× 字形 bug）
+        'atlas_px_per_mm': round(SC * PITCH_PX / 19.05, 4),
         'inset_px': INSET,
         'atlas': [AW, AH],
         'rows': [[[n, u] for n, u in row] for row in ROWS],
