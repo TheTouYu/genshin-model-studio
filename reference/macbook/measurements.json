@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 1,
+  "purpose": "MacBook 建模设计保真基线（AGENTS.md 铁律 10）；官方数据可溯源，实测数据带误差",
+  "collectedAt": "2026-09-09",
+  "sources": [
+    "https://www.apple.com.cn/macbook-pro/specs/",
+    "https://www.apple.com.cn/macbook-air/specs/",
+    "https://www.apple.com.cn/macbook-pro/",
+    "https://www.apple.com.cn/macbook-air/"
+  ],
+  "note_m6": "M6 MacBook 未发布（截至 2026-09-09）；在售最新 = M5 家族（14/16 英寸 MacBook Pro、13.6/15.3 英寸 MacBook Air）",
+  "recommended_target": "macbook-pro-14-m5-pro",
+  "target_confirmed_by_user": true,
+  "target_confirmed_at": "2026-09-09",
+  "official": {
+    "macbook-pro-14": {
+      "height_cm": 1.55, "width_cm": 31.26, "depth_cm": 22.12,
+      "weight_kg": { "M5": 1.55, "M5Pro": 1.60, "M5Max": 1.62 },
+      "display": { "diagonal_in": 14.2, "resolution": [3024, 1964], "ppi": 254, "type": "Liquid Retina XDR", "refresh_hz": 120, "sdr_nits_outdoor": 1000, "xdr_nits_sustained": 1000, "xdr_nits_peak": 1600 },
+      "keyboard": { "type": "背光妙控键盘", "keys_ansi": 78, "keys_iso": 79, "full_size_function_keys": 12, "touch_id": true, "ambient_light_sensor": true },
+      "trackpad": "力度触控板 (Force Touch)",
+      "ports": {
+        "left_front_to_back": ["MagSafe 3", "Thunderbolt x2", "3.5mm headphone"],
+        "right_front_to_back": ["HDMI", "Thunderbolt", "SDXC"],
+        "thunderbolt_version": { "M5": "TB4", "M5Pro": "TB5", "M5Max": "TB5" }
+      },
+      "camera": "1200 万像素 Center Stage（屏幕刘海内）",
+      "audio": "六扬声器系统 + 录音棚级三麦克风阵列",
+      "battery_wh": 72.4,
+      "colors": ["深空黑 Space Black", "银色 Silver"],
+      "materials": "机身 100% 再生铝；整机再生成分 45%"
+    },
+    "macbook-pro-16": { "height_cm": 1.68, "width_cm": 35.57, "depth_cm": 24.81, "weight_kg": { "M5Pro": 2.14, "M5Max": 2.15 }, "display": { "diagonal_in": 16.2, "resolution": [3456, 2234], "ppi": 254 }, "battery_wh": 100 },
+    "macbook-air-13.6": { "height_cm": 1.13, "width_cm": 30.41, "depth_cm": 21.50, "weight_kg": 1.23, "display": { "diagonal_in": 13.6, "resolution": [2560, 1664], "ppi": 224, "nits": 500 }, "ports": ["MagSafe 3", "Thunderbolt x2", "3.5mm headphone"], "colors": ["天蓝色", "银色", "星光色", "午夜色"] },
+    "macbook-air-15.3": { "height_cm": 1.15, "width_cm": 34.04, "depth_cm": 23.76, "weight_kg": 1.51, "display": { "diagonal_in": 15.3, "resolution": [2880, 1864], "ppi": 224, "nits": 500 } }
+  },
+  "derived": {
+    "active_area_mm": { "width": 302.4, "height": 196.4, "method": "diagonal 360.68mm x aspect 3024:1964" },
+    "bezel_mm": { "left_right_each": 5.1, "top_plus_chin": 24.8 },
+    "screen_to_lid_area_ratio": 0.967,
+    "lid_thickness_mm": 4.0,
+    "closed_total_mm": 15.5
+  },
+  "measured": {
+    "method": "headless chromium canvas 像素测量（_scratch/measure3.mjs / measure5.mjs）",
+    "images": { "lid": "official-mbp14-dimensions-1.jpg", "sides": ["official-mbp14-ports-1.jpg", "official-mbp14-ports-2.jpg"] },
+    "side_scale": { "body_height_px": 90, "body_height_mm": 15.5, "mm_per_px": 0.1722 },
+    "port_openings_mm": {
+      "magsafe3_width": 10.5, "usbc_width": 8.27, "usbc_center_spacing": 15.33, "headphone_width": 3.44,
+      "hdmi_width": 14.98, "sdxc_width": 27.21, "vertical_center_from_top_mm": 3.79,
+      "note": "宽度可靠（±0.2mm）；高度受内腔阴影影响不可靠，取行业标准值：USB-C 2.6 / HDMI 5.8 / SD 2.1 / 3.5mm Ø4.4"
+    },
+    "lid": {
+      "corner_radius_mm": { "value": 20, "range": [18, 26], "note": "16 英寸四角实测 22.7-26.0；14 英寸实测 18.1（软阴影致偏小）；同族取 20±2" },
+      "apple_logo_mm": { "width": 37.1, "height": 45.6, "note": "16 英寸实测（含叶）" },
+      "logo_center_offset_mm": { "x_from_lid_center": 0.2, "y_above_lid_center": 4.1 },
+      "front_notch": { "centered": true, "width_fraction_of_body": 0.125, "depth_mm": 1.5 }
+    }
+  },
+  "design_language": [
+    "单一材质面：可见面全为同一种铝，无拼缝/台阶/补丁面",
+    "连续曲率：每角 ≥12 段折线，弦高 ≤0.02mm，四角同半径，上盖内外轮廓共用同一折线",
+    "均匀缝隙：闭合缝 0.3-0.5mm 全域等宽；键帽间隙 ≈0.5mm 全域一致",
+    "结构隐藏：转轴沉入机身、rod 端头内缩 ≥1.5mm、螺丝不可见、脚垫嵌入底盖",
+    "栅格对齐：键帽行列对齐、接口同一水平中线、散热槽与轮廓平行",
+    "克制细节：少而准（一条缝/一个凹槽/一个镜面 logo），新增件必须能指认真机对应处",
+    "比例：屏占比 96.7%、键盘井左右留白等宽、触控板与空格键对齐",
+    "零破绽：方角穿出圆角包络/板角穿出圆管/平头接缝/盖板高出台面/上盖后缘穿入机身/轴端外露/键位语义错误 全部归零"
+  ],
+  "gaps": [
+    { "id": "orthographic-three-view", "status": "Apple 不发布", "handling": "image-2 生成（正交/等比例/白底/带尺寸箭头）" },
+    { "id": "keyboard-top-view", "status": "官方图库无（已检索 827 个 URL）", "handling": "image-2 生成（ANSI 78 键、空格居中）" },
+    { "id": "bottom-case-top-view", "status": "缺", "handling": "image-2 生成（四脚垫内缩、无可见螺丝）" },
+    { "id": "hinge-macro", "status": "缺", "handling": "image-2 生成（轴心沉入、盖板遮挡）" },
+    { "id": "notch-macro", "status": "缺", "handling": "image-2 生成（居中、约 1/8 屏宽）" }
+  ]
+}

@@ -47,6 +47,7 @@
 ## 五、风险探索与未闭合项
 
 - 游戏“初始空模型”显示的 500 常量（f7[6]）语义仍未闭合；root=0.1 已是实测正确值，但公式未从格式文档闭合。
+- **2026-09-09 收口（用户新需求）**：网页画线导出区新增两个参数把该公式产品化——① 主模型缩放 S（默认 0.1）自动换算装饰物（数据 ÷S：比例关系变、整体尺寸不变）；② 整体缩放率 K（默认 1）只改实际主模型缩放（root=S×K，装饰物不动 → 整体尺寸 ×K）。实现 `src/cli/gia-common.ts:resolveGiaScale` + `src/web-shared.ts:toGiaInput`（网页 `/api/export` 与 CLI `--root-scale`/`--overall-scale` 同语义）。此前网页导出走 legacy 分支 root=[1,1,1] —— 即用户反馈“导入游戏主模型没动”的根因，已修（页面导出与 CLI 导出 570 件逐件一致，root=0.1）。
 - 网页端整体优化（用户明确暂缓，后续再做）。
 - 旧导出器 `scripts/export-mesh-gia.js`（已弃用标注）与现行 `src/mesh/panelize.ts + src/cli/export-mesh.ts` 并存——**已完成清理：旧导出器已删除，现行管线唯一**（export-mesh / contour-model 共用 `src/cli/gia-common.ts` + `panelizeMesh`）。
 - `profileLoft` 老 `toes` 角域/lofted 分支仍闲置（新方案为自适应细分+面板化）；趾部算法将复用新工具。

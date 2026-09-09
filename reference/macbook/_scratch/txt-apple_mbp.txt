@@ -1,0 +1,899 @@
+MacBook Pro - Apple
+Apple
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+Entertainment
+Accessories
+Support
+0 +
+MacBook Pro
+Local Nav Menu
+Local Nav Menu
+Overview
+Tech Specs
+Compare
+Switch from PC to Mac
+Buy MacBook Pro
+For a limited time, get a $150 gift card Δ when you buy MacBook Pro with education savings.
+Shop
+MacBook Pro
+Fast runs in the family.
+Now with M5, M5 Pro, and M5 Max.
+*
+◊
+Buy
+Get the highlights.
+Watch the film
+M5, M5 Pro, and M5 Max chips
+AI
+Battery life
+macOS Tahoe
+Phone app and Live Activities
+M5, M5 Pro, and M5 Max.
+One big, powerful family.
+A powerful platform for artificial intelligence. Smart to the core.
+Longest battery life ever in a Mac. Up to 24 hours. Hit the road, Mac. 7
+macOS Tahoe. Stunning new design with Liquid Glass, intuitive productivity tools, and a reimagined Spotlight.
+Live Activities and the Phone app. Stay in touch without touching your phone. 10 , 11
+Take a closer look.
+View in your space
+Sizes
+Sizes. The 14-inch model is available with the M5, M5 Pro, or M5 Max chip. The 16‑inch model is available with the M5 Pro or M5 Max chip.
+Space Black Colors
+Colors. Available in two stunning finishes. MacBook Pro shown in Space Black .
+MacBook Pro Colors.
+Space Black
+Silver
+Display
+Display. The brilliant Liquid Retina XDR display delivers 1600 nits peak HDR brightness 2 and a 1,000,000:1 contrast ratio. 4K videos and HDR photos look more true to life with deep blacks, bright highlights, and vibrant colors.
+Connectivity
+Connectivity. Every MacBook Pro comes with three Thunderbolt 4 or 5 ports, an HDMI port, a MagSafe 3 port, an SDXC card slot, and a headphone jack. 12 Connect high-speed peripherals, transfer photos, drive multiple external displays, and power up instantly.
+Camera
+Camera. The 12MP Center Stage camera keeps you in frame as you move around. And Desk View lets you share your workspace.
+Mics and speakers
+Mics and speakers. With a studio-quality three-mic array and a six-speaker sound system that supports Spatial Audio and Dolby Atmos, MacBook Pro brings incredible audio to any space.
+Stream The Secret Lives of Animals on Apple TV with a subscription.
+Durability
+Durability. Made with 100 percent recycled aluminum in the enclosure, MacBook Pro is built to withstand daily use and designed to last.
+M5. M5 Pro. M5 Max.
+Performance
+M5. M5 Pro. M5 Max.
+Pick your quick.
+Our most advanced series of chips ever built for a pro laptop. Each chip in the M5 family delivers phenomenal single- and multithreaded CPU performance and faster unified memory — giving you the kind of speed you’ve never thought possible. The SSD storage is up to twice as fast as before. 13 And with powerful Neural Accelerators, you can fly through AI tasks at mind-bending speeds.
+Up to 8x faster AI performance than the M1 family 14
+A powerful Neural Accelerator is built into each GPU core of the M5 family of chips, which dramatically speeds up AI tasks like image generation from diffusion models, large language model (LLM) prompt processing, and on-device transformer model training. The 16-core Neural Engine drives Apple Intelligence features, making on-device AI powerful and energy efficient.
+Maxon Cinema 4D
+Run graphics-intensive workflows with responsiveness that keeps up with your imagination. Each chip in the M5 family features a GPU with enhanced shader cores and a third-generation ray‑tracing engine, so 3D modeling is crisper and clearer than ever. And Dynamic Caching optimizes on-chip memory to significantly increase GPU utilization — driving huge performance boosts for pro apps and games.
+Three chips.
+Second to none.
+Adobe Premiere
+M5 brings next-generation speed and powerful on-device AI to college students, business users, and aspiring creators.
+Available in 14”
+Up to 6x faster
+than M1 1
+Visual Studio Code
+M5 Pro delivers even more power for scientists, engineers, software developers, and creative pros tackling intensive projects.
+Available in 14” and 16”
+Up to 7.8x faster than M1 Pro 8
+Vectorworks, Maxon Redshift
+Our most advanced chip ever built for a pro laptop. M5 Max is perfect for 3D VFX artists, AI developers, and film composers.
+Available in 14” and 16”
+Up to 8x faster than M1 Max 14
+Explore the M5 family of chips
+Performance
+Happily ever faster.
+M5
+The 14‑inch MacBook Pro with M5 brings serious speed and advanced on-device AI to the personal, professional, and creative work you do every day. Effortlessly multitask across apps like Asana and Keynote. Breeze through memory-intensive projects such as editing high-resolution photos and videos. M5 also powers AI features that boost your productivity — whether you want to summarize pages of lecture notes or create AI assistants that automate daily workflows for your business.
+Asana, Keynote
+10‑core CPU
+10‑core GPU
+Up to 32GB
+unified memory
+M5 compared to previous MacBook Pro models.
+LLM prompt processing
+AI video processing
+3D rendering
+AI audio enhancement
+Gaming
+Code compiling
+Faster time to first token performance 1
+14‑inch MacBook Pro with M5
+6.4
+x
+14‑inch MacBook Pro with M4
+1.8
+x
+13‑inch MacBook Pro with M1 (baseline)
+Faster AI video enhancing performance in Topaz Video 15
+14‑inch MacBook Pro with M5
+7.7
+x
+14‑inch MacBook Pro with M4
+4.3
+x
+13‑inch MacBook Pro with M1 (baseline)
+Faster render performance with ray tracing in Blender 16
+14‑inch MacBook Pro with M5
+6.8
+x
+14‑inch MacBook Pro with M4
+3.9
+x
+13‑inch MacBook Pro with M1 (baseline)
+Faster AI speech enhancement in Adobe Premiere Pro 17
+14‑inch MacBook Pro with M5
+4.1
+x
+14‑inch MacBook Pro with M4
+1.4
+x
+13‑inch MacBook Pro with M1 (baseline)
+Faster gaming performance in Cyberpunk 2077: Ultimate 18
+14‑inch MacBook Pro with M5
+2.6
+x
+14‑inch MacBook Pro with M4
+1.8
+x
+13‑inch MacBook Pro with M1 (baseline)
+Faster project build performance in Xcode 19
+14‑inch MacBook Pro with M5
+2.1
+x
+14‑inch MacBook Pro with M4
+1.7
+x
+13‑inch MacBook Pro with M1 (baseline)
+M5 Pro
+For those who push the limits, M5 Pro speeds up everything from compiling code to sequencing DNA to editing multiple streams of 8K ProRes video. Whether you choose the 14- or 16-inch model, MacBook Pro with M5 Pro handles demanding workflows and AI-based tasks with ease. Its up to 20-core GPU delivers eye-opening graphics performance for faster 3D rendering and animation. And now with 1TB or 2TB starting storage, you have even more room to work wonders.
+QuPath, Instanseg
+Up to
+18‑core CPU
+Up to
+20‑core GPU
+Up to 64GB
+unified memory
+M5 Pro compared to previous MacBook Pro models.
+14” model
+16” model
+AI image generation
+LLM prompt processing
+3D rendering
+Effect rendering
+AI video processing
+Code compiling
+Gaming
+Faster text-to-image performance 20
+14‑inch MacBook Pro with M5 Pro
+7.6
+x
+14-inch MacBook Pro with M4 Pro
+2.0
+x
+14-inch MacBook Pro with M1 Pro (baseline)
+Faster time to first token performance 21
+14‑inch MacBook Pro with M5 Pro
+6.8
+x
+14-inch MacBook Pro with M4 Pro
+1.8
+x
+14-inch MacBook Pro with M1 Pro (baseline)
+Faster render performance in Redshift 22
+14‑inch MacBook Pro with M5 Pro
+5.1
+x
+14-inch MacBook Pro with M4 Pro
+3.6
+x
+14-inch MacBook Pro with M1 Pro (baseline)
+Faster render performance in Blackmagic DaVinci Resolve Studio 23
+14‑inch MacBook Pro with M5 Pro
+4.8
+x
+14-inch MacBook Pro with M4 Pro
+3.2
+x
+14-inch MacBook Pro with M1 Pro (baseline)
+Faster video enhancing performance in Topaz Video 24
+14‑inch MacBook Pro with M5 Pro
+3.1
+x
+14-inch MacBook Pro with M4 Pro (baseline)
+Faster project build performance in Xcode 25
+14‑inch MacBook Pro with M5 Pro
+2.1
+x
+14-inch MacBook Pro with M4 Pro
+1.8
+x
+14-inch MacBook Pro with M1 Pro (baseline)
+Faster gaming performance with ray tracing in Cyberpunk 2077: Ultimate Edition 26
+14‑inch MacBook Pro with M5 Pro
+1.5
+x
+14-inch MacBook Pro with M4 Pro (baseline)
+AI image generation
+LLM prompt processing
+3D rendering
+Effect rendering
+AI video processing
+Code compiling
+Gaming
+Faster text-to-image performance 8
+16‑inch MacBook Pro with M5 Pro
+7.8
+x
+16-inch MacBook Pro with M4 Pro
+2.1
+x
+16-inch MacBook Pro with M1 Pro (baseline)
+Faster time to first token performance 27
+16‑inch MacBook Pro with M5 Pro
+6.9
+x
+16-inch MacBook Pro with M4 Pro
+1.8
+x
+16-inch MacBook Pro with M1 Pro (baseline)
+Faster render performance in Redshift 28
+16‑inch MacBook Pro with M5 Pro
+5.2
+x
+16-inch MacBook Pro with M4 Pro
+3.6
+x
+16-inch MacBook Pro with M1 Pro (baseline)
+Faster render performance in Blackmagic DaVinci Resolve Studio 29
+16‑inch MacBook Pro with M5 Pro
+4.9
+x
+16-inch MacBook Pro with M4 Pro
+3.2
+x
+16-inch MacBook Pro with M1 Pro (baseline)
+Faster video enhancing performance in Topaz Video 30
+16‑inch MacBook Pro with M5 Pro
+2.6
+x
+16-inch MacBook Pro with M4 Pro (baseline)
+Faster project build performance in Xcode 31
+16‑inch MacBook Pro with M5 Pro
+2.4
+x
+16-inch MacBook Pro with M4 Pro
+1.8
+x
+16-inch MacBook Pro with M1 Pro (baseline)
+Faster gaming performance with ray tracing in Cyberpunk 2077: Ultimate Edition 32
+16‑inch MacBook Pro with M5 Pro
+1.6
+x
+16-inch MacBook Pro with M4 Pro (baseline)
+M5 Max
+Available on the 14- and 16-inch MacBook Pro, the M5 Max chip is designed for the most extreme workflows — and it’s a beast for all things AI. Run LLMs with hundreds of billions of parameters entirely on device. Rip through detailed visual effects, 3D animation, film scoring, and 8K video post-production. Accelerate workflows that rely on read/write operations with a faster SSD and 2TB of starting storage. And you can develop your own tools or fine-tune apps that use built-in AI-training features by tapping into even more powerful on-device training capabilities.
+LM Studio, Autodesk Maya
+18‑core CPU
+Up to
+40‑core GPU
+Up to 128GB
+unified memory
+M5 Max compared to previous MacBook Pro models.
+14” model
+16” model
+AI image generation
+LLM prompt processing
+3D rendering
+Effect rendering
+AI video processing
+Code compiling
+Gaming
+Faster text-to-image performance 14
+14-inch MacBook Pro with M5 Max
+8.0
+x
+14-inch MacBook Pro with M4 Max
+2.1
+x
+14-inch MacBook Pro with M1 Max (baseline)
+Faster time to first token performance 33
+14-inch MacBook Pro with M5 Max
+6.7
+x
+14-inch MacBook Pro with M4 Max
+1.7
+x
+14-inch MacBook Pro with M1 Max (baseline)
+Faster render performance in Redshift 34
+14-inch MacBook Pro with M5 Max
+4.8
+x
+14-inch MacBook Pro with M4 Max
+3.5
+x
+14-inch MacBook Pro with M1 Max (baseline)
+Faster render performance in Blackmagic DaVinci Resolve Studio 35
+14-inch MacBook Pro with M5 Max
+5.4
+x
+14-inch MacBook Pro with M4 Max
+1.8
+x
+14-inch MacBook Pro with M1 Max (baseline)
+Faster video enhancing performance in Topaz Video 36
+14-inch MacBook Pro with M5 Max
+3.5
+x
+14-inch MacBook Pro with M4 Max (baseline)
+Faster project build performance in Xcode 37
+14-inch MacBook Pro with M5 Max
+2.2
+x
+14-inch MacBook Pro with M4 Max
+2.0
+x
+14-inch MacBook Pro with M1 Max (baseline)
+Faster gaming performance with ray tracing in Cyberpunk 2077: Ultimate Edition 38
+14-inch MacBook Pro with M5 Max
+1.4
+x
+14-inch MacBook Pro with M4 Max (baseline)
+AI image generation
+LLM prompt processing
+3D rendering
+Effect rendering
+AI video processing
+Code compiling
+Gaming
+Faster text-to-image performance 39
+16-inch MacBook Pro with M5 Max
+7.3
+x
+16-inch MacBook Pro with M4 Max
+2.1
+x
+16-inch MacBook Pro with M1 Max (baseline)
+Faster time to first token performance 40
+16-inch MacBook Pro with M5 Max
+6.6
+x
+16-inch MacBook Pro with M4 Max
+1.6
+x
+16-inch MacBook Pro with M1 Max (baseline)
+Faster render performance in Redshift 41
+16-inch MacBook Pro with M5 Max
+5.1
+x
+16-inch MacBook Pro with M4 Max
+3.6
+x
+16-inch MacBook Pro with M1 Max (baseline)
+Faster render performance in Blackmagic DaVinci Resolve Studio 42
+16-inch MacBook Pro with M5 Max
+5.0
+x
+16-inch MacBook Pro with M4 Max
+1.7
+x
+16-inch MacBook Pro with M1 Max (baseline)
+Faster video enhancing performance in Topaz Video 43
+16-inch MacBook Pro with M5 Max
+2.7
+x
+16-inch MacBook Pro with M4 Max (baseline)
+Faster project build performance in Xcode 44
+16-inch MacBook Pro with M5 Max
+2.4
+x
+16-inch MacBook Pro with M4 Max
+2.1
+x
+16-inch MacBook Pro with M1 Max (baseline)
+Faster gaming performance with ray tracing in Cyberpunk 2077: Ultimate Edition 45
+16-inch MacBook Pro with M5 Max
+1.4
+x
+16-inch MacBook Pro with M4 Max (baseline)
+AI
+Built for AI. From the silicon up.
+Apple silicon, and every major subsystem that powers it, is designed for AI — creating a platform that comprehensively unites hardware, software, and ecosystem. So you can run demanding on-device AI workloads with incredible power efficiency. And as always, security and privacy are designed in, not just bolted on.
+AI apps on Mac. Born to run.
+Mac is optimized to handle the world’s most advanced AI apps. Run image generation apps like DiffusionBee, LLM apps like Msty Studio and LM Studio, and video enhancement apps like Topaz Video.
+AI tools in apps. Mac makes magic.
+With Logic Pro, you can transform vocals with AI plug-ins like MicDrop. And in Adobe Photoshop, you can make complex image modifications in seconds using the Generative Fill feature.
+Apple Intelligence. Task and you shall receive.
+Apple Intelligence helps you write, express yourself, and get things done effortlessly. Turn a quick note into a polished announcement. Remove distractions from photos with Clean Up. Create unique images with new ChatGPT styles in Image Playground. And use intelligent actions in the Shortcuts app to create automations — like comparing an audio transcription to typed notes and extracting information from a PDF. Apple Intelligence is AI — for you and I. 46
+Learn more about Apple Intelligence
+Great powers come
+with great privacy.
+Apple Intelligence is designed to protect your privacy at every step. It’s integrated into the core of your Mac through on-device processing. So it’s aware of your personal information without collecting your personal information. And with groundbreaking Private Cloud Compute, Apple Intelligence can draw on larger server-based models, running on Apple silicon, to handle more complex requests for you while protecting your privacy.
+Battery
+All-day battery life.
+Think outside the outlet.
+MacBook Pro has the longest battery life ever in a Mac — up to 24 hours — so you can work, create, and play all day. All models provide the same performance whether they’re plugged in or not. Spend more time coding, learning, streaming, or thinking about an outlet for your passion, not your laptop. And when you need to power up, fast charge gets you to 50% in just 30 minutes. 47
+Up to 24 hours battery life 5
+Up to 14 more hours than Intel-based MacBook Pro 5
+macOS Tahoe
+Fresh faced. Timelessly Mac.
+macOS Tahoe with Liquid Glass delivers a refined yet familiar look. With new ways to boost your productivity, work seamlessly with iPhone, and get even more from Apple Intelligence, it’s the most beautiful and powerful version of macOS yet.
+Learn more about macOS Tahoe
+Liquid Glass. Clearly inspired.
+macOS Tahoe features a stunning new design with Liquid Glass, intuitive productivity tools, and a reimagined Spotlight. Fast just flows.
+Spotlight helps you act fast.
+Perform hundreds of actions — from sending a message to taking down a note — all within Spotlight.
+Live Translation speaks your language.
+Communicate effortlessly across languages. Instantly translate texts in Messages, 48 display live translated captions in FaceTime, and get real‑time spoken translations in the Phone app. 49
+Run shortcuts automagically.
+Boost your productivity by automatically running shortcuts at a certain time of day or when you take specific actions — like organizing images based on their content.
+Mac + iPhone
+Even better together.
+Mac and iPhone are incredible on their own. But when you use them together, they work wonders. Thanks to Continuity features, you can move seamlessly across devices to share files and photos, hand off tasks, and even control your iPhone from your Mac.
+Learn more about Continuity
+iPhone Mirroring
+Live Activities
+Universal Clipboard
+Phone app
+Handoff
+Mail, Uber Eats
+See and use your iPhone from your Mac with iPhone Mirroring. Even if you’re charging your phone in another room, you can still access all your favorite apps. 10
+Uber Eats
+Live Activities from your iPhone now appear on your Mac — like when your Uber Eats order is about to arrive. So you don’t have to reach for your phone to stay in the know. 10
+Notes, Microsoft PowerPoint
+Copy images, video, or text from an app on your iPhone or iPad. Then paste into another app on your nearby Mac — or vice versa. No extra steps. It’s that easy.
+Phone app
+Make and take calls right from your Mac, and access Recents, Contacts, and Voicemail. You’ll never miss a call, even if your iPhone is buried deep in your backpack. 11
+Mail
+Start an email on your iPhone and finish it on your Mac. With Handoff, you can seamlessly pass what you’re doing from iPhone to Mac — or from Mac to iPhone. 50
+Apps
+Your ambitions. There’s an app for that.
+Tens of thousands of apps are optimized for Apple silicon — from your go-to productivity apps to your favorite games and hardest-working pro apps. With MacBook Pro, they all soar.
+Photo editing
+Coding
+STEM
+Business
+Graphic design
+3D animation and design
+Music production
+Video editing
+Gaming
+Capture One
+Handle large image files, no sweat. Edit and retouch photos whether in the studio or on location.
+Adobe Lightroom, Adobe Photoshop, Capture One, Pixelmator Pro, Topaz Photo, DxO PhotoLab 9, and more.
+Visual Studio Code
+Get with the program. Run virtual machines and develop code across the stack. Save time with predictive code completion in Xcode.
+Xcode, Unity Editor, Create ML, TensorFlow, PyTorch, NAG Fortran Compiler, Docker, IntelliJ IDEA, and more.
+MATLAB
+Make Mac your lab partner. Run complex simulations or DNA sequencing or analyze large datasets in any STEM environment.
+MATLAB, Autodesk AutoCAD, NASA TetrUSS, Oxford Nanopore MinKNOW, OsiriX MD, Shapr3D, SurgicalAR, Vectorworks, Archicad, and more.
+Microsoft Excel
+Multitask like a boss. Create documents and presentations and collaborate across apps and video conferences — and do it all at once.
+Microsoft 365 Copilot, Slack, Zoom, Keynote, Omni Productivity Suite, and more.
+Adobe InDesign
+Find your type. Take on illustrations, font creation, visual editing, interactive design, and motion graphics with absolute ease.
+Adobe InDesign, Sketch, Linearity Curve, Adobe Illustrator, Figma, and more.
+Vectorworks, Maxon Redshift
+Bring your imagination to life. Build intricate texturing in 3D artwork, create complex animations, and render high-resolution scenes.
+Blender, Maxon Cinema 4D, Maxon Redshift, Autodesk Maya, Adobe Substance Painter, Houdini, and more.
+Avid Pro Tools
+Produce the whole album. Compose, record, and mix across thousands of tracks with hundreds of plug-ins in real time.
+Logic Pro, Avid Pro Tools, Ableton Live, Cubase, Adobe Audition, FL Studio, MainStage, and more.
+NukeX
+Craft stories worth telling. Fly through 4K and 8K footage and tackle motion graphics and compositing with superfast render times.
+DaVinci Resolve Studio, Adobe Premiere Pro, Final Cut Pro, Motion, Adobe After Effects, Foundry Nuke, Autodesk Flame, and more.
+Cyberpunk 2077: Ultimate
+Play favorites. Enjoy immersive gaming thanks to the exceptional graphics capabilities, gorgeous XDR display, and six-speaker sound system with Spatial Audio. Turn on Game Mode for smoother frame rates.
+Assassin’s Creed Shadows, Control Ultimate Edition, Frostpunk 2, World of Warcraft, Sid Meier’s Civilization® VII, and more.
+Display
+Let there be delight.
+1600 nits peak HDR brightness
+1000 nits sustained HDR brightness
+1,000,000:1 contrast ratio
+Down to 1 nit brightness in dark environments
+Up to 1000 nits SDR brightness outdoors
+1 billion colors
+Go from the sunniest terrace to the darkest studio with more ease than ever. The eye-popping Liquid Retina XDR display offers 1600 nits peak HDR brightness. 2 And it provides up to 1000 nits of brightness for SDR content in bright light so you can see what’s on your screen more clearly outside. In low-light situations, it dims to 1 nit so you can work comfortably in darker spaces.
+1600 nits peak HDR brightness
+1000 nits sustained HDR brightness
+1,000,000:1 contrast ratio
+Down to 1 nit brightness in dark environments
+Up to 1000 nits SDR brightness outdoors
+1 billion colors
+Nano-texture display. Fewer reflections. More clarity.
+For those who work in particularly bright spaces — whether inside or out — the nano-texture option reduces reflections to eliminate distractions while maintaining an excellent viewing experience.
+Exceptional contrast with Extreme Dynamic Range.
+MacBook Pro can maintain extreme brightness for HDR content, delivering outstanding contrast between the brightest brights and the blackest blacks.
+ProMotion. A smooth operator.
+ProMotion makes everything from scrolling to gaming superfluid and responsive, automatically adjusting to match the movement of content — with refresh rates up to 120Hz. Video editors can even choose a fixed refresh rate that precisely aligns with footage.
+Multiple displays. Why limit yourself to one?
+If a project calls for larger canvases, you can connect up to two displays with M5, up to three with M5 Pro, or up to four with M5 Max. Both the immersive Studio Display and the advanced Studio Display XDR pair beautifully with MacBook Pro.
+Camera
+The ultimate show and tell.
+The 12MP Center Stage camera helps you look sharp in any light. Together with the advanced mics and speakers, it lets you take charge of the meeting from afar.
+Center Stage
+Desk View
+Center Stage keeps you in frame during video calls, even as you move around or when more people join your frame.
+Desk View lets you share your workspace, adding a whole new dimension to make your video calls more engaging.
+Ports and Connectivity
+Make powerful connections.
+MacBook Pro packs an array of ports for connecting high-speed peripherals, driving high-resolution displays, or directly offloading SDXC cards. Models with the M5 chip feature Thunderbolt 4 and support both Wi-Fi 6E 51 and Bluetooth 5.3. Models with M5 Pro or M5 Max feature Thunderbolt 5, which offers transfer speeds of up to 120Gb/s. 52
+With the Apple-designed N1 wireless chip, M5 Pro and M5 Max models support:
+Wi-Fi 7 6
+Bluetooth 6
+Thunderbolt 12
+HDMI
+SDXC
+Headphone jack
+MagSafe
+Drive external displays. Connect up to two high-resolution external displays with M5, up to three with M5 Pro, or up to four with M5 Max.
+Security
+No compromises.
+Security starts with Apple silicon and extends to the macOS architecture. This deep integration of hardware and software along with automatic software updates helps keep MacBook Pro stable and protected for the long term. The security architecture also powers features such as Touch ID, Find My, and advanced defenses that protect against viruses and malware.
+Touch ID.
+Unlock your Mac, sign in to apps, and make secure payments with your fingertip. The Secure Enclave keeps your fingerprint data safe.
+Find My.
+Locate your misplaced MacBook Pro and remotely lock or erase it if needed.
+FileVault.
+Encrypt and protect your files and data without having to think about it.
+There’s never been a better time to upgrade.
+Select your current MacBook Pro:
+Additional help
+Don’t know which model you have?
+Click the Apple logo in the upper left of your screen and choose About This Mac.
+13-inch with M1 or M2
+13-inch Intel-based
+15- or 16-inch Intel-based
+14- or 16-inch with M1 Pro or M1 Max
+Here’s what you get with the 14‑inch MacBook Pro with M5.
+Fly through demanding AI tasks up to 6x faster. 1
+More ports and faster charging.
+More detailed graphics and gaming with hardware-accelerated ray tracing.
+Liquid Retina XDR display with 1600 nits peak HDR brightness. 2
+Here’s what you get with the 14‑inch MacBook Pro with M5.
+Fly through demanding AI tasks up to 86x faster. 3
+Liquid Retina XDR display with 1600 nits peak HDR brightness. 2
+Built for AI, featuring Neural Accelerators in the GPU.
+Up to 14 more hours battery life. 4 (Up to 24 hours total.) 5
+Here’s what you get with the new 16‑inch MacBook Pro with M5 Pro or M5 Max.
+Liquid Retina XDR display with 1600 nits peak HDR brightness. 2
+HDMI, Thunderbolt 5, SDXC, MagSafe, Wi‑Fi 7, 6 and Bluetooth 6.
+Built for AI, featuring Neural Accelerators in the GPU.
+Up to 13 more hours battery life. 4 (Up to 24 hours of video streaming.) 7
+Here’s what you get with the new 16‑inch MacBook Pro with M5 Pro or M5 Max.
+Fly through demanding AI tasks up to 7.8x faster. 8
+More detailed graphics and gaming with hardware-accelerated ray tracing.
+Powerful Neural Accelerators for next-level, on-device AI.
+Up to 3 more hours battery life. 4 (Up to 24 hours of video streaming.) 7
+Get credit toward a new MacBook Pro when you trade in an eligible device. 9
+See what your device is worth
+Why Apple is the best place to shop Mac.
+Shop Mac
+Apple Upgrade
+Love it. Lease it. Upgrade it.
+Lease a new Mac with low monthly payments for 24 or 36 months and upgrade at the end of your term. §
+Ways to Buy
+Pay over time, interest‑free.
+When you choose to check out at Apple with Apple Card Monthly Installments. ◊◊
+Ways to Buy
+Apple Card Monthly Installments.
+Pay for your new Mac over time, interest-free with Apple Card. ◊◊ Simply choose to check out at Apple with Apple Card Monthly Installments as your payment option when you make your purchase. And enjoy 3% Daily Cash back, all up front. Terms apply.
+Learn more , Apple Card Monthly Installments
+Apple Trade In
+Save with Apple Trade In.
+Get credit toward your next Mac when you trade in an eligible device. 9
+Apple Trade In
+Trade in your eligible device for credit.
+Just add a trade-in when you choose a new product. Once your eligible device has been received and verified, we’ll credit the value to your payment method. Or choose to check out with Apple Card Monthly Installments and we’ll apply the credit instantly. Terms apply.
+Learn more , Apple Trade In
+Education
+Save on Mac with education pricing. **
+College students and educators can save through the Apple Store. **
+Education
+Shop our Education Store and save.
+You can save on Mac, iPad, Apple Watch, 53 and more with Apple education pricing. It’s available to current and newly accepted college students and their parents, as well as faculty, staff, and homeschool teachers of all grade levels. **
+Learn more , Education Pricing
+Personal Setup
+Meet your new Mac with Personal Setup.
+Get one-on-one help with data transfer, the latest features, and more.
+Personal Setup
+Meet your new Mac with Personal Setup.
+When you buy your new Mac directly from Apple, you’ll get access to Personal Setup. In these online sessions, a Specialist can guide you through setup and data transfer or focus on features that help you make the most of your Mac. Best of all, you can join whenever works for you, from wherever you are.
+Learn more , Personal Setup
+Customize Your Mac
+Customize your Mac.
+Choose your chip, memory, storage, even color.
+Customize Your Mac
+Choose your chip, memory, storage, even color.
+Build the Mac that’s best for you. When you buy online at Apple, you can customize your Mac just the way you want. Whether you need an extra-powerful chip, more memory, or additional storage, you can tailor any new Mac to suit your needs.
+Shop Mac
+Delivery and Pickup
+Get flexible delivery and easy pickup.
+Choose two‑hour delivery from an Apple Store, free delivery, or easy pickup options.
+Delivery and Pickup
+Flexible delivery and pickup options.
+Get your new Apple products quickly and easily with two‑hour delivery from an Apple Store, free next‑day delivery, or convenient Apple pickup options.
+Learn more , delivery and pickup options
+Guided Shopping
+Shop live with a Specialist.
+Let us help you find what you need and answer all your questions, one on one, at an Apple Store or online.
+Guided Shopping
+Get help finding what’s right for you.
+Specialists are here to answer your questions about all things Apple. Shop one on one with an Apple Specialist live at an Apple Store or online.
+Shop with a Specialist online
+Apple Store App
+Explore a shopping experience designed around you.
+Use the Apple Store app to get a more personal way to shop.
+Apple Store App
+Shop in the Apple Store app, tailored specifically for you.
+Get personalized product recommendations, compare models, access your Saved Items, and track your orders. And opt in today to get updates on new products, promotions, flexible payment options, and store events.
+Download the Apple Store app
+Scan the QR code to get started.
+Keep exploring Mac.
+Help me choose , the best mac
+Explore all Mac models
+MacBook Air 13” and 15”
+MacBook Air 13” and 15”
+M5 chip
+Sky Blue
+Silver
+Starlight
+Midnight
++ more
+Thin. Fast. Powerful and portable.
+*
+◊
+Learn more
+Buy
+Apple M5 chip
+Apple Intelligence 46
+Up to 18 hours battery life 54
+4 ports 2x Thunderbolt 4 (USB-C),
+3.5 mm headphone jack, MagSafe 3
+MacBook Pro 14” and 16”
+MacBook Pro 14” and 16”
+M5, M5 Pro, or M5 Max chip
+Space Black
+Silver
++ more
+The most advanced Mac laptops for demanding tasks.
+*
+◊
+Currently viewing , MacBook Pro
+Buy
+Apple M5, M5 Pro, or M5 Max chip
+Apple Intelligence 46
+Up to 24 hours battery life 5
+Up to 7 ports 3x Thunderbolt 4 (USB-C) or
+3x Thunderbolt 5 (USB-C), HDMI, SDXC,
+3.5 mm headphone jack, MagSafe 3
+Compare all Mac models
+MacBook Pro and the environment.
+Learn more in our Product Environmental Report (PDF) , opens in new tab
+Made with 45% recycled material by weight.
+Recycled Material
+Our approach.
+Using recycled materials, like 100% recycled cobalt in the battery, reduces the need to mine new material, which avoids the carbon emissions and environmental impacts of mining.
+Learn more in our product environmental reports:
+14-inch MacBook Pro M5 (PDF) , opens in new tab
+14-inch and 16-inch MacBook Pro M5 Pro and M5 Max (PDF) , opens in new tab
+How you can help.
+You can protect the earth’s precious resources by trading in, passing down, or recycling devices and accessories you no longer use. You can bring them into any Apple Store for free, secure recycling. We also offer other ways to recycle, including mail-in options.
+Learn how to trade in or recycle devices
+Manufactured with 50% renewable electricity.
+Renewable Electricity
+Our approach.
+Using electricity from renewable sources like wind and solar across our global supply chain — instead of fossil fuels — significantly reduces carbon emissions from manufacturing Apple products.
+Learn more in our product environmental reports:
+14-inch MacBook Pro M5 (PDF) , opens in new tab
+14-inch and 16-inch MacBook Pro M5 Pro and M5 Max (PDF) , opens in new tab
+How you can help.
+You can extend the lifespan of your batteries and Apple products by using Optimized Battery Charging. It works by learning your charging habits and delaying the final charge — from 80% to 100% — until you are likely to need it.
+Learn more about Optimized Battery Charging
+Ships in 100% fiber‑based packaging.
+Package and Ship
+Our approach.
+MacBook Pro comes in paper packaging that is 100% fiber-based, as part of our commitment to remove plastic from the packaging of all Apple products.
+Learn more in our product environmental reports:
+14-inch MacBook Pro M5 (PDF) , opens in new tab
+14-inch and 16-inch MacBook Pro M5 Pro and M5 Max (PDF) , opens in new tab
+How you can help.
+New Apple products come in paper packaging that’s 100% fiber-based. In most places, you can put the entire box into your household recycling bin. You can also bring Apple packaging to any Apple Store and we’ll recycle it for free.
+Learn more about recycling
+Our values lead the way.
+A plan as innovative as our products.
+We’re committed to bringing net emissions to zero across our entire carbon footprint by 2030.
+Learn more about environment
+Privacy. That’s Apple.
+Privacy is a fundamental human right. Every product and service is designed to help keep your data safe and secure.
+Learn more about privacy
+Innovation that’s accessible by design.
+Our products and services are designed for everyone, with built-in features to help you do what you love, your way.
+Learn more about accessibility
+Think different.
+Mac
+Apple Footer
+Δ Available for Qualified Purchasers only. Qualified Purchasers receive an Apple Gift Card when they purchase an eligible Mac or iPad (“Eligible Product”) at a Qualifying Location through September 24, 2026. Gift card values may vary by Eligible Product. Customers will receive a discount equal to the value of the Apple Gift Card off the price of the Eligible Product, but will be charged for all items in their cart, including the Apple Gift Card. Only one Apple Gift Card per Eligible Product per Qualified Purchaser. Offer subject to availability. While supplies last. Additional restrictions apply. View full offer terms here .
+*
+Financing available to qualified customers, subject to credit approval and credit limit, and requires you to select Apple Card Monthly Installments (ACMI) as your payment type at checkout at Apple. Financing terms vary by product. Taxes and shipping on items purchased using ACMI are subject to your card’s variable APR, not the ACMI 0% APR. ACMI is not available for purchases made at special storefronts or when using such special discounts in-store at Apple, except ACMI is available at the Education storefront and with the Education discount. The last month’s payment for each product will be the product’s purchase price, less all other payments at the monthly payment amount. ACMI is subject to change at any time for any reason, including but not limited to installment term lengths and eligible products. See the Apple Card Customer Agreement for more information about ACMI.
+** Available to current and newly accepted college students and their parents, as well as faculty, staff, and homeschool teachers of all grade levels. See Terms for more information.
+◊
+Apple Upgrade Lease: This offer is for a consumer lease, not a purchase or loan. Lease provided by Klarna Inc. for 12-, 24-, or 36-month term. 12- and 36-month terms not available for all device models. Your first monthly payment is due approximately 30 days after device is shipped or available for pickup. Lease approval is subject to eligibility and is based on creditworthiness. Monthly payments are based on the selected device and lease term. For example:
+For an iPhone 17 Pro 256GB with a purchase price of $1099 (excluding taxes and any trade-in credit), the typical monthly payment is $31.99 (excluding taxes and any trade-in credit) for a 24-month lease term and $45.99 (excluding taxes and any trade-in credit) for a 12-month lease term.
+For an Apple Watch Series 11 42mm with a purchase price of $399 (excluding taxes and any trade-in credit), the typical monthly payment is $11.99 (excluding taxes and any trade-in credit) for a 24-month lease term and $21.99 (excluding taxes and any trade-in credit) for a 12-month lease term.
+For an iPad Pro 256GB with a purchase price of $1199 (excluding taxes and any trade-in credit), the typical monthly payment is $24.99 (excluding taxes and any trade-in credit) for a 36-month lease term and $31.99 (excluding taxes and any trade-in credit) for a 24-month lease term.
+For a MacBook Pro 16GB with a purchase price of $1999 (excluding taxes and any trade-in credit), the typical monthly payment is $38.99 (excluding taxes and any trade-in credit) for a 36-month lease term and $53.99 (excluding taxes and any trade-in credit) for a 24-month lease term.
+No security deposit required. A trade-in device may reduce monthly payments. Advertised monthly payment amount may not include a trade-in device’s estimated value. Upgrades are not guaranteed and are subject to eligibility and approval.
+For iPhone only: In order to lease an iPhone, you must select an eligible carrier (but you cannot use a prepaid carrier plan). A leased iPhone is always unlocked, so you can switch carriers at any time, subject to your carrier’s terms.
+Terminating your Apple Upgrade Lease: Closing your lease and returning your device terminates your lease. You may incur substantial fees if you terminate your lease before the end of your initial lease term. You may have the option to upgrade to a new device by entering into a new lease agreement and returning your prior device. If you upgrade, your new monthly payments may be greater than your prior monthly payments. If you do not upgrade, terminate your lease, or purchase your device by the end of the initial lease term, the lease will convert to a month-to-month lease for up to six months. Your monthly payments may increase during the month-to-month periods. If you take no action at the end of your extension period, you will be charged the purchase fee under your lease. You will not own your device at the end of your lease, unless you pay the purchase fee. Insurance is not included in your lease, and you may incur damage fees if the device is lost, stolen, or not returned in the condition required by the lease.
+Apple Upgrade Lease Eligibility: Leases are only available to U.S. residents (excluding residents of U.S. territories). Leased devices are only available for shipping to U.S. addresses (excluding U.S territories) or pick up at Apple Retail stores in the U.S. (excluding U.S. territories). To be eligible for a lease, you must be at least 18 years old (or the legal age in your state of residence), have a valid Social Security Number or individual taxpayer identification number (ITIN), have an accepted credit or debit card, have an Apple Account in good standing, have a Klarna Account, and be able to receive security verification codes via text message. Leases are not available on refurbished accessories or online at the following special stores: Apple Employee Purchase Plan; participating corporate Employee Purchase Programs; Apple at Work for small businesses or enterprises; Government, Education, or Veterans and Military Purchase Programs.
+◊◊
+Apple Card Monthly Installments (ACMI) is a 0% APR payment option that is only available if you select it at checkout in the U.S. for eligible products purchased at Apple Store locations, apple.com , the Apple Store app, or by calling 1‑800‑MY‑APPLE, and is subject to credit approval and credit limit. See here for more information about eligible products. Existing customers: See your Customer Agreement for your variable APR. As of July 1, 2026, the variable APR on new Apple Card accounts ranges from 17.49% to 27.74%. You must elect to use ACMI at checkout. If you buy an ACMI‑eligible product with a one-time payment on Apple Card at checkout, that purchase is subject to your Apple Card’s variable APR, not the ACMI 0% APR. Taxes and shipping on items purchased using ACMI are subject to your Apple Card’s variable APR, not the ACMI 0% APR. In order to buy an iPhone with ACMI, you must select one of the following carriers (prepaid carrier plans are not supported): AT&T, T‑Mobile, or Verizon. An iPhone purchased with ACMI is always unlocked, so you can switch carriers at any time, subject to your carrier’s terms. ACMI is not available for purchases made at the following special storefronts or when using these discounts in-store at Apple: Apple Employee Purchase Plan; participating corporate Employee Purchase Programs; Apple at Work for small businesses; Government and Veterans and Military Purchase Programs; or on refurbished devices. The last month’s payment for each product will be the product’s purchase price, less all other payments at the monthly payment amount. ACMI is subject to change at any time for any reason, including but not limited to installment term lengths and eligible products. See the Apple Card Customer Agreement for more information about ACMI.
+To access and use all Apple Card features and products available only to Apple Card users, you must add Apple Card to Wallet on an iPhone or iPad that supports and has the latest version of iOS or iPadOS. Apple Card is subject to credit approval, available only for qualifying applicants in the United States, and issued by Goldman Sachs Bank USA, Salt Lake City Branch.
+Apple Payments Services LLC, a subsidiary of Apple Inc., is a service provider of Goldman Sachs Bank USA for Apple Card and Savings accounts. Neither Apple Inc. nor Apple Payments Services LLC is a bank.
+All communications from Apple and Goldman Sachs Bank USA about Apple Card (including transactional and marketing communications) and customer service support are available in English. Certain communications about Apple Card can be viewed in another language depending on your device language settings. If you reside in the U.S. Virgin Islands, American Samoa, Guam, Northern Mariana Islands, or U.S. Minor Outlying Islands, please call Goldman Sachs at 877-255-5923 with questions about Apple Card.
+Testing conducted by Apple in September 2025 using preproduction 14-inch MacBook Pro systems with Apple M5, 10-core CPU, 10-core GPU, 32GB of unified memory, and 4TB SSD, as well as production 14-inch MacBook Pro systems with Apple M4, 10-core CPU, 10-core GPU, and 32GB of unified memory, and production 13-inch MacBook Pro systems with Apple M1, 8-core CPU, 8-core GPU, and 16GB of unified memory, all configured with 2TB SSD. Time to first token measured with a 16K-token prompt using an 8-billion parameter model with 4-bit weights and FP16 activations, mlx-lm, and prerelease MLX framework. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+In temperatures less than 25° C.
+Testing conducted by Apple in September 2025 using preproduction 14-inch MacBook Pro systems with Apple M5, 10-core CPU, 10-core GPU, 32GB of unified memory, and 4TB SSD, and production 1.7GHz quad-core Intel Core i7-based 13-inch MacBook Pro systems with Intel Iris Plus Graphics 645, 16GB of RAM, and 2TB SSD. AI performance tested with Adobe Premiere Pro (Beta) v25.6.0, using Enhance Speech and a 60-minute WAV file. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Battery life varies by use and configuration; see apple.com/batteries for more information.
+Testing conducted by Apple in September 2025 using preproduction 14-inch MacBook Pro systems with Apple M5, 10-core CPU, 10-core GPU, 24GB of unified memory, and 1TB SSD. Wireless web battery life tested by browsing 25 popular websites while connected to Wi-Fi. Video streaming battery life tested with 1080p content in Safari while connected to Wi-Fi. Display brightness set to 8 clicks from the bottom and keyboard backlight was off. Battery life varies by use and configuration. See apple.com/batteries for more information.
+Wi‑Fi 7 available in countries and regions where supported.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, 48GB of unified memory, and 1TB SSD. Wireless web battery life tested by browsing 25 popular websites while connected to Wi-Fi. Video streaming battery life tested with 1080p content in Safari while connected to Wi-Fi. Display brightness set to 8 clicks from the bottom and keyboard backlight was off. Battery life varies by use and configuration. See apple.com/batteries for more information.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, and 64GB of unified memory, as well as production 16-inch MacBook Pro systems with Apple M4 Pro, 14-core CPU, 20-core GPU, and 48GB of unified memory, both configured with 4TB SSD; and production 16-inch MacBook Pro systems with Apple M1 Pro, 10-core CPU, 16-core GPU, and 32GB of unified memory, configured with 8TB SSD. AI image generation measured with a 12-billion parameter model and MLX framework. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Trade-in values will vary based on the condition, year, and configuration of your eligible trade-in device. Not all devices are eligible for credit. You must be at least the age of majority to be eligible to trade in for credit or for an Apple Gift Card. Trade-in value may be applied toward qualifying new device purchase, or added to an Apple Gift Card. Actual value awarded is based on receipt of a qualifying device matching the description provided when estimate was made. Sales tax may be assessed on full value of a new device purchase. In-store trade-in requires presentation of a valid photo ID (local law may require saving this information). Offer may not be available in all stores, and may vary between in-store and online trade-in. Some stores may have additional requirements. Apple or its trade-in partners reserve the right to refuse, cancel, or limit quantity of any trade-in transaction for any reason. More details are available from Apple’s trade-in partner for trade-in and recycling of eligible devices. Restrictions and limitations may apply.
+Available on Mac computers with Apple silicon and Intel-based Mac computers with a T2 Security Chip. Requires that your iPhone and Mac are signed in with the same Apple Account using two-factor authentication, your iPhone and Mac are near each other and have Bluetooth and Wi-Fi turned on, and your Mac is not using AirPlay or Sidecar. Some iPhone features (e.g., camera and microphone) are not compatible with iPhone Mirroring.
+Requires that your iPhone, with an active carrier plan, and Mac are signed in with the same Apple Account, your iPhone and Mac are near each other, signed in to FaceTime with the same Apple Account, have Wi-Fi turned on, and are connected to the same network.
+Port configuration varies by model.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory, as well as production 16-inch MacBook Pro systems with Apple M4 Max, 16-core CPU, 40-core GPU, and 128GB of unified memory, all configured with 8TB SSD. Tested with FIO 3.41, 1024KB request size, 10GB test file, and IO depth=8. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 14-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory, as well as production 14-inch MacBook Pro systems with Apple M4 Max, 16-core CPU, 40-core GPU, and 128GB of unified memory, and production 14-inch MacBook Pro systems with Apple M1 Max, 10-core CPU, 32-core GPU, and 64GB of unified memory, all configured with 8TB SSD. AI image generation measured with a 12-billion parameter model and MLX framework. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in September 2025 using preproduction 14-inch MacBook Pro systems with Apple M5, 10-core CPU, 10-core GPU, 32GB of unified memory, and 4TB SSD, as well as production 14-inch MacBook Pro systems with Apple M4, 10-core CPU, 10-core GPU, and 32GB of unified memory, and production 13-inch MacBook Pro systems with Apple M1, 8-core CPU, 8-core GPU, and 16GB of unified memory, all configured with 2TB SSD. Tested with Topaz Video v1.0.0 using the built-in benchmark. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in September 2025 using preproduction 14-inch MacBook Pro systems with Apple M5, 10-core CPU, 10-core GPU, 32GB of unified memory, and 4TB SSD, as well as production 14-inch MacBook Pro systems with Apple M4, 10-core CPU, 10-core GPU, and 32GB of unified memory, and production 13-inch MacBook Pro systems with Apple M1, 8-core CPU, 8-core GPU, and 16GB of unified memory, all configured with 2TB SSD. Blender 4.5.3 tested using the built-in benchmark and utilizing hardware-accelerated ray tracing on systems with M5 and M4. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in September 2025 using preproduction 14-inch MacBook Pro systems with Apple M5, 10-core CPU, 10-core GPU, 32GB of unified memory, and 4TB SSD, as well as production 14-inch MacBook Pro systems with Apple M4, 10-core CPU, 10-core GPU, and 32GB of unified memory, and production 13-inch MacBook Pro systems with Apple M1, 8-core CPU, 8-core GPU, and 16GB of unified memory, all configured with 2TB SSD. Adobe Premiere Pro (Beta) v25.6.0 tested with a 60-minute WAV file. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in September 2025 using preproduction 14-inch MacBook Pro systems with Apple M5, 10-core CPU, 10-core GPU, 32GB of unified memory, and 4TB SSD, as well as production 14-inch MacBook Pro systems with Apple M4, 10-core CPU, 10-core GPU, and 32GB of unified memory, and production 13-inch MacBook Pro systems with Apple M1, 8-core CPU, 8-core GPU, and 16GB of unified memory, all configured with 2TB SSD. Cyberpunk 2077: Ultimate tested at 1280x800 resolution, with high preset, MetalFX set to balanced, and Ray Tracing off. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in September 2025 using preproduction 14-inch MacBook Pro systems with Apple M5, 10-core CPU, 10-core GPU, 32GB of unified memory, and 4TB SSD, as well as production 14-inch MacBook Pro systems with Apple M4, 10-core CPU, 10-core GPU, and 32GB of unified memory, and production 13-inch MacBook Pro systems with Apple M1, 8-core CPU, 8-core GPU, and 16GB of unified memory, all configured with 2TB SSD. Open source project built with Xcode 26 Release Candidate 1 with Apple Clang 17.0.0, Ninja 1.10.0 git, and CMake 3.26.4. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 14-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, and 64GB of unified memory, as well as production 14-inch MacBook Pro systems with Apple M4 Pro, 14-core CPU, 20-core GPU, and 48GB of unified memory, both configured with a 4TB SSD; and production 14-inch MacBook Pro systems with Apple M1 Pro, 10-core CPU, 16-core GPU, 32GB of unified memory, and 8TB SSD. AI image generation measured with a 12-billion parameter model and MLX framework. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 14-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, and 64GB of unified memory, as well as production 14-inch MacBook Pro systems with Apple M4 Pro, 14-core CPU, 20-core GPU, and 48GB of unified memory, both configured with 4TB SSD; and production 14-inch MacBook Pro systems with Apple M1 Pro, 10-core CPU, 16-core GPU, 32GB of unified memory, and 8TB SSD. Time to first token measured with a 16K-token prompt using a 14-billion parameter model with 4-bit weights and FP16 activations, mlx-lm, and MLX framework. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 14-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, and 64GB of unified memory, as well as production 14-inch MacBook Pro systems with Apple M4 Pro, 14-core CPU, 20-core GPU, and 48GB of unified memory, both configured with 4TB SSD; and production 14-inch MacBook Pro systems with Apple M1 Pro, 10-core CPU, 16-core GPU, 32GB of unified memory, and 8TB SSD. Prerelease Redshift v2026.01.16 tested using a 29.2MB scene utilizing hardware-accelerated ray tracing on systems with M5 Pro and M4 Pro. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 14-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, and 64GB of unified memory, as well as production 14-inch MacBook Pro systems with Apple M4 Pro, 14-core CPU, 20-core GPU, and 48GB of unified memory, both configured with 4TB SSD; and production 14-inch MacBook Pro systems with Apple M1 Pro, 10-core CPU, 16-core GPU, 32GB of unified memory, and 8TB SSD. Tested with DaVinci Resolve Studio 20.3.2 using SpeedWarp 25% - Better effect and a 10-second UHD project at 3840x2160 resolution and 24 frames per second. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 14-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, and 64GB of unified memory, as well as production 14-inch MacBook Pro systems with Apple M4 Pro, 14-core CPU, 20-core GPU, and 48GB of unified memory, both configured with 4TB SSD. Tested with prerelease Topaz Video v1.1.1 using the built-in benchmark for Starlight Mini 720p video enhancement. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 14-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, and 64GB of unified memory, as well as production 14-inch MacBook Pro systems with Apple M4 Pro, 14-core CPU, 20-core GPU, and 48GB of unified memory, both configured with 4TB SSD; and production 14-inch MacBook Pro systems with Apple M1 Pro, 10-core CPU, 16-core GPU, 32GB of unified memory, and 8TB SSD. Open source project built with Xcode 26.2 with Apple Clang 17.0.0. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 14-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, and 64GB of unified memory, as well as production 14-inch MacBook Pro systems with Apple M4 Pro, 14-core CPU, 20-core GPU, and 48GB of unified memory, both configured with 4TB SSD. Cyberpunk 2077: Ultimate Edition tested at 1728x1080 resolution, with ultra preset, MetalFX set to balanced, and Ray Tracing on. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, and 64GB of unified memory, as well as production 16-inch MacBook Pro systems with Apple M4 Pro, 14-core CPU, 20-core GPU, and 48GB of unified memory, both configured with 4TB SSD; and production 16-inch MacBook Pro systems with Apple M1 Pro, 10-core CPU, 16-core GPU, and 32GB of unified memory, configured with 8TB SSD. Time to first token measured with a 16K-token prompt using a 14-billion parameter model with 4-bit weights and FP16 activations, mlx-lm, and MLX framework. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, and 64GB of unified memory, as well as production 16-inch MacBook Pro systems with Apple M4 Pro, 14-core CPU, 20-core GPU, and 48GB of unified memory, both configured with 4TB SSD; and production 16-inch MacBook Pro systems with Apple M1 Pro, 10-core CPU, 16-core GPU, and 32GB of unified memory, configured with 8TB SSD. Prerelease Redshift v2026.01.16 tested using a 29.2MB scene utilizing hardware-accelerated ray tracing on systems with M5 Pro and M4 Pro. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, and 64GB of unified memory, as well as production 16-inch MacBook Pro systems with Apple M4 Pro, 14-core CPU, 20-core GPU, and 48GB of unified memory, both configured with 4TB SSD; and production 16-inch MacBook Pro systems with Apple M1 Pro, 10-core CPU, 16-core GPU, and 32GB of unified memory, configured with 8TB SSD. Tested with DaVinci Resolve Studio 20.3.2 using SpeedWarp 25% - Better effect and a 10-second UHD project at 3840x2160 resolution and 24 frames per second. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, and 64GB of unified memory, as well as production 16-inch MacBook Pro systems with Apple M4 Pro, 14-core CPU, 20-core GPU, and 48GB of unified memory, both configured with 4TB SSD. Tested with prerelease Topaz Video v1.1.1 using the built-in benchmark for Starlight Mini 720p video enhancement. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, and 64GB of unified memory, as well as production 16-inch MacBook Pro systems with Apple M4 Pro, 14-core CPU, 20-core GPU, and 48GB of unified memory, both configured with 4TB SSD; and production 16-inch MacBook Pro systems with Apple M1 Pro, 10-core CPU, 16-core GPU, and 32GB of unified memory, configured with 8TB SSD. Open source project built with Xcode 26.2 with Apple Clang 17.0.0. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, and 64GB of unified memory, as well as production 16-inch MacBook Pro systems with Apple M4 Pro, 14-core CPU, 20-core GPU, and 48GB of unified memory, both configured with 4TB SSD. Cyberpunk 2077: Ultimate Edition tested at 1728x1080 resolution, with ultra preset, MetalFX set to balanced, and Ray Tracing on. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 14-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory, as well as production 14-inch MacBook Pro systems with Apple M4 Max, 16-core CPU, 40-core GPU, and 128GB of unified memory, and production 14-inch MacBook Pro systems with Apple M1 Max, 10-core CPU, 32-core GPU, and 64GB of unified memory, all configured with 8TB SSD. Time to first token measured with a 16K-token prompt using a 14-billion parameter model with 4-bit weights and FP16 activations, mlx-lm, and MLX framework. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 14-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory, as well as production 14-inch MacBook Pro systems with Apple M4 Max, 16-core CPU, 40-core GPU, and 128GB of unified memory, and production 14-inch MacBook Pro systems with Apple M1 Max, 10-core CPU, 32-core GPU, and 64GB of unified memory, all configured with 8TB SSD. Prerelease Redshift v2026.01.16 tested using a 29.2MB scene utilizing hardware-accelerated ray tracing on systems with M5 Max and M4 Max. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 14-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory, as well as production 14-inch MacBook Pro systems with Apple M4 Max, 16-core CPU, 40-core GPU, and 128GB of unified memory, and production 14-inch MacBook Pro systems with Apple M1 Max, 10-core CPU, 32-core GPU, and 64GB of unified memory, all configured with 8TB SSD. Tested with DaVinci Resolve Studio 20.3.2 using SpeedWarp 25% - Better effect and a 10-second UHD project at 3840x2160 resolution and 24 frames per second. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 14-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory, as well as production 14-inch MacBook Pro systems with Apple M4 Max, 16-core CPU, 40-core GPU, and 128GB of unified memory, both configured with 8TB SSD. Tested with prerelease Topaz Video v1.1.1 using the built-in benchmark for Starlight Mini 720p video enhancement. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 14-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory, as well as production 14-inch MacBook Pro systems with Apple M4 Max, 16-core CPU, 40-core GPU, and 128GB of unified memory, and production 14-inch MacBook Pro systems with Apple M1 Max, 10-core CPU, 32-core GPU, and 64GB of unified memory, all configured with 8TB SSD. Open source project built with Xcode 26.2 with Apple Clang 17.0.0. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 14-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory, as well as production 14-inch MacBook Pro systems with Apple M4 Max, 16-core CPU, 40-core GPU, and 128GB of unified memory, both configured with 8TB SSD. Cyberpunk 2077: Ultimate Edition tested at 1728x1080 resolution, with ultra preset, MetalFX set to balanced, and Ray Tracing on. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory, as well as production 16-inch MacBook Pro systems with Apple M4 Max, 16-core CPU, 40-core GPU, and 128GB of unified memory, and production 16-inch MacBook Pro systems with Apple M1 Max, 10-core CPU, 32-core GPU, and 64GB of unified memory, all configured with 8TB SSD. AI image generation measured with a 12-billion parameter model and MLX framework. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory, as well as production 16-inch MacBook Pro systems with Apple M4 Max, 16-core CPU, 40-core GPU, and 128GB of unified memory, and production 16-inch MacBook Pro systems with Apple M1 Max, 10-core CPU, 32-core GPU, and 64GB of unified memory, all configured with 8TB SSD. Time to first token measured with a 16K-token prompt using a 14-billion parameter model with 4-bit weights and FP16 activations, mlx-lm, and MLX framework. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory, as well as production 16-inch MacBook Pro systems with Apple M4 Max, 16-core CPU, 40-core GPU, and 128GB of unified memory, and production 16-inch MacBook Pro systems with Apple M1 Max, 10-core CPU, 32-core GPU, and 64GB of unified memory, all configured with 8TB SSD. Prerelease Redshift v2026.01.16 tested using a 29.2MB scene utilizing hardware-accelerated ray tracing on systems with M5 Max and M4 Max. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory, as well as production 16-inch MacBook Pro systems with Apple M4 Max, 16-core CPU, 40-core GPU, and 128GB of unified memory, and production 16-inch MacBook Pro systems with Apple M1 Max, 10-core CPU, 32-core GPU, and 64GB of unified memory, all configured with 8TB SSD. Tested with DaVinci Resolve Studio 20.3.2 using SpeedWarp 25% - Better effect and a 10-second UHD project at 3840x2160 resolution and 24 frames per second. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory, as well as production 16-inch MacBook Pro systems with Apple M4 Max, 16-core CPU, 40-core GPU, and 128GB of unified memory, both configured with 8TB SSD. Tested with prerelease Topaz Video v1.1.1 using the built-in benchmark for Starlight Mini 720p video enhancement. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory, as well as production 16-inch MacBook Pro systems with Apple M4 Max, 16-core CPU, 40-core GPU, and 128GB of unified memory, and production 16-inch MacBook Pro systems with Apple M1 Max, 10-core CPU, 32-core GPU, and 64GB of unified memory, all configured with 8TB SSD. Open source project built with Xcode 26.2 with Apple Clang 17.0.0. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 40-core GPU, and 128GB of unified memory, as well as production 16-inch MacBook Pro systems with Apple M4 Max, 16-core CPU, 40-core GPU, and 128GB of unified memory, both configured with 8TB SSD. Cyberpunk 2077: Ultimate Edition tested at 1728x1080 resolution, with ultra preset, MetalFX set to balanced, and Ray Tracing on. Performance tests are conducted using specific computer systems and reflect the approximate performance of MacBook Pro.
+Apple Intelligence is available in beta. Some features may not be available in all regions or languages. For feature and language availability and system requirements, see support.apple.com/121115 .
+Testing conducted by Apple in January and February 2026 using preproduction 16-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 32-core GPU, 36GB of unified memory, and 2TB SSD; preproduction 16-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, 48GB of unified memory, and 1TB SSD; preproduction 14-inch MacBook Pro systems with Apple M5 Max, 18-core CPU, 32-core GPU, 36GB of unified memory, and 2TB SSD; and preproduction 14-inch MacBook Pro systems with Apple M5 Pro, 18-core CPU, 20-core GPU, 24GB of unified memory, and 2TB SSD. 16-inch MacBook Pro systems tested with Apple 140W USB-C Power Adapter (Model A2452), and 14-inch MacBook Pro systems tested with Apple 96W USB-C Power Adapter (Model A2166), both with USB-C to MagSafe 3 Cable (Model A2363). Fast-charge testing conducted with drained MacBook Pro units. Times measured from the beginning of wake from hibernate, or from the appearance of the Apple logo as the unit started up. Charge time varies with settings and environmental factors; actual results will vary.
+Live Translation in Messages is available in Apple Intelligence–supported languages when Apple Intelligence is enabled on a compatible iPhone, iPad, or Mac, as well as on Apple Watch Series 9 and later, Apple Watch Ultra 2 and later, and Apple Watch SE 3 when paired with an Apple Intelligence–enabled iPhone. See support.apple.com/121115 for supported languages.
+Live Translation in Phone and FaceTime is available for one-on-one calls in Chinese (Mandarin, Simplified), Chinese (Mandarin, Traditional), English (UK, U.S.), French (France), German, Italian, Japanese, Korean, Portuguese (Brazil), and Spanish (Spain) when Apple Intelligence is enabled on a compatible iPhone, iPad, or Mac.
+Handoff requires an iPhone or iPad with iOS 8 or later or iPadOS.
+Wi‑Fi 6E available in countries and regions where supported.
+Speeds are based on theoretical throughput and may vary.
+Apple Watch Hermès is not eligible for education savings.
+Testing conducted by Apple in January 2026 using preproduction 13-inch MacBook Air systems with Apple M5, 10-core CPU, and 8-core GPU, and preproduction 15-inch MacBook Air systems with Apple M5, 10-core CPU, and 10-core GPU, all configured with 16GB of unified memory and 512GB SSD. Wireless web battery life tested by browsing 25 popular websites while connected to Wi-Fi. Video streaming battery life tested with 1080p content in Safari while connected to Wi-Fi. All systems tested with display brightness set to 8 clicks from bottom and keyboard backlight off. Battery life varies by use and configuration. See apple.com/batteries for more information.
+Some features, applications, and services may not be available in all regions or all languages.
+Some features require an Apple Account, compatible hardware, and compatible internet access or cellular network; additional fees and terms may apply.
+Stellarium image of the M31 galaxy by Lee, Ang (HG731GZ). Creative Commons Attribution License 3.0.
+MATLAB® visualization based on: Cui, et al. “NIRS-Based Hyperscanning.” Neuroimage. V. 59, No. 3, 2012, pp. 2430–2437; Grinsted, et al. “Application of the Cross Wavelet.” Nonlin. Proc. Geophys. V. 11, 2004, pp. 561–566; Maraun, et al, “Nonstationary Gaussian Processes.” Phys. Rev. E. V. 75, 2007, pp. 016707(1)–016707(14); and Torrence and Webster, “Interdecadal Changes.” J. of Climate. V. 12, No. 8, 1999, pp. 2679–2690.
+Some apps may require a subscription.
+
+Apple
+Mac
+MacBook Pro
+Shop and Learn
+Shop and Learn
+Store
+Mac
+iPad
+iPhone
+Watch
+Vision
+AirPods
+TV & Home
+AirTag
+Accessories
+Gift Cards
+Apple Wallet
+Apple Wallet
+Wallet
+Apple Card
+Apple Pay
+Apple Cash
+Account
+Account
+Manage Your Apple Account
+Apple Store Account
+iCloud.com
+Entertainment
+Entertainment
+Apple One
+Apple TV
+Apple Music
+Apple Arcade
+Apple Fitness+
+Apple News+
+Apple Podcasts
+Apple Books
+App Store
+Apple Store
+Apple Store
+Find a Store
+Genius Bar
+Today at Apple
+Group Reservations
+Apple Camp
+Apple Store App
+Certified Refurbished
+Apple Upgrade
+Apple Trade In
+Financing
+Carrier Deals at Apple
+Order Status
+Shopping Help
+For Business
+For Business
+Apple and Business
+Shop for Business
+For Education
+For Education
+Apple and Education
+Shop for K-12
+Shop for College
+For Healthcare
+For Healthcare
+Apple and Healthcare
+For Government
+For Government
+Apple and Government
+Shop for Veterans and Military
+Shop for State and Local Employees
+Shop for Federal Employees
+Apple Values
+Apple Values
+Accessibility
+Education
+Environment
+Inclusion and Diversity
+Privacy
+Racial Equity and Justice
+Supply Chain Innovation
+About Apple
+About Apple
+Newsroom
+Apple Leadership
+Career Opportunities
+Investors
+Ethics & Compliance
+Events
+Contact Apple
+More ways to shop: Find an Apple Store or other retailer near you. Or call 1-800-MY-APPLE (1-800-692-7753).
+United States
+Copyright ©
+2026
+Apple Inc. All rights reserved.
+Privacy Policy
+Terms of Use
+Sales and Refunds
+Legal
+Site Map
+United States
