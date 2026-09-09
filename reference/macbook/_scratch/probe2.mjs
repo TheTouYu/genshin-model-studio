@@ -1,0 +1,10 @@
+import { load } from './load.mjs';
+const { w, h, ch, px } = load(process.argv[2]);
+const lum = (x,y) => { const i=(y*w+x)*ch; return Math.round(0.299*px[i]+0.587*px[i+1]+0.114*px[i+2]); };
+const row=(y,x0,x1)=>{ let s=`y=${y} `; for(let x=x0;x<=x1;x+=1) s+=`${x}:${lum(x,y)} `; console.log(s); };
+const col=(x,y0,y1)=>{ let s=`x=${x} `; for(let y=y0;y<=y1;y+=1) s+=`${y}:${lum(x,y)} `; console.log(s); };
+console.log('== 找上盖左缘 (y=300, x=110..150) =='); row(300,110,150);
+console.log('== 找上盖右缘 (y=300, x=830..870) =='); row(300,830,870);
+console.log('== 找上盖顶缘 (x=250, y=40..75) =='); col(250,40,75);
+console.log('== 找上盖底缘 (x=250, y=505..560) =='); col(250,505,560);
+console.log('== 中央列看文字 (x=490, y=480..540) =='); col(490,480,540);

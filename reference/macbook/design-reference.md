@@ -55,7 +55,7 @@
 
 | 特征 | 13" 家族（被复刻同框） | 14"/16" M5 | 来源 |
 |---|---|---|---|
-| 平面圆角半径 | **R ≈ 10 mm**（13" 官方维修图蓝色描边弧拟合 46–50 px，标定 0.2116 mm/px → 9.7–10.6 mm） | **R ≈ 20 mm**（16" 实测 22.7–26.0，14" 实测 18.1） | 🔵 实测 `apple-mbp13-top-case-official.png` / `official-mbp14-dimensions-1.jpg` |
+| 平面圆角半径 | **R ≈ 10 mm**（13" 官方维修图蓝色描边弧拟合 46–50 px，标定 0.2116 mm/px → 9.7–10.6 mm；并行研究在新闻稿图上独立拟合上盖前角 **R ≈ 10.2 mm**、外接矩形 11.15 × 9.21 mm、rms 0.27 ⇒ 两路互证） | **R ≈ 20 mm**（16" 实测 22.7–26.0，14" 实测 18.1） | 🔵 实测 `apple-mbp13-top-case-official.png` / `official-mbp14-dimensions-1.jpg` |
 | 上盖厚度 | 官方未公布（❌ NOT FOUND）；14" 侧视 ≈ **4.0 mm** | 同 | 🔵 推断 |
 | Apple logo | 上盖外表面**居中偏上**镜面 logo | **37.1 × 45.6 mm**（含叶），水平居中偏差 0.2 mm，中心在上盖几何中心上方 4.1 mm | 🟢 官方图 `apple-mbp13-display-15deg-official.png` / 🔵 实测 |
 | 前缘开盖凹槽 | 居中，宽 ≈1/8 机宽，深 ≈1.5 mm | 同 | 🔵 实测 `official-mbp14-dimensions-2.jpg` |
@@ -78,6 +78,9 @@
 
 Notebookcheck 原文：键程 **1 mm**；"half-sized arrow keys、dedicated Esc button、slightly separated power button"。
 
+- 键数差推导：**78 − 65 = 13 = 12 个全高功能键 + Touch ID 按钮**（🟢 官方键数表交叉推得）。
+- 键帽字符字体：**San Francisco**（2015 年起替换 VAG Rounded）🟡 第三方主张；官方未公布，字号 ❌ NOT FOUND。
+
 ### 3.2 逐像素实测（🔵 官方维修图 `apple-mbp13-top-case-official.png`，1499×1056）
 
 标定：304.1 mm / 1437 px = **0.21162 mm/px (x)**；212.4 mm / 1016 px = **0.20906 mm/px (y)**。
@@ -94,15 +97,17 @@ Notebookcheck 原文：键程 **1 mm**；"half-sized arrow keys、dedicated Esc 
 | Tab / Caps / Shift / Return / delete | 127/149/194/149/126 | **26.9 / 31.5 / 41.1 / 31.5 / 26.7** |
 | 键盘块左右边距 | — | 左 **22.2** / 右 **13.5** |
 
-> ⚠ 纵距 18.3 mm 与横距 19.05 mm 不等：官方图 aspect 1.4144 比真机 1.4317 高 1.2% ⇒ y 向标定有约 1% 系统偏差，纵距真值应在 **18.3–18.6 mm**。建模以「横距 19.05 为准、纵距取横距 ×0.97」最稳。
-> ⚠ 上述是**键帽顶面暗区**尺寸；真机键帽有斜裙边，实体轮廓比顶面约大 0.5 mm。**官方未公布键帽尺寸**（❌ NOT FOUND），此值为本档案实测。
+> ⚠ **行距 18.3–18.5 mm ≠ 列距 19.05 mm（两路独立测量一致）**：本档案用机身深度 212.4 mm 标定 y 向（0.20906 mm/px）；并行研究用 Apple 新闻稿键盘图（1391 px = 304.1 mm）测得行/列像素比 = 84.6/87 = **0.9724**，与本档案 87.6/90 = **0.9733** 吻合。若强行令行距 = 19.05 mm，该图机身深度须为 **221 mm**，与官方 212.4 mm 矛盾 ⇒ 行距真值 ≈ **18.5 mm**。**建模规则：行距 = 列距 ×0.973**。
+> ⚠ 列距 19.05 mm 的独立验证：ANSI 顶排 14.5u，键盘块跨度实测 274.3 mm；14.5 × 19.05 − 1.8 = **274.4 mm** ✓。
+> ⚠ 键帽顶面暗区含**前裙边**（Apple 专利 US10224157B2 原文："The keycap 240 may have a substantially flat top surface. In certain embodiments, the keycap 240 may have a slightly concave shape… A beveled edge 242 may be angled at a 45 degree angle"），故顶面真实高度略小于暗区高度；键帽四角 **R ≈ 1.9 mm**（🔵 实测）。
+> ⚠ **官方未公布键距/键帽尺寸/间隙/空格宽度**（❌ NOT FOUND）；空格键为 **5u 单元（92.5 mm）**，比标准 ANSI 6.25u（118 mm）短 **25.5 mm**。
 
 ### 3.3 底排语义（真机，US ANSI）
 
 `fn | control | option | command | ▁▁▁空格（居中）▁▁▁ | command | option | ◄ ▼ ► | ▲`
 
 - **空格键中心 = 键盘块中心**（v2 实测 x=+0.0950 ⇒ 违规）
-- 方向键为**倒 T**：左/下/右同排，上键在下方键正上方
+- 方向键为**倒 T**，且**四个方向键全部半高**：▲ 8.5 mm 顶对齐、▼◀▶ 7.9 mm 底对齐（居于 17.3 mm 行内）——两路独立测量一致；早前「▲ 全高 77 px」为分量合并的测量错误
 - 修饰键**不等宽**：command 22.0 mm < option/control/fn 17.25 mm
 
 ---
@@ -114,6 +119,10 @@ Notebookcheck 原文：键程 **1 mm**；"half-sized arrow keys、dedicated Esc 
 | 技术 | **Force Touch trackpad**，Apple 原文："pressure-sensing capabilities; enables Force clicks, accelerators, pressure-sensitive drawing, and Multi-Touch gestures" | 🟢 [111339](https://support.apple.com/en-us/111339) |
 | 安装井尺寸 | **129.9 × 79.0 mm**，水平居中（井中心 748 px vs 机身中心 747 px） | 🔵 实测 `apple-mbp13-top-case-official.png` |
 | 交叉验证 | 官方产品图 触控板宽/机身宽 = 0.446 ⇒ ≈135 mm（透视误差内一致） | 🔵 实测 `apple-mbp13-silver-official.png` |
+| 玻璃面板尺寸 | ≈ **132.3 × 78.9 mm**（并行研究 605 × 377.5 px，y 向按 0.2116 标定校正）⇒ 触控板取 **130–132 × 79 mm** | 🔵 实测（两路） |
+| 相对位置 | 左右各距机身边缘 **86.0 mm**、距前缘 **5.4 mm**；井→玻璃 5.7 mm；键盘井左右边距 15.3 mm（井宽 273.5 mm ≈ 14.5u） | 🔵 实测（并行研究） |
+| 圆角 / 颜色 | 玻璃圆角 **R ≈ 4.7 mm**；玻璃与掌托**同色同亮度**（188–192 vs 190），仅靠 2 px 深色轮廓线区分 | 🔵 实测 |
+| 力学 | Force Touch = **4 个力传感器 + Taptic Engine 磁铁**；**触控板本身不动、无机械行程**（"the trackpad itself doesn't move"） | 🟡 MacRumors/iFixit + 🟢 [Apple 102309](https://support.apple.com/en-us/102309) |
 | 表面 | 玻璃面，与掌托**共面**（无边框台阶）；无物理按键行程（Taptic Engine 模拟） | 🟢 官方图 + 🔵 目视 |
 | 维护 | 10 颗螺丝固定，顶部橙色排线 | 🟢 官方图 `apple-mbp13-trackpad-official.png` |
 
@@ -130,10 +139,14 @@ Notebookcheck 原文：键程 **1 mm**；"half-sized arrow keys、dedicated Esc 
 | 可视区（由 ppi 推） | **28.64 × 17.90 cm** | 29.03 × 18.87 cm | 30.24 × 19.64 cm |
 | 比例 | 16:10 (1.6000) | 1.538 | 1.539 |
 | 摄像头 | 720p，顶部居中（无刘海） | 1080p，**刘海** | 1080p，刘海 |
-| 边框 | 左右 **≈8.8 mm**（几何推）/ 实测 6.9–7.8 mm；上 ≈9.7 mm、下 ≈23.7 mm（印「MacBook Pro」） | 极窄 | 左右 ≈5.1 mm |
+| 边框 | 左右 **8.0 mm**、上 **13.6 mm**、下 **11.9 mm**（Apple 新闻稿正面图，按活动区 286.46 × 179.02 mm 自标定，各向异性 **0.16%**，边缘取过渡中点；并行研究同图得 6.9 / 6.5 / 12.9 / 11.2 —— 差异来自阈值，取区间 **6.9–8.6 mm**）；**上盖正面 ≈ 301–303 × 204 mm** | 极窄 | 左右 ≈5.1 mm |
 
 - Notebookcheck 原文："**does not include slim bezels**" —— 13" 2020 的厚边框是**真机特征**，复刻 13" 机型必须保留宽下边框。
 - 🟢 官方脚注：显示屏顶部为圆角设计，按标准矩形测对角线为 13.3 英寸，实际可视区四角亦为圆角。
+- ⚠ **勘误（本档案初版错误）**：初版记「上 ≈9.7 / 下 ≈23.7 mm」，是在**透视**产品图（活动区像素比 2.373 vs 真实 1.600 ⇒ 各向异性 22–33%）上做的纵向测量，**不可用**；改用正投影正面图（各向异性 0.16%）重测得 **上 13.6 / 下 11.9 mm** ⇒ 真机**上边框比下边框厚**，与初版结论相反。**建模必须按上厚下薄。**
+- 🔵 复现要点：像素级过渡在 y=61–64（上）、y=535–536（下）、x=136–142（左）、x=836–840（右）；取过渡中点得 31.5 / 27.5 / 18.5 / 18.5 px × 0.4314 mm/px。下边框内含「MacBook Pro」文字（居中，距上盖底缘 ≈ 2.5 mm，字高 ≈ 1.7 mm），黑玻璃下段因反射呈 lum 27–30 的深灰，**不是**缝隙。
+- 🔵 自洽校验：上盖正面高 = 179.02 + 13.6 + 11.9 = **204.5 mm**（并行研究独立得 204.2 ✓）；机身深 212.4 − 204.5 = **7.9 mm** ⇒ 闭合时上盖后缘比机身尾缘前移约 8 mm（转轴/铰链盖区占深）。
+- 🔵 左右边框上限：若假设上盖与机身同宽，则 (304.1 − 286.46)/2 = 8.83 mm；但上盖实测 ≈301–303 mm 窄于机身 ⇒ **8.0 mm 是更紧的取值**。
 
 ---
 
@@ -144,6 +157,8 @@ Notebookcheck 原文：键程 **1 mm**；"half-sized arrow keys、dedicated Esc 
 | 数量 | **2 个**（左右各一）；铰链盖为独立零件（Apple 维修文档 100536 "Display Hinge Covers"） | 🟢 [100536](https://support.apple.com/en-us/100536) |
 | 构造 | 黑色筒 + 金属支架 | 🟢 官方图 `apple-mbp13-hinge-cover-official.jpg`、`apple-mbp13-bottom-internal-plus-official.jpg` |
 | 显示屏拆卸角 | Apple 维修文档标注 **15°**（服务姿态） | 🟢 官方图 `apple-mbp13-display-15deg-official.png` |
+| 螺丝 / 零件名 | 每个铰链盖 **2 颗 T3 螺丝 (923-05243)**；铰链盖零件名 "Clutch Cover, Right **923-04181** / Left **923-04182**" | 🟢 [100536](https://support.apple.com/en-us/100536) |
+| 装配约束 | 官方原文："Ensure that the top edge of each display hinge cover sits under the top edge of the top case." ⇒ 铰链盖顶缘必须**藏在上壳顶缘之下** | 🟢 100536 |
 | 最大开合角 | **官方未公布**（❌ NOT FOUND） | — |
 | 设计语言 | 转轴**不外露**：闭合时后缘齐平，侧视看不到轴端/轴筒 | 🟢 官方产品图 |
 
@@ -177,6 +192,18 @@ Notebookcheck 原文：键程 **1 mm**；"half-sized arrow keys、dedicated Esc 
 - 散热槽：细长条（高 ≈1–1.5 mm），**靠转轴端**，与机身轮廓平行。
 - 端口开口与侧壁**齐平**、边缘连续倒角，无外露支架 🟢 官方图 `apple-mbp13-io-ports-official.png`。
 
+### 7.3 MBP13 2020 四雷雳口 —— 端口实测（🔵，Apple 正交侧视渲染图，标尺 930 px = 深 212.4 mm = 4.378 px/mm）
+
+| 项 | 实测 | 校验 |
+|---|---|---|
+| USB-C 开口 | **8.22 × 2.51 mm**（36 × 11 px） | Type-C 规范 8.34 × 2.56 mm ⇒ −1.4% / −2.0% ✓ |
+| 同侧两孔中心距 | **14.85 mm** | — |
+| 两孔位置 | 距**前缘 33.4 mm 与 48.2 mm**（左 33.5/48.3、右 33.3/48.1，镜像对称 ±0.2 mm） | — |
+| 3.5 mm 耳机孔 | Ø **3.88 mm**，中心距前缘 **20.6 mm**（右侧） | — |
+
+> ⚠ 前/后方向按标准视图几何判定；若 Apple 渲染图为镜像，则同一组距离应自**后缘**起算。第三方实测端口位置 mm = ❌ NOT FOUND。
+> **建模要点**：同侧两孔**中心距 14.85 mm**、**沿同一水平中线**、与侧壁**齐平**（无凹陷边框、无外露支架）。
+
 ---
 
 ## 8. 底盖
@@ -185,6 +212,12 @@ Notebookcheck 原文：键程 **1 mm**；"half-sized arrow keys、dedicated Esc 
 |---|---|---|
 | 脚垫 | **4 个 Ø15.0 mm**，中心距左右边 **22.0 mm**、距前后边 **22.7 mm**（四角对称） | 🔵 实测 `apple-mbp13-bottom-case-official.jpg` |
 | 螺丝 | **6 颗 P5 五角 (Pentalobe)**：2×6.7 mm + 4×3.4 mm | 🟡 [iFixit 下壳教程](https://www.ifixit.com/Guide/MacBook+Pro+13-Inch+Four+Thunderbolt+Ports+2020+Lower+Case+Replacement/143615) |
+| 卡扣 / 拆卸方向 | 内部 **4 个卡扣**（前角 2 + 中央螺孔旁 2）；拆解为**向前拉**（远离转轴）——"Pull to the side—not up"，抬起不超过 0.5 inch | 🟡 iFixit 143615 + 🟢 [100534](https://support.apple.com/en-us/100534) |
+| 官方零件号 | 下壳 Silver **923-05203/204/205**、Space Gray **923-05200/201/202** | 🟢 100534 |
+| 脚垫交叉验证 | 并行研究（iFixit 底面照，4.36 px/mm）：Ø **14.5 mm**、距侧边 **23 mm**、距后缘 **21 mm** / 距前缘 **28 mm** ⇒ 与本档案 Ø15.0 / 22.0 / 22.7 mm **互证（±1 mm）** | 🔵 实测（两路） |
+| 铭牌实测 | 雕刻块 ≈ **79 × 14 mm**，居中，距后缘 **11.5–25.2 mm**（三行宽 ≈78 / 51 / 24 mm） | 🔵 实测（并行研究） |
+| 进风格栅 | 底盖**无进气格栅**；底面仅一对侧向通风口（🟡 iFixit 拆解），后缘为独立的「vent/antenna module」 | 🟡 iFixit + 🟢 100534/100539 |
+| 扬声器孔 | 官方维修图可见键盘左右细密点阵；iFixit 原文："The speakers are not located under the speaker grilles. The speaker grille doesn't even go clear through the case."，后订正 "most of these holes are cosmetic, but … some of these are through-holes" ⇒ **多为装饰孔** | 🟡 iFixit 拆解 |
 | 后缘暗带 | 天线窗/出风区 **238.1 × 4.9 mm**，水平居中 | 🔵 实测 |
 | 铭牌 | 激光雕刻：Designed by Apple in California / Assembled in China / Model / EMC / Rated 20Vdc 3.25A max + 监管符号 | 🟢 官方图 `apple-mbp13-ventenna-official.png` |
 | 出风槽 | 后缘一排出风槽 | 🟢 官方图 `apple-mbp13-hinge-cover-official.jpg` |
@@ -200,6 +233,12 @@ Notebookcheck 原文：键程 **1 mm**；"half-sized arrow keys、dedicated Esc 
 | Silver 色值 | **#e1e2e4**（官方产品图采样，亮度 p10–p90 = 217–231） | 🔵 推断 |
 | Space Gray 色值 | **#bbbcc1**（同法，175–196）；Silver 比 Space Gray 亮 **≈19%** | 🔵 推断 |
 | 配色可选 | MBP14：深空黑 / 银色；Air：天蓝 / 银 / 星光 / 午夜 | 🟢 官方 |
+| 倒角 | 侧壁↔顶/底面 **45° 连续倒角**，沿边与四角连续；该倒角面 "characterized as having a mirror shine" | 🟢 Apple 专利 US9338908B2 |
+| 加工 | CNC 铣削（"milling operation … CNC milling machine"）；阳极氧化层厚 **8–12 µm**；圆角刀具切削半径 **≈35 mm**（侧壁圆角剖面，非平面 R10） | 🟢 Apple 专利 US9061358 |
+| 喷砂 | 陶瓷珠粒径 **5–30 µm**（权项 0–65 µm）；表面沟槽间距 **0.5–70 µm**、深 **≈0.5 µm** | 🟢 Apple 专利 US10131035B1 |
+| Logo | 嵌件厚 **<0.8 mm**，抛光成镜面；与外表面 "cooperates with the outer surface of the housing to create a continuous surface"（**齐平无台阶**）；涂层为 PVD；2016 起不发光 | 🟢 专利 US9070313B2 + 🟡 第三方 |
+| 官方措辞 | "precision unibody enclosure **crafted** from a single block of aluminum"（Apple 用 crafted；**"carved" = NOT FOUND**）；"continuous curvature" / "no visible seams" 在 Apple 官方来源中 **NOT FOUND** | 🟢 2008 newsroom |
+| 配色第三方冲突 | Space Gray #86868B vs #555555；Silver #A2AAAD vs #A6A6A6 ⇒ **无权威色值** | 🟡 第三方 |
 
 > ⚠ 官方**不公布色值**（❌ NOT FOUND）。采样含打光，只能作「相对明度关系」参考；游戏引擎无 PBR 金属，只能用色值近似。
 
@@ -213,7 +252,7 @@ Notebookcheck 原文：键程 **1 mm**；"half-sized arrow keys、dedicated Esc 
 |---|---|---|---|
 | 1 | **单一轮廓** | 所有水平面外轮廓 = 同一条圆角矩形折线（13" R10 mm / 14" R20 mm）；越界 ≤0.2 mm | 每角方角越界 **4.14 mm** ✗ |
 | 2 | **连续曲率** | 侧壁↔顶/底面过渡无硬边台阶；圆角管分段接缝 <0.05 mm；四角半径一致 | 管接缝楔形缺口 **0.32 mm** ✗ |
-| 3 | **缝隙均匀** | 键间隙 1.80×1.38 mm 全域统一（±0.1 mm）；上盖/底座闭合缝 0.3–0.5 mm 等宽 | 键间隙 0.0006 vs 0.0040 ✗ |
+| 3 | **缝隙均匀** | 列距 **19.05 mm**、行距 **18.5 mm**（= 列距 ×0.973）全域统一（±0.1 mm）；键间隙 1.80 × 1.38 mm；上盖/底座闭合缝 0.3–0.5 mm 等宽 | 键间隙 0.0006 vs 0.0040 ✗ |
 | 4 | **结构隐藏** | 正常视角看不到转轴/轴端/螺丝/支架；rod 端头内缩 ≥1.5 mm | Ø4 mm 轴端外露 ✗ |
 | 5 | **面齐平** | 掌托/键盘井/触控板共面（差 ≤0.05 mm）；盖板不高出台面 | 铰链盖高 **0.6 mm** ✗ |
 | 6 | **栅格对齐** | 触控板与机身同中心；**空格键中心 = 键盘中心**；扬声器栅格与键盘块同边距 | 空格键 x=**+0.0950** ✗ |
@@ -233,6 +272,7 @@ Notebookcheck 原文：键程 **1 mm**；"half-sized arrow keys、dedicated Esc 
 | `apple-mbp13-top-case-official.png` | 🟢 维修文档 100548 | **1499×1056 近正交俯视 Top Case**：esc + 整条 Touch Bar（右端 Touch ID）+ 5 排键，底排 fn/control/option/command + 居中空格 + command/option + 倒 T 方向键；键盘两侧细密点阵扬声器孔；下方触控板安装井（含黑色垫片） |
 | `apple-mbp13-silver-official.png` | 🟢 产品图 | Silver 开合约 100° 正面：屏幕黑边 + 顶部居中摄像头 + 下边框「MacBook Pro」、Touch Bar 横条、6 排黑键、居中大触控板 |
 | `apple-mbp13-spacegray-official.png` | 🟢 产品图 | 同上 Space Gray，机壳明显更深灰（#bbbcc1 vs #e1e2e4） |
+| `apple-mbp13-press-front-official.jpg` | 🟢 Apple 新闻稿（并行研究提供） | **正投影正面图（980×632，活动区各向异性 0.16%）**：屏幕黑边四周宽度由此实测（上 13.6 / 下 11.9 / 左右 8.0 mm）；下边框居中「MacBook Pro」；上边框居中摄像头孔；闭合态前缘可见开盖凹槽 |
 | `apple-mbp13-bottom-case-official.jpg` | 🟢 维修文档 100534 | 底壳外视：四角 4 个黑色圆脚垫（Ø15 mm）+ 后缘深色暗带（238×4.9 mm）+ 前缘蓝圈标注螺丝 |
 | `apple-mbp13-bottom-screws-official.png` | 🟢 维修文档 100534 | 顶壳内侧（黑）带奶白色螺丝柱，红色拉环高亮 |
 | `apple-mbp13-ventenna-official.png` | 🟢 维修文档 100534 | 底壳后缘特写：激光雕刻铭牌 + 监管符号，可见 2 个圆脚垫 |
@@ -253,6 +293,8 @@ Notebookcheck 原文：键程 **1 mm**；"half-sized arrow keys、dedicated Esc 
 | `official-mbp14-hero.jpg`、`hardware.jpg`、`durable.jpg`、`finish-lockup.jpg` | 🟢 规格页 | 开盖正面（刘海）/ 硬件 / 耐用性 / 双色对照 |
 | `official-mbp16-*`、`official-mba13-*`、`official-mba15-*` | 🟢 规格页 | 16"/Air 同套尺寸·端口·配色图 |
 
+> 并行研究另用 Apple 新闻稿键盘/触控板俯视图（标定 1391 px = 304.1 mm，本档案未下载）做**第二路交叉验证**：两路在行/列距比（0.9733 vs 0.9724）、触控板宽（129.9 vs 132.3 mm）、上盖前角圆角（10 vs 10.2 mm）上互相印证；凡两路一致者按 ✅ 采信，凡不一致者已在正文标注。
+
 ### 11.2 未获取 / NOT FOUND
 
 | 项 | 状态 |
@@ -267,6 +309,19 @@ Notebookcheck 原文：键程 **1 mm**；"half-sized arrow keys、dedicated Esc 
 | 色值（Silver/Space Gray） | ❌ 官方未公布；本档案采样（含打光） |
 | 正投影三视图 / USDZ 3D 模型 | ❌ Apple 不发布（已 grep 确认无 `.usdz`） |
 | Wikimedia / 存档站图片 | ❌ 网络不可达（超时），已改用 Apple 官方 CDN 图 |
+| 键距 / 键帽尺寸 / 键间隙 / 空格宽度的官方值 | ❌ 官方从未公布（全部为图像实测） |
+| 触控板为「玻璃」的官方声明 | ❌ Apple 规格页只写 "Force Touch trackpad"，材质未声明 |
+| 三机型触控板的公开实测 mm 值 | ❌ 未找到可引用来源（本档案为图像实测） |
+| 上/下壳圆角半径官方值 | ❌ 未公布（R10 为图像拟合） |
+| 连续曲率（continuous curvature）专利原文 | ❌ patents.google.com / freepatentsonline.com / uspto.report 在本沙箱被墙（仅 patentimages 可通）；键帽形状专利 US10224157B2 可读 |
+| Force Touch 机械行程数值 | ❌ 官方只称 "pressure-sensing"；机制为 4 力传感器 + Taptic Engine（🟡 第三方） |
+| 脚垫材质 / 官方零件号 | ❌ Apple 无脚垫零件号（100531）；iFixit 该机型无脚垫教程（`"guideid":null`） |
+| 扬声器孔 Ø / 间距 / 数量 | ❌ 未找到任何来源（仅定性「细密点阵、多为装饰孔」） |
+| 底盖进风格栅槽尺寸 | ❌ NOT FOUND（底盖无进气格栅，仅侧向通风口） |
+| 色度计实测 sRGB 色值 | ❌ NOT FOUND；第三方色值互相冲突（§9） |
+| 铝合金牌号 / Ra / Sq / Sdq | ❌ NOT FOUND（仅专利给出喷砂珠径与沟槽尺度） |
+| Logo 尺寸与位置 | ❌ NOT FOUND（官方只给「镜面嵌件 <0.8 mm、与外表面齐平」） |
+| 铭牌逐字内容 | ❌ 照片分辨率下 "A2251" / "Designed by Apple in California" / "EMC 3348" 不可辨；官方仅称序列号在底面近监管标识处 |
 
 ### 11.3 标定方法与复现
 
@@ -276,6 +331,8 @@ Notebookcheck 原文：键程 **1 mm**；"half-sized arrow keys、dedicated Esc 
 - 自校验：键距 90 px × 0.21162 = **19.05 mm** = 标准 0.75" 键距 ✓
 - 解码器：`_scratch/png.mjs`（PNG，zlib 自解）+ `jpeg-js`（项目 node_modules，JPEG）
 - 分析脚本：`_scratch/{analyze,keys,geom,gray,bottom,feet,prod}.mjs`
+- 屏幕边框法：`_scratch/bezel2.mjs`（以活动区 286.46 × 179.02 mm 自标定，逐列/逐行量暗带，边缘取过渡中点）+ `_scratch/crop.mjs`（自写 PNG 编码器，裁剪放大供目视复核）
+- ⚠ **透视图不可用于纵向标定**：判据 = 活动区像素比 vs 真实 1.600 —— `apple-mbp13-silver-official.png` 得 **2.373**、`apple-mbp13-display-official.jpg` 得 **1.306**，均严重压缩；仅 `press_retina.jpg` 得 **1.598**（各向异性 0.16%）可用于屏幕纵向测量。
 - 误差：圆角半径 ±2–4 mm（图像软阴影）；开口宽 ±0.2 mm；键距 x ±1%、纵距 ±2%；色值仅相对参考
 
 ---
@@ -291,9 +348,10 @@ Notebookcheck 原文：键程 **1 mm**；"half-sized arrow keys、dedicated Esc 
 | 开合 | 100° | 官方未公布 | — | ⚠ 100° 是**展示姿态**，非机械极限 |
 | 键数 | **79** | 13" 2020 = 65(US)/66(ISO)；Air M2/M3、MBP14 = 79(ISO) | **+13/14 键** | ❌ **不匹配 13" 机型**：模型是「13 寸机身 + 新一代键盘」混合体 |
 | 功能行 | 未指定 | 13" 2020 = Touch Bar；新代际 = 12 全高功能键 | — | ⚠ 必须先定代际：Touch Bar ⇒ 65 键；实体功能键 ⇒ 79 键 |
-| 屏幕可视区 | 29.20 × 18.25 cm | 13.3" = 28.64 × 17.90；13.6" = 29.03 × 18.87 | **+1.9% / +2.0%**（vs 13.3"） | ⚠ 比例正确（1.6000），尺寸偏大 ⇒ 左右边框从 8.8 mm 压到 6.0 mm，**比真机更「现代」** |
+| 屏幕可视区 | 29.20 × 18.25 cm | 13.3" = 28.64 × 17.90；13.6" = 29.03 × 18.87 | **+1.9% / +2.0%**（vs 13.3"） | ⚠ 比例正确（1.6000），尺寸偏大 ⇒ 左右边框从 **8.0 mm** 压到 6.0 mm，**比真机更「现代」** |
+| 屏幕边框分配 | 规格未提 | 上 **13.6** / 下 **11.9** / 左右 **8.0 mm**（**上厚下薄**） | — | 📌 建模若做成「上薄下厚」即失真（初版档案曾误记，见 §5 勘误） |
 | 屏幕对角线 | 13.56" | 13.3" / 13.6" | +0.26" / −0.04" | ⚠ 真机无此规格 |
-| 触控板 | 规格未提 | 129.9 × 79.0 mm，居中 | — | 📌 必须补进模型 |
+| 触控板 | 规格未提 | **130–132 × 79 mm**（玻璃 132.3 × 78.9 / 井 129.9 × 79.0），居中，距左右边 86 mm、距前缘 5.4 mm | — | 📌 必须补进模型 |
 | 脚垫 | 规格未提 | Ø15.0 mm ×4，距各边 22 mm | — | 📌 必须补进模型 |
 | 圆角半径 | v2 用 R10 mm | 13" 实测 **R≈10 mm** ✓ | 0 | ✅ 数值对；❌ 实现错（方角未裁） |
 | 键盘空格键 | v2 空格 x=+0.0950 | 应居中（x=0） | **+95 mm 偏移** | ❌ 语义错误 |
@@ -304,7 +362,7 @@ Notebookcheck 原文：键程 **1 mm**；"half-sized arrow keys、dedicated Esc 
 2. **79 键指向新代际布局** ⇒ 规格自相矛盾，**必须二选一**：
    - **A. 复刻 13" MBP 2020**：65(US)/66(ISO) 键 + Touch Bar + 宽边框 + 等厚 15.6 mm。
    - **B. 复刻新代际**：79 键 + 12 全高功能键，但机身应为 **30.41 × 21.5 × 1.13 cm（楔形）**，与现规格 21.2 × 1.55 冲突。
-3. **屏幕偏大 1.9%**：若坚持 29.20 × 18.25 cm，则左右边框 6.0 mm < 真机 8.8 mm ⇒ 视觉上更像新代际；若要 13" 2020 的味道，屏幕应改为 **28.64 × 17.90 cm**。
+3. **屏幕偏大 1.9%**：若坚持 29.20 × 18.25 cm，则左右边框 6.0 mm < 真机 **8.0 mm** ⇒ 视觉上更像新代际；若要 13" 2020 的味道，屏幕应改为 **28.64 × 17.90 cm**（边框 上 13.6 / 下 11.9 / 左右 8.0 mm）。
 4. **修复优先级**（按 v2 破绽量级）：① 轮廓一致性（4.14 mm）② 上盖-机身穿模（6.60 mm）③ 轴端外露（Ø4 mm）④ 空格键语义（+0.0950）⑤ 盖板齐平（0.6 mm）⑥ 管接缝（0.32 mm）。
 
 ---
