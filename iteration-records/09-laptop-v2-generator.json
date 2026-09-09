@@ -1,0 +1,156 @@
+{
+  "stage": "S1b generator",
+  "tool": "exports/laptop-v2/gen-parts-v2.mjs",
+  "counts": {
+    "total": 573,
+    "quads": 539,
+    "rods": 6,
+    "tubes": 24,
+    "discs": 4,
+    "keycaps": 79,
+    "named": 31
+  },
+  "batches": [
+    {
+      "batch": "base",
+      "files": [
+        {
+          "file": "laptop-v2-base.js",
+          "count": 55
+        }
+      ],
+      "count": 55
+    },
+    {
+      "batch": "keyboard",
+      "files": [
+        {
+          "file": "laptop-v2-keyboard-1.js",
+          "count": 100
+        },
+        {
+          "file": "laptop-v2-keyboard-2.js",
+          "count": 100
+        },
+        {
+          "file": "laptop-v2-keyboard-3.js",
+          "count": 100
+        },
+        {
+          "file": "laptop-v2-keyboard-4.js",
+          "count": 100
+        }
+      ],
+      "count": 400
+    },
+    {
+      "batch": "trackpad",
+      "files": [
+        {
+          "file": "laptop-v2-trackpad.js",
+          "count": 7
+        }
+      ],
+      "count": 7
+    },
+    {
+      "batch": "lid",
+      "files": [
+        {
+          "file": "laptop-v2-lid.js",
+          "count": 26
+        }
+      ],
+      "count": 26
+    },
+    {
+      "batch": "screen",
+      "files": [
+        {
+          "file": "laptop-v2-screen.js",
+          "count": 25
+        }
+      ],
+      "count": 25
+    },
+    {
+      "batch": "ports",
+      "files": [
+        {
+          "file": "laptop-v2-ports.js",
+          "count": 22
+        }
+      ],
+      "count": 22
+    },
+    {
+      "batch": "grille",
+      "files": [
+        {
+          "file": "laptop-v2-grille.js",
+          "count": 18
+        }
+      ],
+      "count": 18
+    },
+    {
+      "batch": "bottom",
+      "files": [
+        {
+          "file": "laptop-v2-bottom.js",
+          "count": 4
+        }
+      ],
+      "count": 4
+    },
+    {
+      "batch": "hinge",
+      "files": [
+        {
+          "file": "laptop-v2-hinge.js",
+          "count": 12
+        }
+      ],
+      "count": 12
+    },
+    {
+      "batch": "feet",
+      "files": [
+        {
+          "file": "laptop-v2-feet.js",
+          "count": 4
+        }
+      ],
+      "count": 4
+    }
+  ],
+  "needProps": [],
+  "rdpMinMargin": 1.3003,
+  "gateNaming": {
+    "registered": 31,
+    "dropped": [
+      "base_left",
+      "base_right",
+      "base_front",
+      "top_kb_left",
+      "top_kb_right",
+      "cham_base_pp",
+      "cham_base_np",
+      "well_front",
+      "well_back",
+      "well_left",
+      "well_right",
+      "lid_inner",
+      "lid_outer",
+      "screen_backplate",
+      "bezel_top",
+      "bezel_left",
+      "bezel_right",
+      "usbc1_back",
+      "usbc2_back",
+      "jack_back",
+      "serial_slot"
+    ]
+  },
+  "conclusion": "needProps=0（消掉 gms.props 兜底）；RDP 最小余量 1.30×；命名集按引擎接触模型自动裁剪为 31 件"
+}

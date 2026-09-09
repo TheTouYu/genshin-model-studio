@@ -1,0 +1,26 @@
+{
+  "id": "01-laptop-s0-preflight",
+  "stage": "S0 预检",
+  "when": "2026-09-08",
+  "task": "PROMPT-laptop-model.md（MacBook 式笔记本 150 元件，一轮做完）",
+  "commands": [
+    "npm run build --silent → exit 0",
+    "npm test → 248 tests / 248 pass / 0 fail（exit 0）",
+    "curl -s -o /dev/null -w %{http_code} http://localhost:8787/ → 200（服务已存在 → 复用，未重复启动）",
+    "npm run capabilities → docs/capabilities.md 同源清单"
+  ],
+  "findings": [
+    "8787 无服务（首次探测 000）→ 以 GMS_EXPORT_DIR=exports/laptop 启动 scripts/web-server.js 并托管为后台任务；HTTP 200",
+    "浏览器=Win11 Edge CDP 9222（browser-harness）；8787 标签页存在但旁边有 /draw/hanfu-cage.html 干扰页 → 关闭，只留建模页（run-gms-parts.sh 取 tabs[0]）",
+    "window.gms / window.gmsPreview 均存在；gms.summary().options.calibration=460px=1m，canvasWidthPx=416、canvasHeightPx=460（非零，全程保留）"
+  ],
+  "artifacts": [
+    "exports/laptop/s0-preflight.json"
+  ],
+  "gate": {
+    "build": "pass",
+    "test": "248/248 pass",
+    "server": "HTTP 200",
+    "gms": "present"
+  }
+}

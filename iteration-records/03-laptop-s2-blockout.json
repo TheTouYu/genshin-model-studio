@@ -1,0 +1,30 @@
+{
+  "id": "03-laptop-s2-blockout",
+  "stage": "S2 粗骨架（底座 16 + 上盖 10 + 转轴 3 = 29 件）",
+  "when": "2026-09-08",
+  "commands": [
+    "bash scripts/run-gms-parts.sh exports/laptop scripts/parts/laptop-base.js scripts/parts/laptop-lid.js scripts/parts/laptop-hinge.js → part1/2/3.json（16/10/3 笔）",
+    "scripts/capture-views.sh http://localhost:8787/ exports/laptop/views --views iso,top,front,left,right,closeup"
+  ],
+  "findings": [
+    "capture-views.sh 的 iso 帧陈旧：其 iso 用 resetView() 后 0.6s 截图，拿到的是 run-gms-parts.sh 末尾停在 front 的上一帧 → view-iso.png 与 view-front.png 逐字节相同（sha256=87dff26c…）",
+    "→ 自建 exports/laptop/capture-six.py：同预设值 + 「帧哈希变化」守卫 + 回读 getCamera() 断言 yaw/pitch/radius 生效（另加 cdp Page.bringToFront 让后台标签页 rAF 不节流）",
+    "骨架视图正确：楔形（前薄后厚）、上盖 100° 开合、转轴 rod 在铰链处；left/right 侧别与 §7 命名一致"
+  ],
+  "artifacts": [
+    "exports/laptop/parts/part1.json",
+    "exports/laptop/parts/part2.json",
+    "exports/laptop/parts/part3.json",
+    "exports/laptop/view-iso.png",
+    "exports/laptop/view-front.png",
+    "exports/laptop/view-left.png",
+    "exports/laptop/views/view-{iso,top,front,left,right,closeup}.png",
+    "exports/laptop/capture-six.py"
+  ],
+  "gate": {
+    "items": 29,
+    "quads": 25,
+    "rods": 1,
+    "visual": "read_image 复核通过（无破面/悬空）"
+  }
+}

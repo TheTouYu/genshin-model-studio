@@ -1,0 +1,4813 @@
+{
+  "rule": "min(w,h) > max(0.0002174, 0.005*hypot(w,h))  [460px=1m, 实测]",
+  "marginMin": 1.15,
+  "minMargin": 1.3003,
+  "entries": [
+    {
+      "id": "base_bottom_0",
+      "batch": "base",
+      "w": 0.304,
+      "h": 0.02898266,
+      "aspect": 0.095338,
+      "limit": 0.00152689,
+      "margin": 18.9815
+    },
+    {
+      "id": "base_bottom_1",
+      "batch": "base",
+      "w": 0.0373,
+      "h": 0.00700158,
+      "aspect": 0.18771,
+      "limit": 0.00021739,
+      "margin": 32.2073
+    },
+    {
+      "id": "base_bottom_2",
+      "batch": "base",
+      "w": 0.001,
+      "h": 0.00700158,
+      "aspect": 0.142825,
+      "limit": 0.00021739,
+      "margin": 4.6
+    },
+    {
+      "id": "base_bottom_3",
+      "batch": "base",
+      "w": 0.001,
+      "h": 0.00700158,
+      "aspect": 0.142825,
+      "limit": 0.00021739,
+      "margin": 4.6
+    },
+    {
+      "id": "base_bottom_4",
+      "batch": "base",
+      "w": 0.001,
+      "h": 0.00700158,
+      "aspect": 0.142825,
+      "limit": 0.00021739,
+      "margin": 4.6
+    },
+    {
+      "id": "base_bottom_5",
+      "batch": "base",
+      "w": 0.2106,
+      "h": 0.00700158,
+      "aspect": 0.033246,
+      "limit": 0.00105358,
+      "margin": 6.6455
+    },
+    {
+      "id": "base_bottom_6",
+      "batch": "base",
+      "w": 0.001,
+      "h": 0.00700158,
+      "aspect": 0.142825,
+      "limit": 0.00021739,
+      "margin": 4.6
+    },
+    {
+      "id": "base_bottom_7",
+      "batch": "base",
+      "w": 0.001,
+      "h": 0.00700158,
+      "aspect": 0.142825,
+      "limit": 0.00021739,
+      "margin": 4.6
+    },
+    {
+      "id": "base_bottom_8",
+      "batch": "base",
+      "w": 0.001,
+      "h": 0.00700158,
+      "aspect": 0.142825,
+      "limit": 0.00021739,
+      "margin": 4.6
+    },
+    {
+      "id": "base_bottom_9",
+      "batch": "base",
+      "w": 0.0373,
+      "h": 0.00700158,
+      "aspect": 0.18771,
+      "limit": 0.00021739,
+      "margin": 32.2073
+    },
+    {
+      "id": "base_bottom_10",
+      "batch": "base",
+      "w": 0.304,
+      "h": 0.00480108,
+      "aspect": 0.015793,
+      "limit": 0.00152019,
+      "margin": 3.1582
+    },
+    {
+      "id": "base_bottom_11",
+      "batch": "base",
+      "w": 0.132,
+      "h": 0.0022005,
+      "aspect": 0.01667,
+      "limit": 0.00066009,
+      "margin": 3.3336
+    },
+    {
+      "id": "base_bottom_12",
+      "batch": "base",
+      "w": 0.132,
+      "h": 0.0022005,
+      "aspect": 0.01667,
+      "limit": 0.00066009,
+      "margin": 3.3336
+    },
+    {
+      "id": "base_bottom_13",
+      "batch": "base",
+      "w": 0.304,
+      "h": 0.0040009,
+      "aspect": 0.013161,
+      "limit": 0.00152013,
+      "margin": 2.6319
+    },
+    {
+      "id": "base_bottom_14",
+      "batch": "base",
+      "w": 0.122,
+      "h": 0.00900203,
+      "aspect": 0.073787,
+      "limit": 0.00061166,
+      "margin": 14.7174
+    },
+    {
+      "id": "base_bottom_15",
+      "batch": "base",
+      "w": 0.122,
+      "h": 0.00900203,
+      "aspect": 0.073787,
+      "limit": 0.00061166,
+      "margin": 14.7174
+    },
+    {
+      "id": "base_bottom_16",
+      "batch": "base",
+      "w": 0.304,
+      "h": 0.15103401,
+      "aspect": 0.496822,
+      "limit": 0.00169726,
+      "margin": 88.9871
+    },
+    {
+      "id": "base_bottom_17",
+      "batch": "base",
+      "w": 0.007,
+      "h": 0.00300068,
+      "aspect": 0.428668,
+      "limit": 0.00021739,
+      "margin": 13.8031
+    },
+    {
+      "id": "base_bottom_18",
+      "batch": "base",
+      "w": 0.01,
+      "h": 0.00300068,
+      "aspect": 0.300068,
+      "limit": 0.00021739,
+      "margin": 13.8031
+    },
+    {
+      "id": "base_bottom_19",
+      "batch": "base",
+      "w": 0.007,
+      "h": 0.00300068,
+      "aspect": 0.428668,
+      "limit": 0.00021739,
+      "margin": 13.8031
+    },
+    {
+      "id": "base_bottom_20",
+      "batch": "base",
+      "w": 0.304,
+      "h": 0.00197657,
+      "aspect": 0.006502,
+      "limit": 0.00152003,
+      "margin": 1.3003
+    },
+    {
+      "id": "base_left_0",
+      "batch": "base",
+      "w": 0.212,
+      "h": 0.00415,
+      "aspect": 0.019575,
+      "limit": 0.0010602,
+      "margin": 3.9143
+    },
+    {
+      "id": "base_left_1",
+      "batch": "base",
+      "w": 0.04175,
+      "h": 0.0025,
+      "aspect": 0.05988,
+      "limit": 0.00021739,
+      "margin": 11.5
+    },
+    {
+      "id": "base_left_2",
+      "batch": "base",
+      "w": 0.0315,
+      "h": 0.0025,
+      "aspect": 0.079365,
+      "limit": 0.00021739,
+      "margin": 11.5
+    },
+    {
+      "id": "base_left_3",
+      "batch": "base",
+      "w": 0.12175,
+      "h": 0.0025,
+      "aspect": 0.020534,
+      "limit": 0.00060888,
+      "margin": 4.1059
+    },
+    {
+      "id": "base_left_4",
+      "batch": "base",
+      "w": 0.212,
+      "h": 0.00425,
+      "aspect": 0.020047,
+      "limit": 0.00106021,
+      "margin": 4.0086
+    },
+    {
+      "id": "base_right_0",
+      "batch": "base",
+      "w": 0.212,
+      "h": 0.00365,
+      "aspect": 0.017217,
+      "limit": 0.00106016,
+      "margin": 3.4429
+    },
+    {
+      "id": "base_right_1",
+      "batch": "base",
+      "w": 0.03425,
+      "h": 0.0035,
+      "aspect": 0.10219,
+      "limit": 0.00021739,
+      "margin": 16.1
+    },
+    {
+      "id": "base_right_2",
+      "batch": "base",
+      "w": 0.17425,
+      "h": 0.0035,
+      "aspect": 0.020086,
+      "limit": 0.00087143,
+      "margin": 4.0164
+    },
+    {
+      "id": "base_right_3",
+      "batch": "base",
+      "w": 0.212,
+      "h": 0.00375,
+      "aspect": 0.017689,
+      "limit": 0.00106017,
+      "margin": 3.5372
+    },
+    {
+      "id": "base_front",
+      "batch": "base",
+      "w": 0.304,
+      "h": 0.0064,
+      "aspect": 0.021053,
+      "limit": 0.00152034,
+      "margin": 4.2096
+    },
+    {
+      "id": "base_back",
+      "batch": "base",
+      "w": 0.304,
+      "h": 0.0109,
+      "aspect": 0.035855,
+      "limit": 0.00152098,
+      "margin": 7.1664
+    },
+    {
+      "id": "top_front",
+      "batch": "base",
+      "w": 0.012,
+      "h": 0.304,
+      "aspect": 0.039474,
+      "limit": 0.00152118,
+      "margin": 7.8886
+    },
+    {
+      "id": "top_tp_left",
+      "batch": "base",
+      "w": 0.074,
+      "h": 0.087,
+      "aspect": 0.850575,
+      "limit": 0.00057107,
+      "margin": 129.5805
+    },
+    {
+      "id": "top_tp_right",
+      "batch": "base",
+      "w": 0.074,
+      "h": 0.087,
+      "aspect": 0.850575,
+      "limit": 0.00057107,
+      "margin": 129.5805
+    },
+    {
+      "id": "top_mid",
+      "batch": "base",
+      "w": 0.005,
+      "h": 0.304,
+      "aspect": 0.016447,
+      "limit": 0.00152021,
+      "margin": 3.289
+    },
+    {
+      "id": "top_kb_left",
+      "batch": "base",
+      "w": 0.109,
+      "h": 0.014,
+      "aspect": 0.12844,
+      "limit": 0.00054948,
+      "margin": 25.4788
+    },
+    {
+      "id": "top_kb_right",
+      "batch": "base",
+      "w": 0.109,
+      "h": 0.014,
+      "aspect": 0.12844,
+      "limit": 0.00054948,
+      "margin": 25.4788
+    },
+    {
+      "id": "top_back",
+      "batch": "base",
+      "w": 0.012,
+      "h": 0.304,
+      "aspect": 0.039474,
+      "limit": 0.00152118,
+      "margin": 7.8886
+    },
+    {
+      "id": "cham_base_pp_0",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.00661226,
+      "aspect": 0.590086,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "cham_base_pp_1",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.00661226,
+      "aspect": 0.590086,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "cham_base_pp_2",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.00661226,
+      "aspect": 0.590086,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "cham_base_pp_3",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.00661226,
+      "aspect": 0.590086,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "cham_base_pn_0",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.01068774,
+      "aspect": 0.365073,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "cham_base_pn_1",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.01068774,
+      "aspect": 0.365073,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "cham_base_pn_2",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.01068774,
+      "aspect": 0.365073,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "cham_base_pn_3",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.01068774,
+      "aspect": 0.365073,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "cham_base_np_0",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.00661226,
+      "aspect": 0.590086,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "cham_base_np_1",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.00661226,
+      "aspect": 0.590086,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "cham_base_np_2",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.00661226,
+      "aspect": 0.590086,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "cham_base_np_3",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.00661226,
+      "aspect": 0.590086,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "cham_base_nn_0",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.01068774,
+      "aspect": 0.365073,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "cham_base_nn_1",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.01068774,
+      "aspect": 0.365073,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "cham_base_nn_2",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.01068774,
+      "aspect": 0.365073,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "cham_base_nn_3",
+      "batch": "base",
+      "w": 0.00390181,
+      "h": 0.01068774,
+      "aspect": 0.365073,
+      "limit": 0.00021739,
+      "margin": 17.9483
+    },
+    {
+      "id": "well_floor",
+      "batch": "keyboard",
+      "w": 0.109,
+      "h": 0.276,
+      "aspect": 0.394928,
+      "limit": 0.00148372,
+      "margin": 73.464
+    },
+    {
+      "id": "well_front",
+      "batch": "keyboard",
+      "w": 0.276,
+      "h": 0.002,
+      "aspect": 0.007246,
+      "limit": 0.00138004,
+      "margin": 1.4492
+    },
+    {
+      "id": "well_back",
+      "batch": "keyboard",
+      "w": 0.276,
+      "h": 0.002,
+      "aspect": 0.007246,
+      "limit": 0.00138004,
+      "margin": 1.4492
+    },
+    {
+      "id": "well_left",
+      "batch": "keyboard",
+      "w": 0.109,
+      "h": 0.002,
+      "aspect": 0.018349,
+      "limit": 0.00054509,
+      "margin": 3.6691
+    },
+    {
+      "id": "well_right",
+      "batch": "keyboard",
+      "w": 0.109,
+      "h": 0.002,
+      "aspect": 0.018349,
+      "limit": 0.00054509,
+      "margin": 3.6691
+    },
+    {
+      "id": "key_r0c0_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r0c0_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c0_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c0_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c0_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c1_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r0c1_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c1_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c1_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c1_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c2_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r0c2_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c2_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c2_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c2_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c3_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r0c3_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c3_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c3_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c3_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c4_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r0c4_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c4_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c4_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c4_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c5_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r0c5_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c5_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c5_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c5_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c6_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r0c6_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c6_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c6_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c6_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c7_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r0c7_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c7_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c7_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c7_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c8_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r0c8_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c8_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c8_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c8_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c9_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r0c9_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c9_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c9_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c9_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c10_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r0c10_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c10_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c10_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c10_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c11_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r0c11_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c11_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c11_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c11_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c12_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r0c12_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c12_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c12_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c12_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c13_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r0c13_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c13_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c13_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r0c13_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c0_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r1c0_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c0_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c0_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c0_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c1_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r1c1_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c1_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c1_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c1_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c2_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r1c2_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c2_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c2_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c2_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c3_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r1c3_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c3_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c3_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c3_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c4_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r1c4_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c4_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c4_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c4_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c5_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r1c5_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c5_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c5_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c5_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c6_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r1c6_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c6_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c6_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c6_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c7_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r1c7_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c7_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c7_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c7_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c8_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r1c8_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c8_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c8_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c8_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c9_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r1c9_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c9_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c9_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c9_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c10_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r1c10_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c10_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c10_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c10_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c11_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r1c11_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c11_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c11_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c11_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c12_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r1c12_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c12_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c12_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c12_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c13_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r1c13_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c13_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c13_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r1c13_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c0_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r2c0_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c0_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c0_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c0_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c1_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r2c1_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c1_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c1_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c1_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c2_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r2c2_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c2_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c2_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c2_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c3_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r2c3_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c3_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c3_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c3_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c4_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r2c4_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c4_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c4_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c4_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c5_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r2c5_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c5_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c5_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c5_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c6_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r2c6_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c6_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c6_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c6_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c7_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r2c7_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c7_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c7_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c7_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c8_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r2c8_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c8_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c8_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c8_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c9_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r2c9_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c9_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c9_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c9_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c10_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r2c10_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c10_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c10_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c10_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c11_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r2c11_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c11_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c11_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c11_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c12_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r2c12_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c12_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c12_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c12_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c13_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r2c13_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c13_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c13_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r2c13_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c0_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r3c0_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c0_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c0_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c0_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c1_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r3c1_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c1_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c1_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c1_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c2_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r3c2_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c2_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c2_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c2_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c3_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r3c3_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c3_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c3_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c3_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c4_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r3c4_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c4_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c4_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c4_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c5_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r3c5_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c5_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c5_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c5_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c6_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r3c6_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c6_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c6_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c6_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c7_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r3c7_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c7_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c7_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c7_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c8_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r3c8_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c8_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c8_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c8_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c9_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r3c9_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c9_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c9_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c9_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c10_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r3c10_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c10_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c10_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c10_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c11_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r3c11_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c11_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c11_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c11_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c12_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r3c12_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c12_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c12_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r3c12_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c0_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r4c0_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c0_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c0_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c0_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c1_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r4c1_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c1_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c1_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c1_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c2_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r4c2_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c2_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c2_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c2_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c3_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r4c3_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c3_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c3_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c3_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c4_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r4c4_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c4_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c4_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c4_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c5_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r4c5_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c5_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c5_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c5_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c6_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r4c6_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c6_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c6_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c6_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c7_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r4c7_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c7_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c7_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c7_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c8_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r4c8_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c8_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c8_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c8_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c9_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r4c9_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c9_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c9_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c9_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c10_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r4c10_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c10_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c10_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c10_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c11_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r4c11_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c11_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c11_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c11_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c12_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r4c12_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c12_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c12_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r4c12_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c0_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r5c0_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c0_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c0_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c0_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c1_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r5c1_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c1_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c1_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c1_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c2_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r5c2_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c2_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c2_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c2_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c3_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r5c3_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c3_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c3_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c3_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c4_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r5c4_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c4_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c4_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c4_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c5_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r5c5_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c5_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c5_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c5_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c6_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r5c6_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c6_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c6_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c6_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c7_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r5c7_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c7_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c7_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c7_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c8_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r5c8_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c8_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c8_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c8_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c9_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.015,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 69
+    },
+    {
+      "id": "key_r5c9_f",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c9_b",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c9_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5c9_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5_space_top",
+      "batch": "keyboard",
+      "w": 0.015,
+      "h": 0.078,
+      "aspect": 0.192308,
+      "limit": 0.00039715,
+      "margin": 37.7695
+    },
+    {
+      "id": "key_r5_space_f",
+      "batch": "keyboard",
+      "w": 0.0814,
+      "h": 0.00240416,
+      "aspect": 0.029535,
+      "limit": 0.00040718,
+      "margin": 5.9045
+    },
+    {
+      "id": "key_r5_space_b",
+      "batch": "keyboard",
+      "w": 0.0814,
+      "h": 0.00240416,
+      "aspect": 0.029535,
+      "limit": 0.00040718,
+      "margin": 5.9045
+    },
+    {
+      "id": "key_r5_space_r",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "key_r5_space_l",
+      "batch": "keyboard",
+      "w": 0.0184,
+      "h": 0.00240416,
+      "aspect": 0.130661,
+      "limit": 0.00021739,
+      "margin": 11.0592
+    },
+    {
+      "id": "tp_face",
+      "batch": "trackpad",
+      "w": 0.074,
+      "h": 0.13,
+      "aspect": 0.569231,
+      "limit": 0.00074793,
+      "margin": 98.9397
+    },
+    {
+      "id": "tp_front_0",
+      "batch": "trackpad",
+      "w": 0.065,
+      "h": 0.0008,
+      "aspect": 0.012308,
+      "limit": 0.00032502,
+      "margin": 2.4614
+    },
+    {
+      "id": "tp_front_1",
+      "batch": "trackpad",
+      "w": 0.065,
+      "h": 0.0008,
+      "aspect": 0.012308,
+      "limit": 0.00032502,
+      "margin": 2.4614
+    },
+    {
+      "id": "tp_back_0",
+      "batch": "trackpad",
+      "w": 0.065,
+      "h": 0.0008,
+      "aspect": 0.012308,
+      "limit": 0.00032502,
+      "margin": 2.4614
+    },
+    {
+      "id": "tp_back_1",
+      "batch": "trackpad",
+      "w": 0.065,
+      "h": 0.0008,
+      "aspect": 0.012308,
+      "limit": 0.00032502,
+      "margin": 2.4614
+    },
+    {
+      "id": "tp_left",
+      "batch": "trackpad",
+      "w": 0.074,
+      "h": 0.0008,
+      "aspect": 0.010811,
+      "limit": 0.00037002,
+      "margin": 2.162
+    },
+    {
+      "id": "tp_right",
+      "batch": "trackpad",
+      "w": 0.074,
+      "h": 0.0008,
+      "aspect": 0.010811,
+      "limit": 0.00037002,
+      "margin": 2.162
+    },
+    {
+      "id": "lid_inner",
+      "batch": "lid",
+      "w": 0.304,
+      "h": 0.212,
+      "aspect": 0.697368,
+      "limit": 0.00185311,
+      "margin": 114.4026
+    },
+    {
+      "id": "lid_outer",
+      "batch": "lid",
+      "w": 0.304,
+      "h": 0.212,
+      "aspect": 0.697368,
+      "limit": 0.00185311,
+      "margin": 114.4026
+    },
+    {
+      "id": "screen_backplate",
+      "batch": "screen",
+      "w": 0.304,
+      "h": 0.212,
+      "aspect": 0.697368,
+      "limit": 0.00185311,
+      "margin": 114.4026
+    },
+    {
+      "id": "bezel_top",
+      "batch": "screen",
+      "w": 0.304,
+      "h": 0.006,
+      "aspect": 0.019737,
+      "limit": 0.0015203,
+      "margin": 3.9466
+    },
+    {
+      "id": "bezel_bottom",
+      "batch": "screen",
+      "w": 0.304,
+      "h": 0.012,
+      "aspect": 0.039474,
+      "limit": 0.00152118,
+      "margin": 7.8886
+    },
+    {
+      "id": "bezel_left",
+      "batch": "screen",
+      "w": 0.006,
+      "h": 0.1825,
+      "aspect": 0.032877,
+      "limit": 0.00091299,
+      "margin": 6.5718
+    },
+    {
+      "id": "bezel_right",
+      "batch": "screen",
+      "w": 0.006,
+      "h": 0.1825,
+      "aspect": 0.032877,
+      "limit": 0.00091299,
+      "margin": 6.5718
+    },
+    {
+      "id": "screen_glow_0",
+      "batch": "screen",
+      "w": 0.292,
+      "h": 0.01520833,
+      "aspect": 0.052083,
+      "limit": 0.00146198,
+      "margin": 10.4026
+    },
+    {
+      "id": "screen_glow_1",
+      "batch": "screen",
+      "w": 0.292,
+      "h": 0.01520833,
+      "aspect": 0.052083,
+      "limit": 0.00146198,
+      "margin": 10.4026
+    },
+    {
+      "id": "screen_glow_2",
+      "batch": "screen",
+      "w": 0.292,
+      "h": 0.01520833,
+      "aspect": 0.052083,
+      "limit": 0.00146198,
+      "margin": 10.4026
+    },
+    {
+      "id": "screen_glow_3",
+      "batch": "screen",
+      "w": 0.292,
+      "h": 0.01520833,
+      "aspect": 0.052083,
+      "limit": 0.00146198,
+      "margin": 10.4026
+    },
+    {
+      "id": "screen_glow_4",
+      "batch": "screen",
+      "w": 0.292,
+      "h": 0.01520833,
+      "aspect": 0.052083,
+      "limit": 0.00146198,
+      "margin": 10.4026
+    },
+    {
+      "id": "screen_glow_5",
+      "batch": "screen",
+      "w": 0.292,
+      "h": 0.01520833,
+      "aspect": 0.052083,
+      "limit": 0.00146198,
+      "margin": 10.4026
+    },
+    {
+      "id": "screen_glow_6",
+      "batch": "screen",
+      "w": 0.292,
+      "h": 0.01520833,
+      "aspect": 0.052083,
+      "limit": 0.00146198,
+      "margin": 10.4026
+    },
+    {
+      "id": "screen_glow_7",
+      "batch": "screen",
+      "w": 0.292,
+      "h": 0.01520833,
+      "aspect": 0.052083,
+      "limit": 0.00146198,
+      "margin": 10.4026
+    },
+    {
+      "id": "screen_glow_8",
+      "batch": "screen",
+      "w": 0.292,
+      "h": 0.01520833,
+      "aspect": 0.052083,
+      "limit": 0.00146198,
+      "margin": 10.4026
+    },
+    {
+      "id": "screen_glow_9",
+      "batch": "screen",
+      "w": 0.292,
+      "h": 0.01520833,
+      "aspect": 0.052083,
+      "limit": 0.00146198,
+      "margin": 10.4026
+    },
+    {
+      "id": "screen_glow_10",
+      "batch": "screen",
+      "w": 0.292,
+      "h": 0.01520833,
+      "aspect": 0.052083,
+      "limit": 0.00146198,
+      "margin": 10.4026
+    },
+    {
+      "id": "screen_glow_11",
+      "batch": "screen",
+      "w": 0.292,
+      "h": 0.01520833,
+      "aspect": 0.052083,
+      "limit": 0.00146198,
+      "margin": 10.4026
+    },
+    {
+      "id": "cam_ring_top",
+      "batch": "screen",
+      "w": 0.0036,
+      "h": 0.0008,
+      "aspect": 0.222222,
+      "limit": 0.00021739,
+      "margin": 3.68
+    },
+    {
+      "id": "cam_ring_bottom",
+      "batch": "screen",
+      "w": 0.0036,
+      "h": 0.0008,
+      "aspect": 0.222222,
+      "limit": 0.00021739,
+      "margin": 3.68
+    },
+    {
+      "id": "cam_ring_left",
+      "batch": "screen",
+      "w": 0.0008,
+      "h": 0.002,
+      "aspect": 0.4,
+      "limit": 0.00021739,
+      "margin": 3.68
+    },
+    {
+      "id": "cam_ring_right",
+      "batch": "screen",
+      "w": 0.0008,
+      "h": 0.002,
+      "aspect": 0.4,
+      "limit": 0.00021739,
+      "margin": 3.68
+    },
+    {
+      "id": "cam_core",
+      "batch": "screen",
+      "w": 0.002,
+      "h": 0.002,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 9.2
+    },
+    {
+      "id": "cam_status",
+      "batch": "screen",
+      "w": 0.0005,
+      "h": 0.0005,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 2.3
+    },
+    {
+      "id": "logo_backing",
+      "batch": "screen",
+      "w": 0.016,
+      "h": 0.016,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 73.6
+    },
+    {
+      "id": "logo_face",
+      "batch": "screen",
+      "w": 0.012,
+      "h": 0.012,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 55.2
+    },
+    {
+      "id": "usbc1_back",
+      "batch": "ports",
+      "w": 0.0085,
+      "h": 0.0025,
+      "aspect": 0.294118,
+      "limit": 0.00021739,
+      "margin": 11.5
+    },
+    {
+      "id": "usbc1_top",
+      "batch": "ports",
+      "w": 0.0085,
+      "h": 0.0035,
+      "aspect": 0.411765,
+      "limit": 0.00021739,
+      "margin": 16.1
+    },
+    {
+      "id": "usbc1_bottom",
+      "batch": "ports",
+      "w": 0.0085,
+      "h": 0.0035,
+      "aspect": 0.411765,
+      "limit": 0.00021739,
+      "margin": 16.1
+    },
+    {
+      "id": "usbc1_za",
+      "batch": "ports",
+      "w": 0.0035,
+      "h": 0.0025,
+      "aspect": 0.714286,
+      "limit": 0.00021739,
+      "margin": 11.5
+    },
+    {
+      "id": "usbc1_zb",
+      "batch": "ports",
+      "w": 0.0035,
+      "h": 0.0025,
+      "aspect": 0.714286,
+      "limit": 0.00021739,
+      "margin": 11.5
+    },
+    {
+      "id": "usbc1_tongue",
+      "batch": "ports",
+      "w": 0.006,
+      "h": 0.0027,
+      "aspect": 0.45,
+      "limit": 0.00021739,
+      "margin": 12.42
+    },
+    {
+      "id": "usbc2_back",
+      "batch": "ports",
+      "w": 0.0085,
+      "h": 0.0025,
+      "aspect": 0.294118,
+      "limit": 0.00021739,
+      "margin": 11.5
+    },
+    {
+      "id": "usbc2_top",
+      "batch": "ports",
+      "w": 0.0085,
+      "h": 0.0035,
+      "aspect": 0.411765,
+      "limit": 0.00021739,
+      "margin": 16.1
+    },
+    {
+      "id": "usbc2_bottom",
+      "batch": "ports",
+      "w": 0.0085,
+      "h": 0.0035,
+      "aspect": 0.411765,
+      "limit": 0.00021739,
+      "margin": 16.1
+    },
+    {
+      "id": "usbc2_za",
+      "batch": "ports",
+      "w": 0.0035,
+      "h": 0.0025,
+      "aspect": 0.714286,
+      "limit": 0.00021739,
+      "margin": 11.5
+    },
+    {
+      "id": "usbc2_zb",
+      "batch": "ports",
+      "w": 0.0035,
+      "h": 0.0025,
+      "aspect": 0.714286,
+      "limit": 0.00021739,
+      "margin": 11.5
+    },
+    {
+      "id": "usbc2_tongue",
+      "batch": "ports",
+      "w": 0.006,
+      "h": 0.0027,
+      "aspect": 0.45,
+      "limit": 0.00021739,
+      "margin": 12.42
+    },
+    {
+      "id": "jack_back",
+      "batch": "ports",
+      "w": 0.0035,
+      "h": 0.0035,
+      "aspect": 1,
+      "limit": 0.00021739,
+      "margin": 16.1
+    },
+    {
+      "id": "jack_top",
+      "batch": "ports",
+      "w": 0.0035,
+      "h": 0.004,
+      "aspect": 0.875,
+      "limit": 0.00021739,
+      "margin": 16.1
+    },
+    {
+      "id": "jack_bottom",
+      "batch": "ports",
+      "w": 0.0035,
+      "h": 0.004,
+      "aspect": 0.875,
+      "limit": 0.00021739,
+      "margin": 16.1
+    },
+    {
+      "id": "jack_za",
+      "batch": "ports",
+      "w": 0.004,
+      "h": 0.0035,
+      "aspect": 0.875,
+      "limit": 0.00021739,
+      "margin": 16.1
+    },
+    {
+      "id": "jack_zb",
+      "batch": "ports",
+      "w": 0.004,
+      "h": 0.0035,
+      "aspect": 0.875,
+      "limit": 0.00021739,
+      "margin": 16.1
+    },
+    {
+      "id": "grille1_back",
+      "batch": "grille",
+      "w": 0.144,
+      "h": 0.008,
+      "aspect": 0.055556,
+      "limit": 0.00072111,
+      "margin": 11.094
+    },
+    {
+      "id": "grille1_blade0_0",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "grille1_blade0_1",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "grille1_blade1_0",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "grille1_blade1_1",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "grille1_blade2_0",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "grille1_blade2_1",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "grille1_blade3_0",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "grille1_blade3_1",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "grille2_back",
+      "batch": "grille",
+      "w": 0.144,
+      "h": 0.008,
+      "aspect": 0.055556,
+      "limit": 0.00072111,
+      "margin": 11.094
+    },
+    {
+      "id": "grille2_blade0_0",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "grille2_blade0_1",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "grille2_blade1_0",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "grille2_blade1_1",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "grille2_blade2_0",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "grille2_blade2_1",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "grille2_blade3_0",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "grille2_blade3_1",
+      "batch": "grille",
+      "w": 0.07,
+      "h": 0.0005,
+      "aspect": 0.007143,
+      "limit": 0.00035001,
+      "margin": 1.4285
+    },
+    {
+      "id": "nameplate",
+      "batch": "bottom",
+      "w": 0.068,
+      "h": 0.017,
+      "aspect": 0.25,
+      "limit": 0.00035046,
+      "margin": 48.5071
+    },
+    {
+      "id": "serial_slot",
+      "batch": "bottom",
+      "w": 0.046,
+      "h": 0.0082,
+      "aspect": 0.178261,
+      "limit": 0.00023363,
+      "margin": 35.0989
+    },
+    {
+      "id": "speaker_back_0",
+      "batch": "bottom",
+      "w": 0.0154,
+      "h": 0.012,
+      "aspect": 0.779221,
+      "limit": 0.00021739,
+      "margin": 55.2
+    },
+    {
+      "id": "speaker_back_1",
+      "batch": "bottom",
+      "w": 0.0154,
+      "h": 0.012,
+      "aspect": 0.779221,
+      "limit": 0.00021739,
+      "margin": 55.2
+    },
+    {
+      "id": "hinge_cover_left",
+      "batch": "hinge",
+      "w": 0.008,
+      "h": 0.05,
+      "aspect": 0.16,
+      "limit": 0.00025318,
+      "margin": 31.5981
+    },
+    {
+      "id": "hinge_cover_left_f",
+      "batch": "hinge",
+      "w": 0.05,
+      "h": 0.00200998,
+      "aspect": 0.0402,
+      "limit": 0.0002502,
+      "margin": 8.0334
+    },
+    {
+      "id": "hinge_cover_left_b",
+      "batch": "hinge",
+      "w": 0.05,
+      "h": 0.00200998,
+      "aspect": 0.0402,
+      "limit": 0.0002502,
+      "margin": 8.0334
+    },
+    {
+      "id": "hinge_cover_right",
+      "batch": "hinge",
+      "w": 0.008,
+      "h": 0.05,
+      "aspect": 0.16,
+      "limit": 0.00025318,
+      "margin": 31.5981
+    },
+    {
+      "id": "hinge_cover_right_f",
+      "batch": "hinge",
+      "w": 0.05,
+      "h": 0.00200998,
+      "aspect": 0.0402,
+      "limit": 0.0002502,
+      "margin": 8.0334
+    },
+    {
+      "id": "hinge_cover_right_b",
+      "batch": "hinge",
+      "w": 0.05,
+      "h": 0.00200998,
+      "aspect": 0.0402,
+      "limit": 0.0002502,
+      "margin": 8.0334
+    }
+  ]
+}

@@ -1,0 +1,502 @@
+[
+ {
+  "name": "base_bottom",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.167,
+   "minY": -0.087,
+   "maxX": -0.137,
+   "maxY": -0.057
+  }
+ },
+ {
+  "name": "base_left",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.272,
+   "minY": -0.007,
+   "maxX": -0.242,
+   "maxY": 0.023
+  }
+ },
+ {
+  "name": "base_right",
+  "type": "rod",
+  "bbox": {
+   "minX": 0.031,
+   "minY": -0.006,
+   "maxX": 0.061,
+   "maxY": 0.024
+  }
+ },
+ {
+  "name": "base_front",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.167,
+   "minY": -0.009,
+   "maxX": -0.137,
+   "maxY": 0.021
+  }
+ },
+ {
+  "name": "base_back",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.167,
+   "minY": -0.013,
+   "maxX": -0.137,
+   "maxY": 0.017
+  }
+ },
+ {
+  "name": "top_front",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.021,
+   "minY": -0.155,
+   "maxX": 0.009,
+   "maxY": -0.125
+  }
+ },
+ {
+  "name": "top_tp_left",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.161,
+   "minY": -0.046,
+   "maxX": -0.13,
+   "maxY": -0.016
+  }
+ },
+ {
+  "name": "top_tp_right",
+  "type": "rod",
+  "bbox": {
+   "minX": 0.056,
+   "minY": -0.046,
+   "maxX": 0.086,
+   "maxY": -0.016
+  }
+ },
+ {
+  "name": "top_mid",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.017,
+   "minY": -0.155,
+   "maxX": 0.013,
+   "maxY": -0.125
+  }
+ },
+ {
+  "name": "top_kb_left",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.214,
+   "minY": -0.01,
+   "maxX": -0.184,
+   "maxY": 0.02
+  }
+ },
+ {
+  "name": "top_kb_right",
+  "type": "rod",
+  "bbox": {
+   "minX": 0.076,
+   "minY": -0.01,
+   "maxX": 0.106,
+   "maxY": 0.02
+  }
+ },
+ {
+  "name": "top_back",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.021,
+   "minY": -0.155,
+   "maxX": 0.009,
+   "maxY": -0.125
+  }
+ },
+ {
+  "name": "cham_base_pp",
+  "type": "rod",
+  "bbox": {
+   "minX": 0.134,
+   "minY": -0.009,
+   "maxX": 0.164,
+   "maxY": 0.021
+  }
+ },
+ {
+  "name": "cham_base_pn",
+  "type": "rod",
+  "bbox": {
+   "minX": 0.127,
+   "minY": -0.013,
+   "maxX": 0.157,
+   "maxY": 0.017
+  }
+ },
+ {
+  "name": "cham_base_np",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.161,
+   "minY": -0.009,
+   "maxX": -0.131,
+   "maxY": 0.021
+  }
+ },
+ {
+  "name": "cham_base_nn",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.168,
+   "minY": -0.013,
+   "maxX": -0.138,
+   "maxY": 0.017
+  }
+ },
+ {
+  "name": "well_floor",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.069,
+   "minY": -0.143,
+   "maxX": -0.039,
+   "maxY": -0.113
+  }
+ },
+ {
+  "name": "well_front",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.153,
+   "minY": -0.004,
+   "maxX": -0.123,
+   "maxY": 0.026
+  }
+ },
+ {
+  "name": "well_back",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.153,
+   "minY": -0.004,
+   "maxX": -0.123,
+   "maxY": 0.026
+  }
+ },
+ {
+  "name": "well_left",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.208,
+   "minY": -0.004,
+   "maxX": -0.178,
+   "maxY": 0.026
+  }
+ },
+ {
+  "name": "well_right",
+  "type": "rod",
+  "bbox": {
+   "minX": 0.069,
+   "minY": -0.004,
+   "maxX": 0.099,
+   "maxY": 0.026
+  }
+ },
+ {
+  "name": "tp_face",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.052,
+   "minY": -0.069,
+   "maxX": -0.022,
+   "maxY": -0.039
+  }
+ },
+ {
+  "name": "lid_inner",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.167,
+   "minY": -0.01,
+   "maxX": -0.137,
+   "maxY": 0.02
+  }
+ },
+ {
+  "name": "lid_outer",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.167,
+   "minY": -0.011,
+   "maxX": -0.137,
+   "maxY": 0.019
+  }
+ },
+ {
+  "name": "screen_backplate",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.167,
+   "minY": -0.011,
+   "maxX": -0.137,
+   "maxY": 0.019
+  }
+ },
+ {
+  "name": "bezel_top",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.167,
+   "minY": 0.188,
+   "maxX": -0.137,
+   "maxY": 0.218
+  }
+ },
+ {
+  "name": "bezel_bottom",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.167,
+   "minY": -0.003,
+   "maxX": -0.137,
+   "maxY": 0.027
+  }
+ },
+ {
+  "name": "usbc1_back",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.168,
+   "minY": -0.01,
+   "maxX": -0.138,
+   "maxY": 0.02
+  }
+ },
+ {
+  "name": "usbc2_back",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.168,
+   "minY": -0.01,
+   "maxX": -0.138,
+   "maxY": 0.02
+  }
+ },
+ {
+  "name": "jack_back",
+  "type": "rod",
+  "bbox": {
+   "minX": 0.131,
+   "minY": -0.01,
+   "maxX": 0.161,
+   "maxY": 0.02
+  }
+ },
+ {
+  "name": "grille1_back",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.162,
+   "minY": -0.017,
+   "maxX": -0.132,
+   "maxY": 0.013
+  }
+ },
+ {
+  "name": "grille1_blade0",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.16,
+   "minY": -0.014,
+   "maxX": -0.13,
+   "maxY": 0.016
+  }
+ },
+ {
+  "name": "grille2_back",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.012,
+   "minY": -0.017,
+   "maxX": 0.018,
+   "maxY": 0.013
+  }
+ },
+ {
+  "name": "grille2_blade0",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.01,
+   "minY": -0.014,
+   "maxX": 0.02,
+   "maxY": 0.016
+  }
+ },
+ {
+  "name": "nameplate",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.049,
+   "minY": -0.018,
+   "maxX": -0.019,
+   "maxY": 0.012
+  }
+ },
+ {
+  "name": "serial_slot",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.038,
+   "minY": -0.013,
+   "maxX": -0.008,
+   "maxY": 0.017
+  }
+ },
+ {
+  "name": "speaker_back_0",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.133,
+   "minY": -0.015,
+   "maxX": -0.103,
+   "maxY": 0.015
+  }
+ },
+ {
+  "name": "speaker_back_1",
+  "type": "rod",
+  "bbox": {
+   "minX": 0.087,
+   "minY": -0.015,
+   "maxX": 0.117,
+   "maxY": 0.015
+  }
+ },
+ {
+  "name": "hinge_rod_0",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.154,
+   "minY": 0.01,
+   "maxX": -0.1,
+   "maxY": 0.014
+  }
+ },
+ {
+  "name": "hinge_rod_1",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.103,
+   "minY": 0.01,
+   "maxX": -0.049,
+   "maxY": 0.014
+  }
+ },
+ {
+  "name": "hinge_rod_2",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.052,
+   "minY": 0.01,
+   "maxX": 0.002,
+   "maxY": 0.014
+  }
+ },
+ {
+  "name": "hinge_rod_3",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.002,
+   "minY": 0.01,
+   "maxX": 0.052,
+   "maxY": 0.014
+  }
+ },
+ {
+  "name": "hinge_rod_4",
+  "type": "rod",
+  "bbox": {
+   "minX": 0.049,
+   "minY": 0.01,
+   "maxX": 0.103,
+   "maxY": 0.014
+  }
+ },
+ {
+  "name": "hinge_rod_5",
+  "type": "rod",
+  "bbox": {
+   "minX": 0.1,
+   "minY": 0.01,
+   "maxX": 0.154,
+   "maxY": 0.014
+  }
+ },
+ {
+  "name": "hinge_cover_left",
+  "type": "rod",
+  "bbox": {
+   "minX": -0.146,
+   "minY": -0.028,
+   "maxX": -0.116,
+   "maxY": 0.002
+  }
+ },
+ {
+  "name": "hinge_cover_right",
+  "type": "rod",
+  "bbox": {
+   "minX": 0.108,
+   "minY": -0.028,
+   "maxX": 0.138,
+   "maxY": 0.002
+  }
+ },
+ {
+  "name": "foot_pp",
+  "type": "disc",
+  "bbox": {
+   "minX": 0.128,
+   "minY": 0,
+   "maxX": 0.136,
+   "maxY": 0.009
+  }
+ },
+ {
+  "name": "foot_pn",
+  "type": "disc",
+  "bbox": {
+   "minX": 0.128,
+   "minY": -0.004,
+   "maxX": 0.136,
+   "maxY": 0.005
+  }
+ },
+ {
+  "name": "foot_np",
+  "type": "disc",
+  "bbox": {
+   "minX": -0.136,
+   "minY": 0,
+   "maxX": -0.128,
+   "maxY": 0.009
+  }
+ },
+ {
+  "name": "foot_nn",
+  "type": "disc",
+  "bbox": {
+   "minX": -0.136,
+   "minY": -0.004,
+   "maxX": -0.128,
+   "maxY": 0.005
+  }
+ }
+]

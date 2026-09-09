@@ -13,3 +13,6 @@ voxel-3d-to-2d/
 .venv/
 __pycache__/
 *.pyc
+
+# 独立模型评估 trace（体积大，报告留档即可）
+exports/*/eval*/trace.jsonl

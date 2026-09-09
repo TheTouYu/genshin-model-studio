@@ -1,0 +1,70 @@
+{
+  "stage": "final",
+  "itemCount": 570,
+  "resourceHistogram": {
+    "10009003": 534,
+    "10009008": 36
+  },
+  "giaBytes": 112223,
+  "gilBytes": 183630,
+  "dimensions": {
+    "topFaceY": 0.0115,
+    "lidThickness": 0.004,
+    "closedTotalHeight": 0.0155,
+    "openAngleDeg": 100,
+    "lidFarEndY": 0.21437,
+    "lowestItem": {
+      "id": "foot_pn",
+      "minY": 0.000425
+    },
+    "widthX": 0.304,
+    "depthZ": 0.245711
+  },
+  "gate": {
+    "ok": true,
+    "floating": [],
+    "collides": [],
+    "namedParts": 31,
+    "links": 22,
+    "method": "window.__gmsNoClear=true → 注入 scripts/parts/laptop-v2-gate.js（31 个引擎可连通命名件，走 gms.part 真实 spec 注册）→ 逐对 gms.touches → 接触对 gms.link → gms.verify()",
+    "whySubset": "gms.verify 只检查命名件；573 件逐 part 注入触发 CDP Runtime.evaluate 超时；gms.import 重建 spec 失真（实测注册成默认 rod/0.03）。命名集由 gen-parts-v2.mjs 用引擎接触模型（web/index.html:3144-3168）自动裁剪为「可连到地面」的 31 件，其余 542 件由 independent-check.mjs 精确复算覆盖。",
+    "droppedNames": [
+      "base_left",
+      "base_right",
+      "base_front",
+      "top_kb_left",
+      "top_kb_right",
+      "cham_base_pp",
+      "cham_base_np",
+      "well_front",
+      "well_back",
+      "well_left",
+      "well_right",
+      "lid_inner",
+      "lid_outer",
+      "screen_backplate",
+      "bezel_top",
+      "bezel_left",
+      "bezel_right",
+      "usbc1_back",
+      "usbc2_back",
+      "jack_back",
+      "serial_slot"
+    ]
+  },
+  "independentAABB": {
+    "pairs": 162165,
+    "isolatedCount": 0,
+    "floatingCount": 0,
+    "expectedFlushGaps": [],
+    "touchingPairs": 3392,
+    "method": "圆柱件用精确轴对齐包围盒（轴向 R·(0,1,0)、逐轴 extent = |u_k|·halfLen + r·√(1−u_k²)），平面件用 8 角点盒；gms.touches 的注册盒忽略 normal 不可作依据"
+  },
+  "visualReviewLoop": {
+    "round1": "reject（major：耳机孔方孔）→ 改用 disc 圆件",
+    "round2": "reject（major：接口侧别）→ 逐像素复核判定为审方误读 + 12× portzoom 取证（evaluator 超时无结论）",
+    "round3": "pass（0 blocking/0 major/0 minor）"
+  },
+  "historyId": "vmtsw39cy6jo9",
+  "unclosed": "用户游戏实测签字（唯一人类门）"
+}

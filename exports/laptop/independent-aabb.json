@@ -1,0 +1,4423 @@
+{
+  "input": "/home/h/genshin-model-studio/exports/laptop/items.json",
+  "itemCount": 150,
+  "resourceHistogram": {
+    "10009003": 145,
+    "10009008": 5
+  },
+  "solidItems": [
+    {
+      "i": 26,
+      "id": "hinge_rod",
+      "resourceId": 10009008
+    },
+    {
+      "i": 146,
+      "id": "foot_pp",
+      "resourceId": 10009008
+    },
+    {
+      "i": 147,
+      "id": "foot_pn",
+      "resourceId": 10009008
+    },
+    {
+      "i": 148,
+      "id": "foot_np",
+      "resourceId": 10009008
+    },
+    {
+      "i": 149,
+      "id": "foot_nn",
+      "resourceId": 10009008
+    }
+  ],
+  "worldBBox": {
+    "min": [
+      -0.1524,
+      0.000425,
+      -0.139711
+    ],
+    "max": [
+      0.1524,
+      0.214422,
+      0.106
+    ],
+    "size": [
+      0.3048,
+      0.213998,
+      0.245711
+    ]
+  },
+  "pairStats": {
+    "pairs": 11175,
+    "minGap": 0,
+    "touchingPairs_le_0_001": 414,
+    "overlappingPairs_eq_0": 321,
+    "largestGap": 0.411233
+  },
+  "expectedFlush": [
+    {
+      "a": "base_bottom",
+      "b": "base_back",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "base_bottom",
+      "b": "base_front",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "base_bottom",
+      "b": "base_left",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "base_bottom",
+      "b": "base_right",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "top_front",
+      "b": "base_front",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "top_back",
+      "b": "base_back",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "top_kb_left",
+      "b": "well_front",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "top_kb_left",
+      "b": "well_left",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "top_kb_right",
+      "b": "well_front",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "top_kb_right",
+      "b": "well_right",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "top_kb_left",
+      "b": "top_back",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "top_kb_right",
+      "b": "top_back",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "cham_base_pp",
+      "b": "base_front",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "cham_base_pp",
+      "b": "base_right",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "well_floor",
+      "b": "well_front",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "well_floor",
+      "b": "well_back",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "well_floor",
+      "b": "well_left",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "well_floor",
+      "b": "well_right",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "tp_face",
+      "b": "tp_front",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "tp_face",
+      "b": "tp_back",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "tp_face",
+      "b": "tp_left",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "tp_face",
+      "b": "tp_right",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "lid_inner",
+      "b": "lid_front",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "lid_inner",
+      "b": "lid_back",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "lid_inner",
+      "b": "lid_left",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "lid_inner",
+      "b": "lid_right",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "screen_backplate",
+      "b": "lid_inner",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "bezel_top",
+      "b": "screen_backplate",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "screen_glow",
+      "b": "bezel_top",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "key_r0c0",
+      "b": "well_floor",
+      "gap": 0.001,
+      "axis": [
+        0,
+        0.001,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "key_r5_space",
+      "b": "well_floor",
+      "gap": 0.001,
+      "axis": [
+        0,
+        0.001,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "usbc1_back",
+      "b": "base_left",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "usbc2_back",
+      "b": "base_left",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "jack_back",
+      "b": "base_right",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "grille1_blade0",
+      "b": "grille1_frame",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "grille2_blade0",
+      "b": "grille2_frame",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "foot_pp",
+      "b": "base_bottom",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "foot_np",
+      "b": "base_bottom",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "hinge_cover_left",
+      "b": "top_back",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "hinge_rod",
+      "b": "top_back",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    },
+    {
+      "a": "lid_inner",
+      "b": "hinge_rod",
+      "gap": 0,
+      "axis": [
+        0,
+        0,
+        0
+      ],
+      "note": "contact/overlap"
+    }
+  ],
+  "nearestNeighbour": [
+    {
+      "id": "base_bottom",
+      "nearest": "base_front",
+      "minGap": 0
+    },
+    {
+      "id": "base_front",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "base_back",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "base_left",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "base_right",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "top_front",
+      "nearest": "base_front",
+      "minGap": 0
+    },
+    {
+      "id": "top_tp_left",
+      "nearest": "base_left",
+      "minGap": 0
+    },
+    {
+      "id": "top_tp_right",
+      "nearest": "base_right",
+      "minGap": 0
+    },
+    {
+      "id": "top_mid",
+      "nearest": "base_left",
+      "minGap": 0
+    },
+    {
+      "id": "top_kb_left",
+      "nearest": "base_left",
+      "minGap": 0
+    },
+    {
+      "id": "top_kb_right",
+      "nearest": "base_right",
+      "minGap": 0
+    },
+    {
+      "id": "top_back",
+      "nearest": "base_back",
+      "minGap": 0
+    },
+    {
+      "id": "cham_base_pp",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "cham_base_pn",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "cham_base_np",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "cham_base_nn",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "lid_inner",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "lid_outer",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "lid_front",
+      "nearest": "lid_inner",
+      "minGap": 0
+    },
+    {
+      "id": "lid_back",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "lid_left",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "lid_right",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "cham_lid_pp",
+      "nearest": "lid_inner",
+      "minGap": 0
+    },
+    {
+      "id": "cham_lid_pn",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "cham_lid_np",
+      "nearest": "lid_inner",
+      "minGap": 0
+    },
+    {
+      "id": "cham_lid_nn",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "hinge_rod",
+      "nearest": "base_left",
+      "minGap": 0
+    },
+    {
+      "id": "hinge_cover_left",
+      "nearest": "base_back",
+      "minGap": 0
+    },
+    {
+      "id": "hinge_cover_right",
+      "nearest": "base_back",
+      "minGap": 0
+    },
+    {
+      "id": "well_floor",
+      "nearest": "well_front",
+      "minGap": 0
+    },
+    {
+      "id": "well_front",
+      "nearest": "top_mid",
+      "minGap": 0
+    },
+    {
+      "id": "well_back",
+      "nearest": "top_back",
+      "minGap": 0
+    },
+    {
+      "id": "well_left",
+      "nearest": "top_kb_left",
+      "minGap": 0
+    },
+    {
+      "id": "well_right",
+      "nearest": "top_kb_right",
+      "minGap": 0
+    },
+    {
+      "id": "key_r0c0",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r0c1",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r0c2",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r0c3",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r0c4",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r0c5",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r0c6",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r0c7",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r0c8",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r0c9",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r0c10",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r0c11",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r0c12",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r0c13",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r1c0",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r1c1",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r1c2",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r1c3",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r1c4",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r1c5",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r1c6",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r1c7",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r1c8",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r1c9",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r1c10",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r1c11",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r1c12",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r1c13",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r2c0",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r2c1",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r2c2",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r2c3",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r2c4",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r2c5",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r2c6",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r2c7",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r2c8",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r2c9",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r2c10",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r2c11",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r2c12",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r2c13",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r3c0",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r3c1",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r3c2",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r3c3",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r3c4",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r3c5",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r3c6",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r3c7",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r3c8",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r3c9",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r3c10",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r3c11",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r3c12",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r4c0",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r4c1",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r4c2",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r4c3",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r4c4",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r4c5",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r4c6",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r4c7",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r4c8",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r4c9",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r4c10",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r4c11",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r4c12",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r5c0",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r5c1",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r5c2",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r5c3",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r5c4",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r5c5",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r5c6",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r5c7",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r5c8",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r5c9",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "key_r5_space",
+      "nearest": "well_floor",
+      "minGap": 0.001
+    },
+    {
+      "id": "tp_face",
+      "nearest": "top_tp_right",
+      "minGap": 0
+    },
+    {
+      "id": "tp_front",
+      "nearest": "top_front",
+      "minGap": 0
+    },
+    {
+      "id": "tp_back",
+      "nearest": "top_mid",
+      "minGap": 0
+    },
+    {
+      "id": "tp_left",
+      "nearest": "top_front",
+      "minGap": 0
+    },
+    {
+      "id": "tp_right",
+      "nearest": "top_tp_right",
+      "minGap": 0
+    },
+    {
+      "id": "screen_backplate",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "bezel_top",
+      "nearest": "base_left",
+      "minGap": 0
+    },
+    {
+      "id": "bezel_bottom",
+      "nearest": "lid_inner",
+      "minGap": 0
+    },
+    {
+      "id": "bezel_left",
+      "nearest": "lid_inner",
+      "minGap": 0
+    },
+    {
+      "id": "bezel_right",
+      "nearest": "lid_inner",
+      "minGap": 0
+    },
+    {
+      "id": "screen_glow",
+      "nearest": "lid_inner",
+      "minGap": 0
+    },
+    {
+      "id": "camera",
+      "nearest": "lid_inner",
+      "minGap": 0
+    },
+    {
+      "id": "logo",
+      "nearest": "lid_inner",
+      "minGap": 0
+    },
+    {
+      "id": "usbc1_back",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "usbc1_top",
+      "nearest": "usbc1_back",
+      "minGap": 0
+    },
+    {
+      "id": "usbc1_za",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "usbc1_zb",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "usbc2_back",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "usbc2_top",
+      "nearest": "usbc2_back",
+      "minGap": 0
+    },
+    {
+      "id": "usbc2_za",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "usbc2_zb",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "jack_back",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "jack_top",
+      "nearest": "jack_back",
+      "minGap": 0
+    },
+    {
+      "id": "grille1_frame",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "grille1_blade0",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "grille1_blade1",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "grille1_blade2",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "grille1_blade3",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "grille2_frame",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "grille2_blade0",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "grille2_blade1",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "grille2_blade2",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "grille2_blade3",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "foot_pp",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "foot_pn",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "foot_np",
+      "nearest": "base_bottom",
+      "minGap": 0
+    },
+    {
+      "id": "foot_nn",
+      "nearest": "base_bottom",
+      "minGap": 0
+    }
+  ],
+  "isolated": [],
+  "isolatedCount": 0,
+  "contactGraph": {
+    "components": 1,
+    "sizes": [
+      150
+    ],
+    "floatingComponents": []
+  },
+  "floatingNoGroundChain": [],
+  "floatingCount": 0,
+  "groundItems": 18,
+  "noPartDirectlyBelow": [
+    "base_left",
+    "base_right",
+    "cham_base_pp",
+    "cham_base_np",
+    "lid_front",
+    "lid_left",
+    "lid_right",
+    "cham_lid_pp",
+    "cham_lid_np",
+    "logo",
+    "usbc1_back",
+    "usbc1_za",
+    "usbc1_zb",
+    "usbc2_back",
+    "usbc2_za",
+    "usbc2_zb",
+    "jack_back",
+    "foot_pp",
+    "foot_pn",
+    "foot_np",
+    "foot_nn"
+  ],
+  "worstGaps": [
+    {
+      "a": "cham_base_np",
+      "b": "cham_lid_pp",
+      "d": 0.411233,
+      "axis": [
+        0.282586,
+        0.191631,
+        0.229205
+      ]
+    },
+    {
+      "a": "cham_base_pp",
+      "b": "cham_lid_np",
+      "d": 0.411233,
+      "axis": [
+        0.282586,
+        0.191631,
+        0.229205
+      ]
+    },
+    {
+      "a": "cham_lid_np",
+      "b": "foot_pp",
+      "d": 0.398148,
+      "axis": [
+        0.269293,
+        0.198456,
+        0.215912
+      ]
+    },
+    {
+      "a": "cham_lid_pp",
+      "b": "foot_np",
+      "d": 0.398148,
+      "axis": [
+        0.269293,
+        0.198456,
+        0.215912
+      ]
+    },
+    {
+      "a": "cham_lid_pp",
+      "b": "usbc2_zb",
+      "d": 0.371958,
+      "axis": [
+        0.293293,
+        0.195881,
+        0.118162
+      ]
+    },
+    {
+      "a": "cham_lid_pp",
+      "b": "usbc2_back",
+      "d": 0.369345,
+      "axis": [
+        0.293293,
+        0.195881,
+        0.109662
+      ]
+    },
+    {
+      "a": "cham_lid_pp",
+      "b": "usbc2_za",
+      "d": 0.369227,
+      "axis": [
+        0.293293,
+        0.195881,
+        0.109262
+      ]
+    },
+    {
+      "a": "cham_lid_pp",
+      "b": "usbc2_top",
+      "d": 0.369133,
+      "axis": [
+        0.293293,
+        0.195481,
+        0.109662
+      ]
+    },
+    {
+      "a": "cham_lid_pp",
+      "b": "usbc1_zb",
+      "d": 0.361247,
+      "axis": [
+        0.293293,
+        0.195881,
+        0.078162
+      ]
+    },
+    {
+      "a": "cham_lid_pp",
+      "b": "usbc1_back",
+      "d": 0.359504,
+      "axis": [
+        0.293293,
+        0.195881,
+        0.069662
+      ]
+    },
+    {
+      "a": "cham_lid_pp",
+      "b": "usbc1_za",
+      "d": 0.359427,
+      "axis": [
+        0.293293,
+        0.195881,
+        0.069262
+      ]
+    },
+    {
+      "a": "cham_lid_pp",
+      "b": "usbc1_top",
+      "d": 0.359286,
+      "axis": [
+        0.293293,
+        0.195481,
+        0.069662
+      ]
+    }
+  ],
+  "boxes": [
+    {
+      "id": "base_bottom",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.000601,
+        -0.105997
+      ],
+      "max": [
+        0.152,
+        0.006099,
+        0.105976
+      ],
+      "size": [
+        0.304,
+        0.005499,
+        0.211973
+      ],
+      "ref": "§2 底座楔形 底面斜面 y_bottom(z)=0.0006+(z+0.1060)/0.2120×0.0045"
+    },
+    {
+      "id": "base_front",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.0051,
+        0.105
+      ],
+      "max": [
+        0.152,
+        0.0115,
+        0.106
+      ],
+      "size": [
+        0.304,
+        0.0064,
+        0.001
+      ],
+      "ref": "§2 底座前壁（z=+0.1060，高 0.0064）"
+    },
+    {
+      "id": "base_back",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.0006,
+        -0.106
+      ],
+      "max": [
+        0.152,
+        0.0115,
+        -0.105
+      ],
+      "size": [
+        0.304,
+        0.0109,
+        0.001
+      ],
+      "ref": "§2 底座后壁（z=−0.1060，高 0.0109）"
+    },
+    {
+      "id": "base_left",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.0006,
+        -0.106
+      ],
+      "max": [
+        -0.151,
+        0.0115,
+        0.106
+      ],
+      "size": [
+        0.001,
+        0.0109,
+        0.212
+      ],
+      "ref": "§2 底座左壁（x=−0.1520，全高 0.0109）"
+    },
+    {
+      "id": "base_right",
+      "resourceId": 10009003,
+      "min": [
+        0.151,
+        0.0006,
+        -0.106
+      ],
+      "max": [
+        0.152,
+        0.0115,
+        0.106
+      ],
+      "size": [
+        0.001,
+        0.0109,
+        0.212
+      ],
+      "ref": "§2 底座右壁（x=+0.1520，全高 0.0109）"
+    },
+    {
+      "id": "top_front",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.0105,
+        0.094
+      ],
+      "max": [
+        0.152,
+        0.0115,
+        0.106
+      ],
+      "size": [
+        0.304,
+        0.001,
+        0.012
+      ],
+      "ref": "§2 顶面框条① 前边距 0.3040×0.0120（z +0.0940…+0.1060）"
+    },
+    {
+      "id": "top_tp_left",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.0105,
+        0.02
+      ],
+      "max": [
+        -0.065,
+        0.0115,
+        0.094
+      ],
+      "size": [
+        0.087,
+        0.001,
+        0.074
+      ],
+      "ref": "§2 顶面框条② 触控板左 0.0870×0.0740"
+    },
+    {
+      "id": "top_tp_right",
+      "resourceId": 10009003,
+      "min": [
+        0.065,
+        0.0105,
+        0.02
+      ],
+      "max": [
+        0.152,
+        0.0115,
+        0.094
+      ],
+      "size": [
+        0.087,
+        0.001,
+        0.074
+      ],
+      "ref": "§2 顶面框条③ 触控板右 0.0870×0.0740"
+    },
+    {
+      "id": "top_mid",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.0105,
+        0.015
+      ],
+      "max": [
+        0.152,
+        0.0115,
+        0.02
+      ],
+      "size": [
+        0.304,
+        0.001,
+        0.005
+      ],
+      "ref": "§2 顶面框条④ 中隔 0.3040×0.0050（z +0.0150…+0.0200）"
+    },
+    {
+      "id": "top_kb_left",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.0105,
+        -0.094
+      ],
+      "max": [
+        -0.138,
+        0.0115,
+        0.015
+      ],
+      "size": [
+        0.014,
+        0.001,
+        0.109
+      ],
+      "ref": "§2 顶面框条⑤ 键盘井左 0.0140×0.1090"
+    },
+    {
+      "id": "top_kb_right",
+      "resourceId": 10009003,
+      "min": [
+        0.138,
+        0.0105,
+        -0.094
+      ],
+      "max": [
+        0.152,
+        0.0115,
+        0.015
+      ],
+      "size": [
+        0.014,
+        0.001,
+        0.109
+      ],
+      "ref": "§2 顶面框条⑥ 键盘井右 0.0140×0.1090"
+    },
+    {
+      "id": "top_back",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.0105,
+        -0.106
+      ],
+      "max": [
+        0.152,
+        0.0115,
+        -0.094
+      ],
+      "size": [
+        0.304,
+        0.001,
+        0.012
+      ],
+      "ref": "§2 顶面框条⑦ 后边距 0.3040×0.0120（z −0.1060…−0.0940）"
+    },
+    {
+      "id": "cham_base_pp",
+      "resourceId": 10009003,
+      "min": [
+        0.141293,
+        0.004994,
+        0.095293
+      ],
+      "max": [
+        0.152,
+        0.0115,
+        0.106
+      ],
+      "size": [
+        0.010707,
+        0.006506,
+        0.010707
+      ],
+      "ref": "§2 圆角 四角单张 45° 切角 quad，等效半径 R 0.0100"
+    },
+    {
+      "id": "cham_base_pn",
+      "resourceId": 10009003,
+      "min": [
+        0.141293,
+        0.000706,
+        -0.106
+      ],
+      "max": [
+        0.152,
+        0.0115,
+        -0.095293
+      ],
+      "size": [
+        0.010707,
+        0.010794,
+        0.010707
+      ],
+      "ref": "§2 圆角 四角单张 45° 切角 quad，等效半径 R 0.0100"
+    },
+    {
+      "id": "cham_base_np",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.004994,
+        0.095293
+      ],
+      "max": [
+        -0.141293,
+        0.0115,
+        0.106
+      ],
+      "size": [
+        0.010707,
+        0.006506,
+        0.010707
+      ],
+      "ref": "§2 圆角 四角单张 45° 切角 quad，等效半径 R 0.0100"
+    },
+    {
+      "id": "cham_base_nn",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.000706,
+        -0.106
+      ],
+      "max": [
+        -0.141293,
+        0.0115,
+        -0.095293
+      ],
+      "size": [
+        0.010707,
+        0.010794,
+        0.010707
+      ],
+      "ref": "§2 圆角 四角单张 45° 切角 quad，等效半径 R 0.0100"
+    },
+    {
+      "id": "lid_inner",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.005418,
+        -0.136756
+      ],
+      "max": [
+        0.152,
+        0.21437,
+        -0.098958
+      ],
+      "size": [
+        0.304,
+        0.208953,
+        0.037798
+      ],
+      "ref": "§2 上盖 内面（闭态 y=0.0115，屏幕面）"
+    },
+    {
+      "id": "lid_outer",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.004897,
+        -0.139711
+      ],
+      "max": [
+        0.152,
+        0.213849,
+        -0.101913
+      ],
+      "size": [
+        0.304,
+        0.208953,
+        0.037798
+      ],
+      "ref": "§2 上盖 外面（闭态 y=0.0155）"
+    },
+    {
+      "id": "lid_front",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.212691,
+        -0.139711
+      ],
+      "max": [
+        0.152,
+        0.21437,
+        -0.135598
+      ],
+      "size": [
+        0.304,
+        0.001679,
+        0.004113
+      ],
+      "ref": "§2 上盖 前缘（z=+0.1060）"
+    },
+    {
+      "id": "lid_back",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.004897,
+        -0.103071
+      ],
+      "max": [
+        0.152,
+        0.006576,
+        -0.098958
+      ],
+      "size": [
+        0.304,
+        0.001679,
+        0.004113
+      ],
+      "ref": "§2 上盖 后缘（z=−0.1060，转轴侧）"
+    },
+    {
+      "id": "lid_left",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.004897,
+        -0.139711
+      ],
+      "max": [
+        -0.151,
+        0.21437,
+        -0.098958
+      ],
+      "size": [
+        0.001,
+        0.209474,
+        0.040753
+      ],
+      "ref": "§2 上盖 左侧缘（x=−0.1520）"
+    },
+    {
+      "id": "lid_right",
+      "resourceId": 10009003,
+      "min": [
+        0.151,
+        0.004897,
+        -0.139711
+      ],
+      "max": [
+        0.152,
+        0.21437,
+        -0.098958
+      ],
+      "size": [
+        0.001,
+        0.209474,
+        0.040753
+      ],
+      "ref": "§2 上盖 右侧缘（x=+0.1520）"
+    },
+    {
+      "id": "cham_lid_pp",
+      "resourceId": 10009003,
+      "min": [
+        0.141293,
+        0.203131,
+        -0.139711
+      ],
+      "max": [
+        0.152,
+        0.21437,
+        -0.133912
+      ],
+      "size": [
+        0.010707,
+        0.011239,
+        0.005799
+      ],
+      "ref": "§2 圆角 上盖四角单张 45° 切角 quad"
+    },
+    {
+      "id": "cham_lid_pn",
+      "resourceId": 10009003,
+      "min": [
+        0.141293,
+        0.004897,
+        -0.104757
+      ],
+      "max": [
+        0.152,
+        0.016136,
+        -0.098958
+      ],
+      "size": [
+        0.010707,
+        0.011239,
+        0.005799
+      ],
+      "ref": "§2 圆角 上盖四角单张 45° 切角 quad"
+    },
+    {
+      "id": "cham_lid_np",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.203131,
+        -0.139711
+      ],
+      "max": [
+        -0.141293,
+        0.21437,
+        -0.133912
+      ],
+      "size": [
+        0.010707,
+        0.011239,
+        0.005799
+      ],
+      "ref": "§2 圆角 上盖四角单张 45° 切角 quad"
+    },
+    {
+      "id": "cham_lid_nn",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.004897,
+        -0.104757
+      ],
+      "max": [
+        -0.141293,
+        0.016136,
+        -0.098958
+      ],
+      "size": [
+        0.010707,
+        0.011239,
+        0.005799
+      ],
+      "ref": "§2 圆角 上盖四角单张 45° 切角 quad"
+    },
+    {
+      "id": "hinge_rod",
+      "resourceId": 10009008,
+      "min": [
+        -0.152,
+        0.0095,
+        -0.102
+      ],
+      "max": [
+        0.152,
+        0.0135,
+        -0.098
+      ],
+      "size": [
+        0.304,
+        0.004,
+        0.004
+      ],
+      "ref": "§2 开合姿态 转轴轴心 (0,0.0115,−0.1000) 轴沿 x，rod size 0.0040"
+    },
+    {
+      "id": "hinge_cover_left",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.0115,
+        -0.106
+      ],
+      "max": [
+        -0.102,
+        0.0125,
+        -0.094
+      ],
+      "size": [
+        0.05,
+        0.001,
+        0.012
+      ],
+      "ref": "§2 转轴 铰链盖 2（左端 x −0.1520…−0.1020，贴顶面）"
+    },
+    {
+      "id": "hinge_cover_right",
+      "resourceId": 10009003,
+      "min": [
+        0.102,
+        0.0115,
+        -0.106
+      ],
+      "max": [
+        0.152,
+        0.0125,
+        -0.094
+      ],
+      "size": [
+        0.05,
+        0.001,
+        0.012
+      ],
+      "ref": "§2 转轴 铰链盖 2（右端 x +0.1020…+0.1520，贴顶面）"
+    },
+    {
+      "id": "well_floor",
+      "resourceId": 10009003,
+      "min": [
+        -0.138,
+        0.0085,
+        -0.094
+      ],
+      "max": [
+        0.138,
+        0.0095,
+        0.015
+      ],
+      "size": [
+        0.276,
+        0.001,
+        0.109
+      ],
+      "ref": "§2 键盘井 井底（y=0.0095）"
+    },
+    {
+      "id": "well_front",
+      "resourceId": 10009003,
+      "min": [
+        -0.138,
+        0.0095,
+        0.015
+      ],
+      "max": [
+        0.138,
+        0.0115,
+        0.016
+      ],
+      "size": [
+        0.276,
+        0.002,
+        0.001
+      ],
+      "ref": "§2 键盘井 前侧壁（法线朝井内）"
+    },
+    {
+      "id": "well_back",
+      "resourceId": 10009003,
+      "min": [
+        -0.138,
+        0.0095,
+        -0.095
+      ],
+      "max": [
+        0.138,
+        0.0115,
+        -0.094
+      ],
+      "size": [
+        0.276,
+        0.002,
+        0.001
+      ],
+      "ref": "§2 键盘井 后侧壁（法线朝井内）"
+    },
+    {
+      "id": "well_left",
+      "resourceId": 10009003,
+      "min": [
+        -0.139,
+        0.0095,
+        -0.094
+      ],
+      "max": [
+        -0.138,
+        0.0115,
+        0.015
+      ],
+      "size": [
+        0.001,
+        0.002,
+        0.109
+      ],
+      "ref": "§2 键盘井 左侧壁（法线朝井内）"
+    },
+    {
+      "id": "well_right",
+      "resourceId": 10009003,
+      "min": [
+        0.138,
+        0.0095,
+        -0.094
+      ],
+      "max": [
+        0.139,
+        0.0115,
+        0.015
+      ],
+      "size": [
+        0.001,
+        0.002,
+        0.109
+      ],
+      "ref": "§2 键盘井 右侧壁（法线朝井内）"
+    },
+    {
+      "id": "key_r0c0",
+      "resourceId": 10009003,
+      "min": [
+        -0.131,
+        0.0105,
+        -0.092
+      ],
+      "max": [
+        -0.116,
+        0.0115,
+        -0.077
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第1行第1键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r0c1",
+      "resourceId": 10009003,
+      "min": [
+        -0.112,
+        0.0105,
+        -0.092
+      ],
+      "max": [
+        -0.097,
+        0.0115,
+        -0.077
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第1行第2键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r0c2",
+      "resourceId": 10009003,
+      "min": [
+        -0.093,
+        0.0105,
+        -0.092
+      ],
+      "max": [
+        -0.078,
+        0.0115,
+        -0.077
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第1行第3键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r0c3",
+      "resourceId": 10009003,
+      "min": [
+        -0.074,
+        0.0105,
+        -0.092
+      ],
+      "max": [
+        -0.059,
+        0.0115,
+        -0.077
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第1行第4键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r0c4",
+      "resourceId": 10009003,
+      "min": [
+        -0.055,
+        0.0105,
+        -0.092
+      ],
+      "max": [
+        -0.04,
+        0.0115,
+        -0.077
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第1行第5键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r0c5",
+      "resourceId": 10009003,
+      "min": [
+        -0.036,
+        0.0105,
+        -0.092
+      ],
+      "max": [
+        -0.021,
+        0.0115,
+        -0.077
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第1行第6键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r0c6",
+      "resourceId": 10009003,
+      "min": [
+        -0.017,
+        0.0105,
+        -0.092
+      ],
+      "max": [
+        -0.002,
+        0.0115,
+        -0.077
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第1行第7键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r0c7",
+      "resourceId": 10009003,
+      "min": [
+        0.002,
+        0.0105,
+        -0.092
+      ],
+      "max": [
+        0.017,
+        0.0115,
+        -0.077
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第1行第8键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r0c8",
+      "resourceId": 10009003,
+      "min": [
+        0.021,
+        0.0105,
+        -0.092
+      ],
+      "max": [
+        0.036,
+        0.0115,
+        -0.077
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第1行第9键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r0c9",
+      "resourceId": 10009003,
+      "min": [
+        0.04,
+        0.0105,
+        -0.092
+      ],
+      "max": [
+        0.055,
+        0.0115,
+        -0.077
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第1行第10键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r0c10",
+      "resourceId": 10009003,
+      "min": [
+        0.059,
+        0.0105,
+        -0.092
+      ],
+      "max": [
+        0.074,
+        0.0115,
+        -0.077
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第1行第11键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r0c11",
+      "resourceId": 10009003,
+      "min": [
+        0.078,
+        0.0105,
+        -0.092
+      ],
+      "max": [
+        0.093,
+        0.0115,
+        -0.077
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第1行第12键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r0c12",
+      "resourceId": 10009003,
+      "min": [
+        0.097,
+        0.0105,
+        -0.092
+      ],
+      "max": [
+        0.112,
+        0.0115,
+        -0.077
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第1行第13键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r0c13",
+      "resourceId": 10009003,
+      "min": [
+        0.116,
+        0.0105,
+        -0.092
+      ],
+      "max": [
+        0.131,
+        0.0115,
+        -0.077
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第1行第14键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r1c0",
+      "resourceId": 10009003,
+      "min": [
+        -0.131,
+        0.0105,
+        -0.074
+      ],
+      "max": [
+        -0.116,
+        0.0115,
+        -0.059
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第2行第1键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r1c1",
+      "resourceId": 10009003,
+      "min": [
+        -0.112,
+        0.0105,
+        -0.074
+      ],
+      "max": [
+        -0.097,
+        0.0115,
+        -0.059
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第2行第2键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r1c2",
+      "resourceId": 10009003,
+      "min": [
+        -0.093,
+        0.0105,
+        -0.074
+      ],
+      "max": [
+        -0.078,
+        0.0115,
+        -0.059
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第2行第3键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r1c3",
+      "resourceId": 10009003,
+      "min": [
+        -0.074,
+        0.0105,
+        -0.074
+      ],
+      "max": [
+        -0.059,
+        0.0115,
+        -0.059
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第2行第4键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r1c4",
+      "resourceId": 10009003,
+      "min": [
+        -0.055,
+        0.0105,
+        -0.074
+      ],
+      "max": [
+        -0.04,
+        0.0115,
+        -0.059
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第2行第5键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r1c5",
+      "resourceId": 10009003,
+      "min": [
+        -0.036,
+        0.0105,
+        -0.074
+      ],
+      "max": [
+        -0.021,
+        0.0115,
+        -0.059
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第2行第6键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r1c6",
+      "resourceId": 10009003,
+      "min": [
+        -0.017,
+        0.0105,
+        -0.074
+      ],
+      "max": [
+        -0.002,
+        0.0115,
+        -0.059
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第2行第7键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r1c7",
+      "resourceId": 10009003,
+      "min": [
+        0.002,
+        0.0105,
+        -0.074
+      ],
+      "max": [
+        0.017,
+        0.0115,
+        -0.059
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第2行第8键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r1c8",
+      "resourceId": 10009003,
+      "min": [
+        0.021,
+        0.0105,
+        -0.074
+      ],
+      "max": [
+        0.036,
+        0.0115,
+        -0.059
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第2行第9键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r1c9",
+      "resourceId": 10009003,
+      "min": [
+        0.04,
+        0.0105,
+        -0.074
+      ],
+      "max": [
+        0.055,
+        0.0115,
+        -0.059
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第2行第10键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r1c10",
+      "resourceId": 10009003,
+      "min": [
+        0.059,
+        0.0105,
+        -0.074
+      ],
+      "max": [
+        0.074,
+        0.0115,
+        -0.059
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第2行第11键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r1c11",
+      "resourceId": 10009003,
+      "min": [
+        0.078,
+        0.0105,
+        -0.074
+      ],
+      "max": [
+        0.093,
+        0.0115,
+        -0.059
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第2行第12键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r1c12",
+      "resourceId": 10009003,
+      "min": [
+        0.097,
+        0.0105,
+        -0.074
+      ],
+      "max": [
+        0.112,
+        0.0115,
+        -0.059
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第2行第13键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r1c13",
+      "resourceId": 10009003,
+      "min": [
+        0.116,
+        0.0105,
+        -0.074
+      ],
+      "max": [
+        0.131,
+        0.0115,
+        -0.059
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第2行第14键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r2c0",
+      "resourceId": 10009003,
+      "min": [
+        -0.131,
+        0.0105,
+        -0.056
+      ],
+      "max": [
+        -0.116,
+        0.0115,
+        -0.041
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第3行第1键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r2c1",
+      "resourceId": 10009003,
+      "min": [
+        -0.112,
+        0.0105,
+        -0.056
+      ],
+      "max": [
+        -0.097,
+        0.0115,
+        -0.041
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第3行第2键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r2c2",
+      "resourceId": 10009003,
+      "min": [
+        -0.093,
+        0.0105,
+        -0.056
+      ],
+      "max": [
+        -0.078,
+        0.0115,
+        -0.041
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第3行第3键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r2c3",
+      "resourceId": 10009003,
+      "min": [
+        -0.074,
+        0.0105,
+        -0.056
+      ],
+      "max": [
+        -0.059,
+        0.0115,
+        -0.041
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第3行第4键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r2c4",
+      "resourceId": 10009003,
+      "min": [
+        -0.055,
+        0.0105,
+        -0.056
+      ],
+      "max": [
+        -0.04,
+        0.0115,
+        -0.041
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第3行第5键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r2c5",
+      "resourceId": 10009003,
+      "min": [
+        -0.036,
+        0.0105,
+        -0.056
+      ],
+      "max": [
+        -0.021,
+        0.0115,
+        -0.041
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第3行第6键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r2c6",
+      "resourceId": 10009003,
+      "min": [
+        -0.017,
+        0.0105,
+        -0.056
+      ],
+      "max": [
+        -0.002,
+        0.0115,
+        -0.041
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第3行第7键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r2c7",
+      "resourceId": 10009003,
+      "min": [
+        0.002,
+        0.0105,
+        -0.056
+      ],
+      "max": [
+        0.017,
+        0.0115,
+        -0.041
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第3行第8键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r2c8",
+      "resourceId": 10009003,
+      "min": [
+        0.021,
+        0.0105,
+        -0.056
+      ],
+      "max": [
+        0.036,
+        0.0115,
+        -0.041
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第3行第9键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r2c9",
+      "resourceId": 10009003,
+      "min": [
+        0.04,
+        0.0105,
+        -0.056
+      ],
+      "max": [
+        0.055,
+        0.0115,
+        -0.041
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第3行第10键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r2c10",
+      "resourceId": 10009003,
+      "min": [
+        0.059,
+        0.0105,
+        -0.056
+      ],
+      "max": [
+        0.074,
+        0.0115,
+        -0.041
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第3行第11键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r2c11",
+      "resourceId": 10009003,
+      "min": [
+        0.078,
+        0.0105,
+        -0.056
+      ],
+      "max": [
+        0.093,
+        0.0115,
+        -0.041
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第3行第12键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r2c12",
+      "resourceId": 10009003,
+      "min": [
+        0.097,
+        0.0105,
+        -0.056
+      ],
+      "max": [
+        0.112,
+        0.0115,
+        -0.041
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第3行第13键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r2c13",
+      "resourceId": 10009003,
+      "min": [
+        0.116,
+        0.0105,
+        -0.056
+      ],
+      "max": [
+        0.131,
+        0.0115,
+        -0.041
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第3行第14键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r3c0",
+      "resourceId": 10009003,
+      "min": [
+        -0.1215,
+        0.0105,
+        -0.038
+      ],
+      "max": [
+        -0.1065,
+        0.0115,
+        -0.023
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第4行第1键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r3c1",
+      "resourceId": 10009003,
+      "min": [
+        -0.1025,
+        0.0105,
+        -0.038
+      ],
+      "max": [
+        -0.0875,
+        0.0115,
+        -0.023
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第4行第2键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r3c2",
+      "resourceId": 10009003,
+      "min": [
+        -0.0835,
+        0.0105,
+        -0.038
+      ],
+      "max": [
+        -0.0685,
+        0.0115,
+        -0.023
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第4行第3键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r3c3",
+      "resourceId": 10009003,
+      "min": [
+        -0.0645,
+        0.0105,
+        -0.038
+      ],
+      "max": [
+        -0.0495,
+        0.0115,
+        -0.023
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第4行第4键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r3c4",
+      "resourceId": 10009003,
+      "min": [
+        -0.0455,
+        0.0105,
+        -0.038
+      ],
+      "max": [
+        -0.0305,
+        0.0115,
+        -0.023
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第4行第5键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r3c5",
+      "resourceId": 10009003,
+      "min": [
+        -0.0265,
+        0.0105,
+        -0.038
+      ],
+      "max": [
+        -0.0115,
+        0.0115,
+        -0.023
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第4行第6键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r3c6",
+      "resourceId": 10009003,
+      "min": [
+        -0.0075,
+        0.0105,
+        -0.038
+      ],
+      "max": [
+        0.0075,
+        0.0115,
+        -0.023
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第4行第7键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r3c7",
+      "resourceId": 10009003,
+      "min": [
+        0.0115,
+        0.0105,
+        -0.038
+      ],
+      "max": [
+        0.0265,
+        0.0115,
+        -0.023
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第4行第8键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r3c8",
+      "resourceId": 10009003,
+      "min": [
+        0.0305,
+        0.0105,
+        -0.038
+      ],
+      "max": [
+        0.0455,
+        0.0115,
+        -0.023
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第4行第9键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r3c9",
+      "resourceId": 10009003,
+      "min": [
+        0.0495,
+        0.0105,
+        -0.038
+      ],
+      "max": [
+        0.0645,
+        0.0115,
+        -0.023
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第4行第10键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r3c10",
+      "resourceId": 10009003,
+      "min": [
+        0.0685,
+        0.0105,
+        -0.038
+      ],
+      "max": [
+        0.0835,
+        0.0115,
+        -0.023
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第4行第11键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r3c11",
+      "resourceId": 10009003,
+      "min": [
+        0.0875,
+        0.0105,
+        -0.038
+      ],
+      "max": [
+        0.1025,
+        0.0115,
+        -0.023
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第4行第12键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r3c12",
+      "resourceId": 10009003,
+      "min": [
+        0.1065,
+        0.0105,
+        -0.038
+      ],
+      "max": [
+        0.1215,
+        0.0115,
+        -0.023
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第4行第13键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r4c0",
+      "resourceId": 10009003,
+      "min": [
+        -0.1215,
+        0.0105,
+        -0.02
+      ],
+      "max": [
+        -0.1065,
+        0.0115,
+        -0.005
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第5行第1键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r4c1",
+      "resourceId": 10009003,
+      "min": [
+        -0.1025,
+        0.0105,
+        -0.02
+      ],
+      "max": [
+        -0.0875,
+        0.0115,
+        -0.005
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第5行第2键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r4c2",
+      "resourceId": 10009003,
+      "min": [
+        -0.0835,
+        0.0105,
+        -0.02
+      ],
+      "max": [
+        -0.0685,
+        0.0115,
+        -0.005
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第5行第3键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r4c3",
+      "resourceId": 10009003,
+      "min": [
+        -0.0645,
+        0.0105,
+        -0.02
+      ],
+      "max": [
+        -0.0495,
+        0.0115,
+        -0.005
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第5行第4键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r4c4",
+      "resourceId": 10009003,
+      "min": [
+        -0.0455,
+        0.0105,
+        -0.02
+      ],
+      "max": [
+        -0.0305,
+        0.0115,
+        -0.005
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第5行第5键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r4c5",
+      "resourceId": 10009003,
+      "min": [
+        -0.0265,
+        0.0105,
+        -0.02
+      ],
+      "max": [
+        -0.0115,
+        0.0115,
+        -0.005
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第5行第6键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r4c6",
+      "resourceId": 10009003,
+      "min": [
+        -0.0075,
+        0.0105,
+        -0.02
+      ],
+      "max": [
+        0.0075,
+        0.0115,
+        -0.005
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第5行第7键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r4c7",
+      "resourceId": 10009003,
+      "min": [
+        0.0115,
+        0.0105,
+        -0.02
+      ],
+      "max": [
+        0.0265,
+        0.0115,
+        -0.005
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第5行第8键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r4c8",
+      "resourceId": 10009003,
+      "min": [
+        0.0305,
+        0.0105,
+        -0.02
+      ],
+      "max": [
+        0.0455,
+        0.0115,
+        -0.005
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第5行第9键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r4c9",
+      "resourceId": 10009003,
+      "min": [
+        0.0495,
+        0.0105,
+        -0.02
+      ],
+      "max": [
+        0.0645,
+        0.0115,
+        -0.005
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第5行第10键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r4c10",
+      "resourceId": 10009003,
+      "min": [
+        0.0685,
+        0.0105,
+        -0.02
+      ],
+      "max": [
+        0.0835,
+        0.0115,
+        -0.005
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第5行第11键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r4c11",
+      "resourceId": 10009003,
+      "min": [
+        0.0875,
+        0.0105,
+        -0.02
+      ],
+      "max": [
+        0.1025,
+        0.0115,
+        -0.005
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第5行第12键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r4c12",
+      "resourceId": 10009003,
+      "min": [
+        0.1065,
+        0.0105,
+        -0.02
+      ],
+      "max": [
+        0.1215,
+        0.0115,
+        -0.005
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第5行第13键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r5c0",
+      "resourceId": 10009003,
+      "min": [
+        -0.134,
+        0.0105,
+        -0.002
+      ],
+      "max": [
+        -0.119,
+        0.0115,
+        0.013
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第6行第1键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r5c1",
+      "resourceId": 10009003,
+      "min": [
+        -0.115,
+        0.0105,
+        -0.002
+      ],
+      "max": [
+        -0.1,
+        0.0115,
+        0.013
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第6行第2键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r5c2",
+      "resourceId": 10009003,
+      "min": [
+        -0.096,
+        0.0105,
+        -0.002
+      ],
+      "max": [
+        -0.081,
+        0.0115,
+        0.013
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第6行第3键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r5c3",
+      "resourceId": 10009003,
+      "min": [
+        -0.077,
+        0.0105,
+        -0.002
+      ],
+      "max": [
+        -0.062,
+        0.0115,
+        0.013
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第6行第4键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r5c4",
+      "resourceId": 10009003,
+      "min": [
+        -0.058,
+        0.0105,
+        -0.002
+      ],
+      "max": [
+        -0.043,
+        0.0115,
+        0.013
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第6行第5键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r5c5",
+      "resourceId": 10009003,
+      "min": [
+        -0.039,
+        0.0105,
+        -0.002
+      ],
+      "max": [
+        -0.024,
+        0.0115,
+        0.013
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第6行第6键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r5c6",
+      "resourceId": 10009003,
+      "min": [
+        -0.02,
+        0.0105,
+        -0.002
+      ],
+      "max": [
+        -0.005,
+        0.0115,
+        0.013
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第6行第7键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r5c7",
+      "resourceId": 10009003,
+      "min": [
+        -0.001,
+        0.0105,
+        -0.002
+      ],
+      "max": [
+        0.014,
+        0.0115,
+        0.013
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第6行第8键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r5c8",
+      "resourceId": 10009003,
+      "min": [
+        0.018,
+        0.0105,
+        -0.002
+      ],
+      "max": [
+        0.033,
+        0.0115,
+        0.013
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第6行第9键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r5c9",
+      "resourceId": 10009003,
+      "min": [
+        0.037,
+        0.0105,
+        -0.002
+      ],
+      "max": [
+        0.052,
+        0.0115,
+        0.013
+      ],
+      "size": [
+        0.015,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 第6行第10键 0.0150×0.0150×0.0010"
+    },
+    {
+      "id": "key_r5_space",
+      "resourceId": 10009003,
+      "min": [
+        0.056,
+        0.0105,
+        -0.002
+      ],
+      "max": [
+        0.134,
+        0.0115,
+        0.013
+      ],
+      "size": [
+        0.078,
+        0.001,
+        0.015
+      ],
+      "ref": "§2 键帽 空格 0.0780×0.0150（占 4 槽）"
+    },
+    {
+      "id": "tp_face",
+      "resourceId": 10009003,
+      "min": [
+        -0.065,
+        0.0109,
+        0.02
+      ],
+      "max": [
+        0.065,
+        0.0115,
+        0.094
+      ],
+      "size": [
+        0.13,
+        0.0006,
+        0.074
+      ],
+      "ref": "§2 触控板 0.1300×0.0740 中心 (0,0.0115,+0.0570) 厚 0.0006"
+    },
+    {
+      "id": "tp_front",
+      "resourceId": 10009003,
+      "min": [
+        -0.065,
+        0.0105,
+        0.094
+      ],
+      "max": [
+        0.065,
+        0.0115,
+        0.095
+      ],
+      "size": [
+        0.13,
+        0.001,
+        0.001
+      ],
+      "ref": "§2 触控板 前侧壁（法线朝凹槽内；h 0.0010 见 engineFix）"
+    },
+    {
+      "id": "tp_back",
+      "resourceId": 10009003,
+      "min": [
+        -0.065,
+        0.0105,
+        0.019
+      ],
+      "max": [
+        0.065,
+        0.0115,
+        0.02
+      ],
+      "size": [
+        0.13,
+        0.001,
+        0.001
+      ],
+      "ref": "§2 触控板 后侧壁（法线朝凹槽内；h 0.0010 见 engineFix）"
+    },
+    {
+      "id": "tp_left",
+      "resourceId": 10009003,
+      "min": [
+        -0.066,
+        0.0105,
+        0.02
+      ],
+      "max": [
+        -0.065,
+        0.0115,
+        0.094
+      ],
+      "size": [
+        0.001,
+        0.001,
+        0.074
+      ],
+      "ref": "§2 触控板 左侧壁（法线朝凹槽内；h 0.0010 见 engineFix）"
+    },
+    {
+      "id": "tp_right",
+      "resourceId": 10009003,
+      "min": [
+        0.065,
+        0.0105,
+        0.02
+      ],
+      "max": [
+        0.066,
+        0.0115,
+        0.094
+      ],
+      "size": [
+        0.001,
+        0.001,
+        0.074
+      ],
+      "ref": "§2 触控板 右侧壁（法线朝凹槽内；h 0.0010 见 engineFix）"
+    },
+    {
+      "id": "screen_backplate",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.005591,
+        -0.135772
+      ],
+      "max": [
+        0.152,
+        0.214422,
+        -0.098663
+      ],
+      "size": [
+        0.304,
+        0.208831,
+        0.037109
+      ],
+      "ref": "§2 屏幕 背板 1（上盖内面底衬）"
+    },
+    {
+      "id": "bezel_top",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.011306,
+        -0.100703
+      ],
+      "max": [
+        0.152,
+        0.017267,
+        -0.099366
+      ],
+      "size": [
+        0.304,
+        0.005961,
+        0.001337
+      ],
+      "ref": "§2 屏幕 黑边 上 0.0060"
+    },
+    {
+      "id": "bezel_bottom",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.196942,
+        -0.134478
+      ],
+      "max": [
+        0.152,
+        0.208812,
+        -0.132098
+      ],
+      "size": [
+        0.304,
+        0.01187,
+        0.002379
+      ],
+      "ref": "§2 屏幕 黑边 下 0.0120"
+    },
+    {
+      "id": "bezel_left",
+      "resourceId": 10009003,
+      "min": [
+        -0.152,
+        0.017215,
+        -0.132394
+      ],
+      "max": [
+        -0.146,
+        0.196994,
+        -0.100408
+      ],
+      "size": [
+        0.006,
+        0.17978,
+        0.031986
+      ],
+      "ref": "§2 屏幕 黑边 左 0.0060"
+    },
+    {
+      "id": "bezel_right",
+      "resourceId": 10009003,
+      "min": [
+        0.146,
+        0.017215,
+        -0.132394
+      ],
+      "max": [
+        0.152,
+        0.196994,
+        -0.100408
+      ],
+      "size": [
+        0.006,
+        0.17978,
+        0.031986
+      ],
+      "ref": "§2 屏幕 黑边 右 0.0060"
+    },
+    {
+      "id": "screen_glow",
+      "resourceId": 10009003,
+      "min": [
+        -0.146,
+        0.017267,
+        -0.132098
+      ],
+      "max": [
+        0.146,
+        0.197046,
+        -0.100112
+      ],
+      "size": [
+        0.292,
+        0.17978,
+        0.031986
+      ],
+      "ref": "§2 屏幕 可视区 0.2920×0.1825（16:10，屏内黑边左/右 0.0060、上 0.0060、下 0.0120）"
+    },
+    {
+      "id": "camera",
+      "resourceId": 10009003,
+      "min": [
+        -0.001,
+        0.01338,
+        -0.099765
+      ],
+      "max": [
+        0.001,
+        0.015401,
+        -0.099122
+      ],
+      "size": [
+        0.002,
+        0.002022,
+        0.000643
+      ],
+      "ref": "§2 摄像头 0.0020×0.0020 方形 quad（屏上边中点）"
+    },
+    {
+      "id": "logo",
+      "resourceId": 10009003,
+      "min": [
+        -0.007,
+        0.10234,
+        -0.122815
+      ],
+      "max": [
+        0.007,
+        0.11618,
+        -0.120089
+      ],
+      "size": [
+        0.014,
+        0.013839,
+        0.002727
+      ],
+      "ref": "§2 品牌 logo 位 0.0140×0.0140 方形 quad（上盖背面中心）"
+    },
+    {
+      "id": "usbc1_back",
+      "resourceId": 10009003,
+      "min": [
+        -0.1524,
+        0.00475,
+        -0.06425
+      ],
+      "max": [
+        -0.152,
+        0.00725,
+        -0.05575
+      ],
+      "size": [
+        0.0004,
+        0.0025,
+        0.0085
+      ],
+      "ref": "§2 接口 USB-C#1 底（凹槽底板，x=−0.1520 侧）"
+    },
+    {
+      "id": "usbc1_top",
+      "resourceId": 10009003,
+      "min": [
+        -0.1524,
+        0.00725,
+        -0.06425
+      ],
+      "max": [
+        -0.152,
+        0.00765,
+        -0.05575
+      ],
+      "size": [
+        0.0004,
+        0.0004,
+        0.0085
+      ],
+      "ref": "§2 接口 USB-C#1 顶壁（法线朝槽内）"
+    },
+    {
+      "id": "usbc1_za",
+      "resourceId": 10009003,
+      "min": [
+        -0.1524,
+        0.00475,
+        -0.06465
+      ],
+      "max": [
+        -0.152,
+        0.00725,
+        -0.06425
+      ],
+      "size": [
+        0.0004,
+        0.0025,
+        0.0004
+      ],
+      "ref": "§2 接口 USB-C#1 侧壁 A（法线朝槽内）"
+    },
+    {
+      "id": "usbc1_zb",
+      "resourceId": 10009003,
+      "min": [
+        -0.1524,
+        0.00475,
+        -0.05575
+      ],
+      "max": [
+        -0.152,
+        0.00725,
+        -0.05535
+      ],
+      "size": [
+        0.0004,
+        0.0025,
+        0.0004
+      ],
+      "ref": "§2 接口 USB-C#1 侧壁 B（法线朝槽内）"
+    },
+    {
+      "id": "usbc2_back",
+      "resourceId": 10009003,
+      "min": [
+        -0.1524,
+        0.00475,
+        -0.02425
+      ],
+      "max": [
+        -0.152,
+        0.00725,
+        -0.01575
+      ],
+      "size": [
+        0.0004,
+        0.0025,
+        0.0085
+      ],
+      "ref": "§2 接口 USB-C#2 底（凹槽底板，x=−0.1520 侧）"
+    },
+    {
+      "id": "usbc2_top",
+      "resourceId": 10009003,
+      "min": [
+        -0.1524,
+        0.00725,
+        -0.02425
+      ],
+      "max": [
+        -0.152,
+        0.00765,
+        -0.01575
+      ],
+      "size": [
+        0.0004,
+        0.0004,
+        0.0085
+      ],
+      "ref": "§2 接口 USB-C#2 顶壁（法线朝槽内）"
+    },
+    {
+      "id": "usbc2_za",
+      "resourceId": 10009003,
+      "min": [
+        -0.1524,
+        0.00475,
+        -0.02465
+      ],
+      "max": [
+        -0.152,
+        0.00725,
+        -0.02425
+      ],
+      "size": [
+        0.0004,
+        0.0025,
+        0.0004
+      ],
+      "ref": "§2 接口 USB-C#2 侧壁 A（法线朝槽内）"
+    },
+    {
+      "id": "usbc2_zb",
+      "resourceId": 10009003,
+      "min": [
+        -0.1524,
+        0.00475,
+        -0.01575
+      ],
+      "max": [
+        -0.152,
+        0.00725,
+        -0.01535
+      ],
+      "size": [
+        0.0004,
+        0.0025,
+        0.0004
+      ],
+      "ref": "§2 接口 USB-C#2 侧壁 B（法线朝槽内）"
+    },
+    {
+      "id": "jack_back",
+      "resourceId": 10009003,
+      "min": [
+        0.152,
+        0.00425,
+        -0.07175
+      ],
+      "max": [
+        0.1524,
+        0.00775,
+        -0.06825
+      ],
+      "size": [
+        0.0004,
+        0.0035,
+        0.0035
+      ],
+      "ref": "§2 接口 耳机孔 底（凹槽底板，x=+0.1520 侧）"
+    },
+    {
+      "id": "jack_top",
+      "resourceId": 10009003,
+      "min": [
+        0.152,
+        0.00775,
+        -0.07175
+      ],
+      "max": [
+        0.1524,
+        0.00815,
+        -0.06825
+      ],
+      "size": [
+        0.0004,
+        0.0004,
+        0.0035
+      ],
+      "ref": "§2 接口 耳机孔 内壁（法线朝槽内）"
+    },
+    {
+      "id": "grille1_frame",
+      "resourceId": 10009003,
+      "min": [
+        -0.145,
+        0.000564,
+        -0.106
+      ],
+      "max": [
+        -0.005,
+        0.000864,
+        -0.1
+      ],
+      "size": [
+        0.14,
+        0.0003,
+        0.006
+      ],
+      "ref": "§2 散热格栅#1 框面（暗色底衬，外凸 0.0001；z 向 0.0060 见 engineFix）"
+    },
+    {
+      "id": "grille1_blade0",
+      "resourceId": 10009003,
+      "min": [
+        -0.145,
+        0.000464,
+        -0.106
+      ],
+      "max": [
+        -0.005,
+        0.000764,
+        -0.105
+      ],
+      "size": [
+        0.14,
+        0.0003,
+        0.001
+      ],
+      "ref": "§2 散热格栅#1 叶片1（外凸 0.0002；0.1400×0.0010×0.0003 见 engineFix）"
+    },
+    {
+      "id": "grille1_blade1",
+      "resourceId": 10009003,
+      "min": [
+        -0.145,
+        0.000464,
+        -0.104333
+      ],
+      "max": [
+        -0.005,
+        0.000764,
+        -0.103333
+      ],
+      "size": [
+        0.14,
+        0.0003,
+        0.001
+      ],
+      "ref": "§2 散热格栅#1 叶片2（外凸 0.0002；0.1400×0.0010×0.0003 见 engineFix）"
+    },
+    {
+      "id": "grille1_blade2",
+      "resourceId": 10009003,
+      "min": [
+        -0.145,
+        0.000464,
+        -0.102667
+      ],
+      "max": [
+        -0.005,
+        0.000764,
+        -0.101667
+      ],
+      "size": [
+        0.14,
+        0.0003,
+        0.001
+      ],
+      "ref": "§2 散热格栅#1 叶片3（外凸 0.0002；0.1400×0.0010×0.0003 见 engineFix）"
+    },
+    {
+      "id": "grille1_blade3",
+      "resourceId": 10009003,
+      "min": [
+        -0.145,
+        0.000464,
+        -0.101
+      ],
+      "max": [
+        -0.005,
+        0.000764,
+        -0.1
+      ],
+      "size": [
+        0.14,
+        0.0003,
+        0.001
+      ],
+      "ref": "§2 散热格栅#1 叶片4（外凸 0.0002；0.1400×0.0010×0.0003 见 engineFix）"
+    },
+    {
+      "id": "grille2_frame",
+      "resourceId": 10009003,
+      "min": [
+        0.005,
+        0.000564,
+        -0.106
+      ],
+      "max": [
+        0.145,
+        0.000864,
+        -0.1
+      ],
+      "size": [
+        0.14,
+        0.0003,
+        0.006
+      ],
+      "ref": "§2 散热格栅#2 框面（暗色底衬，外凸 0.0001；z 向 0.0060 见 engineFix）"
+    },
+    {
+      "id": "grille2_blade0",
+      "resourceId": 10009003,
+      "min": [
+        0.005,
+        0.000464,
+        -0.106
+      ],
+      "max": [
+        0.145,
+        0.000764,
+        -0.105
+      ],
+      "size": [
+        0.14,
+        0.0003,
+        0.001
+      ],
+      "ref": "§2 散热格栅#2 叶片1（外凸 0.0002；0.1400×0.0010×0.0003 见 engineFix）"
+    },
+    {
+      "id": "grille2_blade1",
+      "resourceId": 10009003,
+      "min": [
+        0.005,
+        0.000464,
+        -0.104333
+      ],
+      "max": [
+        0.145,
+        0.000764,
+        -0.103333
+      ],
+      "size": [
+        0.14,
+        0.0003,
+        0.001
+      ],
+      "ref": "§2 散热格栅#2 叶片2（外凸 0.0002；0.1400×0.0010×0.0003 见 engineFix）"
+    },
+    {
+      "id": "grille2_blade2",
+      "resourceId": 10009003,
+      "min": [
+        0.005,
+        0.000464,
+        -0.102667
+      ],
+      "max": [
+        0.145,
+        0.000764,
+        -0.101667
+      ],
+      "size": [
+        0.14,
+        0.0003,
+        0.001
+      ],
+      "ref": "§2 散热格栅#2 叶片3（外凸 0.0002；0.1400×0.0010×0.0003 见 engineFix）"
+    },
+    {
+      "id": "grille2_blade3",
+      "resourceId": 10009003,
+      "min": [
+        0.005,
+        0.000464,
+        -0.101
+      ],
+      "max": [
+        0.145,
+        0.000764,
+        -0.1
+      ],
+      "size": [
+        0.14,
+        0.0003,
+        0.001
+      ],
+      "ref": "§2 散热格栅#2 叶片4（外凸 0.0002；0.1400×0.0010×0.0003 见 engineFix）"
+    },
+    {
+      "id": "foot_pp",
+      "resourceId": 10009008,
+      "min": [
+        0.128,
+        0.004075,
+        0.082
+      ],
+      "max": [
+        0.136,
+        0.004675,
+        0.09
+      ],
+      "size": [
+        0.008,
+        0.0006,
+        0.008
+      ],
+      "ref": "§2 脚垫 4×Ø0.0080×0.0006（disc，中心 y = y_bottom(z) − 0.0003）"
+    },
+    {
+      "id": "foot_pn",
+      "resourceId": 10009008,
+      "min": [
+        0.128,
+        0.000425,
+        -0.09
+      ],
+      "max": [
+        0.136,
+        0.001025,
+        -0.082
+      ],
+      "size": [
+        0.008,
+        0.0006,
+        0.008
+      ],
+      "ref": "§2 脚垫 4×Ø0.0080×0.0006（disc，中心 y = y_bottom(z) − 0.0003）"
+    },
+    {
+      "id": "foot_np",
+      "resourceId": 10009008,
+      "min": [
+        -0.136,
+        0.004075,
+        0.082
+      ],
+      "max": [
+        -0.128,
+        0.004675,
+        0.09
+      ],
+      "size": [
+        0.008,
+        0.0006,
+        0.008
+      ],
+      "ref": "§2 脚垫 4×Ø0.0080×0.0006（disc，中心 y = y_bottom(z) − 0.0003）"
+    },
+    {
+      "id": "foot_nn",
+      "resourceId": 10009008,
+      "min": [
+        -0.136,
+        0.000425,
+        -0.09
+      ],
+      "max": [
+        -0.128,
+        0.001025,
+        -0.082
+      ],
+      "size": [
+        0.008,
+        0.0006,
+        0.008
+      ],
+      "ref": "§2 脚垫 4×Ø0.0080×0.0006（disc，中心 y = y_bottom(z) − 0.0003）"
+    }
+  ]
+}

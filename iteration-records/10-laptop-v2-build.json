@@ -1,0 +1,28 @@
+{
+  "stage": "S2/S3 build",
+  "pipeline": "bash exports/laptop-v2/run-pipeline.sh",
+  "partFiles": 13,
+  "expectedStrokes": [
+    55,
+    100,
+    100,
+    100,
+    100,
+    7,
+    26,
+    25,
+    19,
+    18,
+    4,
+    12,
+    4
+  ],
+  "items": 570,
+  "resources": {
+    "10009003": 534,
+    "10009008": 36
+  },
+  "assemble": "exports/laptop-v2/assemble.mjs（数值序拼装；运行器内置拼装是字典序，会与 spec 错位）",
+  "pitfall": "part 运行途中页面若重载会恢复旧 localStorage 作品（实测 part5=573 笔）→ 跑前把 Storage.prototype.setItem 打成 no-op",
+  "historyId": "vmtsw39cy6jo9"
+}

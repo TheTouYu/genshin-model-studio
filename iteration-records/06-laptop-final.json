@@ -1,0 +1,86 @@
+{
+  "id": "06-laptop-final",
+  "stage": "收尾（交付摘要）",
+  "when": "2026-09-08",
+  "deliverable": "exports/laptop/（单目录交付）",
+  "files": {
+    "partScripts": "scripts/parts/laptop-{base,lid,hinge,keyboard,trackpad,screen,ports,grille,feet}.js（仓库既有约定）+ exports/laptop/parts-src/ 同名副本",
+    "work": "exports/laptop/work.json（150 笔 + components 30 + links 19）",
+    "items": "exports/laptop/items.json（裸数组 150 件）",
+    "structureIn": "exports/laptop/laptop-structure-in.json（{\"name\":\"laptop\",\"items\":[...]}）",
+    "exports": [
+      "laptop.gia (29553 B)",
+      "laptop.gil (48530 B)",
+      "laptop.structure.json (68175 B)",
+      "laptop.summary.json (3758 B)"
+    ],
+    "views": [
+      "views/view-iso.png",
+      "views/view-top.png",
+      "views/view-front.png",
+      "views/view-left.png",
+      "views/view-right.png",
+      "views/view-closeup.png"
+    ],
+    "extraViews": "views/diag/ 13 张近景 + views/probe/ 15 张方向核对探针 + 运行器自带 view-{iso,front,back,left,front-clean}.png",
+    "evidence": [
+      "s0-preflight.json",
+      "points.json",
+      "spec.json",
+      "s4-gate.json",
+      "s4-verify.json",
+      "independent-aabb.json",
+      "parsed.json",
+      "inspect-draw-model.json",
+      "eval/report.json",
+      "eval/final.md",
+      "views/capture-report.json"
+    ],
+    "tooling": [
+      "gen-parts.mjs",
+      "run-pipeline.sh",
+      "final-pass.sh",
+      "capture-six.py",
+      "diag-views.py",
+      "gate-check.py",
+      "independent-check.mjs",
+      "assemble-s4-verify.mjs"
+    ]
+  },
+  "summary": {
+    "items": 150,
+    "resources": {
+      "10009003": 145,
+      "10009008": 5
+    },
+    "keycaps": 79,
+    "openAngleDeg": 100,
+    "closedTotalHeight": 0.0155,
+    "closedTopFaceY": 0.0115,
+    "lidThickness": 0.004,
+    "lidFarEndY": 0.214422,
+    "lowestPoint": 0.000425,
+    "worldBBox": [
+      0.3048,
+      0.213998,
+      0.245711
+    ],
+    "rootScale": [
+      0.1,
+      0.1,
+      0.1
+    ],
+    "gate": "gms.verify ok=True（30 命名件 / 19 条 link 全接触 / floating=[] / collides=[]）",
+    "independent": "独立 AABB：11175 对复算，0 孤立件、0 无地面链、应贴合对 0 缝隙",
+    "visual": "六视角互不相同且非空；独立视觉复核（gpt-5.6-sol）pass，0 blocker/major/minor"
+  },
+  "deviations": [
+    "格栅叶片 z 向 0.0005→0.0010、框面 0.0030→0.0060；触控板四侧壁 h 0.0006→0.0010 —— 引擎 RDP epsilon=0.005×对角线 会抽掉 aspect<0.005 的短边（否则服务端 400）",
+    "屏幕发光色用单色 #14294A（§2 给的 #0E1B2A→#1B3A5C 是渐变；quad 单件单色，逐行渐变需拆 3+ 件，与 150 件清单冲突）",
+    "接口建模为「微外凸浅槽」（底板外凸 0.0004 + 唇壁）：平面件无法在侧壁开洞",
+    "格栅框面外凸 0.0001 / 叶片外凸 0.0002（避免与底面共面 z-fighting；整机最低点仍是后脚垫 0.000425）",
+    "上盖 6 个面（左右侧缘 + 4 切角）用 gms.props 覆写 rotation（引擎未实现 roll）",
+    "x 向包围盒 0.3048 = 0.3040 + 两侧接口浅槽各 0.0004"
+  ],
+  "pending": "用户进游戏实测并签字（唯一人类门）；未获用户游戏验收，不得宣称完成。"
+}

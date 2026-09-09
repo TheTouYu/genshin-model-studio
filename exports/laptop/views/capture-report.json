@@ -1,0 +1,140 @@
+[
+  {
+    "view": "iso",
+    "requested": {
+      "yaw": 0.65,
+      "pitch": 0.85,
+      "radius": 2.4
+    },
+    "actual": {
+      "projection": "perspective",
+      "yaw": 0.65,
+      "pitch": 0.85,
+      "radius": 2.4,
+      "target": [
+        0,
+        0.1074104844111653,
+        -0.016855376081380824
+      ],
+      "aspect": 1.6643741403026135
+    },
+    "bytes": 44527,
+    "sha256": "9d05d052f7020d208397483a4db1216b852ab2c1971ecedbe19f1162afd8564a",
+    "staleRetries": 12
+  },
+  {
+    "view": "top",
+    "requested": {
+      "yaw": 0.65,
+      "pitch": 0.12,
+      "radius": 2.4
+    },
+    "actual": {
+      "projection": "perspective",
+      "yaw": 0.65,
+      "pitch": 0.12,
+      "radius": 2.4,
+      "target": [
+        0,
+        0.1074104844111653,
+        -0.016855376081380824
+      ],
+      "aspect": 1.6643741403026135
+    },
+    "bytes": 45525,
+    "sha256": "c7a071a095886fd5d64d6c9ff59888090a581a4472af6dc8b19824069c783758",
+    "staleRetries": 0
+  },
+  {
+    "view": "front",
+    "requested": {
+      "yaw": 0.0,
+      "pitch": 1.57,
+      "radius": 2.4
+    },
+    "actual": {
+      "projection": "perspective",
+      "yaw": 0,
+      "pitch": 1.57,
+      "radius": 2.4,
+      "target": [
+        0,
+        0.1074104844111653,
+        -0.016855376081380824
+      ],
+      "aspect": 1.6643741403026135
+    },
+    "bytes": 31952,
+    "sha256": "3e40c561a56d2e46eca08d6ff085e53fa4a1d6aeb458379b1778c1fe156fd0b2",
+    "staleRetries": 0
+  },
+  {
+    "view": "left",
+    "requested": {
+      "yaw": 1.5708,
+      "pitch": 1.57,
+      "radius": 2.4
+    },
+    "actual": {
+      "projection": "perspective",
+      "yaw": 1.5708,
+      "pitch": 1.57,
+      "radius": 2.4,
+      "target": [
+        0,
+        0.1074104844111653,
+        -0.016855376081380824
+      ],
+      "aspect": 1.6643741403026135
+    },
+    "bytes": 32566,
+    "sha256": "d40c8160d91db269f0d5542718c9a01e4775bca12d7b0b1bdd1fa2fed5d0af4b",
+    "staleRetries": 0
+  },
+  {
+    "view": "right",
+    "requested": {
+      "yaw": -1.5708,
+      "pitch": 1.57,
+      "radius": 2.4
+    },
+    "actual": {
+      "projection": "perspective",
+      "yaw": -1.5708,
+      "pitch": 1.57,
+      "radius": 2.4,
+      "target": [
+        0,
+        0.1074104844111653,
+        -0.016855376081380824
+      ],
+      "aspect": 1.6643741403026135
+    },
+    "bytes": 32365,
+    "sha256": "0f84ee1fd664702a93c010270740a29f12af7f02caacc18f9c4e079a55fe4da1",
+    "staleRetries": 0
+  },
+  {
+    "view": "closeup",
+    "requested": {
+      "yaw": 0.65,
+      "pitch": 0.85,
+      "radius": 0.8
+    },
+    "actual": {
+      "projection": "perspective",
+      "yaw": 0.65,
+      "pitch": 0.85,
+      "radius": 0.8,
+      "target": [
+        0,
+        0.1074104844111653,
+        -0.016855376081380824
+      ],
+      "aspect": 1.6643741403026135
+    },
+    "bytes": 72612,
+    "sha256": "99f03001a57fa8c050f49904bf0840a93f85797a8d8b0da7730b39e14af1b1a3",
+    "staleRetries": 0
+  }
+]

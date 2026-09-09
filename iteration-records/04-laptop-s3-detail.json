@@ -1,0 +1,55 @@
+{
+  "id": "04-laptop-s3-detail",
+  "stage": "S3 细节（全量 150 件）",
+  "when": "2026-09-08",
+  "commands": [
+    "bash exports/laptop/run-pipeline.sh（9 批 part → 150 笔 → POST → items 150）",
+    "node exports/laptop/independent-check.mjs",
+    "browser-harness < exports/laptop/diag-views.py（近景复核）"
+  ],
+  "fixes": [
+    {
+      "issue": "POST /api/draw-model 400「平面渲染需要矩形轮廓」",
+      "cause": "RDP epsilon=0.005×对角线 抽掉短边：格栅叶片 0.0005×0.1400（比 0.0036）、触控板前/后壁 0.0006×0.1300（比 0.0046）",
+      "fix": "格栅叶片 z 向 0.0005→0.0010（框面 0.0030→0.0060 容纳 4 片+间隙 0.000667）；触控板四侧壁 h 0.0006→0.0010（凹槽内不可见）；生成器加 aspect 断言（min aspect 0.007143 > 0.0055）"
+    },
+    {
+      "issue": "part5.json 只有 1 笔（summary items=146≠150）",
+      "cause": "页面 localStorage 残留 + 多标签 storage 事件触发 restoreLocal，覆盖了批间状态",
+      "fix": "exports/laptop/run-pipeline.sh：跑前只留唯一建模页 + 清 localStorage + reload；跑后断言每批笔画数（16/10/3/84/5/8/10/10/4）与 composed 150"
+    },
+    {
+      "issue": "底面格栅在 bottom 视角不可见（z-fighting）",
+      "cause": "叶片与底面共面（都贴 y_bottom）",
+      "fix": "框面外凸 0.0001（暗色底衬）、叶片外凸 0.0002（银色叶片），最低点仍是后脚垫 0.0004245（叶片最低 0.0004637 > 0.0004245）"
+    },
+    {
+      "issue": "spec.parts 与 items 顺序错位",
+      "cause": "生成器数组顺序（生成序）≠ part 脚本落笔顺序（批次序）",
+      "fix": "spec/points 按 BATCH_ORDER + 批内序重排（否则 independent-check 把 keycap 当成 tp_face）"
+    }
+  ],
+  "readings": {
+    "items": 150,
+    "resources": {
+      "10009003": 145,
+      "10009008": 5
+    },
+    "worldBBoxSize": [
+      0.3048,
+      0.213998,
+      0.245711
+    ],
+    "note_bbox": "x 0.3048 = 0.3040 + 两侧接口浅槽各外凸 0.0004；y 0.2140 ≈ 开合态上盖远端（§5 期望 ≈0.2144，差异来自上盖 4mm 厚度的精确投影）；z 0.2457 = 闭合 0.2120 + 上盖远端后仰 0.0338"
+  },
+  "artifacts": [
+    "exports/laptop/parts/part1..9.json",
+    "exports/laptop/work.json",
+    "exports/laptop/items.json",
+    "exports/laptop/views/diag/*.png"
+  ],
+  "gate": {
+    "post": "ok=True strokes=150 items=150",
+    "visual": "近景复核：键盘 79 键+空格、触控板、屏内黑边+发光区、摄像头、logo、双 USB-C、耳机孔、格栅、脚垫、铰链均可见"
+  }
+}

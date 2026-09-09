@@ -1,0 +1,79 @@
+{
+  "id": "05-laptop-s4-verify",
+  "stage": "S4 验证与导出",
+  "when": "2026-09-08",
+  "commands": [
+    "bash exports/laptop/final-pass.sh（1 流水线 → 2 独立 AABB → 3 导出主链 → 4 门禁 → 5 六视角）",
+    "npm run export-mesh -- exports/laptop/laptop-structure-in.json --out-dir exports/laptop --format both --force --no-qa → exit 0",
+    "python3 tools/gia/gia_parser.py exports/laptop/laptop.gia --json exports/laptop/parsed.json",
+    "scripts/inspect-draw-model.sh http://localhost:8787/",
+    "python3 ~/.agents/skills/isolated-model-evaluator/scripts/evaluate.py --task-file exports/laptop/eval-task.md --provider aijws --model gpt-5.6-sol --tools read,bash --output-dir exports/laptop/eval"
+  ],
+  "readings": {
+    "items": 150,
+    "resources": {
+      "10009003": 145,
+      "10009008": 5
+    },
+    "gms.verify.ok": true,
+    "namedParts": 30,
+    "links": 19,
+    "independentAABB": {
+      "pairs": 11175,
+      "isolated": 0,
+      "floating": 0,
+      "expectedFlushGaps": []
+    },
+    "giaRootScale": [
+      0.10000000149011612,
+      0.10000000149011612,
+      0.10000000149011612
+    ],
+    "giaBytes": 29553,
+    "openAngleDeg": 100,
+    "lidFarEndY": 0.214422,
+    "closedTotalHeight": 0.0155,
+    "lowestPoint": 0.000425,
+    "sixViewsDistinct": true,
+    "independentReview": "pass"
+  },
+  "decisions": [
+    "export-mesh 用 --no-qa 且写明理由（QA 假设 budget.used=面板化件数，纯 quad 透传下必然误报；无 mesh item → 门禁不拦截）",
+    "门禁覆盖 30/150 件：引擎对 quad 用 w/h/thick 轴对齐盒注册（忽略 normal），120 件注册盒 minY>0.001 且 z 向与贴地件相距 >2mm，无法进接触图 → 不命名；全量由独立 AABB 复算覆盖（0 孤立 / 0 悬空 / 应贴合对 0 缝隙）",
+    "视觉复核两次：首轮 cannot_judge（缺 +X 侧近景）→ 补 4 张辅助近景复评 pass（0 blocker/major/minor）",
+    "命名/连接表并入交付 work.json（components 30 / links 19）：gms.export() 只返回 strokes+options，命名/连接在页面 state 与 localStorage（web/index.html:1968/3275）"
+  ],
+  "artifacts": [
+    "exports/laptop/s4-verify.json",
+    "exports/laptop/s4-gate.json",
+    "exports/laptop/independent-aabb.json",
+    "exports/laptop/laptop.gia",
+    "exports/laptop/laptop.gil",
+    "exports/laptop/laptop.structure.json",
+    "exports/laptop/laptop.summary.json",
+    "exports/laptop/parsed.json",
+    "exports/laptop/inspect-draw-model.json",
+    "exports/laptop/eval/report.json",
+    "exports/laptop/eval/final.md"
+  ],
+  "gate": {
+    "items=150（主档 140–350）": true,
+    "10009003 占比 ≥95%": true,
+    "实心件 ≤5%（≤6 件）": true,
+    "无 10009001 / 10009019": true,
+    "开合角 100°±2°": true,
+    "切角偏差 ≤0.003": true,
+    "布局预算 = 0.2120": true,
+    "gms.verify.ok": true,
+    "独立 AABB 无 >0.001 意外缝隙": true,
+    "无孤立件": true,
+    "无悬空（接触图到地）": true,
+    "导出退出码 0": true,
+    ".gia 字节 > 0": true,
+    "summary.itemCount = 150": true,
+    "root = [0.1,0.1,0.1]": true,
+    "六视角互不相同且非空": true,
+    "独立视觉复核无阻断项": true,
+    "用户游戏实测签字": "PENDING（唯一人类门；未签字不得宣称完成）"
+  }
+}

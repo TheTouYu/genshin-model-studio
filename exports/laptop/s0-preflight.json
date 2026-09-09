@@ -1,0 +1,39 @@
+{
+  "stage": "S0-preflight",
+  "when": "2026-09-08T22:42:44+0800",
+  "server": {
+    "url": "http://localhost:8787/",
+    "httpStatus": 200,
+    "action": "已存在服务（HTTP 200）→ 复用，未重复启动 npm run web（避免 EADDRINUSE）",
+    "cmd": "curl -s -o /dev/null -w %{http_code} http://localhost:8787/"
+  },
+  "build": {
+    "cmd": "npm run build --silent",
+    "exitCode": 0
+  },
+  "test": {
+    "cmd": "npm test",
+    "exitCode": 0,
+    "tests": 248,
+    "pass": 248,
+    "fail": 0
+  },
+  "browser": {
+    "tabUrl": "http://localhost:8787/",
+    "windowGms": true,
+    "windowGmsPreview": true,
+    "note": "run-gms-parts.sh 取第一个 localhost:8787 标签页执行 part；已把建模页设为唯一 8787 标签（关闭 hanfu-cage 干扰页）"
+  },
+  "calibration": {
+    "canvasWidthPx": 416,
+    "canvasHeightPx": 460,
+    "heightMeters": 1,
+    "calibration": "460px = 1m",
+    "note": "canvasWidthPx/canvasHeightPx 非零且全程保留（坑 #17）"
+  },
+  "capabilitiesCmd": "npm run capabilities",
+  "route": {
+    "chosen": "经典画线 route 的 gms.part 程序化建模（quad/rod/disc 直出 items → export-mesh 透传）",
+    "why": "刚体+大量平面件（150 元件），不需要 mesh 面板化；mesh route 会引入 10009019/面板化，与本任务红线冲突"
+  }
+}

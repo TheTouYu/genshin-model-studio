@@ -1,0 +1,112 @@
+{
+  "stage": "S4 verify + export",
+  "dimensions": {
+    "topFaceY": 0.0115,
+    "lidThickness": 0.004,
+    "closedTotalHeight": 0.0155,
+    "openAngleDeg": 100,
+    "lidFarEndY": 0.21437,
+    "lowestItem": {
+      "id": "foot_pn",
+      "minY": 0.000425
+    },
+    "widthX": 0.304,
+    "depthZ": 0.245711
+  },
+  "worldBBox": {
+    "min": [
+      -0.152,
+      0.000425,
+      -0.139711
+    ],
+    "max": [
+      0.152,
+      0.214422,
+      0.106
+    ],
+    "size": [
+      0.304,
+      0.213998,
+      0.245711
+    ]
+  },
+  "independent": {
+    "pairs": 162165,
+    "isolated": 0,
+    "floating": 0,
+    "expectedFlushGaps": [],
+    "rdpMinMargin": 1.3003
+  },
+  "gate": {
+    "ok": true,
+    "floating": [],
+    "collides": [],
+    "namedParts": 31,
+    "links": 22
+  },
+  "export": {
+    "command": "npm run export-mesh -- exports/laptop-v2/laptop-structure-in.json --out-dir exports/laptop-v2 --format both --force --no-qa",
+    "exitCode": 0,
+    "elapsedSeconds": 5,
+    "noQaReason": "纯 quad/rod 透传下 summary.budget.used = 0，QA 的「items=N vs budget.used=0」一致性检查必然误报（PROMPT-laptop-model.md §3-S4 实测结论）",
+    "summaryItemCount": 570,
+    "rootTransformScale": [
+      0.10000000149011612,
+      0.10000000149011612,
+      0.10000000149011612
+    ],
+    "item0Scale": [
+      3.0399999618530273,
+      0.009999999776482582,
+      0.2898266017436981
+    ],
+    "rootDoubleCompensation": "item 变换 ×10（0.3040 → 3.04）"
+  },
+  "giaBytes": 112223,
+  "gilBytes": 183630,
+  "views": [
+    {
+      "view": "iso",
+      "file": "views/view-iso.png",
+      "bytes": 90629,
+      "sha256": "8836c16258b545fd",
+      "distinct": true
+    },
+    {
+      "view": "top",
+      "file": "views/view-top.png",
+      "bytes": 106626,
+      "sha256": "efd0acab35971488",
+      "distinct": true
+    },
+    {
+      "view": "front",
+      "file": "views/view-front.png",
+      "bytes": 41933,
+      "sha256": "f0cbddd6faf1a721",
+      "distinct": true
+    },
+    {
+      "view": "left",
+      "file": "views/view-left.png",
+      "bytes": 50940,
+      "sha256": "3ccce9dfc3b45faa",
+      "distinct": true
+    },
+    {
+      "view": "right",
+      "file": "views/view-right.png",
+      "bytes": 52266,
+      "sha256": "16a8c54aa6ce0b68",
+      "distinct": true
+    },
+    {
+      "view": "closeup",
+      "file": "views/view-closeup.png",
+      "bytes": 90101,
+      "sha256": "8a8fda2bb13f1b51",
+      "distinct": true
+    }
+  ],
+  "conclusion": "门禁 ok、0 孤立/0 悬空/应贴合对 0 缝隙、导出 exit 0、六视角互不相同"
+}

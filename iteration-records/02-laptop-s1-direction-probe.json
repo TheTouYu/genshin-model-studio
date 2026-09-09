@@ -1,0 +1,185 @@
+{
+  "id": "02-laptop-s1-direction-probe",
+  "stage": "S1 规格→关键点（含 §2「方向核对」实测）",
+  "when": "2026-09-08",
+  "method": "browser-harness 在建模页执行 gms.clear + gms.part('quad') 探针，readPixels 截图 + 像素色块包围盒量测（不用 Page.captureScreenshot：WebGL 画布截出全白）",
+  "keyFinding_quadAxisSemantics": {
+    "item": "part('quad',{x,y,z,w,h,thick,normal}) → {position:[x,y,z], rotation:rotFromNormal(normal), scale:[w,thick,h]}",
+    "geometryLocalBasis": "平面几何局部基：局部 X = w 方向、局部 Y = 法线（厚度）、局部 Z = h 方向（web/draw/preview.js 10009003 = PlaneGeometry + rotateX(−90)，再 geometry.scale(w,thick,h)）",
+    "rotFromNormal": "[90+δ, 90−φ, 0]（δ=−asin(ny)°, φ=atan2(nz,nx)°）；±Y 法线时 φ=0 → w 沿 −Z、h 沿 +X（与「w=x、h=z」的直觉不同，必须按实测表传参）",
+    "measuredTable": [
+      {
+        "normal": [
+          0,
+          1,
+          0
+        ],
+        "rotation": [
+          0,
+          90,
+          0
+        ],
+        "wAxis": [
+          0,
+          0,
+          -1
+        ],
+        "hAxis": [
+          1,
+          0,
+          0
+        ]
+      },
+      {
+        "normal": [
+          0,
+          -1,
+          0
+        ],
+        "rotation": [
+          180,
+          90,
+          0
+        ],
+        "wAxis": [
+          0,
+          0,
+          -1
+        ],
+        "hAxis": [
+          -1,
+          0,
+          0
+        ]
+      },
+      {
+        "normal": [
+          0,
+          0,
+          1
+        ],
+        "rotation": [
+          90,
+          0,
+          0
+        ],
+        "wAxis": [
+          1,
+          0,
+          0
+        ],
+        "hAxis": [
+          0,
+          -1,
+          0
+        ]
+      },
+      {
+        "normal": [
+          0,
+          0,
+          -1
+        ],
+        "rotation": [
+          90,
+          180,
+          0
+        ],
+        "wAxis": [
+          -1,
+          0,
+          0
+        ],
+        "hAxis": [
+          0,
+          -1,
+          0
+        ]
+      },
+      {
+        "normal": [
+          1,
+          0,
+          0
+        ],
+        "rotation": [
+          90,
+          90,
+          0
+        ],
+        "wAxis": [
+          0,
+          0,
+          -1
+        ],
+        "hAxis": [
+          0,
+          -1,
+          0
+        ]
+      },
+      {
+        "normal": [
+          -1,
+          0,
+          0
+        ],
+        "rotation": [
+          90,
+          -90,
+          0
+        ],
+        "wAxis": [
+          0,
+          0,
+          1
+        ],
+        "hAxis": [
+          0,
+          -1,
+          0
+        ]
+      },
+      {
+        "normal": [
+          0.7071,
+          0,
+          0.7071
+        ],
+        "rotation": [
+          90,
+          45,
+          0
+        ],
+        "wAxis": [
+          0.7071,
+          0,
+          -0.7071
+        ],
+        "hAxis": [
+          0,
+          -1,
+          0
+        ]
+      }
+    ],
+    "verification": "0.3000×0.1000 水平面 normal[0,0,1]→rot[90,0,0]：front 视角量得 697×348 px（≈2:1，与 w:h 一致）、top 视角 851×18 px（0.1 深度被 2.86° 俯角压缩）；normal[1,0,0]→rot[90,90,0] 在 left 视角 135×321 px 竖直长条。截图：exports/laptop/views/{probe-*,shot-*,rotA-*,orient-*}.png",
+    "sideNaming": "capture-views.sh 预设按相机方位命名：left(yaw=1.5708) 相机在 +X 侧 → 看到 x=+0.1520 一侧（耳机孔）；right(yaw=−1.5708) 看到 x=−0.1520 侧（USB-C）。已由 S3 首轮截图核对（diag/side-minusx-usbc.png 两个 USB-C 可见）"
+  },
+  "engineConstraintsConfirmed": [
+    "roll 未实现（part('quad') 忽略 spec.roll）→ 上盖左右侧缘 + 上盖 4 切角共 6 面用 gms.props 覆写 rotation（YXZ 欧拉，由基向量 (w,n,h) 反解）",
+    "disc/el-disc lift = y − thick/2 必须 ≥ 0（脚垫 y=0.000724/0.004375、thick=0.0006 → lift 0.000424/0.004075 ✓）",
+    "rod 只读 x1/y1/x2/y2 + 单值 z（转轴用 rod）",
+    "★ 新发现：服务端平面识别先做 RDP 抽稀，epsilon = max(0.1, 0.005×bbox 对角线)（src/draw/fitting.ts:14-16）→ 平面短边/长边 < ~0.005 时短边两点被抽掉，报 400「平面渲染需要矩形轮廓」。首批 150 件 POST 失败即此因（格栅叶片 0.0005×0.1400、触控板前后壁 0.0006×0.1300）",
+    "★ 新发现：gms.export() 只返回 {version,strokes,options}，不含 components/links（web/index.html:3275-3277）；命名/连接在页面 state 与 localStorage 里（持久化路径 web/index.html:1968）"
+  ],
+  "artifacts": [
+    "exports/laptop/points.json",
+    "exports/laptop/spec.json",
+    "exports/laptop/gen-parts.mjs"
+  ],
+  "gate": {
+    "directionCheck": "done（实测表 + 像素量测）",
+    "keyPoints": "150 件全量写入 points.json"
+  }
+}
