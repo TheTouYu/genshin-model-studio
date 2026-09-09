@@ -1,0 +1,36 @@
+{
+ "id": "07-laptop-history",
+ "stage": "交付后追加（用户追加需求：把作品写进页面历史版本）",
+ "when": "2026-09-08",
+ "deliverable": "benchmark/history/vmtsuafo14805/（work.json + meta.json）",
+ "trigger": "用户原话：「页面刷新之后看不到了，帮忙写到页面的历史里面去」",
+ "rootCause": [
+  "刷新本身没丢：localStorage('gms.draw.work.v1') 已含 150 笔 + components 30 + links 19，reload 后状态为「✓ 150 笔 · 149 笔封闭 · 150 个元件」。",
+  "真正缺的是「历史版本」入口：8787 当时由 scripts/web-server.js 提供，该文件没有 /api/history 四个端点（GET /api/history、GET /api/history/get、POST /api/history/save、POST /api/history/delete），页面「🕘 历史」面板 fetch 得 404。端点原本只存在于 web/server.ts（→ dist/web/server.js）。",
+  "另注：页面「保存」按钮上传的是 gms.export()（web/index.html:3277 只含 {version,strokes,options}）——会丢 components/links；故本次用 API 直接 POST 完整 work.json。"
+ ],
+ "change": {
+  "server": "scripts/web-server.js 补齐 4 个历史端点 + HISTORY_DIR（语义照搬 web/server.ts:106-181），零新增依赖；GMS_EXPORT_DIR 行为不变。",
+  "historyEntry": {
+   "id": "vmtsuafo14805",
+   "name": "笔记本 MacBook 150 元件（30.4×21.2×1.55cm）",
+   "tags": "laptop 150元件 30命名/19连接 开合100° gia已导出",
+   "strokes": 150,
+   "items": 150
+  }
+ },
+ "verify": {
+  "listAPI": "GET /api/history 首条即该条目（共 28 条）",
+  "getAPI": "GET /api/history/get?id=vmtsuafo14805 → strokes 150 / components 30 / links 19 / options 与 work.json 完全一致",
+  "panelLoad": "页面「🕘 历史」面板可见该条目 → 点「加载」→ 状态 ✓ 150 笔 · 149 笔封闭 · 150 个元件；localStorage 与 exports/laptop/work.json 逐字段相等（strokes 差异 0、components 相等、links 相等、options 相等）",
+  "geometryIdentity": "加载后把页面 strokes+options POST /api/draw-model → 150 件，resourceId 计数 10009003×145 + 10009008×5，与 exports/laptop/items.json 的 (resourceId, position, rotation, scale) 逐件相等 = true",
+  "refreshRestore": "普通刷新后仍 ✓ 150 笔 · 150 元件，3D 预览相机 target=[0,0.1074,-0.0169]（笔记本几何中心）、resetView 后 radius 2.4，渲染与交付 view-iso.png 同款（截图 exports/laptop/views/refresh-restored.png、history-loaded.png）"
+ },
+ "notes": [
+  "页面顶部「已加载 box」是旧结构面板的示例状态；$('exportGia') 是旧面板的导出按钮（导出示例 box，984 B）。笔记本的导出按钮在「画线建模」面板内，勿混淆。",
+  "测试误产出的 box.gia 已从游戏导出目录删除。"
+ ],
+ "pending": [
+  "用户进游戏实测并签字（唯一人类门，仍未闭合）"
+ ]
+}
