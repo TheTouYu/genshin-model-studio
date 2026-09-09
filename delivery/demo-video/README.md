@@ -8,8 +8,8 @@
 | `macbook-demo-720p.mp4` | v1 成片（1280×720 / 14.7 MB）——实时录制管线，留作对照 |
 | `macbook-demo-720p.webm` | v1 同内容 WebM/VP8+Opus（浏览器原生播放） |
 | `macbook-demo-raw.webm` | v1 录制原始输出（未补 Duration） |
-| `verify-frames-1440p/t*.png` | v2 逐帧存证（19 张 2560×1440 PNG，含片尾各卡与谢幕卡） |
-| `keyframes/t*.png` | v1 录制过程中的 13 张合成关键帧 |
+| `verify-frames-1440p/t*.jpg` | v2 逐帧存证（19 张 2560×1440 JPEG q92，含片尾各卡与谢幕卡；仓库内为 JPEG 以控体积，`--shots` 重跑会输出 PNG） |
+| `keyframes/t*.jpg` | v1 录制过程中的 23 张合成关键帧（JPEG q92） |
 | `SCRIPT.md` | **分镜脚本**：13 镜的机位参数、时长、字幕、音效表、复现命令、实现说明 |
 | `captions.srt` | 字幕文件（UTF-8，可直接拖进剪辑软件） |
 | `EPILOGUE.md` | **片尾寄语章《以假乱真》全文**（GLM 5.3 撰文）+ 拆卡表 + 导演取舍说明 |

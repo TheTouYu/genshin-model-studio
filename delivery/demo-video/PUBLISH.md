@@ -78,7 +78,7 @@
 
 - 主文案：**一台不存在的 MacBook**
 - 副文案：全片浏览器实时渲染 · 零贴图 · 零素材
-- 画面建议：取 `delivery/demo-video/verify-frames-1440p/t12_4.png`（亮屏 + 桌面）或 `t3.png`（暗场倒影）。
+- 画面建议：取 `delivery/demo-video/verify-frames-1440p/t12_4.jpg`（亮屏 + 桌面）或 `t3.jpg`（暗场倒影）。
   两张都是 2560×1440 PNG，可直接裁封面。
 
 ---

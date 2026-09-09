@@ -17,3 +17,9 @@ __pycache__/
 # 独立模型评估 trace（体积大，报告留档即可）
 exports/*/eval*/trace.jsonl
 .local/
+
+# 临时工作区与调研缓存（体积大且可重建，一律不入库）
+.scratch/
+.hw-research/
+*.heapsnapshot
+Heap.*.heapsnapshot
