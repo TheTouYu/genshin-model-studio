@@ -1,0 +1,24 @@
+{
+  "out": "delivery/demo-video/macbook-demo.webm",
+  "size": 22598059,
+  "dur": 67.8,
+  "fps": 165,
+  "log": [
+    "render size -> 1280x720"
+  ],
+  "keyframes": [
+    2.6,
+    9.4,
+    13.4,
+    19,
+    24.4,
+    28.8,
+    32.6,
+    37.6,
+    44,
+    48,
+    52.4,
+    57,
+    63.5
+  ]
+}

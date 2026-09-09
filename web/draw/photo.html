@@ -123,7 +123,8 @@
       // 黑底影棚（官方 hero/m3-official 那一类）
       dark: {
         bg: 0x000000, bgGrad: null, ground: 0x0b0b0d, groundRough: 0.55, groundMetal: 0.0,
-        shadow: 0.62, refl: 0.11, exposure: 0.95,
+        groundOpacity: 0.52,          // 玻璃台面：倒影（y<0 的镜像组）才穿得出来
+        shadow: 0.62, refl: 0.30, exposure: 0.95,
         env: { room: 0x0a0a0c, key: 4.2, keyW: 2.4, keyH: 0.9, sideW: 1.9, sideH: 0.42, sideL: 1.35, sideR: 1.0, back: 1.5, floor: 1.45, floorCol: 0x8a8f96 },
       },
       // 白底产品照（参考图主体裁：无缝白背景 + 柔和接触阴影 + 极淡倒影）
@@ -137,7 +138,7 @@
       // 中性灰（桌面场景/带环境反射的那类参考图）
       grey: {
         bg: 0x9aa0a6, bgGrad: [0xb9bfc5, 0x7d8288], ground: 0x8e9399, groundRough: 0.42, groundMetal: 0.0,
-        shadow: 0.44, refl: 0.13, exposure: 0.93,
+        groundOpacity: 0.80, shadow: 0.44, refl: 0.16, exposure: 0.93,
         env: { room: 0x24262a, key: 5.0, keyW: 2.6, keyH: 1.0, sideL: 1.25, sideR: 1.0, back: 1.8, floor: 0.8, floorCol: 0xd8dce0 },
       },
     }
@@ -397,6 +398,47 @@
       // 视角表用绝对坐标（模型尺寸固定）；bbox 仅记录到 HUD 供核对
       hud.textContent = 'photo mode ready · ' + groups.size + ' materials · ' +
         (F.length / 3) + ' tris · bbox ' + sz.x.toFixed(2) + '×' + sz.y.toFixed(2) + '×' + sz.z.toFixed(2)
+      // ---------- 上盖拆分：上盖是刚体，页面绕转轴旋转即可开盖/合盖 ----------
+      // mesh JSON 的 lid = {from,to,hingeY,hingeZ,angle}（page-mesh.mjs 用「同参数再建一次 0° 姿态、
+      // 逐顶点比对」标出来，并按部件隔离焊接，保证区间连续、无跨部件三角）。
+      // 局部坐标 = R(-A)·(p - hinge)，挂在 hinge 处的一个 Group 上；开合只改 group.rotation.x
+      // （与 geometry.ts 的 xf 同式：R(φ): y'=y cosφ + z sinφ, z'=-y sinφ + z cosφ → THREE 用 -φ）。
+      var lidGroup = null, lidAngle0 = 0
+      if (data.lid && data.lid.to > data.lid.from) {
+        var LID = data.lid
+        lidAngle0 = LID.angle || 0
+        lidGroup = new THREE.Group()
+        lidGroup.position.set(0, LID.hingeY, LID.hingeZ)
+        var ra = lidAngle0 * Math.PI / 180, ca = Math.cos(ra), sa = Math.sin(ra)
+        var kids = root.children.slice()
+        kids.forEach(function (m) {
+          var g = m.geometry, pa = g.getAttribute('position'), ix = g.getIndex()
+          if (!pa || !ix) return
+          var src = ix.array, body = [], lid = []
+          for (var t = 0; t < src.length; t += 3) {
+            var a = src[t], b = src[t + 1], c = src[t + 2]
+            if (a >= LID.from && a < LID.to && b >= LID.from && b < LID.to && c >= LID.from && c < LID.to) lid.push(a, b, c)
+            else body.push(a, b, c)
+          }
+          if (!lid.length) return
+          g.setIndex(body)
+          var lp = pa.array.slice()
+          for (var i = LID.from; i < LID.to; i++) {
+            var py = lp[i * 3 + 1] - LID.hingeY, pz = lp[i * 3 + 2] - LID.hingeZ
+            lp[i * 3 + 1] = py * ca - pz * sa
+            lp[i * 3 + 2] = py * sa + pz * ca
+          }
+          var lg = new THREE.BufferGeometry()
+          lg.setAttribute('position', new THREE.BufferAttribute(lp, 3))
+          if (g.getAttribute('uv')) lg.setAttribute('uv', g.getAttribute('uv'))
+          lg.setIndex(lid)
+          lg.computeVertexNormals()
+          lidGroup.add(new THREE.Mesh(lg, m.material))
+        })
+        root.add(lidGroup)
+        window.__lidGroup = lidGroup
+        window.__lidMeta = { from: LID.from, to: LID.to, angle0: lidAngle0, hingeY: LID.hingeY, hingeZ: LID.hingeZ }
+      }
       // 倒影副本（低不透明度；材质克隆避免共享）
       root.children.forEach(function (ch) {
         if (!ch.isMesh) return
@@ -406,6 +448,19 @@
         var r = new THREE.Mesh(ch.geometry, mm)
         reflGroup.add(r)
       })
+      // 上盖倒影：整组克隆（转轴姿态由 setLid 同步到两个 group）
+      if (lidGroup) {
+        var rg = new THREE.Group()
+        rg.position.copy(lidGroup.position)
+        rg.rotation.copy(lidGroup.rotation)
+        lidGroup.children.forEach(function (m) {
+          var mm2 = m.material.clone()
+          mm2.transparent = true; mm2.opacity = 0.11; mm2.side = THREE.DoubleSide; mm2.depthWrite = false
+          rg.add(new THREE.Mesh(m.geometry, mm2))
+        })
+        reflGroup.add(rg)
+        window.__lidReflGroup = rg
+      }
       window.__photo.ready = true
       mark('t_mesh_built')
       // 预编译所有材质 program（14 材质 + 倒影克隆 ≈ 28 个 program，集显上首次编译要 ~1.6s；
@@ -499,9 +554,17 @@
       ground.material.color.setHex(p.ground)
       ground.material.roughness = p.groundRough
       ground.material.metalness = p.groundMetal
+      // 地面透明度：不透明地面会把 y<0 的倒影组整个挡住（实测 refl=0 与 0.45 逐像素完全相同）。
+      // 半透明地面 = 真机产品照里那种「玻璃台面上的半透明镜像」（用户点名喜欢的那个效果）。
+      var gop = p.groundOpacity == null ? 1 : p.groundOpacity
+      ground.material.transparent = gop < 0.999
+      ground.material.opacity = gop
       ground.material.needsUpdate = true
       if (shadowMesh) shadowMesh.material.opacity = p.shadow
-      reflGroup.children.forEach(function (ch) { if (ch.material) ch.material.opacity = p.refl })
+      reflGroup.children.forEach(function (ch) {
+        if (ch.material) ch.material.opacity = p.refl
+        if (ch.children) ch.children.forEach(function (c2) { if (c2.material) c2.material.opacity = p.refl })
+      })
       if (typeof POST !== 'undefined' && POST) POST.exposure = p.exposure
       bakeEnv(scaleEnv(p.env, ENV_SCALE))
       render()
@@ -569,9 +632,24 @@
     }
 
     // ---------- 对外 API ----------
+    // 屏幕网格定位：上盖拆分后屏幕三角形都在 lidGroup 里（局部坐标），
+    // 所以必须递归找、并且取三角形最多的那块（0x191919 也被别的小件复用）。
+    function findScreenMesh() {
+      var sm = null, best = -1
+      root.traverse(function (c) {
+        if (!c.isMesh || !c.material || !c.material.color) return
+        if (c.material.color.getHex() !== 0x191919) return
+        if (!c.geometry.attributes.uv) return
+        var n = c.geometry.index ? c.geometry.index.count : c.geometry.attributes.position.count
+        if (n > best) { best = n; sm = c }
+      })
+      return sm
+    }
+
     window.__photo = {
       ready: false,
       views: Object.keys(VIEWS),
+      viewTable: VIEWS,            // 机位表本体（demo-record 等工具要用真实参数，不是只有名字）
       presets: Object.keys(PRESETS),
       // 调试/QA 用（page-probe 读材质表与包围盒；不影响渲染）
       scene: scene,
@@ -586,17 +664,12 @@
       // 屏幕活动区四角在**当前视口**的像素坐标 + 对应 UV（跨视角一致性比对用：
       // 把各视角的屏幕区域透视矫正到同一张「内容空间」再比像素，grazing 视角也能比）
       screenQuad: function () {
-        var sm = null
-        root.children.forEach(function (c) {
-          if (!c.isMesh || !c.material || !c.material.color) return
-          if (c.material.color.getHex() !== 0x191919) return
-          if (!c.geometry.attributes.uv) return      // 0x191919 可能被别的件复用（无 UV）→ 必须挑屏幕那块
-          sm = c
-        })
+        var sm = findScreenMesh()
         if (!sm) return null
         var g = sm.geometry, pos = g.attributes.position.array, uv = g.attributes.uv.array
         var idx = g.index ? g.index.array : null
         var n = idx ? idx.length : pos.length / 3
+        sm.updateMatrixWorld(true)
         // 四角 = UV 极值顶点（比"最近 UV 角点"稳：不受共享顶点数组/焊接影响）
         // (0,0)=min(u+v)  (1,0)=max(u-v)  (1,1)=max(u+v)  (0,1)=min(u-v)
         var best = [{ d: 1e9, vi: -1 }, { d: -1e9, vi: -1 }, { d: -1e9, vi: -1 }, { d: 1e9, vi: -1 }]
@@ -615,7 +688,8 @@
         for (var j2 = 0; j2 < 4; j2++) {
           var vv = best[j2].vi
           if (vv < 0) return null
-          world.push(new THREE.Vector3(pos[vv * 3], pos[vv * 3 + 1], pos[vv * 3 + 2]))
+          // 屏幕在 lidGroup 里时顶点是**上盖局部坐标** → 必须过 matrixWorld 才是世界坐标
+          world.push(new THREE.Vector3(pos[vv * 3], pos[vv * 3 + 1], pos[vv * 3 + 2]).applyMatrix4(sm.matrixWorld))
           v3.copy(world[j2]).project(camera)
           out.push({
             u: want[j2][0], v: want[j2][1],
@@ -627,28 +701,26 @@
         var ctr = world[0].clone().add(world[1]).add(world[2]).add(world[3]).multiplyScalar(0.25)
         var dir = ctr.clone().sub(camera.position).normalize()
         var rc = new THREE.Raycaster(camera.position, dir, 0.001, 100)
-        var hits = rc.intersectObjects(root.children, false)
+        var hits = rc.intersectObjects(root.children, true)   // true=递归（上盖是子 Group）
         if (!hits.length || hits[0].object !== sm) return null
         return out
       },
       screenBox: function () {
-        var sm = null
-        root.children.forEach(function (c) {
-          if (c.isMesh && c.material && c.material.color && c.material.color.getHex() === 0x191919) sm = c
-        })
+        var sm = findScreenMesh()
         if (!sm) return null
         var g = sm.geometry, pos = g.attributes.position.array
+        sm.updateMatrixWorld(true)
         var bb = { min: new THREE.Vector3(1e9, 1e9, 1e9), max: new THREE.Vector3(-1e9, -1e9, -1e9) }
         var idx = g.index ? g.index.array : null
         var n = idx ? idx.length : pos.length / 3
+        var v = new THREE.Vector3()
         for (var k = 0; k < n; k++) {
           var vi = (idx ? idx[k] : k) * 3
-          var px = pos[vi], py = pos[vi + 1], pz = pos[vi + 2]
-          if (px < bb.min.x) bb.min.x = px; if (px > bb.max.x) bb.max.x = px
-          if (py < bb.min.y) bb.min.y = py; if (py > bb.max.y) bb.max.y = py
-          if (pz < bb.min.z) bb.min.z = pz; if (pz > bb.max.z) bb.max.z = pz
+          v.set(pos[vi], pos[vi + 1], pos[vi + 2]).applyMatrix4(sm.matrixWorld)
+          if (v.x < bb.min.x) bb.min.x = v.x; if (v.x > bb.max.x) bb.max.x = v.x
+          if (v.y < bb.min.y) bb.min.y = v.y; if (v.y > bb.max.y) bb.max.y = v.y
+          if (v.z < bb.min.z) bb.min.z = v.z; if (v.z > bb.max.z) bb.max.z = v.z
         }
-        var v = new THREE.Vector3()
         var pts = []
         for (var i = 0; i < 8; i++) {
           v.set(i & 1 ? bb.max.x : bb.min.x, i & 2 ? bb.max.y : bb.min.y, i & 4 ? bb.max.z : bb.min.z).project(camera)
@@ -689,6 +761,37 @@
         return { view: name, w: canvas.width, h: canvas.height, seed: shotSeed, post: JSON.parse(JSON.stringify(POST)) }
       },
       hud: function (on) { hud.style.display = on ? '' : 'none' },
+      // ---------- 演示视频用：开盖 / 亮屏 / 倒影强度 / 线框 ----------
+      // 开盖：上盖是刚体，绕转轴旋转即可。theta=0 闭合、100 全开（= 网格姿态）。
+      // 与 geometry.ts 的 xf 同式：世界 = R(θ)·局部 + hinge；THREE 的 rotation.x 取 -θ。
+      setLid: function (deg) {
+        var lg = window.__lidGroup
+        if (!lg) return null
+        var r = -deg * Math.PI / 180
+        lg.rotation.x = r
+        if (window.__lidReflGroup) window.__lidReflGroup.rotation.x = r
+        return deg
+      },
+      lidRange: function () { return window.__lidMeta || null },
+      // 亮屏：屏幕材质是 emissive；0=全黑，1.4=标定亮度（对贴图实测 222 均值）
+      screenOn: function (k) {
+        if (!window.__screenMat) return null
+        window.__screenMat.emissiveIntensity = k
+        return k
+      },
+      // 倒影（用户点名喜欢的「半透明镜像」）：0..1
+      reflOpacity: function (k) {
+        reflGroup.children.forEach(function (ch) {
+          if (ch.material) ch.material.opacity = k
+          if (ch.children) ch.children.forEach(function (c2) { if (c2.material) c2.material.opacity = k })
+        })
+        return k
+      },
+      // 线框（演示「渲染」过程用）
+      wireframe: function (on) {
+        root.traverse(function (c) { if (c.isMesh && c.material) c.material.wireframe = !!on })
+        return on
+      },
       cam: function (o) {              // 任意机位（排查用）：{azim,elev,dist,target,fov}
         hud.style.display = 'none'
         var v = { azim: o.azim || 0, elev: o.elev || 0, dist: o.dist || 0.6, fov: o.fov || 30,

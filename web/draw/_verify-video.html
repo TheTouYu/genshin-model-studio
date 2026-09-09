@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="zh">
+<head><meta charset="utf-8"><title>demo video verify</title>
+<style>body{margin:0;background:#111;color:#ccc;font:14px/1.5 monospace}#canvas{display:block;width:1280px;height:720px}</style>
+</head>
+<body>
+<!-- 录完的 WebM 回放自检页：video → canvas，page-probe 的 shoot() 直接抓 #canvas。
+     为什么需要它：本机没有 ffmpeg/ffprobe，唯一能证明「录出来的文件真的能解码」的办法
+     就是让浏览器自己解一遍，然后逐帧取图核对。 -->
+<video id="v" src="./_demo.webm" preload="auto" muted playsinline style="position:absolute;left:-9999px"></video>
+<canvas id="canvas" width="1280" height="720"></canvas>
+<script>
+  var v = document.getElementById('v')
+  var c = document.getElementById('canvas')
+  var g = c.getContext('2d')
+  function draw() { g.drawImage(v, 0, 0, c.width, c.height) }
+  window.__v = {
+    ready: false,
+    load: function () {
+      return new Promise(function (res, rej) {
+        function ok() {
+          window.__v.ready = true
+          v.currentTime = 0
+          res({ dur: v.duration, w: v.videoWidth, h: v.videoHeight, err: null })
+        }
+        if (v.readyState >= 2) return ok()
+        v.onloadeddata = ok
+        v.onerror = function () { rej(new Error('video load error: ' + (v.error && v.error.message))) }
+        setTimeout(function () { if (v.readyState < 2) rej(new Error('timeout readyState=' + v.readyState)) }, 20000)
+      })
+    },
+    seek: function (t) {
+      return new Promise(function (res) {
+        v.onseeked = function () { draw(); res({ t: v.currentTime, ok: true }) }
+        v.currentTime = t
+      })
+    },
+    frame: function (t) { v.currentTime = t; return new Promise(function (res) { v.onseeked = function () { draw(); res(t) } }) },
+    draw: draw,
+    // 全片内容地图：播放一遍，每 0.4 s 抓一张 320×180 缩略图（内存友好），返回 {t, png}[]
+    // ⚠️ 必须先把标签页带到前台：Chrome 会「暂停后台的 video-only 媒体以省电」，
+    // 报错 AbortError: The play() request was interrupted because video-only background media
+    // was paused to save power —— 后台标签里播到一半就停，抓帧循环随之卡住（踩过）。
+    mapCapture: function () {
+      return new Promise(function (res) {
+        var small = document.createElement('canvas')
+        small.width = 320; small.height = 180
+        var sg = small.getContext('2d')
+        var snaps = []
+        v.currentTime = 0
+        var kick = function () { var p = v.play(); if (p && p.catch) p.catch(function () {}) }
+        kick()
+        var iv = setInterval(function () {
+          if (v.paused && !v.ended) kick()          // 被省电暂停 → 立刻续播
+          var t = v.currentTime
+          sg.drawImage(v, 0, 0, 320, 180)
+          snaps.push({ t: +t.toFixed(2), png: small.toDataURL('image/jpeg', 0.6) })
+          if (v.ended || t >= v.duration - 0.02) { clearInterval(iv); res(snaps) }
+        }, 400)
+      })
+    },
+    meta: function () { return { dur: v.duration, w: v.videoWidth, h: v.videoHeight, rs: v.readyState } },
+    // 音频自检：把录出来的 WebM 解成 PCM，量峰值/RMS/逐秒能量——证明音轨真的录进去了且不削波
+    analyze: function () {
+      return fetch('./_demo.webm').then(function (r) { return r.arrayBuffer() }).then(function (buf) {
+        var ac = new AudioContext()
+        return ac.decodeAudioData(buf).then(function (ab) {
+          var ch = ab.getChannelData(0)
+          var peak = 0, sum = 0
+          for (var i = 0; i < ch.length; i++) { var a = Math.abs(ch[i]); if (a > peak) peak = a; sum += ch[i] * ch[i] }
+          var perSec = []
+          var sr = ab.sampleRate
+          for (var s = 0; s + sr <= ch.length; s += sr) {
+            var p = 0, r2 = 0
+            for (var k = 0; k < sr; k++) { var x = ch[s + k]; var ax = x < 0 ? -x : x; if (ax > p) p = ax; r2 += x * x }
+            perSec.push({ s: s / sr, peak: +p.toFixed(3), rms: +Math.sqrt(r2 / sr).toFixed(4) })
+          }
+          return { dur: +ab.duration.toFixed(2), channels: ab.numberOfChannels, sampleRate: sr,
+                   peak: +peak.toFixed(3), rms: +Math.sqrt(sum / ch.length).toFixed(4), perSec: perSec }
+        })
+      })
+    }
+  }
+</script>
+</body>
+</html>
