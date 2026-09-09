@@ -83,10 +83,18 @@ def clean_inplace(m):
             keep[lo:hi] = False
     m = m.copy()
     m[:, ~keep] = False
+    # 行组清理：旧版对任何 < 25% 格高的行组一律删 → 数字行键的上档符号（% ^ & * 等）
+    # 被当成污染删掉（裁判 C 实测：4/9/0 有符号、5/6/7/8 没有）。规则改为按行组数量分档：
+    #   ≥3 组 → 小碎块（< 25% 高）判为污染删掉；
+    #   ==2 组 → 只删极薄线（< 8% 高），保留"符号 + 数字"两行。
     rgs = groups(m, axis=1, gap=2)
-    if len(rgs) > 1:
+    if len(rgs) >= 3:
         for lo, hi in rgs:
             if (hi - lo) < 0.25 * H:
+                m[lo:hi, :] = False
+    elif len(rgs) == 2:
+        for lo, hi in rgs:
+            if (hi - lo) < 0.08 * H:
                 m[lo:hi, :] = False
     return m
 

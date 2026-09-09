@@ -197,6 +197,8 @@
         return new THREE.MeshPhysicalMaterial({
           color: col, metalness: 0.05, roughness: 0.45, envMapIntensity: 0.7, side: THREE.DoubleSide,
           emissive: new THREE.Color(0x16264a), emissiveIntensity: 0.5,
+          // 玻璃盖板：真机屏幕在影棚里必然映出柔光箱（眩光）。旧版纯 emissive = 贴纸感。
+          clearcoat: 0.85, clearcoatRoughness: 0.08,
         })
       }
       // 键帽 PBT 微磨砂：参考图 键盘和触控板.png 键帽顶面 36–48（p5 21 / p95 49 有光泽梯度），
