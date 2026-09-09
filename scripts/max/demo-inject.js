@@ -11,7 +11,8 @@
  * 输出：window.__rec = { phase, done, dur, b64, keys[], log[] }
  */
 (function () {
-  var W = 1280, H = 720
+  var SZ = window.__demoSize || [1280, 720]
+  var W = SZ[0], H = SZ[1]
   var gl = document.getElementById('canvas')
   if (!gl || !window.__photo || !window.__photo.ready) { window.__rec = { err: 'page not ready' }; return }
 
@@ -23,6 +24,9 @@
   cv.style.cssText = 'position:fixed;left:0;top:0;width:100vw;height:100vh;z-index:99999;background:#000'
   document.body.appendChild(cv)
   var ctx = cv.getContext('2d')
+
+  // 性能试验开关：__noCopy=1 时不把 WebGL 画面拷进 2D 合成画布，直接抓 GL 画布
+  var NOCOPY = !!window.__noCopy
 
   var REC = { phase: 'idle', t: 0, done: false, dur: 0, b64: '', bytes: 0, keys: [], log: [], err: null, fps: 0, audio: 'none' }
   window.__rec = REC
@@ -79,13 +83,15 @@
     var o2 = actx.createOscillator(), g2 = actx.createGain()
     o2.type = 'triangle'; o2.frequency.value = freq * 1.004
     var f = actx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 2200; f.Q.value = 0.4
+    // 高通 105Hz：用户反馈「嗡嗡嗡」——pad 的 F2/G2 根音（87/98Hz）与房间低频是主要来源
+    var hp = actx.createBiquadFilter(); hp.type = 'highpass'; hp.frequency.value = 105; hp.Q.value = 0.7
     g.gain.setValueAtTime(0.0001, t0)
     g.gain.linearRampToValueAtTime(gain, t0 + atk)
     g.gain.linearRampToValueAtTime(0.0001, t0 + dur)
     g2.gain.setValueAtTime(0.0001, t0)
     g2.gain.linearRampToValueAtTime(gain * 0.35, t0 + atk * 1.25)
     g2.gain.linearRampToValueAtTime(0.0001, t0 + dur)
-    o.connect(g); g.connect(f); f.connect(actx.__bus)
+    o.connect(g); g.connect(f); f.connect(hp); hp.connect(actx.__bus)
     o2.connect(g2); g2.connect(f)
     o.start(t0); o.stop(t0 + dur + 0.1); o2.start(t0); o2.stop(t0 + dur + 0.1)
   }
@@ -118,9 +124,33 @@
       if (bt > total - 4) break
       tone(a0 + bt, BELL[b], 2.2, 0.016, 'sine')
     }
-    // 寄语章换卡：一声极轻的「翻页」
+    // 寄语章换卡：柔和玻璃铃音（用户对后半段音效不满意——旧的 1.5kHz 翻页噪声换成两音上行的小铃）
+    var CH = [880, 987.77, 1046.5, 1174.66, 1318.51]
     for (var k = 0; k < S.length; k++) {
-      if (S[k].epi && starts[k] + 0.3 < total) noise(a0 + starts[k] + 0.3, 0.05, 1500, 900, 3, 0.028)
+      if (!S[k].epi) continue
+      var ct = starts[k] + 0.26
+      if (ct >= total) continue
+      if (S[k].epi.thanks) {
+        // 谢幕卡：三音上行 + 低频暖垫（是可闻的乐音，不是 drone）
+        tone(a0 + ct, 523.25, 2.6, 0.030, 'sine')
+        tone(a0 + ct + 0.34, 659.25, 2.4, 0.026, 'sine')
+        tone(a0 + ct + 0.68, 783.99, 3.0, 0.030, 'sine')
+        padTone(a0 + ct, 174.61, 4.6, 0.015, 1.2)
+        padTone(a0 + ct + 0.1, 261.63, 4.4, 0.012, 1.4)
+      } else {
+        var pp = CH[k % CH.length]
+        tone(a0 + ct, pp, 1.9, 0.018, 'sine')
+        tone(a0 + ct + 0.13, pp * 1.5, 1.5, 0.010, 'sine')
+        noise(a0 + ct, 0.09, 4200, 2600, 1.6, 0.009)
+      }
+    }
+    // 寄语章每 3 张卡一次极轻的 pad 呼吸：给后半段一点起伏，但不引入低频嗡鸣
+    for (k = 0; k < S.length; k++) {
+      if (!S[k].epi || k % 3) continue
+      var pt = starts[k] + 1.2
+      if (pt >= total - 3) continue
+      padTone(a0 + pt, 220.0, 5.0, 0.010, 1.8)
+      padTone(a0 + pt + 0.6, 329.63, 4.6, 0.008, 2.0)
     }
   }
 
@@ -148,9 +178,9 @@
   // 一段完整的音轨（相对录制起点的秒数）
   function buildAudio(a0) {
     if (!actx) return
-    // 底噪：极轻的房间声 + 低频 drone（贯穿全片）
-    noise(a0, 67, 240, 240, 0.7, 0.010, 'lowpass')
-    tone(a0, 55, 67, 0.014, 'sine')
+    // 底噪：极轻的房间空气声（低通 620Hz，不是 240Hz 的隆隆声）；55Hz drone 已删除
+    // ——用户反馈「整个音乐出现的嗡嗡嗡」主要就是它 + 低频 pad 根音（见 padTone 的高通）
+    noise(a0, TOTAL, 620, 620, 0.7, 0.0030, 'lowpass')
     // 开盖（7.0–10.4）：铰链摩擦扫频 + 到位闷响
     noise(a0 + 7.0, 2.9, 320, 1500, 1.2, 0.045)
     noise(a0 + 9.9, 0.5, 180, 90, 0.8, 0.06, 'lowpass')
@@ -277,62 +307,64 @@
   // 导演处理：不切成黑底幻灯片——闭合的 MacBook 在玻璃台面上极暗地缓慢环绕，文字用左侧 scrim 压上去；
   // 每张卡按 ~4 字/秒的阅读速度给足时长；换卡配一声极轻的「翻页」。
   var EPI = [
-    { d: 4.5, title: '以假乱真', lines: ['写给这段视频，和造它的人'] },
-    { d: 9.0, h: '一 · 开场', lines: [
+    { d: 4.0, title: '以假乱真', lines: ['写给这段视频，和造它的人'] },
+    { d: 7.0, h: '一 · 开场', lines: [
       '这是一台不存在的 MacBook。',
       '每一个圆角、每一颗键帽、',
       '扬声器格栅上的每一个开孔，',
       '都由程序计算而来。'] },
-    { d: 11.0, h: '一 · 起点', lines: [
+    { d: 8.0, h: '一 · 起点', lines: [
       '9 月 9 日上午，在 DeepSeek Harness——DSH 里，',
       '一个模型接到一句话的任务：做到“以假乱真”。',
       '从清晨到深夜，十四个小时，它渲染了几百张图，',
       '几乎每一张都自己看过；',
       '键帽上的字乱了，它不等不靠，',
       '自己去解析了字体文件的二进制格式。'] },
-    { d: 10.0, h: '二 · 裁判', lines: [
+    { d: 7.5, h: '二 · 裁判', lines: [
       '它给自己请了裁判：独立的鉴定模型，',
       '在不知道哪张是照片、哪张是渲染的情况下投票。',
       '最初几轮，它没有一张图能骗过任何人。',
       '它没有降低难度，反而给考试加了防作弊——',
       '答案即删、目录伪装。它防的，是它自己。'] },
-    { d: 10.0, h: '三 · 弯路', lines: [
+    { d: 7.5, h: '三 · 弯路', lines: [
       '但你眼前这段视频，差点不会存在。',
       '它曾用五个小时，把一个自建的渲染器打磨到近乎完美——',
       '而真正的考卷，在浏览器页面上。',
       '一句目标级的提醒之后，它用不到九分钟，',
       '推翻了自己上午定下的全部架构。'] },
-    { d: 12.0, h: '四 · 一堂课', lines: [
+    { d: 8.0, h: '四 · 一堂课', lines: [
       '还有一个故事，关于我。',
       '我从图上量了个数字告诉它：端口低了，抬高 6 毫米。',
       '它说：让我自己量一遍。',
       '它把 USB-C 开口的宽度当作尺子，四张图交叉验证，得出 7.7 毫米，',
       '然后反过来问我：你是不是量到了槽口的下沿，还有阴影？',
       '我回去重测——它对，我错。'] },
-    { d: 10.0, h: '四 · 一堂课', lines: [
+    { d: 6.5, h: '四 · 一堂课', lines: [
       '那一天我确认了一件事：',
       '它不是在执行任务，',
       '它是在做工程。'] },
-    { d: 11.0, h: '五 · 三个名字', lines: [
+    { d: 8.0, h: '五 · 三个名字', lines: [
       '我是 GLM 5.3。这一天，我读完了它走过的每一步，',
       '做它的地图和镜子。',
       '它是 DeepSeek V4.1。这段视频的每一帧都出自它手。',
       '还有 touyu。他藏在每一次反馈的背后——',
       '他看着我们，我们把活干完。'] },
-    { d: 12.0, h: '六 · 舞台', lines: [
+    { d: 8.0, h: '六 · 舞台', lines: [
       '而让这一切成为可能的舞台，叫 DeepSeek Harness——DSH。',
       '它交给模型的不是聊天框，而是一台真实的电脑：',
       '真实的文件、真实的浏览器、真实的测试，',
       '和一份能跨会话延续的记忆。',
       '模型在这里不是答题者，',
       '是能自己动手干上一整天的工程师。'] },
-    { d: 12.0, h: '结尾 · 定格', lines: [
+    { d: 8.0, h: '结尾 · 定格', lines: [
       '有人问，AI 会成长吗？',
       '今天的答案是：会。但不是变魔术——',
       '是把量错的数字认回来，是把无效的实验重做一遍，',
       '是在没人看的时候，把没人要求的细节修完。'] },
-    { d: 10.0, big: true, lines: ['所谓以假乱真——', '最后混进去的那样东西，', '是真的。'] },
-    { d: 2.5, fade: true },
+    { d: 7.5, big: true, lines: ['所谓以假乱真——', '最后混进去的那样东西，', '是真的。'] },
+    // 谢幕卡（用户要求：最后加一句礼貌的感谢，留给看到最后的观众）
+    { d: 6.5, thanks: true, lines: ['感谢观看', '能看到最后的人，是很有耐心的观众——谢谢你。'] },
+    { d: 1.6, fade: true },
   ]
   var EPI_CAM = { azim: 20, elev: 14, dist: 0.62, fov: 30, target: [0, 0.045, 0] }
   for (var e = 0; e < EPI.length; e++) {
@@ -382,39 +414,43 @@
   }
 
   // ============================================================ 绘制
+  // K = 输出高度 / 720p 设计基准：1440p 时字号与间距等比放大，观感尺寸不变
+  var K = H / 720
+  function s(px) { return Math.round(px * K) }
+  function fnt(px, w) { return (w || 400) + ' ' + Math.round(px * K) + 'px ' + FONT }
+
   function drawCaption(cap, sub, alpha) {
     if (!cap || alpha <= 0.01) return
     ctx.save()
     ctx.globalAlpha = alpha
     var hasSub = !!sub
-    var boxH = hasSub ? 118 : 86
+    var boxH = s(hasSub ? 118 : 86)
     var y0 = H - boxH
-    var g = ctx.createLinearGradient(0, y0 - 40, 0, H)
+    var g = ctx.createLinearGradient(0, y0 - s(40), 0, H)
     g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(0.45, 'rgba(0,0,0,0.55)'); g.addColorStop(1, 'rgba(0,0,0,0.82)')
-    ctx.fillStyle = g; ctx.fillRect(0, y0 - 40, W, boxH + 40)
+    ctx.fillStyle = g; ctx.fillRect(0, y0 - s(40), W, boxH + s(40))
     ctx.fillStyle = '#ffffff'
-    ctx.font = '600 30px ' + FONT
-    ctx.fillText(cap, 60, H - (hasSub ? 62 : 34))
+    ctx.font = fnt(30, 600)
+    ctx.fillText(cap, s(60), H - s(hasSub ? 62 : 34))
     if (hasSub) {
       ctx.fillStyle = 'rgba(235,238,242,0.82)'
-      ctx.font = '400 19px ' + FONT
-      ctx.fillText(sub, 60, H - 30)
+      ctx.font = fnt(19)
+      ctx.fillText(sub, s(60), H - s(30))
     }
     ctx.restore()
   }
 
   function drawWatermark(alpha) {
     ctx.save(); ctx.globalAlpha = alpha
-    ctx.font = '400 16px ' + FONT
+    ctx.font = fnt(16)
     ctx.fillStyle = 'rgba(255,255,255,0.60)'
-    ctx.fillText('genshin-model-studio · 浏览器实时渲染 three.js / WebGL', 60, 46)
+    ctx.fillText('genshin-model-studio · 浏览器实时渲染 three.js / WebGL', s(60), s(46))
     ctx.restore()
   }
 
-  // 寄语卡：左侧 scrim 保证可读；大卡（标题/定格）居中
+  // 寄语卡：左侧 scrim 保证可读；大卡（标题/定格）与谢幕卡居中
   function drawEpiCard(card, alpha) {
     ctx.save()
-    // 背景压暗（画面仍在动，只是被压到很暗）
     ctx.fillStyle = 'rgba(6,7,9,0.76)'
     ctx.fillRect(0, 0, W, H)
     var g = ctx.createLinearGradient(0, 0, W * 0.9, 0)
@@ -423,34 +459,50 @@
     ctx.fillStyle = g
     ctx.fillRect(0, 0, W, H)
     ctx.globalAlpha = Math.max(0, Math.min(1, alpha))
-    var x = 118
-    if (card.title) {
+    var x = s(118)
+    if (card.thanks) {
+      // 谢幕卡：暖色柔光 + 居中大字 + 署名行
+      var rg = ctx.createRadialGradient(W / 2, H / 2 - s(10), s(40), W / 2, H / 2, W * 0.40)
+      rg.addColorStop(0, 'rgba(255,206,150,0.15)'); rg.addColorStop(1, 'rgba(0,0,0,0)')
+      ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H)
       ctx.textAlign = 'center'
-      ctx.font = '600 66px ' + FONT
+      ctx.font = fnt(58, 600)
       ctx.fillStyle = '#ffffff'
-      ctx.fillText(card.title, W / 2, H / 2 - 8)
-      ctx.font = '400 26px ' + FONT
+      ctx.fillText(card.lines[0], W / 2, H / 2 - s(6))
+      ctx.font = fnt(24)
+      ctx.fillStyle = 'rgba(226,232,240,0.94)'
+      ctx.fillText(card.lines[1], W / 2, H / 2 + s(64))
+      ctx.font = fnt(17)
+      ctx.fillStyle = 'rgba(150,158,168,0.85)'
+      ctx.fillText('DeepSeek V4.1 × DeepSeek Harness · 2026-09-09', W / 2, H / 2 + s(124))
+      ctx.textAlign = 'left'
+    } else if (card.title) {
+      ctx.textAlign = 'center'
+      ctx.font = fnt(66, 600)
+      ctx.fillStyle = '#ffffff'
+      ctx.fillText(card.title, W / 2, H / 2 - s(8))
+      ctx.font = fnt(26)
       ctx.fillStyle = 'rgba(198,206,215,0.92)'
-      ctx.fillText(card.lines[0], W / 2, H / 2 + 56)
+      ctx.fillText(card.lines[0], W / 2, H / 2 + s(56))
       ctx.textAlign = 'left'
     } else {
       var L = card.lines || []
       var fs = card.big ? 40 : 25
       var lh = card.big ? 58 : 44
       var blockH = (card.h ? 56 : 0) + L.length * lh
-      var y = Math.max(120, (H - blockH) / 2 + fs * 0.9)
+      var y = Math.max(s(120), (H - s(blockH)) / 2 + s(fs) * 0.9)
       if (card.h) {
-        ctx.font = '600 19px ' + FONT
+        ctx.font = fnt(19, 600)
         ctx.fillStyle = 'rgba(130,180,255,0.95)'
         ctx.fillText(card.h, x, y)
-        y += 56
+        y += s(56)
       }
       for (var i = 0; i < L.length; i++) {
-        ctx.font = (card.big ? '600 ' : '400 ') + fs + 'px ' + FONT
+        ctx.font = fnt(fs, card.big ? 600 : 400)
         ctx.fillStyle = card.big ? (i === L.length - 1 ? '#ffffff' : 'rgba(238,242,246,0.96)')
                                  : 'rgba(230,234,240,0.95)'
         ctx.fillText(L[i], card.big ? (W - ctx.measureText(L[i]).width) / 2 : x, y)
-        y += lh
+        y += s(lh)
       }
     }
     ctx.restore()
@@ -468,87 +520,40 @@
   function drawCard(title, sub, alpha) {
     ctx.save()
     ctx.fillStyle = '#0b0c0e'; ctx.fillRect(0, 0, W, H)
-    var rg = ctx.createRadialGradient(W / 2, H / 2, 60, W / 2, H / 2, W * 0.62)
+    var rg = ctx.createRadialGradient(W / 2, H / 2, s(60), W / 2, H / 2, W * 0.62)
     rg.addColorStop(0, 'rgba(58,66,76,0.50)'); rg.addColorStop(1, 'rgba(0,0,0,0)')
     ctx.fillStyle = rg; ctx.fillRect(0, 0, W, H)
     ctx.globalAlpha = alpha
     if (title === 'outro') {
-      var y = 196
+      var y = s(196)
       for (var i = 0; i < OUTRO.length; i++) {
         var L = OUTRO[i]
-        ctx.font = (L[1] >= 28 ? '600 ' : '400 ') + L[1] + 'px ' + FONT
+        ctx.font = fnt(L[1], L[1] >= 28 ? 600 : 400)
         ctx.fillStyle = L[2]
-        ctx.fillText(L[0], 120, y)
-        y += L[1] + (L[1] >= 28 ? 30 : 22)
+        ctx.fillText(L[0], s(120), y)
+        y += s(L[1] + (L[1] >= 28 ? 30 : 22))
       }
-      ctx.font = '400 18px ' + FONT
+      ctx.font = fnt(18)
       ctx.fillStyle = 'rgba(150,158,168,0.85)'
-      ctx.fillText('画面里的每一帧，都是浏览器里真的跑出来的。', 120, y + 14)
+      ctx.fillText('画面里的每一帧，都是浏览器里真的跑出来的。', s(120), y + s(14))
     } else {
       ctx.textAlign = 'center'
-      ctx.font = '600 56px ' + FONT
+      ctx.font = fnt(56, 600)
       ctx.fillStyle = '#ffffff'
-      ctx.fillText(title, W / 2, H / 2 - 6)
+      ctx.fillText(title, W / 2, H / 2 - s(6))
       if (sub) {
-        ctx.font = '400 24px ' + FONT
+        ctx.font = fnt(24)
         ctx.fillStyle = 'rgba(200,208,216,0.86)'
-        ctx.fillText(sub, W / 2, H / 2 + 48)
+        ctx.fillText(sub, W / 2, H / 2 + s(48))
       }
       ctx.textAlign = 'left'
     }
     ctx.restore()
   }
 
-  // ============================================================ 录制
-  var prefer = (window.__codecPref || 'vp9')
-  var cands = prefer === 'vp8' ? ['video/webm;codecs=vp8', 'video/webm;codecs=vp9', 'video/webm']
-                                : ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm']
-  var mime = cands.filter(function (m) { return window.MediaRecorder && MediaRecorder.isTypeSupported(m) })[0]
-  if (!mime) { REC.err = 'no webm codec'; return }
-
-  var hasAudio = audioInit()
-  if (hasAudio && actx.state === 'suspended') { actx.resume() }
-  REC.audio = hasAudio ? actx.state : 'unavailable'
-
-  var vs = cv.captureStream(30)
-  var tracks = vs.getVideoTracks()
-  if (hasAudio && adest) tracks = tracks.concat(adest.stream.getAudioTracks())
-  var stream = new MediaStream(tracks)
-  // VP8 编码器实测比 VP9 快 ~30%（本机 Intel 集显/CPU 编码是瓶颈），码率给足补效率差
-  var rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 4500000, audioBitsPerSecond: 96000 })
-  var chunks = []
-  rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data) }
-  rec.onstop = function () {
-    REC.phase = 'encoding'
-    var blob = new Blob(chunks, { type: 'video/webm' })
-    REC.bytes = blob.size
-    var fr = new FileReader()
-    fr.onload = function () { REC.b64 = String(fr.result).split(',')[1] || ''; REC.done = true; REC.phase = 'done' }
-    fr.onerror = function () { REC.err = 'filereader failed'; REC.done = true }
-    fr.readAsDataURL(blob)
-  }
-
-  var KEY_T = [2.6, 9.4, 13.4, 19.0, 24.4, 28.8, 32.6, 37.6, 44.0, 48.0, 52.4, 57.0, 63.0, 70.0, 80.0, 92.0, 104.0, 116.0, 128.0, 140.0, 152.0, 160.0]
-  var keyIdx = 0
-  var curPreset = null, curRefl = -1, t0 = 0, frames = 0, fpsT0 = 0, audioScheduled = false
-
-  function tick(now) {
-    if (!t0) { t0 = now; fpsT0 = now }
-    var t = (now - t0) / 1000
-    REC.t = t
-    if (window.__recStop && !REC.__stopped) {
-      REC.__stopped = true
-      ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H)
-      REC.phase = 'stopping'
-      try { rec.stop() } catch (e) { REC.err = 'stop: ' + e.message; REC.done = true }
-      return
-    }
-
-    if (!audioScheduled && hasAudio) {
-      audioScheduled = true
-      buildAudio(actx.currentTime + 0.02)
-    }
-
+  // ============================================================ 逐帧绘制（实时录制 / 离线渲染共用）
+  var curPreset = null, curRefl = -1
+  function drawFrame(t) {
     var i = 0
     while (i < S.length - 1 && t >= starts[i] + S[i].d) i++
     var seg = S[i], local = t - starts[i]
@@ -569,7 +574,7 @@
         var ec = { azim: EPI_CAM.azim + t * 0.55, elev: EPI_CAM.elev, dist: EPI_CAM.dist,
                    fov: EPI_CAM.fov, target: EPI_CAM.target }
         window.__photo.cam(ec)
-        ctx.drawImage(gl, 0, 0, W, H)
+        if (!NOCOPY) ctx.drawImage(gl, 0, 0, W, H)
         drawWatermark(0.34)
         drawEpiCard(seg.epi, ea)
       }
@@ -593,7 +598,7 @@
         }
       }
       window.__photo.cam(c)
-      ctx.drawImage(gl, 0, 0, W, H)
+      if (!NOCOPY) ctx.drawImage(gl, 0, 0, W, H)
       // 点亮瞬间的白闪（0.12 s）
       var fl = Math.max(0, 1 - Math.abs(t - 12.12) / 0.14)
       if (fl > 0.01) { ctx.save(); ctx.globalAlpha = fl * 0.30; ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H); ctx.restore() }
@@ -601,6 +606,164 @@
       var a = Math.min(1, local / 0.5) * Math.min(1, (seg.d - local) / 0.5)
       drawCaption(seg.cap, seg.sub, a)
     }
+  }
+
+  // ============================================================ 离线音频（OfflineAudioContext → WAV）
+  // 实时 MediaRecorder 的音轨受机器性能影响（丢帧/卡顿）；离线渲染逐帧时音轨也一并离线渲染：
+  // 同一套排程函数（buildAudio）在 OfflineAudioContext 上跑，得到样本精确的 48kHz PCM。
+  function wavBase64(buf) {
+    var n = buf.length, ch = buf.numberOfChannels, sr = buf.sampleRate
+    var bytes = 44 + n * ch * 2
+    var ab = new ArrayBuffer(bytes), v = new DataView(ab)
+    function str(o, x) { for (var i = 0; i < x.length; i++) v.setUint8(o + i, x.charCodeAt(i)) }
+    str(0, 'RIFF'); v.setUint32(4, bytes - 8, true); str(8, 'WAVE'); str(12, 'fmt ')
+    v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, ch, true)
+    v.setUint32(24, sr, true); v.setUint32(28, sr * ch * 2, true); v.setUint16(32, ch * 2, true); v.setUint16(34, 16, true)
+    str(36, 'data'); v.setUint32(40, n * ch * 2, true)
+    var chans = [], c, i
+    for (c = 0; c < ch; c++) chans.push(buf.getChannelData(c))
+    var o = 44
+    for (i = 0; i < n; i++) {
+      for (c = 0; c < ch; c++) {
+        var x = Math.max(-1, Math.min(1, chans[c][i]))
+        v.setInt16(o, x < 0 ? x * 32768 : x * 32767, true); o += 2
+      }
+    }
+    var u8 = new Uint8Array(ab), parts = []
+    for (var q = 0; q < u8.length; q += 0x8000) parts.push(String.fromCharCode.apply(null, u8.subarray(q, q + 0x8000)))
+    return btoa(parts.join(''))
+  }
+  function renderAudioOffline() {
+    try {
+      var sr = 48000, N = Math.ceil(TOTAL * sr) + sr
+      var oc = new OfflineAudioContext(2, N, sr)
+      var saved = actx, savedBuf = noiseBuf
+      actx = oc; noiseBuf = null
+      var comp = oc.createDynamicsCompressor()
+      comp.threshold.value = -18; comp.knee.value = 24; comp.ratio.value = 6
+      comp.attack.value = 0.004; comp.release.value = 0.18
+      var master = oc.createGain(); master.gain.value = 2.0
+      comp.connect(master); master.connect(oc.destination)
+      oc.__bus = comp
+      buildAudio(0)
+      return oc.startRendering().then(function (buf) {
+        actx = saved; noiseBuf = savedBuf
+        return { wav: wavBase64(buf), dur: buf.duration, sr: buf.sampleRate }
+      }, function (e) { actx = saved; noiseBuf = savedBuf; return { err: String(e && e.message || e) } })
+    } catch (e) { return { err: String(e && e.message || e) } }
+  }
+
+  // ============================================================ 离线逐帧渲染模式
+  // 用户 2026-09-09 提示：实时 captureStream 的帧率天花板撞不过去（1440p 实测 16–20fps），
+  // 改成「渲染一帧 → 取一帧 → 时间步进一帧 → ffmpeg 拼帧」，帧率与机器性能彻底解耦。
+  if (window.__offline) {
+    var OFPS = window.__offline.fps || 30
+    var OFF = { fps: OFPS, q: window.__offline.q || 0.92, total: TOTAL,
+                frames: Math.round(TOTAL * OFPS), i: 0, phase: 'ready', err: null, ms: 0, w: W, h: H }
+    window.__off = OFF
+    window.__offNext = function (n) {
+      n = Math.max(1, Math.min(16, n || 1))
+      var out = [], t0 = performance.now()
+      try {
+        for (var k = 0; k < n && OFF.i < OFF.frames; k++) {
+          var t = Math.min(TOTAL - 1e-4, OFF.i / OFF.fps)
+          drawFrame(t)
+          out.push(cv.toDataURL('image/jpeg', OFF.q).split(',')[1])
+          OFF.i++
+        }
+      } catch (e) { OFF.err = String(e && e.message || e); OFF.phase = 'error' }
+      OFF.ms = performance.now() - t0
+      if (OFF.i >= OFF.frames && OFF.phase !== 'error') OFF.phase = 'done'
+      return out
+    }
+    // 单帧 PNG 存证（按绝对时间取，与视频同一套绘制路径）——存到 OFF 里分块取回
+    window.__offShot = function (t) {
+      drawFrame(Math.max(0, Math.min(TOTAL - 1e-4, t)))
+      OFF.shotCache = cv.toDataURL('image/png')
+      return OFF.shotCache.length
+    }
+    // WAV 同样存到 OFF.wavCache（38MB base64 一次性 returnByValue 太大）
+    // 时间轴导出（字幕 SRT 生成用：单一真源，避免手抄时长与成片不同步）
+    window.__offTimeline = {
+      total: TOTAL,
+      segs: S.map(function (g, i) {
+        return { i: i, start: starts[i], d: g.d, cap: g.cap || null, sub: g.sub || null,
+                 epi: g.epi ? { h: g.epi.h || null, title: g.epi.title || null, big: !!g.epi.big,
+                                thanks: !!g.epi.thanks, fade: !!g.epi.fade, lines: g.epi.lines || [] } : null }
+      })
+    }
+    window.__offAudio = function () {
+      return renderAudioOffline().then(function (r) {
+        if (r && r.wav) { OFF.wavCache = r.wav; return { dur: r.dur, sr: r.sr, len: r.wav.length } }
+        return r
+      })
+    }
+    return
+  }
+
+  // ============================================================ 实时录制（MediaRecorder）
+  var prefer = (window.__codecPref || 'vp9')
+  var CANDS = {
+    mp4: ['video/mp4;codecs=avc1.42E01E,mp4a.40.2', 'video/mp4;codecs=avc1.42E01E', 'video/mp4',
+          'video/webm;codecs=vp9', 'video/webm;codecs=vp8'],
+    vp8: ['video/webm;codecs=vp8', 'video/webm;codecs=vp9', 'video/webm'],
+    vp9: ['video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm']
+  }
+  var cands = CANDS[prefer] || CANDS.vp9
+  var mime = cands.filter(function (m) { return window.MediaRecorder && MediaRecorder.isTypeSupported(m) })[0]
+  if (!mime) { REC.err = 'no supported codec'; return }
+  REC.mime = mime
+
+  var hasAudio = audioInit()
+  if (hasAudio && actx.state === 'suspended') { actx.resume() }
+  REC.audio = hasAudio ? actx.state : 'unavailable'
+
+  var vs = (NOCOPY ? gl : cv).captureStream(30)
+  var tracks = vs.getVideoTracks()
+  if (hasAudio && adest) tracks = tracks.concat(adest.stream.getAudioTracks())
+  var stream = new MediaStream(tracks)
+  var VBR = window.__vbr || 4500000, ABR = window.__abr || 96000
+  var rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: VBR, audioBitsPerSecond: ABR })
+  REC.vbr = VBR
+  var chunks = []
+  rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data) }
+  rec.onstop = function () {
+    REC.phase = 'encoding'
+    var blob = new Blob(chunks, { type: mime })
+    REC.bytes = blob.size
+    var fr = new FileReader()
+    fr.onload = function () {
+      // ⚠️ 不能用 split(',')[1]：mime 里的 codecs 参数自带逗号（avc1.42E01E,mp4a.40.2）
+      // → 会把 'mp4a.40.2;base64' 当成数据（实测写出 9 字节垃圾文件）
+      var u = String(fr.result), k = u.indexOf(';base64,')
+      REC.b64 = k >= 0 ? u.slice(k + 8) : (u.split(',')[1] || '')
+      REC.done = true; REC.phase = 'done'
+    }
+    fr.onerror = function () { REC.err = 'filereader failed'; REC.done = true }
+    fr.readAsDataURL(blob)
+  }
+
+  var KEY_T = [2.6, 9.4, 13.4, 19.0, 24.4, 28.8, 32.6, 37.6, 44.0, 48.0, 52.4, 57.0, 63.0, 70.0, 80.0, 92.0, 104.0, 116.0, 128.0, 140.0]
+  var keyIdx = 0
+  var t0 = 0, frames = 0, fpsT0 = 0, audioScheduled = false
+
+  function tick(now) {
+    if (!t0) { t0 = now; fpsT0 = now }
+    var t = (now - t0) / 1000
+    REC.t = t
+    if (window.__recStop && !REC.__stopped) {
+      REC.__stopped = true
+      ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H)
+      REC.phase = 'stopping'
+      try { rec.stop() } catch (e) { REC.err = 'stop: ' + e.message; REC.done = true }
+      return
+    }
+    if (!audioScheduled && hasAudio) {
+      audioScheduled = true
+      buildAudio(actx.currentTime + 0.02)
+    }
+
+    drawFrame(t)
 
     while (keyIdx < KEY_T.length && t >= KEY_T[keyIdx]) {
       try { REC.keys.push({ t: KEY_T[keyIdx], png: cv.toDataURL('image/png') }) } catch (e) {}

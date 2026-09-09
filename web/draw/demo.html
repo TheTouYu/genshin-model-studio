@@ -15,17 +15,17 @@
 <body>
 <div class="wrap">
   <h1>MacBook Pro 14" · 浏览器实时渲染演示</h1>
-  <div class="sub">2 分 55 秒 · 1280×720 · 前 61 秒是演示（开盖 / 亮屏 / 倒影 / 音效全部实时计算，非 AI 生成视频），后面是片尾寄语《以假乱真》</div>
+  <div class="sub">2 分 29 秒 · 2560×1440 @ 30 fps · 前 61 秒是演示（开盖 / 亮屏 / 倒影 / 音效全部实时计算，非 AI 生成视频），后面是片尾寄语《以假乱真》与谢幕卡</div>
   <video controls autoplay playsinline poster="./demo-poster.png">
     <source src="./demo-macbook.mp4" type="video/mp4">
-    <source src="./demo-macbook.webm" type="video/webm">
   </video>
   <div class="note">
     <b>这条片子里的每一帧都来自真实浏览器渲染</b>（本页的 three.js 场景 <a href="./photo.html">photo.html</a>
     被录制下来），模型是本项目生成的网格。开盖是上盖刚体绕转轴旋转，亮屏是屏幕材质发光强度关键帧，
     台面倒影是镜像组 + 半透明玻璃地面；音乐与音效由 WebAudio 现场合成，没有任何第三方素材。<br>
     分镜脚本 / 字幕 / 片尾寄语 / 自我介绍文案见 <code>delivery/demo-video/</code>。<br>
-    MP4 与 WebM 双版本；片尾寄语由 <b>GLM 5.3</b> 撰写，本片导演处理。
+    本版为<b>离线逐帧渲染</b>（1440p / 恒定 30 fps / 内部 2× 超采样），音轨由 OfflineAudioContext 离线渲染；
+    片尾寄语由 <b>GLM 5.3</b> 撰写，本片导演处理。
   </div>
 </div>
 </body>

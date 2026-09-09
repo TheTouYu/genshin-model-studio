@@ -658,7 +658,13 @@
       renderer: renderer,
       // 真 GPU 耗时测量：gl.finish() 强制同步（render() 的 JS 侧只提交命令，不等 GPU）
       gpuMs: gpuMs,
+      render: function () { render() },
       quality: function (q) { return setQuality(q) },
+      // 调试/录制用：直接设 RT 超采样倍率（1080p 输出时用它找「画质 vs 帧率」的拐点）
+      rtScale: function (k) {
+        if (k) { rtScale = Math.max(1, Math.min(4, Number(k) || 1)); if (rt) { rt.dispose(); rt = null } render() }
+        return rtScale
+      },
       // 屏幕活动区在**当前视口**的像素包围盒（跨视角一致性自检用：同一台真机所有视角
       // 屏幕内容必然一致，裁同一块区域比对；返回 null = 本视角看不到屏幕）
       // 屏幕活动区四角在**当前视口**的像素坐标 + 对应 UV（跨视角一致性比对用：
@@ -946,7 +952,8 @@
       if (rt) rt.dispose()
       var depth = new THREE.DepthTexture(tw, th)
       depth.type = THREE.UnsignedIntType
-      rt = new THREE.WebGLRenderTarget(tw, th, { type: THREE.HalfFloatType, depthTexture: depth, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter })
+      // samples>0 = MSAA（离线录制可开：rtScale 1 也能得到干净边缘）
+      rt = new THREE.WebGLRenderTarget(tw, th, { type: THREE.HalfFloatType, depthTexture: depth, minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, samples: (window.__rtSamples || 0) })
       postMat.uniforms.tDiffuse.value = rt.texture
       postMat.uniforms.tDepth.value = depth
       postMat.uniforms.uRes.value.set(w, h)

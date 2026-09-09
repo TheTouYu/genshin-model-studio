@@ -1,7 +1,8 @@
 # 演示视频 · 分镜脚本（可直接照做）
 
-> **2 分 55 秒（175.2 s）· 1280×720 · WebM(VP8+Opus) 35.7 MB / MP4(H.264+AAC) 14.7 MB**
-> 前 61.2 s 是产品演示（13 镜），后 114 s 是片尾寄语章《以假乱真》（GLM 5.3 撰文，12 张卡）
+> **2 分 29 秒（149.3 s）· 2560×1440 · MP4(H.264 CRF18 + AAC 48 kHz) 77.2 MB**
+> 前 61.2 s 是产品演示（13 镜），后 88.1 s 是片尾寄语章《以假乱真》（GLM 5.3 撰文，12 张卡 + 1 张谢幕卡）
+> v1 对照：1280×720 / 175.2 s / 14.7 MB（实时录制管线，见 `macbook-demo-720p.mp4`）
 > 机位参数全部取自 `web/draw/photo.html` 的 `VIEWS` 与实测标定；字幕里每个数字都能在
 > `reference/macbook/design-reference.md` / `src/model/macbook/spec.ts` / `delivery/*.md` 里查到。
 > 复现命令见 §4——**一条命令重跑整段**。
@@ -35,7 +36,7 @@
 | 10 | 46.2 – 51.2 | 闭合上盖俯视，Apple 标 | white | 平面圆角 R20 mm |
 | 11 | 51.2 – 55.2 | 底面：脚垫 + 刻蚀铭牌 | grey | 底盖：脚垫 4 × Ø15 mm 距边 22 mm |
 | 12 | 55.2 – 61.2 | 交互演示：持续环绕 + 缓慢推近 | dark | 拖动旋转 · 滚轮缩放 · Shift / 右键拖动平移 |
-| 13 | 61.2 – 175.2 | **片尾寄语章《以假乱真》**（12 张卡，见 `EPILOGUE.md`） | dark | 文字全文由 GLM 5.3 撰写；画面不切黑，闭合机身极暗缓慢环绕 |
+| 13 | 61.2 – 149.3 | **片尾寄语章《以假乱真》**（12 张卡 + 谢幕卡，见 `EPILOGUE.md`） | dark | 文字全文由 GLM 5.3 撰写；画面不切黑，闭合机身极暗缓慢环绕 |
 
 ---
 
@@ -97,11 +98,18 @@ node scripts/max/page-mesh.mjs --lod 1.0 --open 100 --out web/draw/macbook-curre
 .venv/bin/python scripts/max/make-kb-legends.py
 .venv/bin/python scripts/max/make-screen-from-ref.py
 
-# 3) 录制（需要 CDP 浏览器 127.0.0.1:9222 + 页面服务 localhost:8787）
-node scripts/max/demo-record.mjs --out delivery/demo-video/macbook-demo-raw.webm --codec vp8
+# 3) v2 成片：离线逐帧渲染（需要 CDP 浏览器 127.0.0.1:9222 + 页面服务 localhost:8787 + ffmpeg）
+#    页面渲染一帧 → JPEG → image2pipe → x264(CRF18)；音轨用 OfflineAudioContext 离线渲染
+node scripts/max/demo-offline.mjs --out delivery/demo-video/macbook-demo.mp4 \
+     --w 2560 --h 1440 --fps 30 --q 0.92 --rtscale 2 --crf 18 \
+     --shots delivery/demo-video/verify-frames-1440p
 
-# 4) 收尾（ffmpeg）：补容器时长 → 转 MP4 → 抽帧存证 → ffprobe 体检
+# 3b) v1 对照（实时录制，720p）：MediaRecorder + 补容器时长 + 转 MP4
+node scripts/max/demo-record.mjs --out delivery/demo-video/macbook-demo-raw.webm --codec vp8
 node scripts/max/video-post.mjs delivery/demo-video/macbook-demo-raw.webm --outdir delivery/demo-video
+
+# 4) 字幕（时间轴单一真源 = 页面里的 S，片尾改时长也不会错位）
+node scripts/max/make-captions.mjs --out delivery/demo-video/captions.srt
 
 # 5) 回放自检（浏览器解码 + 逐帧比对，证明「文件真的能播」）
 cp delivery/demo-video/macbook-demo.webm web/draw/_demo.webm

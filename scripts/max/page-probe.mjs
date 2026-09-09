@@ -63,6 +63,7 @@ async function shoot(path, w, h) {
 }
 
 await send('Page.enable')
+await send('Page.bringToFront')   // 后台标签的 rAF 会被节流到 0——性能测量前必须前置
 await send('Runtime.enable')
 // 视口必须先于页面 boot 就设好：否则 canvas 会超出布局视口 → 截图右侧/底部是黑边
 await send('Emulation.setDeviceMetricsOverride', { width: SHOT_W, height: SHOT_H, deviceScaleFactor: 1, mobile: false })
