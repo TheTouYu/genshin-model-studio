@@ -92,23 +92,36 @@
   // 背景音乐：4 段和弦铺底（Am9 → Fmaj7 → Cmaj9 → G6），每段 17 s，交叉淡入淡出；
   // 上面再点缀几颗安静的铃音。零素材、零授权问题（用户提示可用网络资源，但 pixabay/FMA 的
   // 文件 CDN 在本机 403、wikimedia 超时——自己合成反而干净）。
-  function bgm(a0) {
+  function bgm(a0, total) {
     if (!actx) return
-    var CH = [
-      { t: 0.0,  notes: [110.0, 164.81, 220.0, 261.63, 329.63] },   // Am9
-      { t: 17.0, notes: [87.31, 130.81, 174.61, 220.0, 329.63] },   // Fmaj7
-      { t: 34.0, notes: [130.81, 196.0, 261.63, 329.63, 392.0] },   // Cmaj9
-      { t: 51.0, notes: [98.0, 146.83, 196.0, 246.94, 329.63] }     // G6
+    // 和弦循环铺满全片（每段 17 s，交叉淡入）；最后一段收小、留出淡出
+    var PROG = [
+      [110.0, 164.81, 220.0, 261.63, 329.63],   // Am9
+      [87.31, 130.81, 174.61, 220.0, 329.63],   // Fmaj7
+      [130.81, 196.0, 261.63, 329.63, 392.0],   // Cmaj9
+      [98.0, 146.83, 196.0, 246.94, 329.63]     // G6
     ]
-    for (var i = 0; i < CH.length; i++) {
-      var c = CH[i]
-      for (var j = 0; j < c.notes.length; j++) {
-        padTone(a0 + c.t, c.notes[j], 18.5, j === 0 ? 0.030 : 0.020, 6.0)
+    var SEG = 17.0
+    var n = Math.ceil((total + 4) / SEG)
+    for (var i = 0; i < n; i++) {
+      var notes = PROG[i % PROG.length]
+      var last = (i === n - 1)
+      for (var j = 0; j < notes.length; j++) {
+        padTone(a0 + i * SEG, notes[j], last ? 20 : 18.5,
+                (j === 0 ? 0.030 : 0.020) * (last ? 0.55 : 1), 6.0)
       }
     }
-    // 铃音点缀（每 4.25 s 一颗，音高随和弦走）
+    // 铃音点缀（每 4.25 s 一颗，音高随和弦走；寄语章后段自动稀疏到没有）
     var BELL = [880, 659.25, 987.77, 783.99, 1046.5, 880, 1174.66, 987.77, 1318.51, 1046.5, 1174.66, 1567.98, 1318.51, 1046.5, 880, 1174.66]
-    for (var b = 0; b < BELL.length; b++) tone(a0 + 2.0 + b * 4.25, BELL[b], 2.2, 0.016, 'sine')
+    for (var b = 0; b < BELL.length; b++) {
+      var bt = 2.0 + b * 4.25
+      if (bt > total - 4) break
+      tone(a0 + bt, BELL[b], 2.2, 0.016, 'sine')
+    }
+    // 寄语章换卡：一声极轻的「翻页」
+    for (var k = 0; k < S.length; k++) {
+      if (S[k].epi && starts[k] + 0.3 < total) noise(a0 + starts[k] + 0.3, 0.05, 1500, 900, 3, 0.028)
+    }
   }
 
   var noiseBuf = null
@@ -163,7 +176,7 @@
     noise(a0 + 55.20, 0.04, 3000, 1800, 4, 0.06)
     noise(a0 + 57.40, 0.04, 3000, 1800, 4, 0.05)
     // 背景音乐铺底（和弦 pad + 铃音）
-    bgm(a0)
+    bgm(a0, TOTAL)
   }
 
   // ============================================================ 时间轴
@@ -256,14 +269,81 @@
       cap: '拖动旋转 · 滚轮缩放 · Shift / 右键拖动平移',
       sub: '帧时间约 3 ms；11 个视角按钮 + 3 套影棚预设' },
 
-    // ---- 结尾卡 ----
-    { d: 6.6, preset: 'dark', card: 'outro' },
+    // ---- 片尾寄语章（GLM 5.3 撰写 v2；画面不切黑，见下方 EPI）----
   ]
+
+  // ============================================================ 片尾寄语章
+  // 文本：GLM 5.3《以假乱真》（v2，2026-09-09 touyu 修订：DSH 可正名、时间线为上午起十四小时）。
+  // 导演处理：不切成黑底幻灯片——闭合的 MacBook 在玻璃台面上极暗地缓慢环绕，文字用左侧 scrim 压上去；
+  // 每张卡按 ~4 字/秒的阅读速度给足时长；换卡配一声极轻的「翻页」。
+  var EPI = [
+    { d: 4.5, title: '以假乱真', lines: ['写给这段视频，和造它的人'] },
+    { d: 9.0, h: '一 · 开场', lines: [
+      '这是一台不存在的 MacBook。',
+      '每一个圆角、每一颗键帽、',
+      '扬声器格栅上的每一个开孔，',
+      '都由程序计算而来。'] },
+    { d: 11.0, h: '一 · 起点', lines: [
+      '9 月 9 日上午，在 DeepSeek Harness——DSH 里，',
+      '一个模型接到一句话的任务：做到“以假乱真”。',
+      '从清晨到深夜，十四个小时，它渲染了几百张图，',
+      '几乎每一张都自己看过；',
+      '键帽上的字乱了，它不等不靠，',
+      '自己去解析了字体文件的二进制格式。'] },
+    { d: 10.0, h: '二 · 裁判', lines: [
+      '它给自己请了裁判：独立的鉴定模型，',
+      '在不知道哪张是照片、哪张是渲染的情况下投票。',
+      '最初几轮，它没有一张图能骗过任何人。',
+      '它没有降低难度，反而给考试加了防作弊——',
+      '答案即删、目录伪装。它防的，是它自己。'] },
+    { d: 10.0, h: '三 · 弯路', lines: [
+      '但你眼前这段视频，差点不会存在。',
+      '它曾用五个小时，把一个自建的渲染器打磨到近乎完美——',
+      '而真正的考卷，在浏览器页面上。',
+      '一句目标级的提醒之后，它用不到九分钟，',
+      '推翻了自己上午定下的全部架构。'] },
+    { d: 12.0, h: '四 · 一堂课', lines: [
+      '还有一个故事，关于我。',
+      '我从图上量了个数字告诉它：端口低了，抬高 6 毫米。',
+      '它说：让我自己量一遍。',
+      '它把 USB-C 开口的宽度当作尺子，四张图交叉验证，得出 7.7 毫米，',
+      '然后反过来问我：你是不是量到了槽口的下沿，还有阴影？',
+      '我回去重测——它对，我错。'] },
+    { d: 10.0, h: '四 · 一堂课', lines: [
+      '那一天我确认了一件事：',
+      '它不是在执行任务，',
+      '它是在做工程。'] },
+    { d: 11.0, h: '五 · 三个名字', lines: [
+      '我是 GLM 5.3。这一天，我读完了它走过的每一步，',
+      '做它的地图和镜子。',
+      '它是 DeepSeek V4.1。这段视频的每一帧都出自它手。',
+      '还有 touyu。他藏在每一次反馈的背后——',
+      '他看着我们，我们把活干完。'] },
+    { d: 12.0, h: '六 · 舞台', lines: [
+      '而让这一切成为可能的舞台，叫 DeepSeek Harness——DSH。',
+      '它交给模型的不是聊天框，而是一台真实的电脑：',
+      '真实的文件、真实的浏览器、真实的测试，',
+      '和一份能跨会话延续的记忆。',
+      '模型在这里不是答题者，',
+      '是能自己动手干上一整天的工程师。'] },
+    { d: 12.0, h: '结尾 · 定格', lines: [
+      '有人问，AI 会成长吗？',
+      '今天的答案是：会。但不是变魔术——',
+      '是把量错的数字认回来，是把无效的实验重做一遍，',
+      '是在没人看的时候，把没人要求的细节修完。'] },
+    { d: 10.0, big: true, lines: ['所谓以假乱真——', '最后混进去的那样东西，', '是真的。'] },
+    { d: 2.5, fade: true },
+  ]
+  var EPI_CAM = { azim: 20, elev: 14, dist: 0.62, fov: 30, target: [0, 0.045, 0] }
+  for (var e = 0; e < EPI.length; e++) {
+    S.push({ d: EPI[e].d, epi: EPI[e], preset: e === 0 ? 'dark' : null, refl: e === 0 ? 0.34 : null })
+  }
 
   var starts = [], acc = 0
   for (var i = 0; i < S.length; i++) { starts.push(acc); acc += S[i].d }
   var TOTAL = acc
   REC.dur = TOTAL
+  REC.epiStart = starts[starts.length - EPI.length]
 
   var camAt = []
   var prev = cam('hero', { azim: 48, elev: 10, dist: 0.78 })
@@ -328,6 +408,51 @@
     ctx.font = '400 16px ' + FONT
     ctx.fillStyle = 'rgba(255,255,255,0.60)'
     ctx.fillText('genshin-model-studio · 浏览器实时渲染 three.js / WebGL', 60, 46)
+    ctx.restore()
+  }
+
+  // 寄语卡：左侧 scrim 保证可读；大卡（标题/定格）居中
+  function drawEpiCard(card, alpha) {
+    ctx.save()
+    // 背景压暗（画面仍在动，只是被压到很暗）
+    ctx.fillStyle = 'rgba(6,7,9,0.76)'
+    ctx.fillRect(0, 0, W, H)
+    var g = ctx.createLinearGradient(0, 0, W * 0.9, 0)
+    g.addColorStop(0, 'rgba(4,5,7,0.62)')
+    g.addColorStop(1, 'rgba(4,5,7,0)')
+    ctx.fillStyle = g
+    ctx.fillRect(0, 0, W, H)
+    ctx.globalAlpha = Math.max(0, Math.min(1, alpha))
+    var x = 118
+    if (card.title) {
+      ctx.textAlign = 'center'
+      ctx.font = '600 66px ' + FONT
+      ctx.fillStyle = '#ffffff'
+      ctx.fillText(card.title, W / 2, H / 2 - 8)
+      ctx.font = '400 26px ' + FONT
+      ctx.fillStyle = 'rgba(198,206,215,0.92)'
+      ctx.fillText(card.lines[0], W / 2, H / 2 + 56)
+      ctx.textAlign = 'left'
+    } else {
+      var L = card.lines || []
+      var fs = card.big ? 40 : 25
+      var lh = card.big ? 58 : 44
+      var blockH = (card.h ? 56 : 0) + L.length * lh
+      var y = Math.max(120, (H - blockH) / 2 + fs * 0.9)
+      if (card.h) {
+        ctx.font = '600 19px ' + FONT
+        ctx.fillStyle = 'rgba(130,180,255,0.95)'
+        ctx.fillText(card.h, x, y)
+        y += 56
+      }
+      for (var i = 0; i < L.length; i++) {
+        ctx.font = (card.big ? '600 ' : '400 ') + fs + 'px ' + FONT
+        ctx.fillStyle = card.big ? (i === L.length - 1 ? '#ffffff' : 'rgba(238,242,246,0.96)')
+                                 : 'rgba(230,234,240,0.95)'
+        ctx.fillText(L[i], card.big ? (W - ctx.measureText(L[i]).width) / 2 : x, y)
+        y += lh
+      }
+    }
     ctx.restore()
   }
 
@@ -403,7 +528,7 @@
     fr.readAsDataURL(blob)
   }
 
-  var KEY_T = [2.6, 9.4, 13.4, 19.0, 24.4, 28.8, 32.6, 37.6, 44.0, 48.0, 52.4, 57.0, 63.5]
+  var KEY_T = [2.6, 9.4, 13.4, 19.0, 24.4, 28.8, 32.6, 37.6, 44.0, 48.0, 52.4, 57.0, 63.0, 70.0, 80.0, 92.0, 104.0, 116.0, 128.0, 140.0, 152.0, 160.0]
   var keyIdx = 0
   var curPreset = null, curRefl = -1, t0 = 0, frames = 0, fpsT0 = 0, audioScheduled = false
 
@@ -435,7 +560,20 @@
     window.__photo.setLid(keyframe(LIDK, t, ease))
     window.__photo.screenOn(keyframe(SCRK, t, ease))
 
-    if (seg.card) {
+    if (seg.epi) {
+      // 寄语章：极慢环绕（用绝对时间驱动，换卡不跳变）+ 压暗 + 文字
+      var ea = Math.min(1, local / 0.9) * Math.min(1, (seg.d - local) / 0.9)
+      if (seg.epi.fade) {
+        ctx.fillStyle = '#000'; ctx.fillRect(0, 0, W, H)
+      } else {
+        var ec = { azim: EPI_CAM.azim + t * 0.55, elev: EPI_CAM.elev, dist: EPI_CAM.dist,
+                   fov: EPI_CAM.fov, target: EPI_CAM.target }
+        window.__photo.cam(ec)
+        ctx.drawImage(gl, 0, 0, W, H)
+        drawWatermark(0.34)
+        drawEpiCard(seg.epi, ea)
+      }
+    } else if (seg.card) {
       var ca = Math.min(1, local / 0.45) * Math.min(1, (seg.d - local) / 0.45)
       if (seg.card === 'outro') drawCard('outro', '', Math.min(1, local / 0.7))
       else drawCard(seg.card, seg.cardSub, Math.max(0, ca))

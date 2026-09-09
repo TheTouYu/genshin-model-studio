@@ -93,7 +93,7 @@ if (SECS > 0) setTimeout(() => { evalJS('window.__recStop = true').catch(() => {
 // 等待录制完成（总时长 ~68s，留足余量）
 const total = await evalJS('window.__rec.dur')
 let done = false
-for (let i = 0; i < 240; i++) {
+for (let i = 0; i < 600; i++) {
   await sleep(1000)
   const st = JSON.parse(await evalJS('JSON.stringify({p:window.__rec.phase,t:window.__rec.t,fps:window.__rec.fps,d:window.__rec.done,b:window.__rec.b64.length})') || '{}')
   if (i % 5 === 0) console.log(`  t=${(st.t || 0).toFixed(1)}/${total}s phase=${st.p} fps=${st.fps} b64=${((st.b || 0) / 1e6).toFixed(1)}MB`)

@@ -1,6 +1,7 @@
 # 演示视频 · 分镜脚本（可直接照做）
 
-> **67.8 s · 1280×720 · WebM(VP8+Opus) · 22.6 MB**
+> **2 分 55 秒（175.2 s）· 1280×720 · WebM(VP8+Opus) 35.7 MB / MP4(H.264+AAC) 14.7 MB**
+> 前 61.2 s 是产品演示（13 镜），后 114 s 是片尾寄语章《以假乱真》（GLM 5.3 撰文，12 张卡）
 > 机位参数全部取自 `web/draw/photo.html` 的 `VIEWS` 与实测标定；字幕里每个数字都能在
 > `reference/macbook/design-reference.md` / `src/model/macbook/spec.ts` / `delivery/*.md` 里查到。
 > 复现命令见 §4——**一条命令重跑整段**。
@@ -34,7 +35,7 @@
 | 10 | 46.2 – 51.2 | 闭合上盖俯视，Apple 标 | white | 平面圆角 R20 mm |
 | 11 | 51.2 – 55.2 | 底面：脚垫 + 刻蚀铭牌 | grey | 底盖：脚垫 4 × Ø15 mm 距边 22 mm |
 | 12 | 55.2 – 61.2 | 交互演示：持续环绕 + 缓慢推近 | dark | 拖动旋转 · 滚轮缩放 · Shift / 右键拖动平移 |
-| 13 | 61.2 – 67.8 | **结尾卡**：自我介绍 | dark | （整屏文字，见 `SELF-INTRO.md`） |
+| 13 | 61.2 – 175.2 | **片尾寄语章《以假乱真》**（12 张卡，见 `EPILOGUE.md`） | dark | 文字全文由 GLM 5.3 撰写；画面不切黑，闭合机身极暗缓慢环绕 |
 
 ---
 
@@ -54,6 +55,7 @@
 | 10 | closedtop | 0 | 89 | 0.550 | 30 | `[0, 0.008, 0]` | 2.6 s 缓入，之后每秒 azim −1.0° |
 | 11 | bottom | 0 | −88 | 0.50 | 30 | `[0, 0, 0]` | 2.4 s 缓入，之后每秒 azim +0.9° |
 | 12 | hero 变体 | 44 | 21 | 0.68 | 30 | `[0, 0.085, 0]` | 1.8 s 缓入，之后每秒 azim −8.5°、dist +0.004 |
+| 13 | 寄语章背景 | 20 + t×0.55 | 14 | 0.62 | 30 | `[0, 0.045, 0]` | 114 s 内极慢环绕（绝对时间驱动，换卡不跳变），画面被 scrim 压到约 24% 亮度 |
 
 **取景坑（都踩过）**：`closedtop` 的 dist 必须 0.550（0.385 时 312.6 mm 机身被裁）；`bottom` 必须 0.50；
 `ports`/`side` 的 target.z 必须 −0.060（端口整簇中心在 z≈62 mm，旧值 +0.020 会把 HDMI 切在画框外）。
@@ -98,9 +100,8 @@ node scripts/max/page-mesh.mjs --lod 1.0 --open 100 --out web/draw/macbook-curre
 # 3) 录制（需要 CDP 浏览器 127.0.0.1:9222 + 页面服务 localhost:8787）
 node scripts/max/demo-record.mjs --out delivery/demo-video/macbook-demo-raw.webm --codec vp8
 
-# 4) 补写容器时长（否则播放器显示 0:00）
-node scripts/max/webm-fix-duration.mjs delivery/demo-video/macbook-demo-raw.webm \
-                                        delivery/demo-video/macbook-demo.webm
+# 4) 收尾（ffmpeg）：补容器时长 → 转 MP4 → 抽帧存证 → ffprobe 体检
+node scripts/max/video-post.mjs delivery/demo-video/macbook-demo-raw.webm --outdir delivery/demo-video
 
 # 5) 回放自检（浏览器解码 + 逐帧比对，证明「文件真的能播」）
 cp delivery/demo-video/macbook-demo.webm web/draw/_demo.webm
@@ -125,7 +126,18 @@ node scripts/max/page-probe.mjs --url 'http://localhost:8787/draw/_verify-video.
 
 ---
 
-## 6. 已知缺口（不藏）
+## 6. 片尾寄语章（GLM 5.3 撰文）
+
+全文、拆卡表、导演取舍说明见 `EPILOGUE.md`。要点：
+
+- **一句没删**，只拆卡；「它不是在执行任务，它是在做工程」单独立卡留白。
+- **不用旁白**：前 61 秒是产品演示，突然出现人声像换了支片子；文字卡 + 音乐渐弱更连贯。
+- 画面**不切黑**：闭合的 MacBook 在玻璃台面上极暗地缓慢环绕（scrim 压到 24% 亮度），
+  文字用左侧渐变压上去——既是视频，也不是幻灯片。
+- 换卡配一声极轻的「翻页」（带通噪声 1500→900 Hz / 50 ms / 0.028）。
+- 音乐：和弦循环铺满全片（每 17 s 一段、交叉淡入），最后一段收小并淡出。
+
+## 7. 已知缺口（不藏）
 
 - 扬声器开孔：键盘两侧掌托的细密孔阵**还没建模**，特写下会露。
 - 屏幕内容：用户提供的 `亮屏桌面.png` 裁切，**不是**实时 macOS；所有视角共用同一张，保证跨视角自洽。

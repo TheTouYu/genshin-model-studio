@@ -4,12 +4,15 @@
 
 | 文件 | 内容 |
 |---|---|
-| **`macbook-demo.webm`** | **成片**：67.8 s / 1280×720 / VP8+Opus / 22.6 MB。开盖 → 亮屏 → 细节巡游 → 倒影 → 合盖 → 交互 → 自我介绍 |
+| **`macbook-demo.mp4`** | **成片（推荐）**：2 分 55 秒 / 1280×720 / H.264+AAC / 14.7 MB / faststart。微信、PPT、剪辑软件直接能用 |
+| **`macbook-demo.webm`** | 同内容 WebM/VP8+Opus / 35.7 MB（浏览器原生播放） |
 | `macbook-demo-raw.webm` | 录制原始输出（未补 Duration） |
 | `keyframes/t*.png` | 录制过程中的 13 张合成关键帧（存证：字幕/水印/章节卡都在） |
 | `SCRIPT.md` | **分镜脚本**：13 镜的机位参数、时长、字幕、音效表、复现命令、实现说明 |
 | `captions.srt` | 字幕文件（UTF-8，可直接拖进剪辑软件） |
+| `EPILOGUE.md` | **片尾寄语章《以假乱真》全文**（GLM 5.3 撰文）+ 拆卡表 + 导演取舍说明 |
 | `SELF-INTRO.md` | 自我介绍文案（结尾卡 / 口播 / 署名 三版）+ 素材授权说明 |
+| `verify-frames/` | ffmpeg 逐帧抽帧存证（22 张，含寄语章各卡） |
 | `PROMPTS.md` | 若要做 AI 包装镜头用的提示词（含"不要用 AI 生成冒充产品镜头"的红线） |
 
 ## 怎么看
@@ -22,8 +25,7 @@
 ```bash
 cd /home/h/genshin-model-studio
 node scripts/max/demo-record.mjs --out delivery/demo-video/macbook-demo-raw.webm --codec vp8
-node scripts/max/webm-fix-duration.mjs delivery/demo-video/macbook-demo-raw.webm \
-                                        delivery/demo-video/macbook-demo.webm
+node scripts/max/video-post.mjs delivery/demo-video/macbook-demo-raw.webm --outdir delivery/demo-video
 ```
 
 依赖：CDP 浏览器在线（`127.0.0.1:9222`）+ 页面服务 `localhost:8787`。全流程零第三方依赖、零素材。
@@ -35,6 +37,8 @@ node scripts/max/webm-fix-duration.mjs delivery/demo-video/macbook-demo-raw.webm
 - **亮屏**是屏幕材质 `emissiveIntensity` 的关键帧（0 → 1.85 → 1.40）。
 - **倒影**是 y 镜像组 + 半透明玻璃台面（dark 预设 `groundOpacity 0.52`）；地面不透明时倒影完全不可见（实测逐像素 diff = 0）。
 - **音乐与音效全部现场合成**（WebAudio），没有第三方素材。
+- **片尾寄语章**（第 61.2–175.2 s）文字由 GLM 5.3 撰写，本片导演处理为 12 张卡；画面不切黑，
+  闭合机身极暗环绕作为底。
 
 ## 已知缺口（不藏）
 
