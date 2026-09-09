@@ -23,3 +23,7 @@ exports/*/eval*/trace.jsonl
 .hw-research/
 *.heapsnapshot
 Heap.*.heapsnapshot
+
+# 生成的看图产物（脚本可复现：make-v8-gallery.mjs / make-compare-v8.py）
+web/draw/v8/
+web/draw/compare-v8.png
