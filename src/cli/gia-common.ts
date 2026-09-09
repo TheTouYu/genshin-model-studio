@@ -30,6 +30,44 @@ export const MESH_RESOURCE_ID = 10009019
  */
 export const ROOT_SCALE = 0.1
 
+/**
+ * 整体缩放率默认值（用户需求 2026-09-09：网页两个参数中的第二个）。
+ *
+ * 语义（与用户实测公式一致）：
+ *   实际写入 rootTransform.scale = 主模型缩放 S × 整体缩放率 K
+ *   装饰物数据侧一律 ÷S（position 与 scale 同时除，root 在游戏内会乘回）
+ *   → 游戏内真实尺寸 = 建模尺寸 × K；主模型:装饰物 比例只由 S 决定（K 不改变比例）。
+ * 例：S=0.1,K=1 → root 0.1、装饰物 ×10、真实尺寸=建模尺寸；
+ *     S=0.1,K=2 → root 0.2、装饰物仍 ×10 → 整体放大 2 倍；
+ *     S=0.2,K=1 → root 0.2、装饰物 ×5 → 整体尺寸不变、主模型相对更大。
+ */
+export const OVERALL_SCALE = 1
+
+/** 网页 / CLI 可调的 GIA 缩放参数。 */
+export type GiaScaleOptions = {
+  /** 主模型缩放 S（默认 ROOT_SCALE=0.1）：控制主模型与装饰物的大小比例，不影响整体尺寸。 */
+  rootScale?: number
+  /** 整体缩放率 K（默认 1）：只改实际主模型缩放、不动装饰物数据 → 整体尺寸 ×K，比例不变。 */
+  overallScale?: number
+}
+
+/** 校验并解析缩放参数 → 实际 root 缩放值（S×K）。非法值抛错（网页侧会被 /api/export 转成 400）。 */
+export function resolveGiaScale(opts?: GiaScaleOptions): {
+  rootScale: number
+  overallScale: number
+  rootTransformScale: number
+} {
+  const rootScale = opts?.rootScale ?? ROOT_SCALE
+  const overallScale = opts?.overallScale ?? OVERALL_SCALE
+  if (!Number.isFinite(rootScale) || rootScale <= 0) {
+    throw new Error(`[gia] 主模型缩放必须为正数（got ${String(opts?.rootScale)}）`)
+  }
+  if (!Number.isFinite(overallScale) || overallScale <= 0) {
+    throw new Error(`[gia] 整体缩放率必须为正数（got ${String(opts?.overallScale)}）`)
+  }
+  return { rootScale, overallScale, rootTransformScale: rootScale * overallScale }
+}
+
 /** makeGiaInput 返回的 GIA 结构输入（可被 encodeGia 直接消费）。 */
 export type GiaInput = {
   schemaVersion: 1
@@ -54,17 +92,19 @@ export type GiaInput = {
 /**
  * 把一张已 resolve 的 structure 的 items 包成 GIA 模型输入。
  *
- * 关键补偿（铁律 #1）：rootTransform.scale = [ROOT_SCALE, ROOT_SCALE, ROOT_SCALE]，
- * 且每个 item 的 position/scale 均 ÷ROOT_SCALE（root 在游戏内会再次乘回，故真实尺寸不变）。
+ * 关键补偿（铁律 #1）：rootTransform.scale = [S×K, S×K, S×K]，
+ * 且每个 item 的 position/scale 均 ÷S（root 在游戏内会再次乘回，故真实尺寸 ×K）。
+ * S=主模型缩放（默认 0.1）、K=整体缩放率（默认 1）；不传 opts 时与历史行为字节级一致。
  * 确保 export-mesh / contour-model 输出同一 root 语义（字节级一致，除非模型名/ID 不同）。
  */
-export function makeGiaInput(name: string, items: readonly StructureItem[]): GiaInput {
+export function makeGiaInput(name: string, items: readonly StructureItem[], opts?: GiaScaleOptions): GiaInput {
+  const { rootScale, rootTransformScale } = resolveGiaScale(opts)
   const giaItems = items.map((it, idx) => ({
     id: 1073741824 + idx + 1,
     resourceId: it.resourceId,
-    position: [...it.position.map((v: number) => v / ROOT_SCALE)],
+    position: [...it.position.map((v: number) => v / rootScale)],
     rotation: [...it.rotation],
-    scale: [...it.scale.map((v: number) => v / ROOT_SCALE)],
+    scale: [...it.scale.map((v: number) => v / rootScale)],
     ...(it.color === undefined ? {} : { color: it.color, name: `item_${idx + 1}` })
   }))
   return {
@@ -73,7 +113,11 @@ export function makeGiaInput(name: string, items: readonly StructureItem[]): Gia
       name,
       unitId: UNIT_ID,
       templatePrefabId: TEMPLATE_PREFAB_ID,
-      rootTransform: { position: [0, 0, 0], rotation: [0, 0, 0], scale: [ROOT_SCALE, ROOT_SCALE, ROOT_SCALE] },
+      rootTransform: {
+        position: [0, 0, 0],
+        rotation: [0, 0, 0],
+        scale: [rootTransformScale, rootTransformScale, rootTransformScale]
+      },
       items: giaItems
     },
     file: { filePath: `${name}.gia`, gameVersion: GAME_VERSION }

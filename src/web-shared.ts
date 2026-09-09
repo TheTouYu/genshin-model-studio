@@ -12,6 +12,7 @@ import type { ModelOptions, Stroke, TaggedItem } from './draw/types.js'
 import type { StructureItem } from './core/structure.js'
 import { resolveStructure } from './core/structure.js'
 import { checkStructure, type HealthReport } from './core/invariants.js'
+import { resolveGiaScale } from './cli/gia-common.js'
 
 export const EXAMPLES = join(process.cwd(), 'examples')
 
@@ -324,17 +325,26 @@ export function countItems(data: any): number {
  *   { schemaVersion, model: { name, unitId, templatePrefabId, rootTransform, items[] }, file }
  * - 扁平 structure 格式（examples/house.json 等）：
  *   { name, prefabId, templatePrefabId, position, rotation, scale, items[], filePath }
+ *
+ * 缩放参数（用户需求 2026-09-09，网页「主模型缩放 / 整体缩放率」）：
+ *   传了 data.rootScale 或 data.overallScale 时启用共享 root 语义（src/cli/gia-common.ts）——
+ *   rootTransform.scale = 主模型缩放 S × 整体缩放率 K，item position/scale 均 ÷S。
+ *   不传时保持历史行为（用 rootTransform.scale / data.scale，缺省 [1,1,1]，item 原样）。
  */
 export function toGiaInput(data: any) {
   const model = data.model ?? {}
   const rawItems = Array.isArray(model.items) ? model.items : data.items ?? []
+  const scaleOpts =
+    typeof data.rootScale === 'number' || typeof data.overallScale === 'number'
+      ? resolveGiaScale({ rootScale: data.rootScale, overallScale: data.overallScale })
+      : null
   const items = rawItems.map((it: any, i: number) => ({
     id: it.id ?? 1073741824 + i + 1,
     resourceId: it.resourceId,
     name: it.name ?? `装饰物_${i + 1}`,
-    position: it.position ?? [0, 0, 0],
+    position: (it.position ?? [0, 0, 0]).map((v: number) => (scaleOpts ? v / scaleOpts.rootScale : v)),
     rotation: it.rotation ?? [0, 0, 0],
-    scale: it.scale ?? [1, 1, 1],
+    scale: (it.scale ?? [1, 1, 1]).map((v: number) => (scaleOpts ? v / scaleOpts.rootScale : v)),
     color: it.color,
   }))
   const name = model.name || data.name || 'model'
@@ -348,7 +358,9 @@ export function toGiaInput(data: any) {
       rootTransform: {
         position: rootTransform.position ?? data.position ?? [0, 0, 0],
         rotation: rootTransform.rotation ?? data.rotation ?? [0, 0, 0],
-        scale: rootTransform.scale ?? data.scale ?? [1, 1, 1],
+        scale: scaleOpts
+          ? [scaleOpts.rootTransformScale, scaleOpts.rootTransformScale, scaleOpts.rootTransformScale]
+          : rootTransform.scale ?? data.scale ?? [1, 1, 1],
       },
       items,
     },

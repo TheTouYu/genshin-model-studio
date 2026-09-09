@@ -1,0 +1,84 @@
+{
+  "iteration": 40,
+  "stage": "gia-scale-params",
+  "date": "2026-09-09",
+  "title": "GIA 缩放两参数（主模型缩放 S + 整体缩放率 K）：网页输入框 + CLI flag + 网页导出路径根缩放修复",
+  "user_request_verbatim": "导入为gia的时候，中间主模型尺寸默认是1x1x1，单位是m，剩下的500个装饰物的尺寸大小就是模型的缩放大小。现在调整中间主模型的大小为0.1x0.1x0.1,那么为了保证整体的大小不变，需要同步给所有装饰物的大小同步缩放10. 这个需求，之前做过，但是好像丢了。你的上一个版本，导入游戏实测，主模型没动。现在提新需求：在网页增加两个设置参数，1.主模型的缩放，默认是0.1，自动换算装饰物的缩放 2.整体的缩放率，默认是1，如果玩家设置为了2，那么直接修改实际的主模型缩放而不修改装饰物缩放，达到整体放大效果。这两个参数，一个控制主模型和装饰物大小比例关系（不影响整体尺寸），另外一个，控制主模型的缩放不改变它和装饰物的比例关系，来修改整体的尺寸",
+  "semantics": {
+    "S_rootScale": "主模型缩放，默认 0.1：只改主模型与装饰物的大小比例，不影响整体尺寸",
+    "K_overallScale": "整体缩放率，默认 1：只改实际主模型缩放，不动装饰物 → 整体尺寸 ×K，比例不变",
+    "formula": "rootTransform.scale = S×K；item position/scale 均 ÷S；游戏内真实尺寸 = 建模尺寸 ×K",
+    "authority": "docs/game-engine-knowledge/retrospective-2026-09-06-ganyu-ankle-gia-export.md §四 用户逐字公式（主模型缩放 × 装饰物缩放 = 1）"
+  },
+  "root_cause_of_loss": {
+    "symptom": "上版本导入游戏实测：主模型没动（rootTransform.scale=[1,1,1]）",
+    "cause": "scripts/web-server.js:233 的 /api/export → src/web-shared.ts:toGiaInput 旧实现 `scale: rootTransform.scale ?? data.scale ?? [1,1,1]` 且 item 原样 → 网页导出 root=1；CLI（export-mesh/contour-model）走 src/cli/gia-common.ts:makeGiaInput（root=0.1 + item ÷0.1），两条路径语义不一致",
+    "fix": "toGiaInput 在传入 rootScale/overallScale 时复用 resolveGiaScale 共享语义；不传时保持历史行为（root=[1,1,1]），examples/football.json 等自带 rootTransform 的调用不受影响"
+  },
+  "changes": {
+    "src/cli/gia-common.ts": "新增 OVERALL_SCALE=1、GiaScaleOptions、resolveGiaScale(opts)（正数校验，返回 {rootScale, overallScale, rootTransformScale:S*K}）；makeGiaInput(name, items, opts?) → root=S*K、item ÷S；不传 opts 与历史字节级一致",
+    "src/web-shared.ts": "toGiaInput 复用 resolveGiaScale（传 rootScale/overallScale 才启用共享语义）",
+    "src/cli/export-mesh.ts": "新增 --root-scale <S> / --overall-scale <K>（正数校验，非法 exit 1）+ usage 两行",
+    "src/cli/contour-model.ts": "同两个 flag",
+    "web/index.html": "画线导出区新增 #drawRootScale（默认 0.1）/ #drawOverallScale（默认 1）+ 实时读数 #drawScaleHint；doModelExport 把两参数放进 /api/export body 并在状态栏回显；localStorage 作品 JSON 增加可选 scale 侧边字段（缺省不写）；applyWork/gms.import 恢复两参数；gms.export()/「导出作品 JSON」非缺省时附 scale",
+    "public/index.html": "与 web/index.html 同步（两份镜像，tests/work-persistence.test.ts 对两份都断言）",
+    "tests/agents-align.test.ts": "新增 2 个测试：makeGiaInput 缩放参数（root=S*K、K 不改装饰物、S 翻倍→装饰物减半、真实尺寸不变/×K、非法值 assert.throws）；toGiaInput 缩放参数（不传→legacy root [1,1,1]；只传一个→另一个取默认）",
+    "tests/work-persistence.test.ts": "VM 上下文补 currentScaleOrDefault/isDefaultScale 两个桩（断言未改）",
+    "AGENTS.md": "铁律 #1 补两参数公式与实现位置",
+    "docs/gia-format.md": "f11.1.7[0] rootTransform 行补本项目写入语义",
+    "docs/game-engine-knowledge/retrospective-2026-09-06-ganyu-ankle-gia-export.md": "§五 未闭合项补 2026-09-09 收口说明"
+  },
+  "verification": {
+    "unit_tests": "npm test → 250/250 pass（含新增 2 例）",
+    "http_e2e": {
+      "endpoint": "POST http://localhost:8787/api/export?format=gia（服务已重启加载新 dist）",
+      "cases": [
+        "legacy 不传参数 → root=[1,1,1]、item scale=[0.8,0.4,0.6]（历史行为不变）",
+        "S=0.1,K=1 → root=[0.1,0.1,0.1]、item pos=[5,2,3] scale=[8,4,6]",
+        "S=0.1,K=2 → root=[0.2,0.2,0.2]、item scale=[8,4,6]（装饰物不动）",
+        "S=0.2,K=1 → root=[0.2,0.2,0.2]、item pos=[2.5,1,1.5] scale=[4,2,3]（比例变、整体不变）",
+        "只传 K=3 → root=[0.3,...]、item scale=[8,4,6]（S 取默认 0.1）",
+        "S=0 → 400「[gia] 主模型缩放必须为正数（got 0）」",
+        "K=-2 → 400「[gia] 整体缩放率必须为正数（got -2）」"
+      ],
+      "parser": "python3 tools/gia/gia_parser.py <gia> --json <out> 回读 rootTransform.scale"
+    },
+    "page_e2e": {
+      "browser": "Win11 Edge CDP 9222（browser-harness），页面 http://localhost:8787/ 载入 570 件笔记本作品",
+      "inputs_present": "S=0.1、K=1（默认），提示行「.gia 写入：实际主模型缩放 0.1（= 0.1 × 1）· 装饰物数据 ×10 · 游戏内真实尺寸 = 建模尺寸 ×1」",
+      "real_click_export": "点「导出 .gia」→ 浏览器下载 /mnt/c/Users/touyu/Downloads/laptop-v2-scalecheck.gia（117989 B）；gia_parser 回读 root=[0.1,0.1,0.1]、570 件，且与 exports/laptop-v2/parsed.json 逐件 (position,scale) 相同 570/570 → 网页导出 = CLI 导出（「主模型没动」修复的硬证据）",
+      "request_body_capture": "hook window.fetch 捕获点击请求：data={name, items(570), rootScale:0.1, overallScale:2}",
+      "persistence": "K=2 → localStorage('gms.draw.work.v1').scale={rootScale:0.1,overallScale:2}、gms.export() 含 scale；reload 后输入框恢复 0.1/2；K=1 → 两处都不写 scale（历史 work.json 字节形态不变）",
+      "import_roundtrip": "gms.import({...,scale:{rootScale:0.25,overallScale:4}}) → 输入框 0.25/4，提示行「实际主模型缩放 1（= 0.25 × 4）· 装饰物数据 ×4 · 游戏内真实尺寸 = 建模尺寸 ×4」",
+      "invalid_input": "K=0 → 提示行与状态栏都显示「整体缩放率必须是正数（如 1、2）」，不发起导出"
+    },
+    "cli_e2e": {
+      "default_byte_identity": "node dist/src/cli/export-mesh.js exports/laptop-v2/laptop-structure-in.json --out-dir .scratch/scale-cli/k1 --format gia --force --no-qa --root-scale 0.1 --overall-scale 1 → sha256 2e10a835e598f7a793134813e2a93a8799928ce0a3cc6e21a8457947ce13450d，与已交付 exports/laptop-v2/laptop.gia 完全相同",
+      "K2": "--overall-scale 2 → root=[0.2,0.2,0.2]、item0.scale=[3.04,0.01,0.289827]（与 K=1 相同）",
+      "S2": "--root-scale 0.2 → root=[0.2,0.2,0.2]、item0.scale=[1.52,0.005,0.144913]（= K=1 的一半）",
+      "invalid": "--root-scale 0 → exit 1「[error] --root-scale must be a positive number (got 0)」；--overall-scale -1 → exit 1"
+    },
+    "screenshots": [
+      "delivery/scale-params/page-export-area.png（默认 0.1/1 + 提示行）",
+      "delivery/scale-params/page-scale-K2.png（K=2 时提示行「实际主模型缩放 0.2（= 0.1 × 2）· 装饰物数据 ×10 · 游戏内真实尺寸 = 建模尺寸 ×2」）"
+    ]
+  },
+  "game_dir_delivery": {
+    "note": "用户指令：下载没有问题，直接用命令导出到游戏目录，通知测试",
+    "dir": "/mnt/c/Users/touyu/AppData/LocalLow/miHoYo/原神/BeyondLocal/Beyond_Local_Export",
+    "command_v2": "node dist/src/cli/export-mesh.js exports/laptop-v2/laptop-structure-in.json --out-dir .scratch/game-export/v2 --format gia --force --no-qa --root-scale 0.1 --overall-scale 1 → 复制 laptop.gia 为 笔记本v2-570件-主模型0.1.gia",
+    "command_v1": "node dist/src/cli/export-mesh.js exports/laptop/laptop-structure-in.json --out-dir .scratch/game-export/v1 --format gia --force --no-qa --root-scale 0.1 --overall-scale 1 → 复制 laptop.gia 为 笔记本v1-150件-主模型0.1.gia",
+    "files": [
+      "笔记本v2-570件-主模型0.1.gia（112223 B，sha256 2e10a835e598f7a793134813e2a93a8799928ce0a3cc6e21a8457947ce13450d）",
+      "笔记本v1-150件-主模型0.1.gia（29553 B，sha256 6eb7a8a78348e4c9316e1945046073604fc7396f79678ac80e1671e4c8cefbdb，与已交付 exports/laptop/laptop.gia 逐字节相同）"
+    ],
+    "readback": "gia_parser 在游戏目录内回读：两份 root=[0.1,0.1,0.1]；v2 item0.scale=[3.04,0.01,0.28983]（570 件）、v1 item0.scale=[3.04,0.01,2.12]（150 件）",
+    "ab_reference": "用户上次实测的 笔记本模型.gia（31095 B）回读 root=[1.0,1.0,1.0]、item0.scale=[0.304,0.001,0.212] → 证实上次文件来自网页 legacy 路径（主模型没动）",
+    "sandbox": "游戏目录在会话工作区之外，cp 被 workspace-write 拒绝（EROFS）→ 经用户授权以 danger-full-access 重试成功"
+  },
+  "notes": [
+    "服务端 /api/export 在 DSH 沙箱内写游戏导出目录被拒（EROFS，工作区写权限限制）——不影响浏览器下载链路；真实文件落在 Windows Downloads",
+    "多次自动下载会被 Edge 拦截（第二次 K=2 导出未落盘），故 K=2 的证据改用 fetch 捕获请求体 + HTTP 直测 + CLI 复现",
+    "未闭合：用户游戏实测签字（唯一人类门）"
+  ]
+}

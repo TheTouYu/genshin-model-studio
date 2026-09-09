@@ -25,6 +25,7 @@ import {
   UNIT_ID,
   TEMPLATE_PREFAB_ID
 } from '../src/cli/gia-common.js'
+import { toGiaInput } from '../src/web-shared.js'
 import { panelize, panelizeMesh, colorStringToItemColor, type PanelMesh } from '../src/mesh/panelize.js'
 import { resolveStructure, type StructureItem } from '../src/core/structure.js'
 import { encodeGia } from '../src/gia/gia-encoder.js'
@@ -106,6 +107,58 @@ test('shared makeGiaInput: rootTransform.scale=[0.1,0.1,0.1] + item position/sca
   assertVecClose(gia.model.items[0].scale, [8, 4, 6])
   assertVecClose(gia.model.items[1].position, [0, 1, 0])
   assertVecClose(gia.model.items[1].scale, [10, 10, 10])
+})
+
+/* ------------------------------ ①b 网页/CLI 缩放两参数（2026-09-09 用户需求） ------------------------------ */
+
+test('makeGiaInput 缩放参数：root=S×K、装饰物÷S（S 改比例不动尺寸，K 改尺寸不动比例）', () => {
+  const items: StructureItem[] = [
+    { resourceId: 10009003, position: [0.5, 0.2, 0.3], rotation: [0, 0, 0], scale: [0.8, 0.4, 0.6] }
+  ]
+  const base = makeGiaInput('scale-unit', items) // 默认 S=0.1 K=1
+  const k2 = makeGiaInput('scale-unit', items, { rootScale: 0.1, overallScale: 2 })
+  const s2 = makeGiaInput('scale-unit', items, { rootScale: 0.2, overallScale: 1 })
+
+  // root = S×K
+  assertVecClose(base.model.rootTransform.scale, [0.1, 0.1, 0.1])
+  assertVecClose(k2.model.rootTransform.scale, [0.2, 0.2, 0.2])
+  assertVecClose(s2.model.rootTransform.scale, [0.2, 0.2, 0.2])
+  // 装饰物只由 S 决定：K 不改装饰物数据
+  assertVecClose(k2.model.items[0].scale, base.model.items[0].scale)
+  assertVecClose(k2.model.items[0].position, base.model.items[0].position)
+  // S 翻倍 → 装饰物数据减半（真实尺寸不变）
+  assertVecClose(s2.model.items[0].scale, base.model.items[0].scale.map((v) => v / 2))
+  assertVecClose(s2.model.items[0].position, base.model.items[0].position.map((v) => v / 2))
+  // 游戏内真实尺寸 = root × 装饰物数据：S 变→不变（比例关系与尺寸解耦）；K=2 → 2 倍
+  const real = (g: typeof base): number[] =>
+    g.model.items[0].scale.map((v: number, j: number) => v * g.model.rootTransform.scale[j])
+  assertVecClose(real(base), [0.8, 0.4, 0.6])
+  assertVecClose(real(s2), [0.8, 0.4, 0.6])
+  assertVecClose(real(k2), [1.6, 0.8, 1.2])
+  // 非法值拒绝
+  assert.throws(() => makeGiaInput('bad', items, { rootScale: 0 }), /主模型缩放/)
+  assert.throws(() => makeGiaInput('bad', items, { overallScale: -1 }), /整体缩放率/)
+})
+
+test('toGiaInput 缩放参数（网页导出路径）：传 rootScale/overallScale 才启用共享 root 语义', () => {
+  const data = { name: 'web-scale', items: [{ resourceId: 10009003, position: [1, 0.5, 0.25], rotation: [0, 0, 0], scale: [0.2, 0.1, 0.05] }] }
+  // 不传 → 历史行为：root=[1,1,1]、item 原样
+  const legacy = toGiaInput(data)
+  assert.deepEqual(legacy.model.rootTransform.scale, [1, 1, 1])
+  assert.deepEqual(legacy.model.items[0].scale, [0.2, 0.1, 0.05])
+  // 传 S=0.1 K=1 → root 0.1、装饰物 ×10
+  const a = toGiaInput({ ...data, rootScale: 0.1, overallScale: 1 })
+  assertVecClose(a.model.rootTransform.scale, [0.1, 0.1, 0.1])
+  assertVecClose(a.model.items[0].scale, [2, 1, 0.5])
+  assertVecClose(a.model.items[0].position, [10, 5, 2.5])
+  // 只传 overallScale → S 取默认 0.1
+  const k3 = toGiaInput({ ...data, overallScale: 3 })
+  assertVecClose(k3.model.rootTransform.scale, [0.3, 0.3, 0.3])
+  assertVecClose(k3.model.items[0].scale, [2, 1, 0.5])
+  // 只传 rootScale → K 取默认 1
+  const s5 = toGiaInput({ ...data, rootScale: 0.5 })
+  assertVecClose(s5.model.rootTransform.scale, [0.5, 0.5, 0.5])
+  assertVecClose(s5.model.items[0].scale, [0.4, 0.2, 0.1])
 })
 
 /* ------------------------------ ② 两条 CLI .gia 字节一致 ------------------------------ */

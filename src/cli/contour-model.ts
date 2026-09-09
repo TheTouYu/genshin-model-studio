@@ -35,7 +35,7 @@ import {
   colorStringToItemColor,
   type PanelItem
 } from '../mesh/panelize.js'
-import { makeGiaInput } from './gia-common.js'
+import { makeGiaInput, ROOT_SCALE, OVERALL_SCALE } from './gia-common.js'
 import { verifyMeshExport, type MeshVerifyResult } from '../mesh/verify.js'
 import { auditExport, formatQaMarkdown } from '../qa/export-qa.js'
 import { resolveStructure, type StructureItem } from '../core/structure.js'
@@ -68,6 +68,8 @@ function usage(): string {
     '  --views            emit five orthographic wireframe snapshots as .svg',
     '  --no-gate          skip the verification gate (summary notes SKIPPED_GATE)',
     '  --no-qa            skip the post-export QA audit (default: run it)',
+    '  --root-scale <S>   main-model scale written as GIA root (default 0.1); item data is divided by S',
+    '  --overall-scale <K> overall size multiplier: root = S*K, item data unchanged (default 1)',
     '  --force            overwrite existing output files',
     '  --format-txt <f>   summary output: text (default) or json',
     '  -h, --help         display this help'
@@ -86,6 +88,8 @@ type ParsedArgs = {
   qa: boolean
   force: boolean
   summaryFormat: 'text' | 'json'
+  rootScale: number
+  overallScale: number
   help: boolean
 }
 
@@ -102,6 +106,8 @@ function parseArgs(argv: string[]): ParsedArgs {
     qa: true,
     force: false,
     summaryFormat: 'text',
+    rootScale: ROOT_SCALE,
+    overallScale: OVERALL_SCALE,
     help: false
   }
   for (let index = 0; index < argv.length; index++) {
@@ -141,6 +147,18 @@ function parseArgs(argv: string[]): ParsedArgs {
         throw new Error(`[error] --format-txt must be text or json (got ${value})`)
       }
       result.summaryFormat = value
+    } else if (arg === '--root-scale') {
+      const value = Number(next())
+      if (!Number.isFinite(value) || value <= 0) {
+        throw new Error(`[error] --root-scale must be a positive number (got ${value})`)
+      }
+      result.rootScale = value
+    } else if (arg === '--overall-scale') {
+      const value = Number(next())
+      if (!Number.isFinite(value) || value <= 0) {
+        throw new Error(`[error] --overall-scale must be a positive number (got ${value})`)
+      }
+      result.overallScale = value
     } else if (arg === '-h' || arg === '--help') result.help = true
     else if (arg.startsWith('-')) throw new Error(`[error] unknown option: ${arg}`)
     else if (result.input !== undefined) throw new Error(`[error] unexpected argument: ${arg}`)
@@ -452,7 +470,9 @@ function main(): void {
   if (args.format === 'gil' || args.format === 'both') writeNew(gilPath, gilCandidate, args.force)
   let giaCandidate: Uint8Array | null = null
   if (args.format === 'gia' || args.format === 'both') {
-    giaCandidate = encodeGia(makeGiaInput(name, structure.items))
+    giaCandidate = encodeGia(
+      makeGiaInput(name, structure.items, { rootScale: args.rootScale, overallScale: args.overallScale })
+    )
     writeNew(giaPath, giaCandidate, args.force)
   }
   writeNew(structurePath, prettyJson(structure), args.force)

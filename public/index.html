@@ -33,6 +33,9 @@
   .canvas-hint { position: absolute; right: 10px; top: 10px; color: #9fb0c2; background: rgba(16, 21, 28, 0.72); border-radius: 4px; padding: 3px 8px; font-size: 12px; pointer-events: none; }
   .draw-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; }
   .draw-actions input[type=text] { padding: 0.35rem 0.5rem; width: 170px; }
+  .draw-actions input[type=number] { padding: 0.35rem 0.4rem; width: 88px; }
+  .draw-scale-hint { color: #666; font-size: 0.82rem; }
+  .draw-scale-hint.err { color: #b23; }
   #drawStatus { color: #555; }
   #drawStatus.err { color: #b23; }
   #drawStatus.ok { color: #2a7a2a; }
@@ -253,8 +256,15 @@
   </div>
   <div class="draw-actions" style="margin-top: 0.8rem;">
     <label>模型名字 <input type="text" id="modelName" value="手绘模型"></label>
+    <label title="主模型（根节点）缩放：只改变主模型与装饰物的大小比例，不影响整体尺寸——装饰物数据自动 ×1/该值">主模型缩放
+      <input type="number" id="drawRootScale" value="0.1" min="0.001" step="0.01"></label>
+    <label title="整体缩放率：直接改实际主模型缩放、不动装饰物 → 整体尺寸 ×该值，比例关系不变">整体缩放率
+      <input type="number" id="drawOverallScale" value="1" min="0.01" step="0.1"></label>
     <button id="drawExportGil">导出 .gil</button>
     <button id="drawExportGia">导出 .gia</button>
+  </div>
+  <div class="draw-actions" style="margin-top: 0.4rem;">
+    <span id="drawScaleHint" class="draw-scale-hint"></span>
   </div>
 </section>
 
@@ -1961,12 +1971,15 @@ loadExamples()
       if (localStorage.getItem(LS_KEY) !== observedWork) { restoreLocal(); return }
       // v3：{ version, strokes, options }；新字段仅在非缺省时写入（由笔画对象自身保证）。
       // 二十一期：components（命名注册表）/ links（受力连接）为可选侧边字段，不进入 strokes 语义字段。
+      // 2026-09-09：scale（GIA 缩放两参数）同为可选侧边字段，缺省（0.1/1）不写。
+      const sc = currentScaleOrDefault()
       localStorage.setItem(LS_KEY, JSON.stringify({
         version: WORK_VERSION,
         strokes: state.strokes,
         options: state.options,
         ...(Object.keys(state.componentNames).length ? { components: state.componentNames } : {}),
         ...(state.gmsLinks.length ? { links: state.gmsLinks } : {}),
+        ...(isDefaultScale(sc) ? {} : { scale: sc }),
       }))
       observedWork = localStorage.getItem(LS_KEY)
     } catch (e) { /* 隐私模式等场景忽略 */ }
@@ -2088,6 +2101,7 @@ loadExamples()
         .map((l) => ({ a: l.a, b: l.b, support: l.support || null, gap: l.gap, contact: !!l.contact }))
       : []
     state.selectedId = null
+    applyScaleFromWork(data) // 2026-09-09：GIA 缩放两参数（可选侧边字段，缺省 0.1/1）
     syncControls()
     renderMainPalette()
     renderStrokeList()
@@ -2121,10 +2135,12 @@ loadExamples()
   }
 
   el('exportWork').addEventListener('click', () => {
+    const sc = currentScaleOrDefault()
     const work = {
       version: WORK_VERSION, // v3：{ version, strokes, options }（PRD §4；format 字段由 v1/v2 引入，v3 起不再写）
       strokes: state.strokes,
       options: state.options,
+      ...(isDefaultScale(sc) ? {} : { scale: sc }), // 2026-09-09：GIA 缩放两参数（缺省不写）
     }
     download('draw-work.json', new Blob([JSON.stringify(work, null, 2)], { type: 'application/json' }))
     setStatus(`已导出作品 JSON v${WORK_VERSION}（${state.strokes.length} 笔笔画）`, 'ok')
@@ -2157,16 +2173,74 @@ loadExamples()
     return m ? m[1] : fallback
   }
 
+  /* ---------- GIA 缩放两参数（2026-09-09 用户需求） ----------
+     语义（与游戏实测公式一致）：实际写入 rootTransform.scale = 主模型缩放 S × 整体缩放率 K；
+     装饰物数据一律 ÷S（position/scale 同时除，root 在游戏内会乘回）
+       → 游戏内真实尺寸 = 建模尺寸 ×K；主模型:装饰物 比例只由 S 决定（K 不改比例，只改整体尺寸）。
+     例：S=0.1,K=1 → root 0.1、装饰物 ×10、真实尺寸=建模尺寸；
+         S=0.1,K=2 → root 0.2、装饰物仍 ×10 → 整体放大 2 倍；
+         S=0.2,K=1 → root 0.2、装饰物 ×5 → 整体尺寸不变、主模型相对更大。 */
+
+  const SCALE_DEFAULTS = { rootScale: 0.1, overallScale: 1 }
+
+  const fmtScale = (n) => Number(n.toFixed(6)).toString()
+
+  function readScaleParams() {
+    const rawS = el('drawRootScale').value.trim()
+    const rawK = el('drawOverallScale').value.trim()
+    const S = rawS === '' ? SCALE_DEFAULTS.rootScale : Number(rawS)
+    const K = rawK === '' ? SCALE_DEFAULTS.overallScale : Number(rawK)
+    if (!Number.isFinite(S) || S <= 0) return { error: '主模型缩放必须是正数（如 0.1）' }
+    if (!Number.isFinite(K) || K <= 0) return { error: '整体缩放率必须是正数（如 1、2）' }
+    return { rootScale: S, overallScale: K }
+  }
+
+  function currentScaleOrDefault() {
+    const p = readScaleParams()
+    return p.error
+      ? { rootScale: SCALE_DEFAULTS.rootScale, overallScale: SCALE_DEFAULTS.overallScale }
+      : { rootScale: p.rootScale, overallScale: p.overallScale }
+  }
+
+  function isDefaultScale(s) {
+    return s.rootScale === SCALE_DEFAULTS.rootScale && s.overallScale === SCALE_DEFAULTS.overallScale
+  }
+
+  function updateScaleHint() {
+    const hint = el('drawScaleHint')
+    const p = readScaleParams()
+    if (p.error) { hint.className = 'draw-scale-hint err'; hint.textContent = p.error; return }
+    hint.className = 'draw-scale-hint'
+    hint.textContent =
+      `.gia 写入：实际主模型缩放 ${fmtScale(p.rootScale * p.overallScale)}` +
+      `（= ${fmtScale(p.rootScale)} × ${fmtScale(p.overallScale)}）· 装饰物数据 ×${fmtScale(1 / p.rootScale)}` +
+      ` · 游戏内真实尺寸 = 建模尺寸 ×${fmtScale(p.overallScale)}`
+  }
+
+  function applyScaleFromWork(data) {
+    const sc = data && typeof data.scale === 'object' && !Array.isArray(data.scale) ? data.scale : null
+    const S = sc && Number.isFinite(sc.rootScale) && sc.rootScale > 0 ? sc.rootScale : SCALE_DEFAULTS.rootScale
+    const K = sc && Number.isFinite(sc.overallScale) && sc.overallScale > 0 ? sc.overallScale : SCALE_DEFAULTS.overallScale
+    el('drawRootScale').value = String(S)
+    el('drawOverallScale').value = String(K)
+    updateScaleHint()
+  }
+
   function doModelExport(format) {
     if (!state.items || state.items.length === 0) {
       setStatus('还没有可导出的模型：请先在画布上画线生成', 'err')
+      return
+    }
+    const scale = readScaleParams()
+    if (scale.error) {
+      setStatus(scale.error, 'err')
       return
     }
     const name = (el('modelName').value || '').trim() || '手绘模型'
     fetch('/api/export?format=' + format, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ data: { name, items: state.items } }),
+      body: JSON.stringify({ data: { name, items: state.items, rootScale: scale.rootScale, overallScale: scale.overallScale } }),
     })
       .then((res) => {
         if (!res.ok) return res.text().then((t) => { throw new Error(t) })
@@ -2175,13 +2249,18 @@ loadExamples()
       .then(({ blob, cd }) => {
         const filename = downloadNameFromCd(cd, format === 'gia' ? 'model.gia' : 'model.gil')
         download(filename, blob)
-        setStatus(`已导出 ${filename}（${blob.size} 字节）`, 'ok')
+        const scaleNote = format === 'gia'
+          ? ` · 主模型缩放 ${fmtScale(scale.rootScale)} × 整体 ${fmtScale(scale.overallScale)}`
+          : ''
+        setStatus(`已导出 ${filename}（${blob.size} 字节）${scaleNote}`, 'ok')
       })
       .catch((err) => setStatus('导出失败：' + err.message, 'err'))
   }
 
   el('drawExportGil').addEventListener('click', () => doModelExport('gil'))
   el('drawExportGia').addEventListener('click', () => doModelExport('gia'))
+  el('drawRootScale').addEventListener('input', () => { updateScaleHint(); saveLocal() })
+  el('drawOverallScale').addEventListener('input', () => { updateScaleHint(); saveLocal() })
 
   /* ---------- 3D 预览：Three.js CDN fallback + preview.js ---------- */
 
@@ -3274,7 +3353,14 @@ loadExamples()
 
   function gmsExport() {
     // 返回作品 JSON（{ version, strokes, options }，与「导出作品 JSON」按钮同构；可直传 gms.import）
-    return { version: WORK_VERSION, strokes: state.strokes, options: state.options }
+    // 2026-09-09：scale（GIA 缩放两参数）仅在非缺省时附上（缺省 0.1/1 不写 → 历史 work.json 字节不变）
+    const sc = currentScaleOrDefault()
+    return {
+      version: WORK_VERSION,
+      strokes: state.strokes,
+      options: state.options,
+      ...(isDefaultScale(sc) ? {} : { scale: sc }),
+    }
   }
 
   function gmsImport(data) {
@@ -3370,6 +3456,7 @@ loadExamples()
   syncControls()
   renderMainPalette()
   renderStrokeList()
+  updateScaleHint()
   if (!restoreLocal()) setStatus('在画布上画线（鼠标或手指），松手自动拟合生成；画完点击笔画圆点可改颜色/渲染/元件类型/粗细/高度/抬升/方向/3D 变换')
   updateToolbar()
   loadThree()
