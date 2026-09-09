@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* L4-G5/G6：verifyMesh 自交=0 / 瘦三角≤5% / 面积比≤20 / 面数≤1200 / 薄片存在。 */
+/* L4-G5/G6：verifyMesh 自交=0 / 瘦三角≤5% / 面积比≤20 / 面数≤1500（S5 任务书 §6.1 把预算 1200→1500）/ 薄片存在。 */
 import { loadMesh, loadReport, verify, report } from './lib/l4-common.mjs';
 const mesh = loadMesh(); const rep = loadReport();
 const v = verify(mesh, { maxSamples: 200000 });
@@ -10,7 +10,7 @@ const checks = [
     detail: `${v.checks.skinny.pct}%（${v.checks.skinny.count} 个）` },
   { name: 'L4-G5c 面积比≤20', ok: v.checks.areaRatio.value <= 20,
     detail: `p95/p5=${v.checks.areaRatio.value}` },
-  { name: 'L4-G6 面数≤1200', ok: rep.faces <= 1200, detail: `faces=${rep.faces}` },
+  { name: 'L4-G6 面数≤1500（S5 §6.1 预算）', ok: rep.faces <= 1500, detail: `faces=${rep.faces}` },
   { name: '薄片存在（袖/纱/发/刃）', ok: rep.sheets.sleeve >= 2 && rep.sheets.veil >= 3 && rep.sheets.hair >= 4 && rep.sheets.blade >= 1,
     detail: `sleeve=${rep.sheets.sleeve} veil=${rep.sheets.veil} hair=${rep.sheets.hair} blade=${rep.sheets.blade}` },
 ];

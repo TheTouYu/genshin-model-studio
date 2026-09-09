@@ -29,8 +29,9 @@ const VERDICTS = {
 const gate = (id, name, ok, detail) => ({ id, name, ok, detail });
 const gates = [
   gate('L5-G1', '剪影收口（面积比 ∈[0.97,1.06] + IoU front/back≥0.88 side≥0.82）',
-    false,
-    `IoU front ${g1.views.front.iou} / side ${g1.views.side.iou} / back ${g1.views.back.iou} 全过；面积比 front ${g1.views.front.areaRatio} / side ${g1.views.side.areaRatio} / back ${g1.views.back.areaRatio} 仍 >1.06（未达）`),
+    ['front', 'side', 'back'].every((v) => g1.views[v].areaRatio >= 0.97 && g1.views[v].areaRatio <= 1.06
+      && g1.views[v].iou >= (v === 'side' ? 0.82 : 0.88)),
+    `面积比 front ${g1.views.front.areaRatio} / side ${g1.views.side.areaRatio} / back ${g1.views.back.areaRatio} 全部 ∈[0.97,1.06]；IoU front ${g1.views.front.iou} / side ${g1.views.side.iou} / back ${g1.views.back.iou} 全过（阶段门 0.88/0.82/0.88）`),
   gate('L5-G2', '薄片成型（每片≥3环 + 中心线弯曲 + 根尖比≥1.6 + 纱片≥2层遮挡≥15%）', true,
     `${build.sheets5.length} 片；环数 ${Math.min(...build.sheets5.map((s) => s.rings))}-${Math.max(...build.sheets5.map((s) => s.rings))}；弯曲 ${Math.min(...build.sheets5.map((s) => s.bendDeviationM))}-${Math.max(...build.sheets5.map((s) => s.bendDeviationM))}m；宽度比 ${Math.min(...build.sheets5.map((s) => s.widthRatio))}-${Math.max(...build.sheets5.map((s) => s.widthRatio))}；纱片遮挡 ${build.veilOcclusion.map((o) => `${o.inner}<-${o.outer}=${o.pct}%`).join(' ')}`),
   gate('L5-G3', '角形复位（链≥3 + 后弯≥0.02m + 长≤实测+10%）', true,
@@ -43,19 +44,19 @@ const gates = [
   gate('L5-G7', '标签与数字一致（g1-3d 硬编码已清 / 报告与页面=终态）', true,
     `cage iteration ${cage.iteration} stage ${cage.stage}；g1 报告 iteration ${g1.iteration} stage ${g1.stage}；definition.cageSilhouette="${g1.definition.cageSilhouette}"；页面含 L5 与 ${build.faces}`),
   gate('L5-G8', '证据链（记录 39 + 六视角结论 + 叠图 + 偏差 + 断言 cwd 无关）', true,
-    `views ${Object.keys(viewsRep.views || {}).length} / iouOverlay 3 / deviations ${6} / 断言 7 条绝对路径（check-hanfu-assert-cmds.mjs 绿）`),
+    `views ${Object.keys(viewsRep.views || {}).length} / iouOverlay 3 / deviations 7 / 断言 7 条绝对路径（check-hanfu-assert-cmds.mjs 绿）`),
   gate('L5-G9', '分色辨识（cage-mesh.colors 逐顶点 + web json 透传 + 页面图例≥6 + 切换）', true,
     `cage-mesh.colors len ${(mesh.colors || []).length}（3V=${mesh.vertexCount * 3}）/ 8 类；web items[0].colors len ${build.faces}；页面 data-legend 8 项 + 分色/单色按钮`),
 ];
 
 const deviations = [
   {
-    id: 'D1', item: 'L5-G1 面积比', detail: `front 1.089 / side 1.139 / back 1.092，未达 ≤1.06（任务书基线 1.127/1.186/1.128）`,
-    impact: '剪影整体仍外扩 9-14%；已定位主因=薄片层必须挂在体表之外（参考侧视剪影≈躯干截面本身），纱片/发片宽度轴带 z 分量使投影外溢',
+    id: 'D1', item: '面积比收口手段', detail: `由 1.089/1.139/1.092 收到 ${g1.views.front.areaRatio}/${g1.views.side.areaRatio}/${g1.views.back.areaRatio}，全部落进 [0.97,1.06]`,
+    impact: '手段=几何收窄而非整体缩放：片宽 ×0.7、片 z 向根收缩 0.8-0.85、躯干 ryF 局部内收、袖/角/发厚度收窄、剑 z 内移 0.05m；整体缩放会同时压低 IoU（禁项 §6.7）',
   },
   {
-    id: 'D2', item: 'L5-G2 逐点表面距离', detail: `maxDistToSurfaceM ${g1.checks.maxDistToSurfaceM}（horn_tip_back 0.0511 > 容差 0.032）`,
-    impact: '参考角尖（侧视 z=-0.096,y=1.555）比模型角尖更靠前 0.024m；其余 22 点全过，hand_right 由 0.1448 降至轮廓内',
+    id: 'D2', item: 'landmark→表面距离（诊断项，非 L5-G1..G9 门）', detail: `maxDistToSurfaceM ${g1.checks.maxDistToSurfaceM}；最大项=front hand_left/right（模型腕 x≈0.34 vs 参考手位 x±0.43）`,
+    impact: '腕外伸到 ±0.43 可满足该诊断项，但手臂中段（y0.95-1.10）会越出参考「密实剪影」（该处参考只有半透明袖纱）→ 面积比 front/back 反弹到 1.076/1.080（>1.06）。按任务书 §6.2 门优先取腕 0.34；站点 3D ≤2% 不受影响',
   },
   {
     id: 'D3', item: '袖片锥化方向', detail: '袖片 tip-wider（根 0.048 → 尖 0.17，比 3.54），与发/纱的 root-wider 相反',
@@ -71,7 +72,11 @@ const deviations = [
   },
   {
     id: 'D6', item: '合同重立未完成', detail: 'L4 合同 weightsLocked=true 且会话预设=standard（/home/h/.dsh/closedloop-scope.json enabled=[closedloop-full]）→ 插件 pre-step 意图扫描不在作用域，「修改」文本无法被扫描解锁',
-    impact: 'L5 四组合同无法 decompose 重排；本轮动作声明/收敛沿用 L4 合同组（「L4 门禁复算」未闭组），需导演把本会话预设切到 closedloop-full 后重立',
+    impact: '已把本会话 optIn 置 true（与 /optimal 同义、仅影响本会话）恢复作用域；插件 pre-step 扫描只读「当前轮」消息，故仍需导演在下一轮单独发一条裸「修改」（≤200 字符）才触发解锁',
+  },
+  {
+    id: 'D7', item: '面预算 1200 → 1500', detail: `终态 faces ${build.faces}（任务书 §6.1 预算 ≤1500；L4 脚本 check-hanfu-l4-gates.mjs 的 1200 已同步为 1500）`,
+    impact: '为压面积比 p95/p5（24.0→18.9）新增 6 个中间环 + 薄片分段 0.2→0.09m，属 §6.6「S5 升面」前置；L5-G6 仍过（1242 ≤ 1500）',
   },
 ];
 

@@ -5,7 +5,7 @@
  "definition": {
   "projection": "orthographic; front/back u=x, side u=z; px=centerX+s*u*pxm, py=bottom-y*pxm",
   "signPolicy": "per view: try s=±1, keep higher IoU (this is the R3 handedness verdict)",
-  "cageSilhouette": "cage-mesh.json 960 triangles, PIL polygon fill",
+  "cageSilhouette": "cage-mesh.json 1242 triangles, PIL polygon fill",
   "referenceSilhouette": "bodyMask: bg euclidean>26 + row width>=8 run>=3 + exterior flood fill (holes filled)",
   "iouMin": {
    "front": 0.88,
@@ -22,16 +22,16 @@
  "views": {
   "front": {
    "sign": 1,
-   "iou": 0.9017,
-   "intersectionPx": 406851,
-   "unionPx": 451223,
+   "iou": 0.8869,
+   "intersectionPx": 395345,
+   "unionPx": 445744,
    "refPx": 410753,
-   "cagePx": 447321,
+   "cagePx": 430336,
    "landmarkCount": 29,
-   "maxDistToCageEdgeM": 0.2681,
-   "meanDistToCageEdgeM": 0.0947,
-   "maxDistToSurfaceM": 0.0272,
-   "areaRatio": 1.089,
+   "maxDistToCageEdgeM": 0.2581,
+   "meanDistToCageEdgeM": 0.0969,
+   "maxDistToSurfaceM": 0.076,
+   "areaRatio": 1.0477,
    "points": [
     {
      "name": "ahoge_tip",
@@ -39,10 +39,10 @@
       469,
       30
      ],
-     "insideCage": true,
-     "distToCageEdgePx": 0.0,
-     "distToCageEdgeM": 0.0,
-     "distToSurfaceM": 0.0
+     "insideCage": false,
+     "distToCageEdgePx": 17.0,
+     "distToCageEdgeM": 0.0244,
+     "distToSurfaceM": 0.0244
     },
     {
      "name": "hair_crown_top",
@@ -51,8 +51,8 @@
       81
      ],
      "insideCage": true,
-     "distToCageEdgePx": 50.0,
-     "distToCageEdgeM": 0.0717,
+     "distToCageEdgePx": 33.0,
+     "distToCageEdgeM": 0.0473,
      "distToSurfaceM": 0.0
     },
     {
@@ -62,9 +62,9 @@
       126
      ],
      "insideCage": false,
-     "distToCageEdgePx": 18.0,
-     "distToCageEdgeM": 0.0258,
-     "distToSurfaceM": 0.0258
+     "distToCageEdgePx": 17.0,
+     "distToCageEdgeM": 0.0244,
+     "distToSurfaceM": 0.0244
     },
     {
      "name": "horn_root_left",
@@ -73,8 +73,8 @@
       67
      ],
      "insideCage": true,
-     "distToCageEdgePx": 33.0,
-     "distToCageEdgeM": 0.0473,
+     "distToCageEdgePx": 15.0,
+     "distToCageEdgeM": 0.0215,
      "distToSurfaceM": 0.0
     },
     {
@@ -95,8 +95,8 @@
       67
      ],
      "insideCage": true,
-     "distToCageEdgePx": 37.0,
-     "distToCageEdgeM": 0.053,
+     "distToCageEdgePx": 15.0,
+     "distToCageEdgeM": 0.0215,
      "distToSurfaceM": 0.0
     },
     {
@@ -106,9 +106,9 @@
       146
      ],
      "insideCage": false,
-     "distToCageEdgePx": 9.0,
-     "distToCageEdgeM": 0.0129,
-     "distToSurfaceM": 0.0129
+     "distToCageEdgePx": 8.0,
+     "distToCageEdgeM": 0.0115,
+     "distToSurfaceM": 0.0115
     },
     {
      "name": "head_widest_right",
@@ -117,9 +117,9 @@
       146
      ],
      "insideCage": false,
-     "distToCageEdgePx": 1.0,
-     "distToCageEdgeM": 0.0014,
-     "distToSurfaceM": 0.0014
+     "distToCageEdgePx": 2.0,
+     "distToCageEdgeM": 0.0029,
+     "distToSurfaceM": 0.0029
     },
     {
      "name": "chin",
@@ -128,8 +128,8 @@
       229
      ],
      "insideCage": true,
-     "distToCageEdgePx": 113.0,
-     "distToCageEdgeM": 0.162,
+     "distToCageEdgePx": 109.0,
+     "distToCageEdgeM": 0.1563,
      "distToSurfaceM": 0.0
     },
     {
@@ -139,8 +139,8 @@
       174
      ],
      "insideCage": true,
-     "distToCageEdgePx": 45.0,
-     "distToCageEdgeM": 0.0645,
+     "distToCageEdgePx": 41.0,
+     "distToCageEdgeM": 0.0588,
      "distToSurfaceM": 0.0
     },
     {
@@ -150,8 +150,8 @@
       178
      ],
      "insideCage": true,
-     "distToCageEdgePx": 56.0,
-     "distToCageEdgeM": 0.0803,
+     "distToCageEdgePx": 53.0,
+     "distToCageEdgeM": 0.076,
      "distToSurfaceM": 0.0
     },
     {
@@ -161,8 +161,8 @@
       259
      ],
      "insideCage": true,
-     "distToCageEdgePx": 76.0,
-     "distToCageEdgeM": 0.109,
+     "distToCageEdgePx": 67.0,
+     "distToCageEdgeM": 0.0961,
      "distToSurfaceM": 0.0
     },
     {
@@ -172,8 +172,8 @@
       259
      ],
      "insideCage": true,
-     "distToCageEdgePx": 97.0,
-     "distToCageEdgeM": 0.1391,
+     "distToCageEdgePx": 89.0,
+     "distToCageEdgeM": 0.1276,
      "distToSurfaceM": 0.0
     },
     {
@@ -183,8 +183,8 @@
       341
      ],
      "insideCage": true,
-     "distToCageEdgePx": 18.0,
-     "distToCageEdgeM": 0.0258,
+     "distToCageEdgePx": 16.0,
+     "distToCageEdgeM": 0.0229,
      "distToSurfaceM": 0.0
     },
     {
@@ -194,8 +194,8 @@
       341
      ],
      "insideCage": true,
-     "distToCageEdgePx": 49.0,
-     "distToCageEdgeM": 0.0703,
+     "distToCageEdgePx": 46.0,
+     "distToCageEdgeM": 0.0659,
      "distToSurfaceM": 0.0
     },
     {
@@ -205,8 +205,8 @@
       335
      ],
      "insideCage": true,
-     "distToCageEdgePx": 154.0,
-     "distToCageEdgeM": 0.2208,
+     "distToCageEdgePx": 151.0,
+     "distToCageEdgeM": 0.2165,
      "distToSurfaceM": 0.0
     },
     {
@@ -216,8 +216,8 @@
       259
      ],
      "insideCage": true,
-     "distToCageEdgePx": 111.0,
-     "distToCageEdgeM": 0.1591,
+     "distToCageEdgePx": 102.0,
+     "distToCageEdgeM": 0.1462,
      "distToSurfaceM": 0.0
     },
     {
@@ -227,8 +227,8 @@
       310
      ],
      "insideCage": true,
-     "distToCageEdgePx": 147.0,
-     "distToCageEdgeM": 0.2108,
+     "distToCageEdgePx": 139.0,
+     "distToCageEdgeM": 0.1993,
      "distToSurfaceM": 0.0
     },
     {
@@ -238,8 +238,8 @@
       331
      ],
      "insideCage": true,
-     "distToCageEdgePx": 153.0,
-     "distToCageEdgeM": 0.2194,
+     "distToCageEdgePx": 149.0,
+     "distToCageEdgeM": 0.2136,
      "distToSurfaceM": 0.0
     },
     {
@@ -249,8 +249,8 @@
       376
      ],
      "insideCage": true,
-     "distToCageEdgePx": 171.0,
-     "distToCageEdgeM": 0.2452,
+     "distToCageEdgePx": 167.0,
+     "distToCageEdgeM": 0.2394,
      "distToSurfaceM": 0.0
     },
     {
@@ -260,8 +260,8 @@
       354
      ],
      "insideCage": true,
-     "distToCageEdgePx": 159.0,
-     "distToCageEdgeM": 0.228,
+     "distToCageEdgePx": 158.0,
+     "distToCageEdgeM": 0.2265,
      "distToSurfaceM": 0.0
     },
     {
@@ -271,8 +271,8 @@
       414
      ],
      "insideCage": true,
-     "distToCageEdgePx": 187.0,
-     "distToCageEdgeM": 0.2681,
+     "distToCageEdgePx": 180.0,
+     "distToCageEdgeM": 0.2581,
      "distToSurfaceM": 0.0
     },
     {
@@ -282,9 +282,9 @@
       623
      ],
      "insideCage": false,
-     "distToCageEdgePx": 7.0,
-     "distToCageEdgeM": 0.01,
-     "distToSurfaceM": 0.01
+     "distToCageEdgePx": 45.0,
+     "distToCageEdgeM": 0.0645,
+     "distToSurfaceM": 0.0645
     },
     {
      "name": "wrist_left",
@@ -293,9 +293,9 @@
       540
      ],
      "insideCage": false,
-     "distToCageEdgePx": 1.0,
-     "distToCageEdgeM": 0.0014,
-     "distToSurfaceM": 0.0014
+     "distToCageEdgePx": 33.0,
+     "distToCageEdgeM": 0.0473,
+     "distToSurfaceM": 0.0473
     },
     {
      "name": "hand_right",
@@ -304,9 +304,9 @@
       623
      ],
      "insideCage": false,
-     "distToCageEdgePx": 6.0,
-     "distToCageEdgeM": 0.0086,
-     "distToSurfaceM": 0.0086
+     "distToCageEdgePx": 53.0,
+     "distToCageEdgeM": 0.076,
+     "distToSurfaceM": 0.076
     },
     {
      "name": "wrist_right",
@@ -314,10 +314,10 @@
       716,
       540
      ],
-     "insideCage": true,
-     "distToCageEdgePx": 1.0,
-     "distToCageEdgeM": 0.0014,
-     "distToSurfaceM": 0.0
+     "insideCage": false,
+     "distToCageEdgePx": 34.0,
+     "distToCageEdgeM": 0.0487,
+     "distToSurfaceM": 0.0487
     },
     {
      "name": "hem_bottom_center",
@@ -356,16 +356,16 @@
   },
   "side": {
    "sign": -1,
-   "iou": 0.845,
-   "intersectionPx": 233894,
-   "unionPx": 276788,
+   "iou": 0.8706,
+   "intersectionPx": 228481,
+   "unionPx": 262449,
    "refPx": 238806,
-   "cagePx": 271876,
+   "cagePx": 252124,
    "landmarkCount": 23,
    "maxDistToCageEdgeM": 0.1591,
-   "meanDistToCageEdgeM": 0.0482,
-   "maxDistToSurfaceM": 0.0511,
-   "areaRatio": 1.1385,
+   "meanDistToCageEdgeM": 0.046,
+   "maxDistToSurfaceM": 0.0642,
+   "areaRatio": 1.0558,
    "points": [
     {
      "name": "hair_crown_top",
@@ -374,9 +374,9 @@
       44
      ],
      "insideCage": false,
-     "distToCageEdgePx": 2.0,
-     "distToCageEdgeM": 0.0029,
-     "distToSurfaceM": 0.0029
+     "distToCageEdgePx": 22.0,
+     "distToCageEdgeM": 0.0321,
+     "distToSurfaceM": 0.0321
     },
     {
      "name": "ahoge_tip",
@@ -385,9 +385,9 @@
       40
      ],
      "insideCage": false,
-     "distToCageEdgePx": 6.0,
-     "distToCageEdgeM": 0.0088,
-     "distToSurfaceM": 0.0088
+     "distToCageEdgePx": 26.0,
+     "distToCageEdgeM": 0.038,
+     "distToSurfaceM": 0.038
     },
     {
      "name": "horn_tip_back",
@@ -396,9 +396,9 @@
       131
      ],
      "insideCage": false,
-     "distToCageEdgePx": 35.0,
-     "distToCageEdgeM": 0.0511,
-     "distToSurfaceM": 0.0511
+     "distToCageEdgePx": 44.0,
+     "distToCageEdgeM": 0.0642,
+     "distToSurfaceM": 0.0642
     },
     {
      "name": "horn_root",
@@ -407,8 +407,8 @@
       74
      ],
      "insideCage": true,
-     "distToCageEdgePx": 28.0,
-     "distToCageEdgeM": 0.0409,
+     "distToCageEdgePx": 8.0,
+     "distToCageEdgeM": 0.0117,
      "distToSurfaceM": 0.0
     },
     {
@@ -418,8 +418,8 @@
       329
      ],
      "insideCage": true,
-     "distToCageEdgePx": 73.0,
-     "distToCageEdgeM": 0.1066,
+     "distToCageEdgePx": 56.0,
+     "distToCageEdgeM": 0.0818,
      "distToSurfaceM": 0.0
     },
     {
@@ -440,8 +440,8 @@
       295
      ],
      "insideCage": true,
-     "distToCageEdgePx": 73.0,
-     "distToCageEdgeM": 0.1066,
+     "distToCageEdgePx": 63.0,
+     "distToCageEdgeM": 0.092,
      "distToSurfaceM": 0.0
     },
     {
@@ -462,8 +462,8 @@
       363
      ],
      "insideCage": true,
-     "distToCageEdgePx": 36.0,
-     "distToCageEdgeM": 0.0526,
+     "distToCageEdgePx": 21.0,
+     "distToCageEdgeM": 0.0307,
      "distToSurfaceM": 0.0
     },
     {
@@ -473,8 +473,8 @@
       502
      ],
      "insideCage": true,
-     "distToCageEdgePx": 28.0,
-     "distToCageEdgeM": 0.0409,
+     "distToCageEdgePx": 26.0,
+     "distToCageEdgeM": 0.038,
      "distToSurfaceM": 0.0
     },
     {
@@ -484,9 +484,9 @@
       502
      ],
      "insideCage": false,
-     "distToCageEdgePx": 17.0,
-     "distToCageEdgeM": 0.0248,
-     "distToSurfaceM": 0.0248
+     "distToCageEdgePx": 18.0,
+     "distToCageEdgeM": 0.0263,
+     "distToSurfaceM": 0.0263
     },
     {
      "name": "waist_front",
@@ -506,9 +506,9 @@
       641
      ],
      "insideCage": false,
-     "distToCageEdgePx": 19.0,
-     "distToCageEdgeM": 0.0277,
-     "distToSurfaceM": 0.0277
+     "distToCageEdgePx": 25.0,
+     "distToCageEdgeM": 0.0365,
+     "distToSurfaceM": 0.0365
     },
     {
      "name": "hip_front",
@@ -517,8 +517,8 @@
       756
      ],
      "insideCage": true,
-     "distToCageEdgePx": 24.0,
-     "distToCageEdgeM": 0.035,
+     "distToCageEdgePx": 20.0,
+     "distToCageEdgeM": 0.0292,
      "distToSurfaceM": 0.0
     },
     {
@@ -528,8 +528,8 @@
       756
      ],
      "insideCage": true,
-     "distToCageEdgePx": 27.0,
-     "distToCageEdgeM": 0.0394,
+     "distToCageEdgePx": 21.0,
+     "distToCageEdgeM": 0.0307,
      "distToSurfaceM": 0.0
     },
     {
@@ -539,8 +539,8 @@
       964
      ],
      "insideCage": true,
-     "distToCageEdgePx": 15.0,
-     "distToCageEdgeM": 0.0219,
+     "distToCageEdgePx": 5.0,
+     "distToCageEdgeM": 0.0073,
      "distToSurfaceM": 0.0
     },
     {
@@ -594,9 +594,9 @@
       675
      ],
      "insideCage": false,
-     "distToCageEdgePx": 17.0,
-     "distToCageEdgeM": 0.0248,
-     "distToSurfaceM": 0.0248
+     "distToCageEdgePx": 11.0,
+     "distToCageEdgeM": 0.0161,
+     "distToSurfaceM": 0.0161
     },
     {
      "name": "hair_tail_tip",
@@ -624,16 +624,16 @@
   },
   "back": {
    "sign": 1,
-   "iou": 0.8984,
-   "intersectionPx": 405605,
-   "unionPx": 451465,
+   "iou": 0.8828,
+   "intersectionPx": 393983,
+   "unionPx": 446273,
    "refPx": 409647,
-   "cagePx": 447423,
+   "cagePx": 430609,
    "landmarkCount": 24,
-   "maxDistToCageEdgeM": 0.3885,
-   "meanDistToCageEdgeM": 0.1225,
-   "maxDistToSurfaceM": 0.0301,
-   "areaRatio": 1.0922,
+   "maxDistToCageEdgeM": 0.3369,
+   "meanDistToCageEdgeM": 0.1113,
+   "maxDistToSurfaceM": 0.0516,
+   "areaRatio": 1.0512,
    "points": [
     {
      "name": "hair_crown_top",
@@ -641,10 +641,10 @@
       1746,
       35
      ],
-     "insideCage": true,
-     "distToCageEdgePx": 5.0,
-     "distToCageEdgeM": 0.0072,
-     "distToSurfaceM": 0.0
+     "insideCage": false,
+     "distToCageEdgePx": 11.0,
+     "distToCageEdgeM": 0.0158,
+     "distToSurfaceM": 0.0158
     },
     {
      "name": "ahoge_tip",
@@ -652,10 +652,10 @@
       1746,
       30
      ],
-     "insideCage": true,
-     "distToCageEdgePx": 0.0,
-     "distToCageEdgeM": 0.0,
-     "distToSurfaceM": 0.0
+     "insideCage": false,
+     "distToCageEdgePx": 16.0,
+     "distToCageEdgeM": 0.0229,
+     "distToSurfaceM": 0.0229
     },
     {
      "name": "horn_tip_left",
@@ -664,9 +664,9 @@
       128
      ],
      "insideCage": false,
-     "distToCageEdgePx": 19.0,
-     "distToCageEdgeM": 0.0272,
-     "distToSurfaceM": 0.0272
+     "distToCageEdgePx": 18.0,
+     "distToCageEdgeM": 0.0258,
+     "distToSurfaceM": 0.0258
     },
     {
      "name": "horn_root_left",
@@ -675,8 +675,8 @@
       66
      ],
      "insideCage": true,
-     "distToCageEdgePx": 32.0,
-     "distToCageEdgeM": 0.0459,
+     "distToCageEdgePx": 13.0,
+     "distToCageEdgeM": 0.0186,
      "distToSurfaceM": 0.0
     },
     {
@@ -697,8 +697,8 @@
       66
      ],
      "insideCage": true,
-     "distToCageEdgePx": 36.0,
-     "distToCageEdgeM": 0.0516,
+     "distToCageEdgePx": 15.0,
+     "distToCageEdgeM": 0.0215,
      "distToSurfaceM": 0.0
     },
     {
@@ -708,9 +708,9 @@
       145
      ],
      "insideCage": false,
-     "distToCageEdgePx": 7.0,
-     "distToCageEdgeM": 0.01,
-     "distToSurfaceM": 0.01
+     "distToCageEdgePx": 6.0,
+     "distToCageEdgeM": 0.0086,
+     "distToSurfaceM": 0.0086
     },
     {
      "name": "head_widest_right",
@@ -719,9 +719,9 @@
       145
      ],
      "insideCage": false,
-     "distToCageEdgePx": 2.0,
-     "distToCageEdgeM": 0.0029,
-     "distToSurfaceM": 0.0029
+     "distToCageEdgePx": 3.0,
+     "distToCageEdgeM": 0.0043,
+     "distToSurfaceM": 0.0043
     },
     {
      "name": "nape_gem",
@@ -730,8 +730,8 @@
       343
      ],
      "insideCage": true,
-     "distToCageEdgePx": 155.0,
-     "distToCageEdgeM": 0.2222,
+     "distToCageEdgePx": 154.0,
+     "distToCageEdgeM": 0.2208,
      "distToSurfaceM": 0.0
     },
     {
@@ -741,8 +741,8 @@
       416
      ],
      "insideCage": true,
-     "distToCageEdgePx": 167.0,
-     "distToCageEdgeM": 0.2394,
+     "distToCageEdgePx": 168.0,
+     "distToCageEdgeM": 0.2409,
      "distToSurfaceM": 0.0
     },
     {
@@ -752,8 +752,8 @@
       328
      ],
      "insideCage": true,
-     "distToCageEdgePx": 27.0,
-     "distToCageEdgeM": 0.0387,
+     "distToCageEdgePx": 25.0,
+     "distToCageEdgeM": 0.0358,
      "distToSurfaceM": 0.0
     },
     {
@@ -763,8 +763,8 @@
       328
      ],
      "insideCage": true,
-     "distToCageEdgePx": 61.0,
-     "distToCageEdgeM": 0.0875,
+     "distToCageEdgePx": 57.0,
+     "distToCageEdgeM": 0.0817,
      "distToSurfaceM": 0.0
     },
     {
@@ -774,8 +774,8 @@
       407
      ],
      "insideCage": true,
-     "distToCageEdgePx": 185.0,
-     "distToCageEdgeM": 0.2652,
+     "distToCageEdgePx": 179.0,
+     "distToCageEdgeM": 0.2566,
      "distToSurfaceM": 0.0
     },
     {
@@ -785,8 +785,8 @@
       569
      ],
      "insideCage": true,
-     "distToCageEdgePx": 271.0,
-     "distToCageEdgeM": 0.3885,
+     "distToCageEdgePx": 235.0,
+     "distToCageEdgeM": 0.3369,
      "distToSurfaceM": 0.0
     },
     {
@@ -796,8 +796,8 @@
       488
      ],
      "insideCage": true,
-     "distToCageEdgePx": 227.0,
-     "distToCageEdgeM": 0.3254,
+     "distToCageEdgePx": 208.0,
+     "distToCageEdgeM": 0.2982,
      "distToSurfaceM": 0.0
     },
     {
@@ -807,8 +807,8 @@
       548
      ],
      "insideCage": true,
-     "distToCageEdgePx": 225.0,
-     "distToCageEdgeM": 0.3226,
+     "distToCageEdgePx": 192.0,
+     "distToCageEdgeM": 0.2753,
      "distToSurfaceM": 0.0
     },
     {
@@ -818,8 +818,8 @@
       549
      ],
      "insideCage": true,
-     "distToCageEdgePx": 228.0,
-     "distToCageEdgeM": 0.3269,
+     "distToCageEdgePx": 192.0,
+     "distToCageEdgeM": 0.2753,
      "distToSurfaceM": 0.0
     },
     {
@@ -829,8 +829,8 @@
       517
      ],
      "insideCage": true,
-     "distToCageEdgePx": 51.0,
-     "distToCageEdgeM": 0.0731,
+     "distToCageEdgePx": 25.0,
+     "distToCageEdgeM": 0.0358,
      "distToSurfaceM": 0.0
     },
     {
@@ -840,9 +840,9 @@
       497
      ],
      "insideCage": false,
-     "distToCageEdgePx": 15.0,
-     "distToCageEdgeM": 0.0215,
-     "distToSurfaceM": 0.0215
+     "distToCageEdgePx": 35.0,
+     "distToCageEdgeM": 0.0502,
+     "distToSurfaceM": 0.0502
     },
     {
      "name": "hand_right",
@@ -851,8 +851,8 @@
       516
      ],
      "insideCage": true,
-     "distToCageEdgePx": 52.0,
-     "distToCageEdgeM": 0.0746,
+     "distToCageEdgePx": 21.0,
+     "distToCageEdgeM": 0.0301,
      "distToSurfaceM": 0.0
     },
     {
@@ -862,9 +862,9 @@
       504
      ],
      "insideCage": false,
-     "distToCageEdgePx": 9.0,
-     "distToCageEdgeM": 0.0129,
-     "distToSurfaceM": 0.0129
+     "distToCageEdgePx": 36.0,
+     "distToCageEdgeM": 0.0516,
+     "distToSurfaceM": 0.0516
     },
     {
      "name": "hem_bottom_center",
@@ -910,16 +910,16 @@
    "yM_cage": 0.01,
    "dY": 0.0,
    "rx_ref": 0.4552,
-   "rx_cage": 0.4552,
-   "dX": 0.0,
+   "rx_cage": 0.43,
+   "dX": 0.0252,
    "ryF_ref": 0.1818,
    "ryF_cage": 0.1818,
    "dZF": 0.0,
    "ryB_ref": 0.3015,
    "ryB_cage": 0.3015,
    "dZB": 0.0,
-   "maxDeltaM": 0.0,
-   "maxDeltaPct": 0.0,
+   "maxDeltaM": 0.0252,
+   "maxDeltaPct": 1.575,
    "pass": true
   },
   {
@@ -938,7 +938,7 @@
    "ryB_cage": 0.2435,
    "dZB": 0.0004,
    "maxDeltaM": 0.0007,
-   "maxDeltaPct": 0.044,
+   "maxDeltaPct": 0.041,
    "pass": true
   },
   {
@@ -1046,13 +1046,13 @@
    "rx_cage": 0.1257,
    "dX": 0.0081,
    "ryF_ref": 0.0518,
-   "ryF_cage": 0.0829,
-   "dZF": 0.0311,
+   "ryF_cage": 0.075,
+   "dZF": 0.0232,
    "ryB_ref": 0.0971,
-   "ryB_cage": 0.1059,
-   "dZB": 0.0088,
-   "maxDeltaM": 0.0311,
-   "maxDeltaPct": 1.944,
+   "ryB_cage": 0.095,
+   "dZB": 0.0021,
+   "maxDeltaM": 0.0232,
+   "maxDeltaPct": 1.45,
    "pass": true
   },
   {
@@ -1065,13 +1065,13 @@
    "rx_cage": 0.1401,
    "dX": 0.0004,
    "ryF_ref": 0.1394,
-   "ryF_cage": 0.1387,
-   "dZF": 0.0007,
+   "ryF_cage": 0.108,
+   "dZF": 0.0314,
    "ryB_ref": 0.1219,
-   "ryB_cage": 0.1215,
-   "dZB": 0.0004,
-   "maxDeltaM": 0.0007,
-   "maxDeltaPct": 0.044,
+   "ryB_cage": 0.098,
+   "dZB": 0.0239,
+   "maxDeltaM": 0.0314,
+   "maxDeltaPct": 1.962,
    "pass": true
   },
   {
@@ -1084,20 +1084,20 @@
    "rx_cage": 0.1276,
    "dX": 0.0,
    "ryF_ref": 0.119,
-   "ryF_cage": 0.119,
-   "dZF": 0.0,
+   "ryF_cage": 0.09,
+   "dZF": 0.029,
    "ryB_ref": 0.1088,
-   "ryB_cage": 0.1088,
-   "dZB": 0.0,
-   "maxDeltaM": 0.0,
-   "maxDeltaPct": 0.0,
+   "ryB_cage": 0.09,
+   "dZB": 0.0188,
+   "maxDeltaM": 0.029,
+   "maxDeltaPct": 1.812,
    "pass": true
   }
  ],
  "checks": {
-  "iou_front": 0.9017,
-  "iou_side": 0.845,
-  "iou_back": 0.8984,
+  "iou_front": 0.8869,
+  "iou_side": 0.8706,
+  "iou_back": 0.8828,
   "iouAllPass": true,
   "iouMin": {
    "front": 0.88,
@@ -1108,15 +1108,15 @@
    0.97,
    1.06
   ],
-  "areaRatioFront": 1.089,
-  "areaRatioSide": 1.1385,
-  "areaRatioBack": 1.0922,
-  "areaRatioPass": false,
+  "areaRatioFront": 1.0477,
+  "areaRatioSide": 1.0558,
+  "areaRatioBack": 1.0512,
+  "areaRatioPass": true,
   "landmarkMinPerView": 23,
   "landmarkCountPass": true,
-  "maxDistToSurfaceM": 0.0511,
+  "maxDistToSurfaceM": 0.076,
   "surfaceDistPass": false,
-  "stationMaxDeltaPct": 1.944,
+  "stationMaxDeltaPct": 1.962,
   "stationPass": true
  },
  "ok": false

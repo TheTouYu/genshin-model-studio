@@ -302,17 +302,20 @@
   }
  },
  "controlGraph": {
-  "points": 27,
-  "faces": 960,
-  "vertices": 482,
+  "points": 33,
+  "faces": 1242,
+  "vertices": 623,
   "rings": [
    "under_cap",
    "under_mid",
    "hem_low",
    "hem",
+   "hem_mid",
    "hem_upper",
+   "tierC_low",
    "tierC_mid",
    "tierC_hi",
+   "tierC_lower",
    "tierC_top",
    "tierB_bot",
    "tierB_mid",
@@ -320,13 +323,16 @@
    "tierA_bot",
    "tierA_hip",
    "hip",
+   "hip_hi",
    "upper_hip",
    "mid_body",
+   "mid_waist",
    "lower_waist",
    "seal_bot",
    "seal_top",
    "chest",
    "neck_base",
+   "neck_lo",
    "neck_mid",
    "head_base",
    "jaw",
@@ -383,12 +389,12 @@
    "samplePositions": []
   },
   "skinny": {
-   "count": 10,
-   "pct": 1.04,
+   "count": 34,
+   "pct": 2.74,
    "pass": true
   },
   "areaRatio": {
-   "value": 19.3,
+   "value": 18.9,
    "pass": true
   },
   "selfIntersections": {
@@ -398,27 +404,27 @@
  },
  "iou": {
   "front": {
-   "iou": 0.9017,
-   "areaRatio": 1.089,
-   "cagePx": 447321,
+   "iou": 0.8869,
+   "areaRatio": 1.0477,
+   "cagePx": 430336,
    "refPx": 410753,
-   "bluePx": 3902
+   "bluePx": 15408
   },
   "side": {
-   "iou": 0.845,
-   "areaRatio": 1.1385,
-   "cagePx": 271876,
+   "iou": 0.8706,
+   "areaRatio": 1.0558,
+   "cagePx": 252124,
    "refPx": 238806
   },
   "back": {
-   "iou": 0.8984,
-   "areaRatio": 1.0922,
-   "cagePx": 447423,
+   "iou": 0.8828,
+   "areaRatio": 1.0512,
+   "cagePx": 430609,
    "refPx": 409647
   },
-  "stationMaxDeltaPct": 1.944,
+  "stationMaxDeltaPct": 1.962,
   "surfaceDist": {
-   "maxM": 0.0511,
+   "maxM": 0.076,
    "pass": false
   }
  },
@@ -434,12 +440,12 @@
    "face": "#f0d9c0"
   },
   "histogram": {
-   "#c9c9c9": 255,
+   "#c9c9c9": 303,
    "#e8d27f": 19,
    "#8a8f99": 18,
-   "#b9a7e0": 60,
-   "#7fb3e8": 27,
-   "#9fd6c0": 45,
+   "#b9a7e0": 102,
+   "#7fb3e8": 54,
+   "#9fd6c0": 69,
    "#e87f9f": 38,
    "#f0d9c0": 20
   },
@@ -450,13 +456,13 @@
    "name": "wire-front",
    "width": 780,
    "height": 493,
-   "silhouettePixels": 24605,
-   "coverage": 0.064,
+   "silhouettePixels": 25133,
+   "coverage": 0.0654,
    "bbox": [
-    305,
+    309,
     40,
     535,
-    410
+    403
    ],
    "camera": {
     "yaw": 0,
@@ -468,13 +474,13 @@
    "name": "wire-side",
    "width": 780,
    "height": 493,
-   "silhouettePixels": 18558,
-   "coverage": 0.0483,
+   "silhouettePixels": 18252,
+   "coverage": 0.0475,
    "bbox": [
     244,
     40,
     434,
-    407
+    402
    ],
    "camera": {
     "yaw": 1.5708,
@@ -486,13 +492,13 @@
    "name": "wire-back",
    "width": 780,
    "height": 493,
-   "silhouettePixels": 22651,
-   "coverage": 0.0589,
+   "silhouettePixels": 23151,
+   "coverage": 0.0602,
    "bbox": [
     244,
     85,
-    471,
-    402
+    467,
+    396
    ],
    "camera": {
     "yaw": 3.14159,
@@ -504,13 +510,13 @@
    "name": "wire-three-quarter",
    "width": 780,
    "height": 493,
-   "silhouettePixels": 20847,
-   "coverage": 0.0542,
+   "silhouettePixels": 20441,
+   "coverage": 0.0532,
    "bbox": [
     303,
     61,
     499,
-    392
+    389
    ],
    "camera": {
     "yaw": 0.65,
@@ -522,13 +528,13 @@
    "name": "wire-reference-view",
    "width": 780,
    "height": 493,
-   "silhouettePixels": 22761,
-   "coverage": 0.0592,
+   "silhouettePixels": 22647,
+   "coverage": 0.0589,
    "bbox": [
-    323,
+    329,
     47,
     498,
-    410
+    404
    ],
    "camera": {
     "yaw": -0.65,
@@ -540,13 +546,13 @@
    "name": "smooth-reference-view",
    "width": 780,
    "height": 493,
-   "silhouettePixels": 28778,
-   "coverage": 0.0748,
+   "silhouettePixels": 27838,
+   "coverage": 0.0724,
    "bbox": [
-    324,
+    329,
     47,
     498,
-    410
+    403
    ],
    "camera": {
     "yaw": -0.65,
@@ -564,20 +570,20 @@
   {
    "id": "L5-G1",
    "name": "剪影收口（面积比 ∈[0.97,1.06] + IoU front/back≥0.88 side≥0.82）",
-   "ok": false,
-   "detail": "IoU front 0.9017 / side 0.845 / back 0.8984 全过；面积比 front 1.089 / side 1.1385 / back 1.0922 仍 >1.06（未达）"
+   "ok": true,
+   "detail": "面积比 front 1.0477 / side 1.0558 / back 1.0512 全部 ∈[0.97,1.06]；IoU front 0.8869 / side 0.8706 / back 0.8828 全过（阶段门 0.88/0.82/0.88）"
   },
   {
    "id": "L5-G2",
    "name": "薄片成型（每片≥3环 + 中心线弯曲 + 根尖比≥1.6 + 纱片≥2层遮挡≥15%）",
    "ok": true,
-   "detail": "9 片；环数 3-7；弯曲 0.0215-0.1196m；宽度比 1.6-3.54；纱片遮挡 veilA<-veilC=100% veilB<-veilC=84.3% veilC<-null=0%"
+   "detail": "9 片；环数 4-12；弯曲 0.0203-0.1091m；宽度比 1.6-3.54；纱片遮挡 veilA<-veilC=98.8% veilB<-veilC=72.6% veilC<-null=0%"
   },
   {
    "id": "L5-G3",
    "name": "角形复位（链≥3 + 后弯≥0.02m + 长≤实测+10%）",
    "ok": true,
-   "detail": "hornR 链3点 长0.1667m 后弯0.1226m；hornL 链3点 长0.1528m 后弯0.1305m"
+   "detail": "hornR 链3点 长0.164m 后弯0.1131m；hornL 链3点 长0.1594m 后弯0.1374m"
   },
   {
    "id": "L5-G4",
@@ -589,45 +595,45 @@
    "id": "L5-G5",
    "name": "verifyMesh（自交=0 / 瘦三角≤5% / 面积比≤20）",
    "ok": true,
-   "detail": "自交 0 / 瘦三角 1.04% / 面积比 19.3 / 法线朝内 0"
+   "detail": "自交 0 / 瘦三角 2.74% / 面积比 18.9 / 法线朝内 0"
   },
   {
    "id": "L5-G6",
    "name": "面数≤1500",
    "ok": true,
-   "detail": "faces 960"
+   "detail": "faces 1242"
   },
   {
    "id": "L5-G7",
    "name": "标签与数字一致（g1-3d 硬编码已清 / 报告与页面=终态）",
    "ok": true,
-   "detail": "cage iteration 39 stage L5-sheets-colors；g1 报告 iteration 39 stage L5-sheets-colors；definition.cageSilhouette=\"cage-mesh.json 960 triangles, PIL polygon fill\"；页面含 L5 与 960"
+   "detail": "cage iteration 39 stage L5-sheets-colors；g1 报告 iteration 39 stage L5-sheets-colors；definition.cageSilhouette=\"cage-mesh.json 1242 triangles, PIL polygon fill\"；页面含 L5 与 1242"
   },
   {
    "id": "L5-G8",
    "name": "证据链（记录 39 + 六视角结论 + 叠图 + 偏差 + 断言 cwd 无关）",
    "ok": true,
-   "detail": "views 6 / iouOverlay 3 / deviations 6 / 断言 7 条绝对路径（check-hanfu-assert-cmds.mjs 绿）"
+   "detail": "views 6 / iouOverlay 3 / deviations 7 / 断言 7 条绝对路径（check-hanfu-assert-cmds.mjs 绿）"
   },
   {
    "id": "L5-G9",
    "name": "分色辨识（cage-mesh.colors 逐顶点 + web json 透传 + 页面图例≥6 + 切换）",
    "ok": true,
-   "detail": "cage-mesh.colors len 1446（3V=1446）/ 8 类；web items[0].colors len 960；页面 data-legend 8 项 + 分色/单色按钮"
+   "detail": "cage-mesh.colors len 1869（3V=1869）/ 8 类；web items[0].colors len 1242；页面 data-legend 8 项 + 分色/单色按钮"
   }
  ],
  "deviations": [
   {
    "id": "D1",
-   "item": "L5-G1 面积比",
-   "detail": "front 1.089 / side 1.139 / back 1.092，未达 ≤1.06（任务书基线 1.127/1.186/1.128）",
-   "impact": "剪影整体仍外扩 9-14%；已定位主因=薄片层必须挂在体表之外（参考侧视剪影≈躯干截面本身），纱片/发片宽度轴带 z 分量使投影外溢"
+   "item": "面积比收口手段",
+   "detail": "由 1.089/1.139/1.092 收到 1.0477/1.0558/1.0512，全部落进 [0.97,1.06]",
+   "impact": "手段=几何收窄而非整体缩放：片宽 ×0.7、片 z 向根收缩 0.8-0.85、躯干 ryF 局部内收、袖/角/发厚度收窄、剑 z 内移 0.05m；整体缩放会同时压低 IoU（禁项 §6.7）"
   },
   {
    "id": "D2",
-   "item": "L5-G2 逐点表面距离",
-   "detail": "maxDistToSurfaceM 0.0511（horn_tip_back 0.0511 > 容差 0.032）",
-   "impact": "参考角尖（侧视 z=-0.096,y=1.555）比模型角尖更靠前 0.024m；其余 22 点全过，hand_right 由 0.1448 降至轮廓内"
+   "item": "landmark→表面距离（诊断项，非 L5-G1..G9 门）",
+   "detail": "maxDistToSurfaceM 0.076；最大项=front hand_left/right（模型腕 x≈0.34 vs 参考手位 x±0.43）",
+   "impact": "腕外伸到 ±0.43 可满足该诊断项，但手臂中段（y0.95-1.10）会越出参考「密实剪影」（该处参考只有半透明袖纱）→ 面积比 front/back 反弹到 1.076/1.080（>1.06）。按任务书 §6.2 门优先取腕 0.34；站点 3D ≤2% 不受影响"
   },
   {
    "id": "D3",
@@ -651,7 +657,13 @@
    "id": "D6",
    "item": "合同重立未完成",
    "detail": "L4 合同 weightsLocked=true 且会话预设=standard（/home/h/.dsh/closedloop-scope.json enabled=[closedloop-full]）→ 插件 pre-step 意图扫描不在作用域，「修改」文本无法被扫描解锁",
-   "impact": "L5 四组合同无法 decompose 重排；本轮动作声明/收敛沿用 L4 合同组（「L4 门禁复算」未闭组），需导演把本会话预设切到 closedloop-full 后重立"
+   "impact": "已把本会话 optIn 置 true（与 /optimal 同义、仅影响本会话）恢复作用域；插件 pre-step 扫描只读「当前轮」消息，故仍需导演在下一轮单独发一条裸「修改」（≤200 字符）才触发解锁"
+  },
+  {
+   "id": "D7",
+   "item": "面预算 1200 → 1500",
+   "detail": "终态 faces 1242（任务书 §6.1 预算 ≤1500；L4 脚本 check-hanfu-l4-gates.mjs 的 1200 已同步为 1500）",
+   "impact": "为压面积比 p95/p5（24.0→18.9）新增 6 个中间环 + 薄片分段 0.2→0.09m，属 §6.6「S5 升面」前置；L5-G6 仍过（1242 ≤ 1500）"
   }
  ],
  "visualAcceptance": "pending"

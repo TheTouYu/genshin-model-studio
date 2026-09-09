@@ -1,20 +1,20 @@
 {
  "front": {
-  "iou": 0.9017,
-  "interPx": 406851,
-  "bluePx": 3902,
-  "redPx": 40470
+  "iou": 0.8869,
+  "interPx": 395345,
+  "bluePx": 15408,
+  "redPx": 34991
  },
  "side": {
-  "iou": 0.845,
-  "interPx": 233894,
-  "bluePx": 4912,
-  "redPx": 37982
+  "iou": 0.8706,
+  "interPx": 228481,
+  "bluePx": 10325,
+  "redPx": 23643
  },
  "back": {
-  "iou": 0.8984,
-  "interPx": 405605,
-  "bluePx": 4042,
-  "redPx": 41818
+  "iou": 0.8828,
+  "interPx": 393983,
+  "bluePx": 15664,
+  "redPx": 36626
  }
 }

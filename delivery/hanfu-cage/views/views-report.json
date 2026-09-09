@@ -17,13 +17,13 @@
     "wire-front": {
       "width": 780,
       "height": 493,
-      "silhouettePixels": 24605,
-      "coverage": 0.064,
+      "silhouettePixels": 25133,
+      "coverage": 0.0654,
       "bbox": [
-        305,
+        309,
         40,
         535,
-        410
+        403
       ],
       "camera": {
         "yaw": 0,
@@ -33,13 +33,13 @@
     "wire-side": {
       "width": 780,
       "height": 493,
-      "silhouettePixels": 18558,
-      "coverage": 0.0483,
+      "silhouettePixels": 18252,
+      "coverage": 0.0475,
       "bbox": [
         244,
         40,
         434,
-        407
+        402
       ],
       "camera": {
         "yaw": 1.5708,
@@ -49,13 +49,13 @@
     "wire-back": {
       "width": 780,
       "height": 493,
-      "silhouettePixels": 22651,
-      "coverage": 0.0589,
+      "silhouettePixels": 23151,
+      "coverage": 0.0602,
       "bbox": [
         244,
         85,
-        471,
-        402
+        467,
+        396
       ],
       "camera": {
         "yaw": 3.14159,
@@ -65,13 +65,13 @@
     "wire-three-quarter": {
       "width": 780,
       "height": 493,
-      "silhouettePixels": 20847,
-      "coverage": 0.0542,
+      "silhouettePixels": 20441,
+      "coverage": 0.0532,
       "bbox": [
         303,
         61,
         499,
-        392
+        389
       ],
       "camera": {
         "yaw": 0.65,
@@ -81,13 +81,13 @@
     "wire-reference-view": {
       "width": 780,
       "height": 493,
-      "silhouettePixels": 22761,
-      "coverage": 0.0592,
+      "silhouettePixels": 22647,
+      "coverage": 0.0589,
       "bbox": [
-        323,
+        329,
         47,
         498,
-        410
+        404
       ],
       "camera": {
         "yaw": -0.65,
@@ -97,13 +97,13 @@
     "smooth-reference-view": {
       "width": 780,
       "height": 493,
-      "silhouettePixels": 28778,
-      "coverage": 0.0748,
+      "silhouettePixels": 27838,
+      "coverage": 0.0724,
       "bbox": [
-        324,
+        329,
         47,
         498,
-        410
+        403
       ],
       "camera": {
         "yaw": -0.65,
