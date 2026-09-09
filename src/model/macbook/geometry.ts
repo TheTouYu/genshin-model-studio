@@ -8,7 +8,7 @@ import { Texture } from '../../render/image.js';
 import { Vec3, v3, clamp } from '../../render/math.js';
 import {
   roundedRectPath, pathAt, sweepSurface, patch, lin, disk, cylinderSide,
-  polygonFill, roundedRectOutline, extrudeOutline, plateWithHoles, plateFill, RRect,
+  polygonFill, roundedRectOutline, extrudeOutline, plateWithHoles, plateFill, RRect, PathPt,
 } from '../../geom/solids.js';
 import { S, KB_ROWS } from './spec.js';
 
@@ -381,13 +381,21 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
   {
     // 内缩必须 ≥ 顶部倒角(B.fillet=1.55)，否则板角穿出圆角管（实测 0.45mm 黑色楔形）
     const outline: RRect = { cx: 0, cz: 0, w: B.w - 2.7, d: B.d - 2.7, r: B.r - 1.35 };
+    const hslot = S.hinge.slot;
     const holes: RRect[] = [
       { cx: 0, cz: wellCz, w: wellW, d: wellD, r: 4.0 },
       { cx: -grilleCx, cz: wellCz, w: S.grille.w, d: S.grille.d, r: S.grille.r },
       { cx: grilleCx, cz: wellCz, w: S.grille.w, d: S.grille.d, r: S.grille.r },
+      { cx: 0, cz: hslot.cz, w: hslot.w, d: hslot.d, r: hslot.r },
     ];
     b.material(M.ALU);
-    plateWithHoles(b, outline, holes, deckY, { maxCell: mc(24) });
+    // maxCell=24mm 时圆角外轮廓被 z 带切成台阶（R20 角最多内缩 ~3.6mm）→ 台面在四角够不到侧壁，
+    // 露出内部（用户 2026-09-10 圈出的"透明角"，左右两侧都有）。6mm 档把台阶压到 0.23mm 以内。
+    plateWithHoles(b, outline, holes, deckY, { maxCell: mc(6) });
+    // 转轴槽：台面后缘挖一条凹槽（槽底 + 槽壁），转轴筒藏在槽里 —— 真机开盖时看到的就是这条槽。
+    b.material(M.HINGE);
+    plateFill(b, { cx: 0, cz: hslot.cz, w: hslot.w, d: hslot.d, r: hslot.r }, deckY - hslot.depth, { nu: sc(64, 10), nt: 2, cornerSegs: sc(6, 4), vertexSampling: true });
+    extrudeOutline(b, roundedRectOutline(hslot.w, hslot.d, hslot.r, 0, hslot.cz, sc(6, 4), sc(10, 8)), deckY - hslot.depth, deckY, { flipWall: true });
     // 键盘井底/井壁是**黑色阳极氧化**（MBP 14 起键盘区为黑色底衬）。
     // 实测判据：用户参考图 键盘和触控板.png 里键间槽底色 rgb(15,14,14)；
     // 我旧版用 M.ALU → 渲染读作 rgb(194,193,192)（裁判 C 逐像素点名："真 MacBook 键盘槽是黑的"）。
@@ -545,11 +553,11 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     const surf = (u: number, v: number): Vec3 => { const p = surf0(u, v); return v3(p.x, p.y, p.z + L.d / 2); };
     patch(b, (u, v) => xf(surf(u, v)), lin(0, 1, sc(448, 96)), lin(0, 1, prof.length - 1));
 
-    const plateLocal = (outline: RRect, holes: RRect[], y: number, flip: boolean, mat: number, opts2: { nu?: number; nt?: number; maxCell?: number; uv?: (x: number, z: number) => [number, number] } = {}): void => {
+    const plateLocal = (outline: RRect, holes: RRect[], y: number, flip: boolean, mat: number, opts2: { nu?: number; nt?: number; maxCell?: number; cornerSegs?: number; uv?: (x: number, z: number) => [number, number] } = {}): void => {
       const tmp = new MeshBuilder();
       tmp.material(0);
-      if (holes.length) plateWithHoles(tmp, outline, holes, y, { maxCell: opts2.maxCell ?? mc(24), flip });
-      else plateFill(tmp, outline, y, { nu: opts2.nu ?? sc(64, 8), nt: opts2.nt ?? sc(3, 1), flip, uv: opts2.uv, cornerSegs: sc(10, 6), vertexSampling: true });
+      if (holes.length) plateWithHoles(tmp, outline, holes, y, { maxCell: opts2.maxCell ?? mc(6), flip });
+      else plateFill(tmp, outline, y, { nu: opts2.nu ?? sc(64, 8), nt: opts2.nt ?? sc(3, 1), flip, uv: opts2.uv, cornerSegs: opts2.cornerSegs ?? sc(10, 6), vertexSampling: true });
       const md = tmp.build();
       b.material(mat);
       const idx: number[] = [];
@@ -569,10 +577,24 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     const actCz = L.d - scr.chin - scr.h / 2;
     const act: RRect = { cx: 0, cz: actCz, w: scr.w, d: scr.h, r: scr.r };
     const YG = -0.25;                        // 玻璃平面（焊接容差 0.2mm 之上）
-    plateLocal(inner, [act], YG, true, M.GLASS, { maxCell: mc(24) });
+    // 玻璃边框 = inner → act 的环形面片（两条圆角矩形路径按同一 u 参数插值）。
+    // 旧版走 plateWithHoles 挖洞：扫描线网格 maxCell=mc(24)=24mm，R9.5 的活动区圆角被切成台阶，
+    // 掠射角下就是一排锯齿（用户 2026-09-10 圈出来的那处）。环形面片的洞边 = 活动区路径细采样（48 段/角）。
+    {
+      const mkPath = (rr: RRect): PathPt[] => roundedRectPath(rr.w, rr.d, rr.r, sc(48, 8)).map((q) => ({ x: q.x, z: q.z + rr.cz, nx: q.nx, nz: q.nz, u: q.u }));
+      const pOut = mkPath(inner);
+      // 内边界比活动区大 0.2mm：屏幕平面压在环形面片之上，保证掠射角下不漏出下面的铝面
+      const pAct = mkPath({ cx: act.cx, cz: act.cz, w: act.w + 0.2, d: act.d + 0.2, r: act.r + 0.1 });
+      b.material(M.GLASS);
+      patch(b, (u, v) => {
+        const o = pathAt(pOut, u), a = pathAt(pAct, u);
+        return xf(loc(v3(o.x + (a.x - o.x) * v, YG, o.z + (a.z - o.z) * v)));
+      }, lin(0, 1, sc(384, 64)), [0, 1]);
+      // 注：pAct 的 u 参数化必须与 pOut 同源（同段数）——两条路径都是 48 段/角，u 一一对应
+    }
     if (assets.screenTex) {
       plateLocal(act, [], YG + 0.002, true, M.SCREEN, {
-        nu: 64, nt: 2,
+        nu: 64, nt: 2, cornerSegs: sc(48, 8),
         uv: (x, z) => [(x - (act.cx - act.w / 2)) / act.w, 1 - (z - (act.cz - act.d / 2)) / act.d],
       });
       const notchCz = actCz + scr.h / 2 - scr.notchH / 2;
@@ -605,20 +627,33 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     }
   }
 
-  // ============ 8. 转轴 ============
+  // ============ 8. 转轴（槽内筒 + 两端端盖） ============
   {
     b.material(M.HINGE);
-    const r = S.hinge.rodD / 2, segs = sc(20, 8), xSegs = sc(20, 28);
+    const r = S.hinge.rodD / 2, segs = sc(20, 8), xSegs = sc(16, 20);
+    const hy = S.hinge.rodY, hz = S.hinge.rodZ, hw = S.hinge.coverW;
     for (let j = 0; j < xSegs; j++) {
-      const x0 = -S.hinge.coverW / 2 + (S.hinge.coverW * j) / xSegs;
-      const x1 = -S.hinge.coverW / 2 + (S.hinge.coverW * (j + 1)) / xSegs;
+      const x0 = -hw / 2 + (hw * j) / xSegs;
+      const x1 = -hw / 2 + (hw * (j + 1)) / xSegs;
       for (let i = 0; i < segs; i++) {
         const a0 = (i / segs) * Math.PI * 2, a1 = ((i + 1) / segs) * Math.PI * 2;
         const n0 = v3(0, Math.sin(a0), Math.cos(a0)), n1 = v3(0, Math.sin(a1), Math.cos(a1));
-        const p0 = v3(x0, hingeY + n0.y * r, hingeZ + n0.z * r), p1 = v3(x0, hingeY + n1.y * r, hingeZ + n1.z * r);
-        const p2 = v3(x1, hingeY + n1.y * r, hingeZ + n1.z * r), p3 = v3(x1, hingeY + n0.y * r, hingeZ + n0.z * r);
+        const p0 = v3(x0, hy + n0.y * r, hz + n0.z * r), p1 = v3(x0, hy + n1.y * r, hz + n1.z * r);
+        const p2 = v3(x1, hy + n1.y * r, hz + n1.z * r), p3 = v3(x1, hy + n0.y * r, hz + n0.z * r);
         const v0 = b.vertex(p0, n0, 0, 0), v1 = b.vertex(p1, n1, 1, 0), v2 = b.vertex(p2, n1, 1, 1), v3v = b.vertex(p3, n0, 0, 1);
         b.quad(v0, v1, v2, v3v);
+      }
+    }
+    // 端盖（旧版是两端开口的管，侧视直接看到空心内壁 —— 用户点名的那处"没做细节处理"）
+    for (const sx of [-1, 1]) {
+      const xc = (sx * hw) / 2, nx = v3(sx, 0, 0);
+      const c = b.vertex(v3(xc, hy, hz), nx, 0.5, 0.5);
+      for (let i = 0; i < segs; i++) {
+        const a0 = (i / segs) * Math.PI * 2, a1 = ((i + 1) / segs) * Math.PI * 2;
+        const p0 = v3(xc, hy + Math.sin(a0) * r, hz + Math.cos(a0) * r);
+        const p1 = v3(xc, hy + Math.sin(a1) * r, hz + Math.cos(a1) * r);
+        const v0 = b.vertex(p0, nx, 0, 0), v1 = b.vertex(p1, nx, 1, 1);
+        if (sx < 0) b.tri(c, v1, v0); else b.tri(c, v0, v1);
       }
     }
   }

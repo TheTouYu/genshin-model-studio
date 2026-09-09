@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>MacBook 14″ · 页面渲染总览（v8 六张 + 本轮修复特写）</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; padding: 26px 30px 70px; background: #14151a; color: #e8e9ec;
+         font: 14px/1.6 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; }
+  h1 { font-size: 19px; font-weight: 600; margin: 0 0 4px; }
+  h2 { font-size: 15px; font-weight: 600; margin: 34px 0 14px; color: #cfd2d9; }
+  p.lead { margin: 0 0 6px; color: #9a9da6; }
+  a { color: #7fb4ff; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(400px, 1fr)); gap: 22px; }
+  .grid.small { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+  figure { margin: 0; background: #1c1d23; border: 1px solid #2b2d36; border-radius: 10px; overflow: hidden; }
+  figure img { display: block; width: 100%; height: auto; background: #000; }
+  figcaption { padding: 9px 13px 11px; font-size: 13px; color: #b9bcc4; }
+  figcaption b { color: #e8e9ec; font-weight: 600; }
+  .meta { color: #7e828c; font-size: 12px; }
+  .note { margin-top: 30px; padding: 14px 16px; background: #1c1d23; border: 1px solid #2b2d36;
+          border-radius: 10px; color: #b9bcc4; font-size: 13px; }
+  .note li { margin: 5px 0; }
+</style>
+</head>
+<body>
+  <h1>MacBook Pro 14″ · 浏览器页面渲染总览</h1>
+  <p class="lead">同一份网格（<code>web/draw/macbook-current.json</code>）+ 同一套影棚环境，全部由
+    <a href="./photo.html" target="_blank">/draw/photo.html</a> 实时渲染后直接读画布像素。
+    <a href="./compare-v8.png" target="_blank">→ 与配对参考图并排</a></p>
+
+  <h2>协议 6 张（与 v7 同条件：配对参考图 / 画布 / 背景）</h2>
+  <div class="grid">
+    <figure>
+      <a href="./v8/p1-closedtop.png" target="_blank"><img src="./v8/p1-closedtop.png" alt="1 闭合俯视 closedtop" loading="lazy"></a>
+      <figcaption><b>1 闭合俯视 closedtop</b><br><span class="meta">900×724 · 白底 · 配对参考：俯视图.png</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v8/p2-screenfront.png" target="_blank"><img src="./v8/p2-screenfront.png" alt="2 屏幕正面 screenfront" loading="lazy"></a>
+      <figcaption><b>2 屏幕正面 screenfront</b><br><span class="meta">1000×627 · 白底 · 配对参考：正视图.png</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v8/p3-kb.png" target="_blank"><img src="./v8/p3-kb.png" alt="3 键盘+触控板 kb" loading="lazy"></a>
+      <figcaption><b>3 键盘+触控板 kb</b><br><span class="meta">880×680 · 白底 · 配对参考：键盘和触控板.png</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v8/p4-ports.png" target="_blank"><img src="./v8/p4-ports.png" alt="4 左侧接口 ports" loading="lazy"></a>
+      <figcaption><b>4 左侧接口 ports</b><br><span class="meta">1180×395 · 暗底 · 配对参考：official-mbp14-ports-1.jpg</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v8/p5-hero.png" target="_blank"><img src="./v8/p5-hero.png" alt="5 3/4 开盖 hero" loading="lazy"></a>
+      <figcaption><b>5 3/4 开盖 hero</b><br><span class="meta">860×520 · 暗底 · 配对参考：official-mbp14-hero.jpg</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v8/p6-bottom.png" target="_blank"><img src="./v8/p6-bottom.png" alt="6 底面 bottom" loading="lazy"></a>
+      <figcaption><b>6 底面 bottom</b><br><span class="meta">880×600 · 灰底 · 配对参考：apple-mbp13-bottom-case-official.jpg</span></figcaption>
+    </figure>
+  </div>
+
+  <h2>本轮修复的四处（用户点名）</h2>
+  <div class="grid">
+    <figure>
+      <a href="./v8/qa/hinge-open.png" target="_blank"><img src="./v8/qa/hinge-open.png" alt="转轴（开盖）" loading="lazy"></a>
+      <figcaption><b>转轴（开盖）</b><br><span class="meta">槽内筒 + 端盖，筒不再悬空在台面上</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v8/qa/hinge-closed.png" target="_blank"><img src="./v8/qa/hinge-closed.png" alt="转轴（合盖）" loading="lazy"></a>
+      <figcaption><b>转轴（合盖）</b><br><span class="meta">合盖息屏：旧版壁纸会从盖缝里透出来（彩色像素 8914 → 23）</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v8/qa/deckL.png" target="_blank"><img src="./v8/qa/deckL.png" alt="台面左前角" loading="lazy"></a>
+      <figcaption><b>台面左前角</b><br><span class="meta">圆角台阶 3.6mm → 0.23mm，不再"透明看到里面"</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v8/qa/deckR.png" target="_blank"><img src="./v8/qa/deckR.png" alt="台面右前角" loading="lazy"></a>
+      <figcaption><b>台面右前角</b><br><span class="meta">同上，右侧同样验证</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v8/qa/bezel.png" target="_blank"><img src="./v8/qa/bezel.png" alt="屏幕边框/活动区" loading="lazy"></a>
+      <figcaption><b>屏幕边框/活动区</b><br><span class="meta">玻璃边框改环形面片（48 段/角），洞边不再锯齿</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v8/qa/cornerL.png" target="_blank"><img src="./v8/qa/cornerL.png" alt="上盖左前角" loading="lazy"></a>
+      <figcaption><b>上盖左前角</b><br><span class="meta">圆角 + 镜面高光连续</span></figcaption>
+    </figure>
+  </div>
+
+  <h2>开合盖（页面已接入动画：按钮「开 / 合盖」或按 L / 空格）</h2>
+  <div class="grid small">
+    <figure>
+      <a href="./v8/lid/100.png" target="_blank"><img src="./v8/lid/100.png" alt="上盖 100°" loading="lazy"></a>
+      <figcaption><b>上盖 100°</b><br><span class="meta">undefined</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v8/lid/66.png" target="_blank"><img src="./v8/lid/66.png" alt="上盖 66°" loading="lazy"></a>
+      <figcaption><b>上盖 66°</b><br><span class="meta">undefined</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v8/lid/33.png" target="_blank"><img src="./v8/lid/33.png" alt="上盖 33°" loading="lazy"></a>
+      <figcaption><b>上盖 33°</b><br><span class="meta">undefined</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v8/lid/0.png" target="_blank"><img src="./v8/lid/0.png" alt="上盖 0°" loading="lazy"></a>
+      <figcaption><b>上盖 0°</b><br><span class="meta">undefined</span></figcaption>
+    </figure>
+  </div>
+
+  <div class="note">
+    <b>本轮改动（都在盘档）</b>
+    <ul>
+      <li><b>合盖息屏</b>：屏幕自发光随开合角淡出（0° 全灭），旧版合盖后壁纸从盖缝透出。</li>
+      <li><b>转轴</b>：台面后缘开槽（槽底 + 槽壁），转轴筒藏进槽里并加两端端盖；旧版是悬空 Ø6 开口管。</li>
+      <li><b>台面四角</b>：挖孔板件的扫描线网格 24mm → 6mm，圆角台阶 3.6mm → 0.23mm。</li>
+      <li><b>屏幕边框</b>：玻璃边框改环形面片，活动区洞边 48 段/角。</li>
+      <li><b>键帽圆角</b>：4 段/角 → 12 段/角（880px 下不再是八边形）。</li>
+      <li><b>页面动画</b>：<code>__photo.animLid/toggleLid</code> + UI 按钮 + L / 空格快捷键。</li>
+    </ul>
+    <p style="margin:10px 0 0">已知未修：<code>control</code>/<code>command</code> 字标缺尾字母（图集矩形比键窄）、触控板暗缝左右不对称、底盖刻蚀读作虚线块。</p>
+  </div>
+</body>
+</html>

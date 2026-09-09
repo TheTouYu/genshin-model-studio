@@ -74,6 +74,9 @@ if (MESH) {
 await sleep(2000)   // 等纹理/PMREM 完全就绪
 // 线框模式（几何取证用：看顶面网格/轮廓，不受材质与光照干扰）
 if (arg('wire', '') === '1') { await evalJS('window.__photo.wireframe(true)'); await sleep(400) }
+// 指定上盖角度（空=网格存储姿态）：拍开合过程中的任意一帧
+const LIDDEG = arg('lid', '')
+if (LIDDEG !== '') { await evalJS(`window.__photo.setLid(${Number(LIDDEG)})`); await sleep(400) }
 
 const vp = await evalJS('JSON.stringify({iw: innerWidth, ih: innerHeight, cw: document.getElementById("canvas").width, ch: document.getElementById("canvas").height})')
 const hud = await evalJS(`document.getElementById('hud') ? document.getElementById('hud').textContent : ''`)
@@ -113,13 +116,16 @@ for (const v of VIEWS) {
   // 上盖姿态自检（2026-09-10 加）：lidGroup 局部坐标按 R(-angle0) 反解，静态出图必须把
   // rotation.x 还原成 -angle0，否则 angle0≠0 的网格会静默渲染成合盖（本轮踩过，白跑一炉）。
   const lidMeta = await evalJS('JSON.stringify(window.__lidMeta)')
-  const lidRot = await evalJS('window.__lidGroup ? window.__lidGroup.rotation.x : null')
+  // 注意：合盖时 rotation.x = -0，CDP 对 -0 返回 unserializableValue 而非 value → 直接取值会得到
+  // undefined（本轮误报过一次 [LID-MISMATCH]）。所以显式转字符串再解析。
+  const lidRot = await evalJS('window.__lidGroup ? String(window.__lidGroup.rotation.x) : "nogroup"')
+  const hasLid = await evalJS('!!window.__lidGroup')
   let lidCheck = null
   if (lidMeta && lidMeta !== 'null') {
     const lm = JSON.parse(lidMeta)
-    const want = -lm.angle0 * Math.PI / 180
+    const want = -(LIDDEG !== '' ? Number(LIDDEG) : lm.angle0) * Math.PI / 180
     const got = Number(lidRot)
-    lidCheck = { angle0: lm.angle0, rot: +got.toFixed(4), want: +want.toFixed(4), ok: Math.abs(got - want) < 1e-3 }
+    lidCheck = { angle0: lm.angle0, hasGroup: !!hasLid, rot: +got.toFixed(4), want: +want.toFixed(4), ok: !!hasLid && Math.abs(got - want) < 1e-3 }
     if (!lidCheck.ok) console.error(`[LID-MISMATCH] ${v}: rotation.x=${got} 期望 ${want.toFixed(4)} → 出图无效`)
   }
   const dataUrl = await evalJS(`document.getElementById('canvas').toDataURL('image/png')`)

@@ -30,7 +30,10 @@ const mesh = built.mesh;
 // 转轴数值取 spec.ts（L.closedY / L.hingeZ），与 geometry.ts 的 xf() 同源，避免两处漂移。
 let LID = null;
 {
-  const zero = buildMacbook14({ openAngle: 0, screenOn, color, lod, legends: false }, { logo }).mesh;
+  // 参考姿态必须与输出姿态不同，否则一个顶点都不会"动"→ 闭合网格拿不到 lid 区间
+  // （2026-09-10 修：闭合网格缺 lid 字段 → 页面不知道该合盖，屏幕不熄 → 合盖后壁纸从缝里透出来）
+  const refAngle = openAngle === 0 ? 100 : 0;
+  const zero = buildMacbook14({ openAngle: refAngle, screenOn, color, lod, legends: false }, { logo }).mesh;
   if (zero.pos.length !== mesh.pos.length || zero.idx.length !== mesh.idx.length) {
     console.warn('!! lid 标记跳过：两个姿态的拓扑不一致（顶点/索引数不同）');
   } else {

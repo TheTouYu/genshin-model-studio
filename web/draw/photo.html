@@ -36,12 +36,13 @@
   <div class="row" id="rowView"></div>
   <div class="row" id="rowPreset"></div>
   <div class="row">
+    <button id="btnLid">开 / 合盖</button>
     <button id="btnReset">重置视角</button>
     <button id="btnQ">画质：高</button>
     <button id="btnSave">保存 PNG</button>
     <button id="btnHud">隐藏文字</button>
   </div>
-  <div class="hint">拖动旋转 · 滚轮缩放 · Shift / 右键拖动平移</div>
+  <div class="hint">拖动旋转 · 滚轮缩放 · Shift / 右键拖动平移 · L 开合盖</div>
 </div>
 <script>
 /**
@@ -99,6 +100,18 @@
     closedtop:{ azim: 0,   elev: 89, dist: 0.550, fov: 30, target: [0, 0.008, 0.000] },  // 0.385 时 312.6mm 宽被画框裁掉两侧
     // 底盖俯视（配对 `底盖和100°侧面姿态.png` 的底盖部分）
     bottom:   { azim: 0,   elev: -88, dist: 0.50, fov: 30, target: [0, 0.000, 0.000], noRefl: true },  // 0.40 时底面被裁
+    // 转轴特写（左后方低角度）：看槽内筒、端面、盖缝。用户 2026-09-10 点名的位置。
+    hinge:    { azim: 212, elev: 16, dist: 0.34, fov: 30, target: [-0.010, 0.013, -0.095] },
+    hingel:   { azim: 262, elev: 9,  dist: 0.30, fov: 28, target: [-0.090, 0.011, -0.090] },
+    // 屏幕边框/活动区边缘特写（用户 2026-09-10 圈的那处：掠射角下的台阶）
+    bezel:    { azim: -22, elev: -9, dist: 0.30, fov: 32, target: [-0.100, 0.055, -0.060] },
+    bezel2:   { azim: -42, elev: -26, dist: 0.17, fov: 30, target: [-0.135, 0.035, -0.080] },
+    // 上盖前角特写（用户 2026-09-10：这两个角在反光场景下像透明能看到里面）
+    cornerL:  { azim: 208, elev: 24, dist: 0.16, fov: 30, target: [-0.150, 0.212, -0.136] },
+    cornerR:  { azim: 152, elev: 24, dist: 0.16, fov: 30, target: [0.150, 0.212, -0.136] },
+    // 台面前角（掌托左侧，用户最后圈的那处：反光时像透明能看到里面）
+    deckL:    { azim: -46, elev: 42, dist: 0.26, fov: 32, target: [-0.140, 0.010, 0.098] },
+    deckR:    { azim: 46,  elev: 42, dist: 0.26, fov: 32, target: [0.140, 0.010, 0.098] },
   }
 
   function boot(THREE) {
@@ -276,7 +289,8 @@
         window.__screenMat.map = t
         window.__screenMat.emissiveMap = t
         window.__screenMat.emissive = new THREE.Color(0xffffff)
-        window.__screenMat.emissiveIntensity = 1.40
+        window.__screenMat.emissiveIntensity = SCREEN_BASE
+        lidScreen(lidDeg)          // 贴图晚到：重新按当前开合角决定亮灭（合盖必须熄屏）
         window.__screenMat.needsUpdate = true
       }
       hud.textContent = hud.textContent + ' · screen tex ok'
@@ -383,7 +397,7 @@
           window.__screenUV = { uSpan: uSpan, vSpan: vSpan, normal: [nrm.x, nrm.y, nrm.z] }
           g.setAttribute('uv', new THREE.BufferAttribute(uv, 2))
           window.__screenMat = mat
-          if (screenTex) { mat.map = screenTex; mat.emissiveMap = screenTex; mat.emissive = new THREE.Color(0xffffff); mat.emissiveIntensity = 1.40; mat.needsUpdate = true }
+          if (screenTex) { mat.map = screenTex; mat.emissiveMap = screenTex; mat.emissive = new THREE.Color(0xffffff); mat.emissiveIntensity = SCREEN_BASE; mat.needsUpdate = true }
         }
         var mesh = new THREE.Mesh(g, mat)
         mesh.frustumCulled = false
@@ -396,7 +410,7 @@
       var sz = box.getSize(new THREE.Vector3())
       var diag = sz.length()
       // 视角表用绝对坐标（模型尺寸固定）；bbox 仅记录到 HUD 供核对
-      hud.textContent = 'photo mode ready · ' + groups.size + ' materials · ' +
+      hud.textContent = 'photo mode ready ' + BUILD + ' · ' + groups.size + ' materials · ' +
         (F.length / 3) + ' tris · bbox ' + sz.x.toFixed(2) + '×' + sz.y.toFixed(2) + '×' + sz.z.toFixed(2)
       // ---------- 上盖拆分：上盖是刚体，页面绕转轴旋转即可开盖/合盖 ----------
       // mesh JSON 的 lid = {from,to,hingeY,hingeZ,angle}（page-mesh.mjs 用「同参数再建一次 0° 姿态、
@@ -436,10 +450,10 @@
           lidGroup.add(new THREE.Mesh(lg, m.material))
         })
         root.add(lidGroup)
-        // 初始姿态必须还原成网格存储姿态（局部坐标已按 R(-angle0) 反解）：demo 每帧调 setLid 覆写，
-        // 静态出图/交互浏览不会调 → 少了这行，任何 angle0≠0 的网格都渲染成合盖（2026-09-10 修）
-        lidGroup.rotation.x = -lidAngle0 * Math.PI / 180
+        // 先挂到 window 再 applyLid（applyLid 从 window.__lidGroup 取句柄，顺序反了就静默不动）
         window.__lidGroup = lidGroup
+        // 初始姿态 = 网格存储姿态（angle0）；顺带按开合角决定屏幕亮灭（合盖熄屏）
+        applyLid(lidAngle0)
         window.__lidMeta = { from: LID.from, to: LID.to, angle0: lidAngle0, hingeY: LID.hingeY, hingeZ: LID.hingeZ }
       }
       // 倒影副本（低不透明度；材质克隆避免共享）
@@ -649,6 +663,30 @@
       return sm
     }
 
+    // ---------- 上盖开合（静态出图 / 交互 / 演示共用一套） ----------
+    // lidAngle0 = 网格存储的开盖角（page-mesh.mjs 写入 mesh JSON 的 lid.angle）。
+    // 上盖局部坐标已按 R(-angle0) 反解，所以「渲染成网格姿态」= rotation.x 取 -lidAngle0。
+    // 旧版少了这一步，任何 angle0≠0 的网格静态出图都会静默合盖（2026-09-10 修）。
+    var lidDeg = 0, lidAnimId = 0
+    var BUILD = 'v8.1'              // HUD 里显示：用于识别浏览器缓存的旧页面（本轮踩过）
+    var SCREEN_BASE = 1.40          // 屏幕自发光标定值（对贴图实测均值 222）
+    function lidScreen(deg) {
+      // 合盖息屏：0° 全灭、≥12° 全亮（真机合盖屏幕不发光；旧版合盖后光会从盖缝漏出来）
+      if (!window.__screenMat) return
+      var k = Math.max(0, Math.min(1, (deg - 3) / 9))
+      window.__screenMat.emissiveIntensity = SCREEN_BASE * k
+    }
+    function applyLid(deg) {
+      var lg = window.__lidGroup
+      if (!lg) return null
+      var r = -deg * Math.PI / 180
+      lg.rotation.x = r
+      if (window.__lidReflGroup) window.__lidReflGroup.rotation.x = r
+      lidDeg = deg
+      lidScreen(deg)
+      return deg
+    }
+
     window.__photo = {
       ready: false,
       views: Object.keys(VIEWS),
@@ -770,22 +808,38 @@
         return { view: name, w: canvas.width, h: canvas.height, seed: shotSeed, post: JSON.parse(JSON.stringify(POST)) }
       },
       hud: function (on) { hud.style.display = on ? '' : 'none' },
-      // ---------- 演示视频用：开盖 / 亮屏 / 倒影强度 / 线框 ----------
-      // 开盖：上盖是刚体，绕转轴旋转即可。theta=0 闭合、100 全开（= 网格姿态）。
-      // 与 geometry.ts 的 xf 同式：世界 = R(θ)·局部 + hinge；THREE 的 rotation.x 取 -θ。
-      setLid: function (deg) {
-        var lg = window.__lidGroup
-        if (!lg) return null
-        var r = -deg * Math.PI / 180
-        lg.rotation.x = r
-        if (window.__lidReflGroup) window.__lidReflGroup.rotation.x = r
-        return deg
+      // ---------- 开盖 / 合盖 ----------
+      // 上盖是刚体：局部坐标已按 R(-angle0) 反解，绕转轴改 rotation.x 即可（THREE 取 -θ）。
+      // theta=0 闭合、100 全开（= 网格姿态）。合盖时屏幕必须熄灭：真机合盖息屏，
+      // 而且旧版合盖后屏幕自发光会从盖缝里漏出来（用户 2026-09-10 点名）。
+      lid: function () { return lidDeg },
+      setLid: function (deg) { return applyLid(deg) },
+      animLid: function (to, ms) {
+        var from = lidDeg, t0 = performance.now()
+        ms = Math.max(120, ms || 900)
+        if (lidAnimId) cancelAnimationFrame(lidAnimId)
+        return new Promise(function (done) {
+          function step() {
+            var t = Math.min(1, (performance.now() - t0) / ms)
+            var e = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2   // easeInOutQuad
+            applyLid(from + (to - from) * e)
+            renderLive()
+            if (t < 1) { lidAnimId = requestAnimationFrame(step) } else { lidAnimId = 0; endLive(); done(to) }
+          }
+          lidAnimId = requestAnimationFrame(step)
+        })
+      },
+      toggleLid: function (ms) {
+        // 目标角从 mesh JSON 的 lid.angle 取（lidAngle0 是 buildMesh 内的局部变量，闭包里取不到）
+        var a0 = (window.__lidMeta && window.__lidMeta.angle0) || 100
+        return window.__photo.animLid(lidDeg > 50 ? 0 : a0, ms || 900)
       },
       lidRange: function () { return window.__lidMeta || null },
       // 亮屏：屏幕材质是 emissive；0=全黑，1.4=标定亮度（对贴图实测 222 均值）
       screenOn: function (k) {
         if (!window.__screenMat) return null
-        window.__screenMat.emissiveIntensity = k
+        SCREEN_BASE = k
+        lidScreen(lidDeg)          // 仍受开合角约束：合盖时保持熄灭
         return k
       },
       // 倒影（用户点名喜欢的「半透明镜像」）：0..1
@@ -1044,6 +1098,8 @@
       if (VIEW_KEYS[k]) { applyView(VIEW_KEYS[k]); render(); refreshBtns(); return }
       if (PRESET_KEYS[k]) { setPreset(PRESET_KEYS[k]); applyView(curView); render(); refreshBtns(); return }
       if (k === 'h') { hud.style.display = hud.style.display === 'none' ? '' : 'none' }
+      if (k === 'l') { window.__photo.toggleLid(900); return }
+      if (k === ' ') { window.__photo.toggleLid(900); ev.preventDefault(); return }
     })
     window.addEventListener('resize', function () {
       resize(Math.max(320, window.innerWidth), Math.max(240, window.innerHeight))
@@ -1100,8 +1156,9 @@
     // ---------- 按钮面板 ----------
     var VIEW_LABEL = { hero: '3/4 视角', front: '正面', closedtop: '闭合俯视', screenfront: '屏幕正面',
                        screen34: '屏幕 3/4', kb: '键盘俯视', top: '顶视', ports: '接口特写',
-                       side: '侧面', lid: '上盖特写', bottom: '底面' }
-    var VIEW_ORDER = ['hero', 'front', 'closedtop', 'screenfront', 'screen34', 'kb', 'top', 'ports', 'side', 'lid', 'bottom']
+                       side: '侧面', lid: '上盖特写', bottom: '底面',
+                       hinge: '转轴特写', hingel: '转轴侧面', bezel: '边框特写', cornerL: '左前角', cornerR: '右前角', deckL: '台面左前角', deckR: '台面右前角' }
+    var VIEW_ORDER = ['hero', 'front', 'closedtop', 'screenfront', 'screen34', 'kb', 'top', 'ports', 'side', 'lid', 'hinge', 'hingel', 'bezel', 'cornerL', 'cornerR', 'deckL', 'deckR', 'bottom']
     var PRESET_LABEL = { white: '白底', dark: '深色', grey: '灰底' }
     var rowView = document.getElementById('rowView')
     var rowPreset = document.getElementById('rowPreset')
@@ -1128,6 +1185,7 @@
         b.className = (b.dataset.preset === curPreset) ? 'on' : ''
       })
     }
+    document.getElementById('btnLid').onclick = function () { window.__photo.toggleLid(900) }
     document.getElementById('btnReset').onclick = function () { applyView(curView); render(); refreshBtns() }
     document.getElementById('btnQ').onclick = function () {
       setQuality(QUALITY === 'high' ? 'low' : 'high')
