@@ -75,7 +75,7 @@
 
 ## 未闭合项（2026-09-09 笔记本 v1/v2 审美失败复盘登记）
 
-- O-2026-09-09-01：笔记本 v3 重做（设计保真版）**未开始**。输入 = `reference/macbook/design-reference.md` + `docs/game-engine-knowledge/laptop-design-fidelity-matrix-2026-09-09.md`；待定：是否继续纯平面件表达连续圆角、复刻哪一代机型（MBP13 2020 有 Touch Bar / Air M2 无风扇无格栅）。
+- O-2026-09-09-01：笔记本 v3 重做（设计保真版）**挂起——用户裁决「不做，等我给你指示」（2026-09-09 真人帧）**。不排期、不擅自开工；重启条件=用户明确指示（届时先定机型 A/B/C，见 `reference/macbook/design-reference.md` §13）。输入 = `reference/macbook/design-reference.md` + `docs/game-engine-knowledge/laptop-design-fidelity-matrix-2026-09-09.md`；待定：是否继续纯平面件表达连续圆角、复刻哪一代机型（MBP13 2020 有 Touch Bar / Air M2 无风扇无格栅）。
 - O-2026-09-09-02：平面件体系**不可表达**项：键帽字符/图例、Apple logo 字形、Touch Bar 内容——需决定「凹槽+色差近似」还是「显式声明放弃」。
 - O-2026-09-09-03：门禁补强未做：① 轮廓一致性（所有面外轮廓 = 同一条圆角折线）② 上盖 vs 机身穿模 ③ 全机间隙一致性 ④ 结构隐藏（轴端/盖板/螺丝）。v2 实测：四角方角越界 4.14mm、上盖后缘穿入机身 6.60mm、rod 端 Ø4mm 外露——三类门禁全绿也没拦住。
 - O-2026-09-09-04：**已闭合（2026-09-09）**——按任务流分三次 scoped 提交：`005eeec` GIA 缩放两参数（src/cli + src/web-shared + 两 index.html + tests + docs/gia-format.md + iteration-records/40 + delivery/scale-params）、`cf9445e` `/api/history` 四端点 + 两条历史入库、`503a548` v1/v2 交付归档（exports/laptop*、scripts/parts/laptop-*.js、iteration-records/01-06/08-12、两份 PROMPT）。体积控制：`exports/*/eval*/trace.jsonl` 进 .gitignore（5.6 MB trace 不入库，报告留档）。汉服流（package.json 的 jimp、delivery/hanfu-*、web/draw/hanfu-*）**未碰**，仍归其任务。
