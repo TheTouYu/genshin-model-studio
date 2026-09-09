@@ -72,6 +72,8 @@ if (MESH) {
   if (!ok) throw new Error('mesh load failed: ' + MESH)
 }
 await sleep(2000)   // 等纹理/PMREM 完全就绪
+// 线框模式（几何取证用：看顶面网格/轮廓，不受材质与光照干扰）
+if (arg('wire', '') === '1') { await evalJS('window.__photo.wireframe(true)'); await sleep(400) }
 
 const vp = await evalJS('JSON.stringify({iw: innerWidth, ih: innerHeight, cw: document.getElementById("canvas").width, ch: document.getElementById("canvas").height})')
 const hud = await evalJS(`document.getElementById('hud') ? document.getElementById('hud').textContent : ''`)
@@ -108,11 +110,23 @@ for (const v of VIEWS) {
   // 于是画布只占画面左上 1133×672，右侧/底部是黑的，曾被误读成"渲染缺陷"。
   const screenBox = await evalJS('JSON.stringify(window.__photo.screenBox())')
   const screenQuad = await evalJS('JSON.stringify(window.__photo.screenQuad())')
+  // 上盖姿态自检（2026-09-10 加）：lidGroup 局部坐标按 R(-angle0) 反解，静态出图必须把
+  // rotation.x 还原成 -angle0，否则 angle0≠0 的网格会静默渲染成合盖（本轮踩过，白跑一炉）。
+  const lidMeta = await evalJS('JSON.stringify(window.__lidMeta)')
+  const lidRot = await evalJS('window.__lidGroup ? window.__lidGroup.rotation.x : null')
+  let lidCheck = null
+  if (lidMeta && lidMeta !== 'null') {
+    const lm = JSON.parse(lidMeta)
+    const want = -lm.angle0 * Math.PI / 180
+    const got = Number(lidRot)
+    lidCheck = { angle0: lm.angle0, rot: +got.toFixed(4), want: +want.toFixed(4), ok: Math.abs(got - want) < 1e-3 }
+    if (!lidCheck.ok) console.error(`[LID-MISMATCH] ${v}: rotation.x=${got} 期望 ${want.toFixed(4)} → 出图无效`)
+  }
   const dataUrl = await evalJS(`document.getElementById('canvas').toDataURL('image/png')`)
   const file = path.join(OUT, `p${VIEWS.indexOf(v) + 1}-${v}.png`)
   fs.writeFileSync(file, Buffer.from(String(dataUrl).split(',')[1], 'base64'))
   // 快速指纹：中心区域像素统计（确认不是空帧）
-  shots.push({ view: v, file, bytes: fs.statSync(file).size, screenBox: screenBox && screenBox !== 'null' ? JSON.parse(screenBox) : null, screenQuad: screenQuad && screenQuad !== 'null' ? JSON.parse(screenQuad) : null })
+  shots.push({ view: v, file, bytes: fs.statSync(file).size, screenBox: screenBox && screenBox !== 'null' ? JSON.parse(screenBox) : null, screenQuad: screenQuad && screenQuad !== 'null' ? JSON.parse(screenQuad) : null, lid: lidCheck })
 }
 const report = { ready, vp, fingerprint, shots }
 const REP = arg('report', '')

@@ -436,6 +436,9 @@
           lidGroup.add(new THREE.Mesh(lg, m.material))
         })
         root.add(lidGroup)
+        // 初始姿态必须还原成网格存储姿态（局部坐标已按 R(-angle0) 反解）：demo 每帧调 setLid 覆写，
+        // 静态出图/交互浏览不会调 → 少了这行，任何 angle0≠0 的网格都渲染成合盖（2026-09-10 修）
+        lidGroup.rotation.x = -lidAngle0 * Math.PI / 180
         window.__lidGroup = lidGroup
         window.__lidMeta = { from: LID.from, to: LID.to, angle0: lidAngle0, hingeY: LID.hingeY, hingeZ: LID.hingeZ }
       }
