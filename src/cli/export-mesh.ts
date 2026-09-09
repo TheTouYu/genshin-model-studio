@@ -56,6 +56,11 @@ function usage(): string {
     '  --format <fmt>     output formats: gil, gia, or both (default: both)',
     '  --budget <N>       face budget: mark summary when the unit count exceeds N',
     '  --no-gate          skip the verification gate (summary notes SKIPPED_GATE)',
+    '  --max-skinny-pct <P>   skinny-triangle percentage limit (default 5)',
+    '  --max-area-ratio <R>   p95/p5 area ratio limit (default 20)',
+    '  --assembly         multi-shell assembly mode: open edges / cross-shell intersections',
+    '                     are reported but not treated as gate failures (weld/normals/',
+    '                     degenerate/skinny/areaRatio/budget stay enforced)',
     '  --no-qa            skip the post-export QA audit (default: run it)',
     '  --root-scale <S>   main-model scale written as GIA root (default 0.1); item data is divided by S',
     '  --overall-scale <K> overall size multiplier: root = S*K, item data unchanged (default 1)',
@@ -72,6 +77,9 @@ function parseArgs(argv: string[]): {
   budget: number | null
   force: boolean
   noGate: boolean
+  assembly: boolean
+  maxSkinnyPct: number | null
+  maxAreaRatio: number | null
   qa: boolean
   summaryFormat: 'text' | 'json'
   rootScale: number
@@ -85,6 +93,9 @@ function parseArgs(argv: string[]): {
     budget: null as number | null,
     force: false,
     noGate: false,
+    assembly: false,
+    maxSkinnyPct: null as number | null,
+    maxAreaRatio: null as number | null,
     qa: true,
     summaryFormat: 'text' as 'text' | 'json',
     rootScale: ROOT_SCALE,
@@ -113,6 +124,20 @@ function parseArgs(argv: string[]): {
       result.budget = value
     } else if (arg === '--force') result.force = true
     else if (arg === '--no-gate') result.noGate = true
+    else if (arg === '--assembly') result.assembly = true
+    else if (arg === '--max-skinny-pct') {
+      const value = Number(next())
+      if (!Number.isFinite(value) || value < 0) {
+        throw new Error(`[error] --max-skinny-pct must be a non-negative number (got ${value})`)
+      }
+      result.maxSkinnyPct = value
+    } else if (arg === '--max-area-ratio') {
+      const value = Number(next())
+      if (!Number.isFinite(value) || value < 0) {
+        throw new Error(`[error] --max-area-ratio must be a non-negative number (got ${value})`)
+      }
+      result.maxAreaRatio = value
+    }
     else if (arg === '--no-qa') result.qa = false
     else if (arg === '--format-txt') {
       const value = next()
@@ -286,7 +311,11 @@ function main(): void {
   // 无 mesh item 的输入没有可校验几何，门禁无事可做（不拦截）。
   const gateRan = !args.noGate && meshes.length > 0
   const gate: MeshVerifyResult | null = gateRan
-    ? verifyMeshExport(meshes, stats.map((s) => s.budget.used), requested)
+    ? verifyMeshExport(meshes, stats.map((s) => s.budget.used), requested, {
+        assembly: args.assembly,
+        ...(args.maxSkinnyPct === null ? {} : { maxSkinnyPct: args.maxSkinnyPct }),
+        ...(args.maxAreaRatio === null ? {} : { maxAreaRatio: args.maxAreaRatio })
+      })
     : null
 
   const meshModel = {

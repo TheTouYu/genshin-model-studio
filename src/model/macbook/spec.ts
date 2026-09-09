@@ -57,7 +57,7 @@ export const S = {
   feet: { d: 15.0, h: 0.55, insetX: 22.0, insetZ: 20.0 },
   /** 底盖后缘螺丝（pentalobe，可见） */
   screws: { d: 3.2, insetX: 33.0, insetZ: 6.5 },
-  grille: { w: 12.0, d: 96.0, r: 3.0, dotD: 0.42, dotPitch: 0.86, depth: 0.18 },
+  grille: { w: 12.0, d: 96.0, r: 3.0, dotD: 0.42, dotPitch: 0.86, depth: 0.30 },
   /** 侧壁接口：左（前→后）MagSafe3 / USB-C / USB-C / 3.5mm；右（前→后）HDMI / USB-C / SDXC */
   ports: {
     /** 接口中心距底面的高度 */

@@ -56,7 +56,7 @@ const TW0=Date.now();
 initMsTable();
 const assets = loadAssets(workerData.screenOn);
 const TW1=Date.now();
-const built = buildMacbook14({ openAngle: workerData.openAngle, screenOn: workerData.screenOn, color: workerData.color ?? 'silver' }, assets);
+const built = buildMacbook14({ openAngle: workerData.openAngle, screenOn: workerData.screenOn, color: workerData.color ?? 'silver', lod: workerData.lod ?? 1, legends: workerData.legends !== false }, assets);
 if (workerData.aluRough !== undefined && workerData.aluRough !== null) { for (const m of built.materials) if (m && m.name === 'alu-silver') m.roughness = workerData.aluRough; }
 const mats = built.materials;
 const b = new MeshBuilder();

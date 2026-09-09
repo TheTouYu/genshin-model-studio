@@ -415,3 +415,31 @@ test('selfIntersections: far-apart non-intersecting triangles are NOT flagged (g
   assert.equal(r.checks.selfIntersections.pass, true)
   assert.equal(r.checks.selfIntersections.intersectingPairs, 0)
 })
+
+test('assembly mode: open shells become notes (not failures) but weld/normals stay hard', () => {
+  // 裂缝网格 = 水密圆柱少一个面：开边存在、无未焊接顶点、法线一致。
+  const cracked = crackMesh()
+  const strict = verifyMesh(cracked)
+  assert.equal(strict.ok, false, 'strict mode rejects open shells')
+  assert.equal(strict.checks.watertight.pass, false)
+
+  const assembly = verifyMesh(cracked, { assembly: true })
+  assert.equal(assembly.checks.watertight.pass, false, 'open edges are still reported')
+  assert.ok(
+    (assembly.notes ?? []).some((n) => n.includes('装配模式') && n.includes('开边')),
+    'assembly mode must explain the exemption in notes'
+  )
+  assert.equal(
+    assembly.failures.some((f) => f.includes('水密性未通过')),
+    false,
+    'watertight must not be a failure in assembly mode'
+  )
+  assert.equal(assembly.ok, true, 'cracked shell passes in assembly mode')
+})
+
+test('assembly mode does NOT relax hard checks (unwelded vertices still fail)', () => {
+  const r = verifyMesh(openCylinder(), { assembly: true })
+  assert.ok(r.checks.seams.seamCount > 0)
+  assert.equal(r.ok, false, 'seams remain a hard failure')
+  assert.ok(r.failures.some((f) => f.includes('未焊接顶点')))
+})

@@ -61,6 +61,16 @@ export type MeshVerifyOptions = {
   budget?: BudgetInfo
   /** 每个检查最多采样定位数。缺省 5。 */
   maxSamples?: number
+  /**
+   * 多壳体装配模式（默认 false=单一水密壳语义）。
+   *
+   * 产品级装配件（机身 + 上盖 + 78 键 + 端口腔体…）由多个独立闭合/开放壳组成，
+   * 壳间必然有开边与跨壳相交——这不是网格缺陷，而是装配语义。开启后：
+   *   - watertight：开边/非流形仍统计并报告，但不判失败（装配件允许开边）
+   *   - selfIntersections：仍统计，但不判失败（跨壳相交=结构堆叠）
+   * 焊接 / 法线 / 退化 / 瘦三角 / 面积比 / 预算仍为硬门禁。
+   */
+  assembly?: boolean
 }
 
 /** 边采样定位：一条边的两个端点坐标。 */
@@ -86,6 +96,8 @@ export type MeshVerifyResult = {
   }
   /** 可读中文失败原因，一个失败一条（含定位）。 */
   failures: string[]
+  /** 装配模式下的非阻塞说明（统计项，不拦截）。 */
+  notes?: string[]
 }
 
 const DEFAULT_WELD_TOL = 2e-4
@@ -698,7 +710,15 @@ export function verifyMesh(mesh: MeshVerifyInput, opts: MeshVerifyOptions = {}):
   const budget = { requested, used, exceeded, pass: !exceeded }
 
   const failures: string[] = []
-  if (!watertight.pass) {
+  const notes: string[] = []
+  const assembly = opts.assembly === true
+  if (!watertight.pass && assembly) {
+    notes.push(
+      `装配模式：开边 ${watertight.openEdges} 条、非流形边 ${watertight.nonManifold} 条` +
+        `（多壳体装配件允许，仍统计）`
+    )
+  }
+  if (!watertight.pass && !assembly) {
     const loc = watertight.samplePositions.length
       ? `（如边 ${fmtPos(watertight.samplePositions[0].a)}→${fmtPos(watertight.samplePositions[0].b)}）`
       : ''
@@ -714,7 +734,10 @@ export function verifyMesh(mesh: MeshVerifyInput, opts: MeshVerifyOptions = {}):
       : ''
     failures.push(`存在 ${normals.invertedCount} 个朝内的法线面（有向边不一致或分量朝内）${loc}`)
   }
-  if (!selfIntersections.pass) {
+  if (!selfIntersections.pass && assembly) {
+    notes.push(`装配模式：跨壳/壳内相交 ${selfIntersections.intersectingPairs} 处（结构堆叠，仍统计）`)
+  }
+  if (!selfIntersections.pass && !assembly) {
     const loc = selfIntersections.samplePairs.length
       ? `（面 #${selfIntersections.samplePairs[0].faceA} 与 #${selfIntersections.samplePairs[0].faceB}）`
       : ''
@@ -746,7 +769,8 @@ export function verifyMesh(mesh: MeshVerifyInput, opts: MeshVerifyOptions = {}):
       budget,
       selfIntersections
     },
-    failures
+    failures,
+    ...(notes.length ? { notes } : {})
   }
 }
 
@@ -837,7 +861,15 @@ export function verifyMeshExport(
 
   // 逐条失败：先几何，后全局预算。
   const failures: string[] = []
-  if (!watertight.pass) {
+  const notes: string[] = []
+  const assembly = opts.assembly === true
+  if (!watertight.pass && assembly) {
+    notes.push(
+      `装配模式：开边 ${watertight.openEdges} 条、非流形边 ${watertight.nonManifold} 条` +
+        `（多壳体装配件允许，仍统计）`
+    )
+  }
+  if (!watertight.pass && !assembly) {
     const loc = watertight.samplePositions.length
       ? `（如边 ${fmtPos(watertight.samplePositions[0].a)}→${fmtPos(watertight.samplePositions[0].b)}）`
       : ''
@@ -853,7 +885,10 @@ export function verifyMeshExport(
       : ''
     failures.push(`存在 ${normals.invertedCount} 个朝内的法线面（有向边不一致或分量朝内）${loc}`)
   }
-  if (!selfIntersections.pass) {
+  if (!selfIntersections.pass && assembly) {
+    notes.push(`装配模式：跨壳/壳内相交 ${selfIntersections.intersectingPairs} 处（结构堆叠，仍统计）`)
+  }
+  if (!selfIntersections.pass && !assembly) {
     const loc = selfIntersections.samplePairs.length
       ? `（面 #${selfIntersections.samplePairs[0].faceA} 与 #${selfIntersections.samplePairs[0].faceB}）`
       : ''
@@ -887,6 +922,7 @@ export function verifyMeshExport(
       budget,
       selfIntersections
     },
-    failures
+    failures,
+    ...(notes.length ? { notes } : {})
   }
 }
