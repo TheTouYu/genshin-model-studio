@@ -10,6 +10,7 @@
  */
 import fs from 'node:fs'
 import path from 'node:path'
+import { execFileSync } from 'node:child_process'
 
 const args = process.argv.slice(2)
 const arg = (n, d) => { const i = args.indexOf('--' + n); return i >= 0 ? args[i + 1] : d }
@@ -26,6 +27,21 @@ const MESH = arg('mesh', '')            // 空=页面默认（开盖）；'./mac
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
 fs.mkdirSync(OUT, { recursive: true })
+fs.mkdirSync('.scratch/max', { recursive: true })
+
+// 页面内联 JS 语法自检：曾因一行注释吃掉 if 的 `{` → 整页卡在 loading…，白跑一整批渲染。
+// 渲染前 0.2s 的检查，换掉 20 分钟的无效长跑。
+{
+  const html = fs.readFileSync('web/draw/photo.html', 'utf8')
+  const blocks = [...html.matchAll(/<script(?![^>]*src=)[^>]*>([\s\S]*?)<\/script>/g)].map((m) => m[1])
+  blocks.forEach((b, i) => {
+    const tmp = `.scratch/max/_page-check-${i}.js`
+    fs.writeFileSync(tmp, b)
+    try { execFileSync(process.execPath, ['--check', tmp], { stdio: 'pipe' }) }
+    catch (e) { throw new Error(`photo.html inline script #${i} 语法错误：\n${String(e.stderr).slice(0, 400)}`) }
+  })
+  console.log(`page JS syntax OK (${blocks.length} inline block)`)
+}
 
 const t0 = await (await fetch(`http://127.0.0.1:${PORT}/json/new?${encodeURIComponent(URL_)}`, { method: 'PUT' })).json()
 const ws = new WebSocket(t0.webSocketDebuggerUrl)
@@ -46,7 +62,7 @@ await send('Emulation.setDeviceMetricsOverride', { width: W, height: H, deviceSc
 await send('Emulation.setVisibleSize', { width: W, height: H })
 
 let ready = false
-for (let i = 0; i < 100; i++) { if (await evalJS('!!(window.__photo && window.__photo.ready)')) { ready = true; break } await sleep(300) }
+for (let i = 0; i < 100; i++) { if (await evalJS('!!(window.__photo && window.__photo.ready && (!window.__screenMat || !!window.__screenMat.map))')) { ready = true; break } await sleep(300) }
 if (!ready) throw new Error('page not ready')
 await sleep(3000)
 if (MESH) {
@@ -65,6 +81,10 @@ const fingerprint = {
   screen: fs.statSync('web/draw/screen-ui.png').mtime.toISOString(),
   photoHtml: fs.statSync('web/draw/photo.html').mtime.toISOString(),
   hud,
+  // 分支自检：网格 colors 格式变了会让字标/屏幕贴图分支静默失效（曾发生，渲染整批无字标无桌面）
+  kbTop: (await evalJS('window.__kbDebug ? window.__kbDebug.top : 0')) || 0,
+  hasScreenTex: await evalJS('!!(window.__screenMat && window.__screenMat.map)'),
+  screenUV: await evalJS('JSON.stringify(window.__screenUV || null)'),
 }
 if (PRESET) await evalJS(`window.__photo.preset(${JSON.stringify(PRESET)})`)
 if (POST) await evalJS(`window.__photo.post(${JSON.stringify(JSON.parse(POST))})`)
@@ -73,17 +93,25 @@ await sleep(1500)
 const shots = []
 for (const v of VIEWS) {
   const o = Object.assign({ seed: SEED0 + VIEWS.indexOf(v) * 7919 }, TUNEMAP[v] || {})
+  // 每视角可覆写预设（背景/地面多样化 → 去聚类），但整组仍在**同一页面会话**里拍
+  // —— 屏幕贴图只加载一次，跨视角内容必然同源（用户点名的硬伤）。
+  if (TUNEMAP[v] && TUNEMAP[v].preset) { await evalJS(`window.__photo.preset(${JSON.stringify(TUNEMAP[v].preset)})`); await sleep(900) }
   await evalJS(`window.__photo.shoot('${v}', ${W}, ${H}, ${JSON.stringify(o)})`)
   await sleep(900)
   // 直接读 canvas 像素（preserveDrawingBuffer:true）——绕开浏览器缩放/视口几何。
   // 历史 bug：本机浏览器有 1.25× 页面缩放（dpr 0.8），captureScreenshot 的 clip 按设备像素，
   // 于是画布只占画面左上 1133×672，右侧/底部是黑的，曾被误读成"渲染缺陷"。
+  const screenBox = await evalJS('JSON.stringify(window.__photo.screenBox())')
+  const screenQuad = await evalJS('JSON.stringify(window.__photo.screenQuad())')
   const dataUrl = await evalJS(`document.getElementById('canvas').toDataURL('image/png')`)
   const file = path.join(OUT, `p${VIEWS.indexOf(v) + 1}-${v}.png`)
   fs.writeFileSync(file, Buffer.from(String(dataUrl).split(',')[1], 'base64'))
   // 快速指纹：中心区域像素统计（确认不是空帧）
-  shots.push({ view: v, file, bytes: fs.statSync(file).size })
+  shots.push({ view: v, file, bytes: fs.statSync(file).size, screenBox: screenBox && screenBox !== 'null' ? JSON.parse(screenBox) : null, screenQuad: screenQuad && screenQuad !== 'null' ? JSON.parse(screenQuad) : null })
 }
-console.log(JSON.stringify({ ready, vp, fingerprint, shots }, null, 2))
+const report = { ready, vp, fingerprint, shots }
+const REP = arg('report', '')
+if (REP) { fs.mkdirSync(path.dirname(REP), { recursive: true }); fs.writeFileSync(REP, JSON.stringify(report, null, 2)); console.log('report: ' + REP) }
+console.log(JSON.stringify(report, null, 2))
 ws.close()
 try { await fetch(`http://127.0.0.1:${PORT}/json/close/${t0.id}`) } catch {}

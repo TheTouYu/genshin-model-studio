@@ -88,7 +88,7 @@
         shadow: 0.30, refl: 0.15, exposure: 0.55,
         // 标定（对参考图 俯视图.png 实测 lid mean 213 / logo +13 / bg 255）：
         // 强度已含 0.30 全局倍率，exposure 0.55——envScale 保持 1 即得标定态
-        env: { room: 0x9a9a9a, key: 1.92, keyW: 2.6, keyH: 1.1, sideL: 0.51, sideR: 0.405, back: 0.66, floor: 1.55, floorCol: 0xffffff },
+        env: { room: 0xb0b0b0, key: 1.30, keyW: 3.6, keyH: 1.8, sideL: 0.38, sideR: 0.32, back: 0.50, floor: 0.90, floorCol: 0xffffff },
       },
       // 中性灰（桌面场景/带环境反射的那类参考图）
       grey: {
@@ -166,6 +166,15 @@
     function makeMat(hex) {
       var light = isLight(hex)
       var col = new THREE.Color(hex)
+      // 触控板：浅色**磨砂玻璃**（参考图 trackpad/deck 亮度比 0.985、p5 215 p95 229 近乎平场）。
+      // 深色镜面玻璃在垂直视角只有 4% 反射率 → 实测读 93（过暗 2.4×），物理上不可能到 222。
+      // ⚠ 必须排在 isLight 之前：0x909093 三通道和 435 > 阈值 300，否则被当成"浅色铝"。
+      if (hex === 0x909093) {
+        return new THREE.MeshPhysicalMaterial({
+          color: new THREE.Color(0xe6e6e8), metalness: 0.0, roughness: 0.10, side: THREE.DoubleSide,
+          envMapIntensity: 1.1, clearcoat: 0.6, clearcoatRoughness: 0.06,
+        })
+      }
       // Apple 标：镜面 PVD 嵌件（metal 1 / rough 0.04）。参考图 俯视图 里 logo 比上盖**更亮**
       // （反射影棚主光），若按普通铝面（rough 0.30）渲染则读作灰苹果 + 暗边。
       if (hex === 0xfbfbfc) {
@@ -187,10 +196,18 @@
           emissive: new THREE.Color(0x16264a), emissiveIntensity: 0.5,
         })
       }
-      // 触控板玻璃 0x303032 / 屏幕玻璃边框 0x151516：比纯哑光深色多一层反射（真机靠反射率区分）
-      if (hex === 0x909093 || hex === 0x151516) {
+      // 键帽 PBT 微磨砂：参考图 键盘和触控板.png 键帽顶面 36–48（p5 21 / p95 49 有光泽梯度），
+      // 旧值 roughness 0.55 / env 0.65 读作 27 过黑 → 加深层清漆把表面光泽补回来。
+      if (hex === 0x1d1d1f) {
         return new THREE.MeshPhysicalMaterial({
-          color: col, metalness: 0.30, roughness: 0.11, side: THREE.DoubleSide, envMapIntensity: 1.15,
+          color: col, metalness: 0.10, roughness: 0.52, side: THREE.DoubleSide,
+          clearcoat: 0.16, clearcoatRoughness: 0.62, envMapIntensity: 0.95,
+        })
+      }
+      // 屏幕玻璃边框 0x151516：深色、弱反射（真机黑边近乎纯黑）
+      if (hex === 0x151516) {
+        return new THREE.MeshPhysicalMaterial({
+          color: col, metalness: 0.30, roughness: 0.11, side: THREE.DoubleSide, envMapIntensity: 0.55,
           clearcoat: 0.6, clearcoatRoughness: 0.10,
         })
       }
@@ -211,7 +228,7 @@
         window.__screenMat.map = t
         window.__screenMat.emissiveMap = t
         window.__screenMat.emissive = new THREE.Color(0xffffff)
-        window.__screenMat.emissiveIntensity = 0.62
+        window.__screenMat.emissiveIntensity = 1.40
         window.__screenMat.needsUpdate = true
       }
       hud.textContent = hud.textContent + ' · screen tex ok'
@@ -235,7 +252,8 @@
       groups.forEach(function (idx, colHex) {
         var pos = posArray()
         // 键帽组：顶面(ny>0.55)贴字标图，侧面保持纯色（字标是蚀刻在键帽顶面的）
-        if (colHex === '0x1d1d1f') {
+        // hexOf 归一：mesh JSON 的 colors 可能是 '0x1d1d1f' 也可能是整数 1907998
+        if (hexOf(colHex) === 0x1d1d1f) {
           var topIdx = [], sideIdx = []
           for (var t = 0; t < idx.length; t += 3) {
             var A = V[idx[t]], B = V[idx[t + 1]], C = V[idx[t + 2]]
@@ -283,7 +301,7 @@
         // 屏幕活动区：**平面内** UV。不能用世界 bbox——上盖开 100° 时屏幕平面相对
         // 世界 z 压缩 cos(80°)=0.174，按 bbox 归一化会把桌面贴图竖向拉伸 5.76×：
         // 评委据此指出「刘海渲染成悬垂进屏内的大黑梯形」（实测渲染 141px 高 vs 应 25px）。
-        if (colHex === '0x191919') {
+        if (hexOf(colHex) === 0x191919) {
           var bb = new THREE.Box3().setFromBufferAttribute(g.getAttribute('position'))
           // 平面法线：取一个面积最大的三角形
           var nrm = new THREE.Vector3(0, 1, 0), best = -1
@@ -317,7 +335,7 @@
           window.__screenUV = { uSpan: uSpan, vSpan: vSpan, normal: [nrm.x, nrm.y, nrm.z] }
           g.setAttribute('uv', new THREE.BufferAttribute(uv, 2))
           window.__screenMat = mat
-          if (screenTex) { mat.map = screenTex; mat.emissiveMap = screenTex; mat.emissive = new THREE.Color(0xffffff); mat.emissiveIntensity = 0.62; mat.needsUpdate = true }
+          if (screenTex) { mat.map = screenTex; mat.emissiveMap = screenTex; mat.emissive = new THREE.Color(0xffffff); mat.emissiveIntensity = 1.40; mat.needsUpdate = true }
         }
         var mesh = new THREE.Mesh(g, mat)
         mesh.frustumCulled = false
@@ -439,6 +457,7 @@
     }
 
     function resize(w, h) {
+      renderer.setPixelRatio(1)          // 本机 dpr=0.8 → 画布只有 1132×672（细节被抹平）；强制 1:1
       renderer.setSize(w, h, false)
       canvas.style.width = w + 'px'
       canvas.style.height = h + 'px'
@@ -451,6 +470,89 @@
       ready: false,
       views: Object.keys(VIEWS),
       presets: Object.keys(PRESETS),
+      // 调试/QA 用（page-probe 读材质表与包围盒；不影响渲染）
+      scene: scene,
+      root: root,
+      camera: camera,
+      // 屏幕活动区在**当前视口**的像素包围盒（跨视角一致性自检用：同一台真机所有视角
+      // 屏幕内容必然一致，裁同一块区域比对；返回 null = 本视角看不到屏幕）
+      // 屏幕活动区四角在**当前视口**的像素坐标 + 对应 UV（跨视角一致性比对用：
+      // 把各视角的屏幕区域透视矫正到同一张「内容空间」再比像素，grazing 视角也能比）
+      screenQuad: function () {
+        var sm = null
+        root.children.forEach(function (c) {
+          if (!c.isMesh || !c.material || !c.material.color) return
+          if (c.material.color.getHex() !== 0x191919) return
+          if (!c.geometry.attributes.uv) return      // 0x191919 可能被别的件复用（无 UV）→ 必须挑屏幕那块
+          sm = c
+        })
+        if (!sm) return null
+        var g = sm.geometry, pos = g.attributes.position.array, uv = g.attributes.uv.array
+        var idx = g.index ? g.index.array : null
+        var n = idx ? idx.length : pos.length / 3
+        // 四角 = UV 极值顶点（比"最近 UV 角点"稳：不受共享顶点数组/焊接影响）
+        // (0,0)=min(u+v)  (1,0)=max(u-v)  (1,1)=max(u+v)  (0,1)=min(u-v)
+        var best = [{ d: 1e9, vi: -1 }, { d: -1e9, vi: -1 }, { d: -1e9, vi: -1 }, { d: 1e9, vi: -1 }]
+        for (var k = 0; k < n; k++) {
+          var vi = idx ? idx[k] : k
+          var u = uv[vi * 2], v = uv[vi * 2 + 1]
+          var sum = u + v, dif = u - v
+          if (sum < best[0].d) { best[0].d = sum; best[0].vi = vi }
+          if (dif > best[1].d) { best[1].d = dif; best[1].vi = vi }
+          if (sum > best[2].d) { best[2].d = sum; best[2].vi = vi }
+          if (dif < best[3].d) { best[3].d = dif; best[3].vi = vi }
+        }
+        var want = [[0, 0], [1, 0], [1, 1], [0, 1]]
+        var v3 = new THREE.Vector3()
+        var out = [], world = []
+        for (var j2 = 0; j2 < 4; j2++) {
+          var vv = best[j2].vi
+          if (vv < 0) return null
+          world.push(new THREE.Vector3(pos[vv * 3], pos[vv * 3 + 1], pos[vv * 3 + 2]))
+          v3.copy(world[j2]).project(camera)
+          out.push({
+            u: want[j2][0], v: want[j2][1],
+            px: (v3.x * 0.5 + 0.5) * canvas.width,
+            py: (1 - (v3.y * 0.5 + 0.5)) * canvas.height,
+          })
+        }
+        // 屏幕是否真的看得见（底视/背面视角屏幕被上盖挡住 → 返回 null，避免一致性自检误报）
+        var ctr = world[0].clone().add(world[1]).add(world[2]).add(world[3]).multiplyScalar(0.25)
+        var dir = ctr.clone().sub(camera.position).normalize()
+        var rc = new THREE.Raycaster(camera.position, dir, 0.001, 100)
+        var hits = rc.intersectObjects(root.children, false)
+        if (!hits.length || hits[0].object !== sm) return null
+        return out
+      },
+      screenBox: function () {
+        var sm = null
+        root.children.forEach(function (c) {
+          if (c.isMesh && c.material && c.material.color && c.material.color.getHex() === 0x191919) sm = c
+        })
+        if (!sm) return null
+        var g = sm.geometry, pos = g.attributes.position.array
+        var bb = { min: new THREE.Vector3(1e9, 1e9, 1e9), max: new THREE.Vector3(-1e9, -1e9, -1e9) }
+        var idx = g.index ? g.index.array : null
+        var n = idx ? idx.length : pos.length / 3
+        for (var k = 0; k < n; k++) {
+          var vi = (idx ? idx[k] : k) * 3
+          var px = pos[vi], py = pos[vi + 1], pz = pos[vi + 2]
+          if (px < bb.min.x) bb.min.x = px; if (px > bb.max.x) bb.max.x = px
+          if (py < bb.min.y) bb.min.y = py; if (py > bb.max.y) bb.max.y = py
+          if (pz < bb.min.z) bb.min.z = pz; if (pz > bb.max.z) bb.max.z = pz
+        }
+        var v = new THREE.Vector3()
+        var pts = []
+        for (var i = 0; i < 8; i++) {
+          v.set(i & 1 ? bb.max.x : bb.min.x, i & 2 ? bb.max.y : bb.min.y, i & 4 ? bb.max.z : bb.min.z).project(camera)
+          pts.push([(v.x * 0.5 + 0.5) * canvas.width, (1 - (v.y * 0.5 + 0.5)) * canvas.height])
+        }
+        var xs = pts.map(function (p) { return p[0] }), ys = pts.map(function (p) { return p[1] })
+        var x0 = Math.max(0, Math.min.apply(null, xs)), y0 = Math.max(0, Math.min.apply(null, ys))
+        var x1 = Math.min(canvas.width, Math.max.apply(null, xs)), y1 = Math.min(canvas.height, Math.max.apply(null, ys))
+        if (x1 - x0 < 8 || y1 - y0 < 8) return null
+        return { x0: x0, y0: y0, x1: x1, y1: y1 }
+      },
       setBg: function (hex) { scene.background = new THREE.Color(hex); render() },
       preset: function (name) { return setPreset(name) },
       // 环境强度倍率（铝面亮度校准）：重烘 cubemap，不改背景/地面

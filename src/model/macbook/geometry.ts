@@ -150,7 +150,10 @@ function keycap(
     return -dish * (1 - qq * qq);
   } : undefined;
   b.material(o.matTop);
-  plateFill(b, q, topY, { nu: ksc(26, 4), nt: 1, deform, uv: uvFn, cornerSegs: ksc(4, 1) });
+  // nt 随键帽进深走：半高方向键（d≈7.8mm）在 nt=1 时每格 0.67×7.8mm 极度狭长，
+  // deform 使格子强烈非平面 → 拆分后出现退化三角 → 顶面缺口（实测方向键顶边 V 形缺口）
+  const ntK = Math.max(1, Math.round(d / 5));
+  plateFill(b, q, topY, { nu: ksc(26, 4), nt: ntK, deform, uv: uvFn, cornerSegs: ksc(4, 1) });
   b.material(o.matSide);
   plateFill(b, q, topY - h, { nu: ksc(26, 4), nt: 1, flip: true, cornerSegs: ksc(4, 1) });
 }
@@ -375,15 +378,21 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     for (let ri = 0; ri < KB_ROWS.length; ri++) {
       const row = KB_ROWS[ri];
       const cz = S.deck.kbBackZ + ri * kb.pitchY + kb.keyH / 2;
-      let x = blockX0;
+      let x = blockX0, downCx = 0;
+      const halfKey = kb.keyH - gapZ;               // 全高键帽进深
       for (const [name, u] of row.keys) {
-        const wpx = u * kb.pitchX;
-        const capW = wpx - gapX;
-        const cx = x + wpx / 2;
+        const isArrow = name === 'left' || name === 'down' || name === 'right' || name === 'up';
+        const wpx = u * kb.pitchX;                  // 'up' 的 u=0：不占行宽（与 down 同列、上半行）
+        const capW = (u > 0 ? wpx : kb.pitchX) - gapX;
+        const cx = name === 'up' ? downCx : x + wpx / 2;
+        if (name === 'down') downCx = cx;
+        // 倒 T 四键半高：up 贴上半行、left/down/right 贴下半行
+        const capD = isArrow ? halfKey / 2 : halfKey;
+        const czk = isArrow ? cz + (name === 'up' ? -halfKey / 4 : halfKey / 4) : cz;
         const rect = wantLegends ? assets.legendRects?.[ri === 0 ? `f:${name}` : `${ri - 1}:${name}`] : undefined;
         let uvRect: [number, number, number, number] | undefined, uvTile: [number, number] | undefined;
         if (rect && atlasSize) { uvRect = rect; uvTile = [rect[2] / pxPerMm, rect[3] / pxPerMm]; }
-        keycap(b, cx, deckY + kb.protrude, cz, capW, kb.capH, kb.keyH - gapZ, kb.keyR, {
+        keycap(b, cx, deckY + kb.protrude, czk, capW, kb.capH, capD, kb.keyR, {
           dish: kb.dish, matSide: M.KEY, matTop: rect ? M.LEGEND : M.KEY, uvRect, uvTile, atlas: atlasSize,
         }, LOD);
         x += wpx;
@@ -394,6 +403,17 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
   // ============ 4. 触控板 ============
   {
     const tp = S.trackpad, cz = (S.deck.tpBackZ + S.deck.tpFrontZ) / 2;
+    // 缝隙：真机玻璃四周与掌托之间有可见细缝（照片里读作一圈暗线，是触控板"看得见"的主因；
+    // 只靠 0.96 的亮度比在渐变掌托上会完全糊掉）。0.35mm 暗缝 + 玻璃略暗于掌托。
+    // 沿触控板外沿扫掠一圈 0.7mm 暗带：圆角处是精确圆弧（plateWithHoles 的网格会在圆角断线）
+    {
+      const seamPath = roundedRectPath(tp.w + 0.7, tp.d + 0.7, tp.r + 0.35, sc(32, 8));
+      const seamProf = [{ o: 0, y: deckY + 0.06 }, { o: 0.7, y: deckY + 0.06 }];
+      const seam0 = sweepSurface(seamPath, seamProf);
+      const seam = (u: number, v: number): Vec3 => { const p = seam0(u, v); return v3(p.x, p.y, p.z + cz); };
+      b.material(M.GLASS);
+      patch(b, seam, lin(0, 1, sc(256, 32)), [0, 1]);
+    }
     b.material(M.TRACKPAD);
     plateFill(b, { cx: 0, cz, w: tp.w, d: tp.d, r: tp.r }, deckY + 0.25, { nu: sc(48, 8), nt: 2, cornerSegs: sc(6, 4), vertexSampling: true });
   }

@@ -71,7 +71,8 @@ await send('Emulation.setVisibleSize', { width: SHOT_W, height: SHOT_H })
 // 等网格就绪
 let ready = false
 for (let i = 0; i < 90; i++) {
-  const v = await evalJS('!!(window.__photo && window.__photo.ready)')
+  // 屏幕贴图必须就绪再拍：晚到的贴图会让部分视角的屏幕是纯色（跨视角内容不一致 = 硬伤）
+  const v = await evalJS('!!(window.__photo && window.__photo.ready && (!window.__screenMat || !!window.__screenMat.map))')
   if (v === true) { ready = true; break }
   await sleep(400)
 }

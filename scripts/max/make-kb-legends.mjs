@@ -17,18 +17,13 @@ const ROOT = new URL('../..', import.meta.url).pathname;
 const PX_PER_MM = 9;                 // 键盘块 279.3×110mm → 2514×990
 const atlas = JSON.parse(readFileSync(ROOT + 'reference/macbook/legend-atlas.json', 'utf8'));
 const rects = atlas.rects;
+import { KB_ROWS } from '../../dist/src/model/macbook/spec.js';
 const pxPerMm = atlas.atlas_px_per_mm;          // 14.0008（atlas 图集 px/mm）
 
 // ---- 与 geometry.ts 同源的键位布局 ----
 const kb = { pitchX: 19.05, pitchY: 18.65, keyW: 17.35, keyH: 16.95, blockW: 279.3, kbBackZ: -98.6 };
-const KB_ROWS = [
-  { name: 'fn', keys: [['esc', 1.0714], ['F1', 1.0714], ['F2', 1.0714], ['F3', 1.0714], ['F4', 1.0714], ['F5', 1.0714], ['F6', 1.0714], ['F7', 1.0714], ['F8', 1.0714], ['F9', 1.0714], ['F10', 1.0714], ['F11', 1.0714], ['F12', 1.0714], ['touchid', 1.0714]] },
-  { name: 'r1', keys: [['`', 1.065], ['1', 1], ['2', 1], ['3', 1], ['4', 1], ['5', 1], ['6', 1], ['7', 1], ['8', 1], ['9', 1], ['0', 1], ['-', 1], ['=', 1], ['delete', 1.585]] },
-  { name: 'r2', keys: [['tab', 1.568], ['Q', 1], ['W', 1], ['E', 1], ['R', 1], ['T', 1], ['Y', 1], ['U', 1], ['I', 1], ['O', 1], ['P', 1], ['[', 1], [']', 1], ['\\', 1.082]] },
-  { name: 'r3', keys: [['caps', 1.809], ['A', 1], ['S', 1], ['D', 1], ['F', 1], ['G', 1], ['H', 1], ['J', 1], ['K', 1], ['L', 1], [';', 1], ["'", 1], ['return', 1.841]] },
-  { name: 'r4', keys: [['lshift', 2.312], ['Z', 1], ['X', 1], ['C', 1], ['V', 1], ['B', 1], ['N', 1], ['M', 1], [',', 1], ['.', 1], ['/', 1], ['rshift', 2.338]] },
-  { name: 'r5', keys: [['fn', 1.065], ['control', 1], ['option', 1], ['command', 1.243], ['space', 5.013], ['command', 1.243], ['option', 1], ['left', 1], ['down', 1], ['right', 1]] },
-];
+// 键位布局单一真源：直接用 dist 里的 spec.KB_ROWS（此前本文件自带一份副本，
+// 加了 up 键后不同步 → up 字标整块缺失）
 
 const blockX0 = -kb.blockW / 2;
 const z0 = kb.kbBackZ, z1 = kb.kbBackZ + 5 * kb.pitchY + kb.keyH;
@@ -40,11 +35,17 @@ let placed = 0, missing = 0;
 for (let ri = 0; ri < KB_ROWS.length; ri++) {
   const row = KB_ROWS[ri];
   const cz = kb.kbBackZ + ri * kb.pitchY + kb.keyH / 2;
-  let x = blockX0;
+  let x = blockX0, downCx = 0;
+  const halfKey = kb.keyH - 1.38;                 // gapZ（与 geometry.ts 同源）
   for (const [name, u] of row.keys) {
     const wpx = u * kb.pitchX;
-    const cx = x + wpx / 2;
-    const rect = rects[ri === 0 ? `f:${name}` : `${ri - 1}:${name}`];
+    const cx = name === 'up' ? downCx : x + wpx / 2;
+    if (name === 'down') downCx = cx;
+    // 方向键是半高键：up 在上半行、left/down/right 在下半行 → 字标必须跟着键帽中心走
+    // （旧版用行中心 → 字标落在键帽上边缘，渲染里读作"键帽顶角一块白斑"）
+    const isArrow = name === 'left' || name === 'down' || name === 'right' || name === 'up';
+    const czk = isArrow ? cz + (name === 'up' ? -halfKey / 4 : halfKey / 4) : cz;
+    const rect = name === 'up' ? (rects['4:up'] || [0, 0, 0, 0]) : rects[ri === 0 ? `f:${name}` : `${ri - 1}:${name}`];
     if (rect) {
       // rect = [ax, ay, aw, ah]（图集 px）；字标世界宽高 = rect 尺寸 / pxPerMm
       const [ax, ay, aw, ah] = rect;
@@ -63,7 +64,7 @@ for (let ri = 0; ri < KB_ROWS.length; ri++) {
       }
       placed++;
       if (!globalThis.__rects) globalThis.__rects = [];
-      globalThis.__rects.push({ px: px0, py: pz0, pw, ph, ax, ay, aw, ah });
+      globalThis.__rects.push({ key: `${ri}:${name}`, row: ri, name, cx, cz: czk, px: px0, py: pz0, pw, ph, ax, ay, aw, ah });
     } else missing++;
     x += wpx;
   }
