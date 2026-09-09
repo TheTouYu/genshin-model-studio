@@ -7,6 +7,7 @@
  *  - 始终从当前 dist 构建（含当日全部修复：刻字条移除/圆角分段/曲面细分优化）
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { gzipSync } from 'node:zlib';
 import { buildMacbook14 } from '../../dist/src/model/macbook/geometry.js';
 import { linearToSrgb } from '../../dist/src/render/image.js';
 
@@ -77,6 +78,11 @@ for (let t = 0; t < mesh.mat.length; t++) {
 
 const out = { name: `macbook-pro-14-${color}-${openAngle === 0 ? 'closed' : 'open' + openAngle}-r4`, vertices, faces, colors };
 mkdirSync(ROOT + 'web/draw/', { recursive: true });
-writeFileSync(ROOT + OUT, JSON.stringify(out));
+const json = JSON.stringify(out);
+writeFileSync(ROOT + OUT, json);
+// 同时写 gzip 版（2.58MB → 0.36MB，7.1×）。页面用 fetch + DecompressionStream 解压，
+// 不需要服务器支持 Content-Encoding（web-server.js 零依赖单文件，不重启它）。
+const gz = gzipSync(Buffer.from(json, 'utf8'), { level: 9 });
+writeFileSync(ROOT + OUT + '.gz', gz);
 console.log(`verts ${vertices.length} | tris ${faces.length / 3} | dropped ${dropped} | colors ${new Set(colors).size}`);
-console.log('written: ' + OUT);
+console.log(`written: ${OUT} (${(json.length / 1048576).toFixed(2)}MB) + .gz (${(gz.length / 1048576).toFixed(2)}MB)`);

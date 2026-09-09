@@ -5,14 +5,44 @@
 <title>MacBook 影棚渲染 · 页面通道</title>
 <style>
   html, body { margin: 0; padding: 0; background: #000; overflow: hidden; }
-  #canvas { display: block; width: 100vw; height: 100vh; }
+  #canvas { display: block; width: 100vw; height: 100vh; cursor: grab; }
+  #canvas.dragging { cursor: grabbing; }
   #hud { position: fixed; left: 10px; top: 10px; color: #9fb; font: 12px/1.5 ui-monospace, monospace;
          background: rgba(0,0,0,.45); padding: 6px 9px; border-radius: 6px; pointer-events: none; }
+  #ui { position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%);
+        display: flex; flex-direction: column; gap: 6px; align-items: center;
+        font: 12px/1.4 -apple-system, "Segoe UI", system-ui, sans-serif; color: #e8e8ea;
+        user-select: none; }
+  #ui .row { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+             background: rgba(20,20,22,.74); padding: 6px 8px; border-radius: 10px;
+             box-shadow: 0 4px 18px rgba(0,0,0,.5); }
+  #ui button { font: inherit; color: #dcdce0; background: rgba(255,255,255,.08);
+               border: 1px solid rgba(255,255,255,.14); border-radius: 7px;
+               padding: 5px 11px; cursor: pointer; }
+  #ui button:hover { background: rgba(255,255,255,.20); color: #fff; }
+  #ui button.on { background: #e8e8ea; color: #17171a; border-color: #e8e8ea; font-weight: 600; }
+  #ui .hint { color: #9a9aa0; font-size: 11px; }
+  #load { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+          background: #0a0a0c; color: #cfcfd4; z-index: 9; transition: opacity .25s;
+          font: 14px/1.7 -apple-system, "Segoe UI", system-ui, sans-serif; }
+  #load.off { opacity: 0; pointer-events: none; }
 </style>
 </head>
 <body>
 <canvas id="canvas"></canvas>
 <div id="hud">loading…</div>
+<div id="load">正在加载模型…</div>
+<div id="ui">
+  <div class="row" id="rowView"></div>
+  <div class="row" id="rowPreset"></div>
+  <div class="row">
+    <button id="btnReset">重置视角</button>
+    <button id="btnQ">画质：高</button>
+    <button id="btnSave">保存 PNG</button>
+    <button id="btnHud">隐藏文字</button>
+  </div>
+  <div class="hint">拖动旋转 · 滚轮缩放 · Shift / 右键拖动平移</div>
+</div>
 <script>
 /**
  * photo.html —— 页面通道的「影棚渲染」模式
@@ -31,12 +61,23 @@
  */
 (function () {
   'use strict'
+  // 本地优先：three r160 直接从工作区出（node_modules/three/build/three.min.js 复制到
+  // web/draw/three.min.js）——CDN 首包在国内常被墙/超时，是"页面加载很久"的头号嫌疑。
+  // 后面两个 CDN 只作兜底（版本一致 0.160.0）。
   var CDNS = [
+    './three.min.js',
     'https://unpkg.com/three@0.160.0/build/three.min.js',
     'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js',
   ]
   var hud = document.getElementById('hud')
   var canvas = document.getElementById('canvas')
+  // ---------- 性能探针 ----------
+  // 用户反馈「加载很久」——先量化再优化，别猜。__perf 记录各阶段耗时（ms，相对脚本启动）。
+  var T0 = performance.now()
+  var PERF = { t_three: 0, t_mesh_fetched: 0, t_mesh_built: 0, t_env: 0, t_first_render: 0,
+               render_ms: 0, renders: 0, mesh_bytes: 0, live_ms: 0 }
+  window.__perf = PERF
+  function mark(k) { PERF[k] = Math.round(performance.now() - T0) }
 
   // ---------- 视角表（与盲测参考图同角度类别）----------
   // azim: 绕 y 轴方位角（0 = 从正前方看），elev: 仰角，dist: 相机距离（米），target: 注视点
@@ -149,6 +190,7 @@
       envRT = pmrem.fromCubemap(cubeRT.texture)
       scene.environment = envRT.texture
       cubeRT.dispose()
+      mark('t_env')
     }
     bakeEnv(PRESETS.dark.env)
 
@@ -365,6 +407,32 @@
         reflGroup.add(r)
       })
       window.__photo.ready = true
+      mark('t_mesh_built')
+      // 预编译所有材质 program（14 材质 + 倒影克隆 ≈ 28 个 program，集显上首次编译要 ~1.6s；
+      // 放到"加载中"遮罩后面，别让用户以为页面卡死）
+      try { renderer.compile(scene, camera) } catch (e) {}
+      autoQuality()                                // 遮罩仍盖着：测量期间别让用户看到黑屏
+      var ld = document.getElementById('load')
+      if (ld) ld.classList.add('off')
+    }
+
+    // 自适应画质：测**稳态**帧时间（首帧含纹理上传/RT 分配，可达 0.9s，不能作判据），
+    // 取 3 帧中位数 > 60ms（软件渲染/弱 GPU 大窗口）才降到低档——否则用户在弱机器上拖动卡成幻灯片。
+    function autoQuality() {
+      var ms = 0
+      try {
+        gpuMs(function () { render() })              // 预热帧：纹理上传 + RT 分配
+        var s = []
+        for (var i = 0; i < 3; i++) s.push(gpuMs(function () { render() }))
+        s.sort(function (a, b) { return a - b })
+        ms = s[1]
+      } catch (e) { ms = -1 }
+      PERF.frame_ms = ms
+      var slow = ms > 60
+      setQuality(slow ? 'low' : 'high', true)
+      var note = slow ? (' · 低画质（帧 ' + ms + 'ms，超采样已关）') : (' · 帧 ' + ms + 'ms')
+      hud.textContent = hud.textContent.replace(/ · 帧 .*$/, '') + note
+      PERF.auto_quality = slow ? 'low' : 'high'
     }
 
     // ---------- 地面 / 接触阴影 / 倒影（"悬浮在黑底上"是裁判认定的 CG 特征）----------
@@ -441,8 +509,37 @@
     }
 
     // ---------- 相机 ----------
+    var curView = 'hero'
+    // 轨道状态：鼠标拖动/滚轮改这三个量。视角表与 __photo.cam() 都会把它同步过来，
+    // 所以「先按按钮取景 → 再手动微调」是连续的，不会跳。
+    var ORBIT = { azim: 34, elev: 24, dist: 0.70, fov: 30, target: [0, 0.085, 0] }
+    function syncOrbit(t) {
+      var d = new THREE.Vector3().subVectors(camera.position, t)
+      var dist = Math.max(1e-4, d.length())
+      ORBIT.azim = Math.atan2(d.x, d.z) * 180 / Math.PI
+      ORBIT.elev = Math.asin(Math.max(-1, Math.min(1, d.y / dist))) * 180 / Math.PI
+      ORBIT.dist = dist
+      ORBIT.fov = camera.fov
+      ORBIT.target = [t.x, t.y, t.z]
+    }
+    function applyOrbit() {
+      var el = Math.max(-89.5, Math.min(89.5, ORBIT.elev)) * Math.PI / 180
+      var az = ORBIT.azim * Math.PI / 180
+      var t = new THREE.Vector3(ORBIT.target[0], ORBIT.target[1], ORBIT.target[2])
+      camera.fov = ORBIT.fov
+      camera.position.set(
+        t.x + ORBIT.dist * Math.cos(el) * Math.sin(az),
+        t.y + ORBIT.dist * Math.sin(el),
+        t.z + ORBIT.dist * Math.cos(el) * Math.cos(az)
+      )
+      camera.lookAt(t)
+      camera.updateProjectionMatrix()
+      reflGroup.visible = camera.position.y > 0.004
+      POST.focus = ORBIT.dist
+    }
     function applyView(name) {
       var v = VIEWS[name] || VIEWS.hero
+      curView = VIEWS[name] ? name : 'hero'
       var az = v.azim * Math.PI / 180, el = v.elev * Math.PI / 180
       var t = v._center
         ? new THREE.Vector3(v._center.x + v.target[0], v._center.y + v.target[1], v._center.z + v.target[2])
@@ -459,6 +556,7 @@
       // 镜像组在 y<0（scale.y=-1）→ 底视图时它横在相机与模型之间（实测底视图穿透成透明）
       reflGroup.visible = !v.noRefl && camera.position.y > 0.004
       if (typeof POST !== 'undefined' && POST) POST.focus = camera.position.distanceTo(t)
+      syncOrbit(t)
     }
 
     function resize(w, h) {
@@ -479,6 +577,10 @@
       scene: scene,
       root: root,
       camera: camera,
+      renderer: renderer,
+      // 真 GPU 耗时测量：gl.finish() 强制同步（render() 的 JS 侧只提交命令，不等 GPU）
+      gpuMs: gpuMs,
+      quality: function (q) { return setQuality(q) },
       // 屏幕活动区在**当前视口**的像素包围盒（跨视角一致性自检用：同一台真机所有视角
       // 屏幕内容必然一致，裁同一块区域比对；返回 null = 本视角看不到屏幕）
       // 屏幕活动区四角在**当前视口**的像素坐标 + 对应 UV（跨视角一致性比对用：
@@ -564,20 +666,14 @@
       envScale: function (k) { ENV_SCALE = k; bakeEnv(scaleEnv(PRESETS[curPreset].env, ENV_SCALE)); render(); return ENV_SCALE },
       // 换网格（开盖/闭合两态共用本页）
       loadMesh: function (url, cb) {
-        var x = new XMLHttpRequest()
-        x.open('GET', url + '?t=' + Date.now(), true)
-        x.onload = function () {
-          if (x.status >= 200 && x.status < 300) {
-            while (root.children.length) root.remove(root.children[0])
-            while (reflGroup.children.length) reflGroup.remove(reflGroup.children[0])
-            meshReady = false
-            window.__photo.ready = false
-            try { buildMesh(JSON.parse(x.responseText)); window.__meshLoaded = url; if (cb) cb(true) }
-            catch (e) { hud.textContent = 'mesh parse failed: ' + e.message; if (cb) cb(false) }
-          } else if (cb) cb(false)
-        }
-        x.onerror = function () { if (cb) cb(false) }
-        x.send()
+        fetchMesh(url, function (txt) {
+          while (root.children.length) root.remove(root.children[0])
+          while (reflGroup.children.length) reflGroup.remove(reflGroup.children[0])
+          meshReady = false
+          window.__photo.ready = false
+          try { buildMesh(JSON.parse(txt)); window.__meshLoaded = url; if (cb) cb(true) }
+          catch (e) { hud.textContent = 'mesh parse failed: ' + e.message; if (cb) cb(false) }
+        }, function (err) { hud.textContent = 'mesh load failed (' + err + ')'; if (cb) cb(false) })
       },
       // 相机参数（每次拍摄可覆写）：noise 传感器噪声幅度、vignette 暗角、ca 色散、
       // aperture 景深强度（0=全清晰）、focus 对焦距离（米，缺省自动=到注视点距离）、
@@ -604,6 +700,7 @@
                             t.z + v.dist * Math.cos(el) * Math.cos(az))
         camera.lookAt(t); camera.updateProjectionMatrix()
         POST.focus = camera.position.distanceTo(t)
+        syncOrbit(t)
         render()
         return { ok: true }
       },
@@ -716,6 +813,30 @@
 
     // RT 用 2× 分辨率 + 双线性采样 = 2× 超采样（RT 不开 MSAA，避免 depthTexture 解析歧义）
     var rtScale = 2
+    var QUALITY = 'high'
+    // 真 GPU 耗时：render() 的 JS 侧只提交命令（异步），必须 gl.finish() 才拿到真实帧时间
+    function gpuMs(fn) {
+      var gl = renderer.getContext(), t = performance.now()
+      if (fn) fn()
+      gl.finish()
+      return Math.round((performance.now() - t) * 10) / 10
+    }
+    // 画质档：低档 = 关 2× 超采样 + 关景深（软件渲染/弱 GPU 上这是能不能拖动的前提）
+    function setQuality(q, silent) {
+      QUALITY = (q === 'low') ? 'low' : 'high'
+      var want = QUALITY === 'low' ? 1 : 2
+      if (rtScale !== want) {
+        rtScale = want
+        if (rt) { rt.dispose(); rt = null }
+      }
+      POST.aperture = QUALITY === 'low' ? 0 : 0
+      POST.noise = QUALITY === 'low' ? 0.022 : 0.030
+      render()
+      var b = document.getElementById('btnQ')
+      if (b) b.textContent = '画质：' + (QUALITY === 'low' ? '低' : '高')
+      if (!silent && hud) hud.style.display = ''
+      return QUALITY
+    }
     function ensureRT(w, h) {
       var tw = Math.round(w * rtScale), th = Math.round(h * rtScale)
       if (rt && rt.width === tw && rt.height === th) return
@@ -731,14 +852,22 @@
     // POST：每次拍摄可覆写（景深/噪声/暗角/色散都是"相机参数"，不是每张都一样的常数）
     var POST = { noise: 0.030, vignette: 0.20, ca: 0.0016, aperture: 0.0, focus: 0.6, maxBlur: 0.014, exposure: 1.0 }
     var shotSeed = 1
+    // 拖动/滚轮期间的快速预览态：只跳过景深/色散/噪声（这三项是后处理里最贵的），
+    // RT 尺寸不动 → 不会反复分配 2× 半浮点缓冲（那样反而更卡）。松手/停滚后出全质量图。
+    var LIVE = false
     function render() {
       var w = canvas.width, h = canvas.height
       if (w < 8 || h < 8) return
+      var t0 = performance.now()
       ensureRT(w, h)
       var u = postMat.uniforms
       u.uNear.value = camera.near; u.uFar.value = camera.far
-      u.uFocus.value = POST.focus; u.uAperture.value = POST.aperture; u.uMaxBlur.value = POST.maxBlur
-      u.uNoise.value = POST.noise; u.uVignette.value = POST.vignette; u.uCA.value = POST.ca
+      u.uFocus.value = POST.focus
+      u.uAperture.value = LIVE ? 0 : POST.aperture
+      u.uMaxBlur.value = POST.maxBlur
+      u.uNoise.value = LIVE ? 0 : POST.noise
+      u.uVignette.value = LIVE ? POST.vignette * 0.7 : POST.vignette
+      u.uCA.value = LIVE ? 0 : POST.ca
       u.uExposure.value = POST.exposure * (PRESETS[curPreset] ? 1.0 : 1.0)
       u.uSeed.value = shotSeed
       renderer.setRenderTarget(rt)
@@ -746,28 +875,169 @@
       renderer.render(scene, camera)
       renderer.setRenderTarget(null)
       renderer.render(postScene, postCam)
+      PERF.render_ms = Math.round((performance.now() - t0) * 10) / 10
+      PERF.renders++
+      if (!PERF.t_first_render) mark('t_first_render')
     }
 
     // 加载网格（静态文件，同源；不用 fetch 走接口，避免 WSL2 转发抽风）
-    var xhr = new XMLHttpRequest()
-    xhr.open('GET', './macbook-current.json?t=' + Date.now(), true)   // 禁缓存：几何每轮都在变
-    xhr.onload = function () {
-      if (xhr.status >= 200 && xhr.status < 300) {
-        try { buildMesh(JSON.parse(xhr.responseText)) } catch (e) { hud.textContent = 'mesh parse failed: ' + e.message }
-      } else { hud.textContent = 'mesh load failed HTTP ' + xhr.status }
+    // 网格加载：优先 gzip（2.58MB→0.36MB，7×；WSL→Windows 的 localhost 转发对 2.6MB 要 0.4–3.2s），
+    // 浏览器自带 DecompressionStream 解压 → 不需要服务器加 Content-Encoding。失败则回退明文 JSON。
+    function plainXHR(url, onText, onErr) {
+      var x = new XMLHttpRequest()
+      x.open('GET', url, true)                                            // 禁缓存：几何每轮都在变
+      x.onload = function () {
+        if (x.status >= 200 && x.status < 300) onText(x.responseText, 'plain')
+        else onErr('HTTP ' + x.status)
+      }
+      x.onerror = function () { onErr('network') }
+      x.send()
     }
-    xhr.onerror = function () { hud.textContent = 'mesh load failed (network)' }
-    xhr.send()
-    resize(1600, 1000)
+    function fetchMesh(url, onText, onErr) {
+      var ts = '?t=' + Date.now()
+      if (!window.DecompressionStream) { plainXHR(url + ts, onText, onErr); return }
+      fetch(url + '.gz' + ts).then(function (r) {
+        if (!r.ok) throw new Error('gz HTTP ' + r.status)
+        return new Response(r.body.pipeThrough(new DecompressionStream('gzip'))).text()
+      }).then(function (t) { onText(t, 'gzip') })
+        .catch(function () { plainXHR(url + ts, onText, onErr) })
+    }
+    fetchMesh('./macbook-current.json', function (txt, how) {
+      mark('t_mesh_fetched'); PERF.mesh_bytes = txt.length; PERF.mesh_enc = how
+      try { buildMesh(JSON.parse(txt)) } catch (e) { hud.textContent = 'mesh parse failed: ' + e.message }
+    }, function (err) { hud.textContent = 'mesh load failed (' + err + ')' })
+    // 启动即按窗口尺寸出图（旧版固定 1600×1000 → 窗口小于该尺寸时画布被裁切，
+    // 用户打开页面只看到一片黑）
+    resize(Math.max(320, window.innerWidth), Math.max(240, window.innerHeight))
     applyView('hero')
     render()
+
+    // ---------- 交互（给人在浏览器里看模型用；自动化走 __photo API 不受影响） ----------
+    var VIEW_KEYS = { '1': 'hero', '2': 'screenfront', '3': 'kb', '4': 'closedtop', '5': 'ports', '6': 'bottom', '7': 'side', '8': 'front', '9': 'top' }
+    var PRESET_KEYS = { q: 'white', w: 'dark', e: 'grey' }
+    var liveTimer = 0
+    function renderLive() {                    // 拖动/滚轮：先快出图，停 200ms 后补全质量
+      LIVE = true
+      render()
+      clearTimeout(liveTimer)
+      liveTimer = setTimeout(function () { LIVE = false; render() }, 200)
+    }
+    function endLive() {
+      clearTimeout(liveTimer)
+      if (LIVE) { LIVE = false; render() }
+    }
+    window.addEventListener('keydown', function (ev) {
+      var k = ev.key.toLowerCase()
+      if (VIEW_KEYS[k]) { applyView(VIEW_KEYS[k]); render(); refreshBtns(); return }
+      if (PRESET_KEYS[k]) { setPreset(PRESET_KEYS[k]); applyView(curView); render(); refreshBtns(); return }
+      if (k === 'h') { hud.style.display = hud.style.display === 'none' ? '' : 'none' }
+    })
+    window.addEventListener('resize', function () {
+      resize(Math.max(320, window.innerWidth), Math.max(240, window.innerHeight))
+      applyOrbit()                             // 保留用户当前机位（旧版会跳回预设视角）
+      render()
+    })
+
+    // ---------- 鼠标轨道控制 ----------
+    var drag = null
+    canvas.addEventListener('contextmenu', function (e) { e.preventDefault() })
+    canvas.addEventListener('pointerdown', function (e) {
+      drag = { id: e.pointerId, x: e.clientX, y: e.clientY, pan: (e.button === 2 || e.shiftKey) }
+      canvas.classList.add('dragging')
+      try { canvas.setPointerCapture(e.pointerId) } catch (err) {}
+      e.preventDefault()
+    })
+    canvas.addEventListener('pointermove', function (e) {
+      if (!drag || e.pointerId !== drag.id) return
+      var dx = e.clientX - drag.x, dy = e.clientY - drag.y
+      drag.x = e.clientX; drag.y = e.clientY
+      if (drag.pan) {
+        // 沿相机的右/上轴平移注视点；速度随距离缩放（近景慢、远景快）
+        var right = new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion)
+        var up = new THREE.Vector3(0, 1, 0).applyQuaternion(camera.quaternion)
+        var k = ORBIT.dist * 0.0018
+        for (var i = 0; i < 3; i++) {
+          var a = i === 0 ? right.x : (i === 1 ? right.y : right.z)
+          var b = i === 0 ? up.x : (i === 1 ? up.y : up.z)
+          ORBIT.target[i] += (-a * dx + b * dy) * k
+        }
+      } else {
+        ORBIT.azim -= dx * 0.30
+        ORBIT.elev += dy * 0.30
+      }
+      applyOrbit()
+      renderLive()
+    })
+    function stopDrag(e) {
+      if (!drag) return
+      drag = null
+      canvas.classList.remove('dragging')
+      try { if (e && e.pointerId != null) canvas.releasePointerCapture(e.pointerId) } catch (err) {}
+      endLive()
+    }
+    canvas.addEventListener('pointerup', stopDrag)
+    canvas.addEventListener('pointercancel', stopDrag)
+    canvas.addEventListener('wheel', function (e) {
+      e.preventDefault()
+      ORBIT.dist = Math.max(0.10, Math.min(3.0, ORBIT.dist * Math.exp(e.deltaY * 0.0012)))
+      applyOrbit()
+      renderLive()
+    }, { passive: false })
+
+    // ---------- 按钮面板 ----------
+    var VIEW_LABEL = { hero: '3/4 视角', front: '正面', closedtop: '闭合俯视', screenfront: '屏幕正面',
+                       screen34: '屏幕 3/4', kb: '键盘俯视', top: '顶视', ports: '接口特写',
+                       side: '侧面', lid: '上盖特写', bottom: '底面' }
+    var VIEW_ORDER = ['hero', 'front', 'closedtop', 'screenfront', 'screen34', 'kb', 'top', 'ports', 'side', 'lid', 'bottom']
+    var PRESET_LABEL = { white: '白底', dark: '深色', grey: '灰底' }
+    var rowView = document.getElementById('rowView')
+    var rowPreset = document.getElementById('rowPreset')
+    VIEW_ORDER.forEach(function (name) {
+      if (!VIEWS[name]) return
+      var b = document.createElement('button')
+      b.textContent = VIEW_LABEL[name] || name
+      b.dataset.view = name
+      b.onclick = function () { applyView(name); render(); refreshBtns() }
+      rowView.appendChild(b)
+    })
+    Object.keys(PRESETS).forEach(function (name) {
+      var b = document.createElement('button')
+      b.textContent = PRESET_LABEL[name] || name
+      b.dataset.preset = name
+      b.onclick = function () { setPreset(name); applyOrbit(); render(); refreshBtns() }
+      rowPreset.appendChild(b)
+    })
+    function refreshBtns() {
+      Array.prototype.forEach.call(rowView.children, function (b) {
+        b.className = (b.dataset.view === curView) ? 'on' : ''
+      })
+      Array.prototype.forEach.call(rowPreset.children, function (b) {
+        b.className = (b.dataset.preset === curPreset) ? 'on' : ''
+      })
+    }
+    document.getElementById('btnReset').onclick = function () { applyView(curView); render(); refreshBtns() }
+    document.getElementById('btnQ').onclick = function () {
+      setQuality(QUALITY === 'high' ? 'low' : 'high')
+      applyOrbit()
+      render()
+    }
+    document.getElementById('btnSave').onclick = function () {
+      var a = document.createElement('a')
+      a.download = 'macbook-' + curView + '.png'
+      a.href = canvas.toDataURL('image/png')
+      a.click()
+    }
+    document.getElementById('btnHud').onclick = function () {
+      hud.style.display = hud.style.display === 'none' ? '' : 'none'
+    }
+    refreshBtns()
   }
 
   function loadCdn(i) {
     if (i >= CDNS.length) { hud.textContent = 'three.js CDN 加载失败'; return }
     var s = document.createElement('script')
     s.src = CDNS[i]
-    s.onload = function () { try { boot(window.THREE) } catch (e) { hud.textContent = 'boot failed: ' + e.message } }
+    s.onload = function () { try { mark('t_three'); boot(window.THREE) } catch (e) { hud.textContent = 'boot failed: ' + e.message } }
     s.onerror = function () { loadCdn(i + 1) }
     document.head.appendChild(s)
   }

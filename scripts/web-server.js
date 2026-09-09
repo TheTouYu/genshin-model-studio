@@ -50,7 +50,9 @@ function sendFile(res, file, fallbackType) {
     }
 }
 function send(res, code, body, type = 'text/plain; charset=utf-8') {
-    res.writeHead(code, { 'Content-Type': type });
+    // 预览页/贴图每轮都在改：一律 no-store，避免用户打开页面看到上一轮的缓存
+    // （实测 web/draw/photo.html 被缓存后，画布尺寸仍是旧值 → 只看到一片黑）
+    res.writeHead(code, { 'Content-Type': type, 'Cache-Control': 'no-store, must-revalidate' });
     res.end(body);
 }
 const server = createServer((req, res) => {
