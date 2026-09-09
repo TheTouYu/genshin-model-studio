@@ -16,6 +16,12 @@
 ## 铁律（实测通过，违反必返工）
 1. **GIA 根缩放**：真实尺寸 = root × 数据（root 同时乘位置与缩放）。root=0.1 → 空模型 0.1；
    改 root 必须“位置与缩放同乘 1/root”双向补偿（`export-mesh` 默认 `ROOT_SCALE=0.1` 已内置）。
+   **两个参数（2026-09-09 用户需求，网页画线导出区 `#drawRootScale`/`#drawOverallScale`）**：
+   ① 主模型缩放 S（默认 0.1，字段 `rootScale`）——只改主模型与装饰物的比例，不影响整体尺寸；
+   ② 整体缩放率 K（默认 1，字段 `overallScale`）——只改实际主模型缩放、不动装饰物 → 整体尺寸 ×K。
+   公式：`rootTransform.scale = S×K`、item `position`/`scale` 均 ÷S、游戏内真实尺寸 = 建模尺寸 ×K。
+   实现 `src/cli/gia-common.ts`（`resolveGiaScale`/`makeGiaInput`，CLI `--root-scale`/`--overall-scale`）+
+   `src/web-shared.ts` `toGiaInput`（网页 `/api/export` 同语义；两参数都不传时保持历史行为 root=[1,1,1]）。
 2. **表面模型用 10009003 平面**，不要 10009001 盒（游戏表现为饼环堆叠）；旋转用
    `rotFromNormal`（网页 part('quad') 同款）；曲面项目 `panelize` 用
    `{ rotationMode:'normal', normalTolerance:0.2 }`（默认 0.999 会把凸包/趾区拆成三角尖刺）。
@@ -39,6 +45,14 @@
    “长”出来（extrudeRing/branch），不允许独立放样后 index 合并；评审时 seamCheck 断缝检测。
    **粗模必须有前后区分**：前视宽剖面（rx）+ 侧视深剖面（ryF/cyF + ryB/cyB）共同驱动截面，
    躯干前后体块 landmark（锁骨/胸骨/肩胛/脊柱沟/骨盆/臀/鞋前）进骨架——面数低不等于没有前后。
+10. **设计保真门（2026-09-09 笔记本 v1/v2 审美失败复盘固化）**：**规格数值是实现约束，不是设计目标**。
+   建模前必须建真机参考档案 `reference/<产品>/design-reference.md`（尺寸/键盘/接口/底盖/材质 + 官方图 + 来源 URL）
+   并写下**设计语言清单**（连续曲率、缝隙均匀、结构隐藏、栅格对齐）；交付前必须做**同角度 A/B 并排比对**
+   （渲染图 vs 真机图），逐项打勾才可宣称完成。**门禁全绿 ≠ 像**：`gms.verify`/独立 AABB/独立视觉复核
+   只覆盖结构合法性；交付文档里的 `pass` 必须紧邻一行「未覆盖维度：设计保真（无参考图对照）」。
+   实测高频设计破绽：方角穿出圆角包络（每角 4.14mm）、板角穿出圆角管（2.14mm）、圆角管平头接缝（0.32mm）、
+   轴端与侧壁齐平（Ø4mm 外露）、盖板高出台面（0.6mm）、上盖后缘穿入机身（6.60mm）、键位语义错误（空格键 x=+0.0950）。
+   复盘权威文档：`docs/game-engine-knowledge/retrospective-2026-09-09-laptop-macbook-design-fidelity.md`。
 
 ## 常用命令
 - 构建/测试：`npm run build --silent`、`npm test`。
