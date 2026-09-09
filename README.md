@@ -132,11 +132,24 @@ structure.json 超集（中间格式，可手写、可导出）
 | 10009012 | 开口薄壁圆柱 | 截面直径 1；空心无盖底 |
 | 10009019 | 网格 | 由顶点+面承载（世界坐标） |
 
+## 案例：MacBook Pro 14″（浏览器渲染 + `.gia` 导出）
+
+以真机规格档案 `reference/macbook/design-reference.md` 为基准，用本仓库的网格管线产出
+`.gia`（`delivery/macbook-gia/`），并在浏览器里用 PBR + 程序化影棚环境 + 后处理做产品级
+渲染（`web/draw/photo.html`，three.js r160；`npm run web` 后打开 `/draw/photo.html`）：
+
+- 演示视频（2 分 29 秒 / 2560×1440 / H.264+AAC）：`delivery/demo-video/macbook-demo.mp4`；
+  分镜、音效表与复现命令见 `delivery/demo-video/README.md`、`delivery/demo-video/SCRIPT.md`
+- 播放页：`/draw/demo.html`；逐帧存证 `delivery/demo-video/verify-frames-1440p/`
+- 标定与盲测报告：`delivery/REPORT-demo-v2-1440p.md`、`delivery/REPORT-v7.md`、
+  `docs/macbook-max-rubric.md`
+
 ## 边界声明
 
 - **不写回真实地图**：`.gil` 候选的写回 = genshin-ts 适配器职责（`apply-candidate`
   哈希安全门、ID 双查、Temp 同步），本仓库只产出候选与可回读结构。
-- **不含游戏素材**：仓库无任何游戏资源文件；resID 仅为游戏内官方元件引用。
+- **素材边界**：代码与产物不含游戏素材文件；resID 仅为游戏内官方元件引用。
+  `reference/` 下为建模标定用的第三方参考图（版权归原权利人，仅作尺寸/造型对照，不参与编码与产物）。
 - **一期不实现**：节点图/玩法逻辑、3D 网页渲染、`.gia`→structure 逆向、写回真实地图（由 genshin-ts 适配器提供）。
 - **候选 ≠ 游戏核验**：`compatibility=not-proven`；闭包结构正确不代表编辑器/游戏视觉
   已通过。尺寸/颜色语义以 `docs/input-format.md` 的校准记录为准，未校准资源
