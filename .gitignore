@@ -30,3 +30,4 @@ web/draw/compare-v8.png
 
 # r10 看图页的图片目录（大，不入库；页面 v9.html 会引用，本地存在即可）
 web/draw/v9/
+web/draw/v10/

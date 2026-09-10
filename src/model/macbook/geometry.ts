@@ -40,7 +40,7 @@ export interface BuildResult { mesh: MeshData; materials: Material[]; stats: Rec
 
 const M = {
   ALU: 0, ALU_DARK: 1, GLASS: 2, SCREEN: 3, KEY: 4, LEGEND: 5, TRACKPAD: 6, LOGO: 7,
-  PORT_DARK: 8, PORT_METAL: 9, RUBBER: 10, GRILLE: 11, SCREW: 12, HINGE: 13, LENS: 14, GRILLE_RIM: 15, ALU_GLOSS: 16, ETCH: 17, WELL: 18, PORT_TONGUE: 19, GOLD: 20,
+  PORT_DARK: 8, PORT_METAL: 9, RUBBER: 10, GRILLE: 11, SCREW: 12, HINGE: 13, LENS: 14, GRILLE_RIM: 15, ALU_GLOSS: 16, ETCH: 17, WELL: 18, PORT_TONGUE: 19, GOLD: 20, DEBUG: 21,
 } as const;
 
 function baseMaterials(assets: Assets, color: 'silver' | 'spaceblack' = 'silver'): Material[] {
@@ -67,6 +67,7 @@ function baseMaterials(assets: Assets, color: 'silver' | 'spaceblack' = 'silver'
   mats[M.PORT_TONGUE] = makeMaterial({ name: 'port-tongue', baseColor: [0.035, 0.035, 0.038], metallic: 0.15, roughness: 0.55 });
   // MagSafe 弹性触点 = 镀金（真机 5 个金色触点）
   mats[M.GOLD] = makeMaterial({ name: 'port-gold', baseColor: [0.72, 0.55, 0.24], metallic: 1, roughness: 0.22 });
+  mats[M.DEBUG] = makeMaterial({ name: 'debug', baseColor: [1.0, 0.05, 0.05], metallic: 0, roughness: 0.5 });
   mats[M.RUBBER] = makeMaterial({ name: 'foot', baseColor: [0.028, 0.028, 0.029], metallic: 0, roughness: 0.62 });
   mats[M.GRILLE] = makeMaterial({ name: 'grille', baseColor: [0.020, 0.020, 0.021], metallic: 0.35, roughness: 0.55, baseTex: assets.grilleTex });
   mats[M.SCREW] = makeMaterial({ name: 'screw', baseColor: [0.70, 0.70, 0.71], metallic: 1, roughness: 0.24 });
@@ -181,8 +182,43 @@ function portFracs(kind: string, w: number, h: number): number[] {
   }
   const fCap = Math.max(0.05, Math.min(0.5, (w / 2 - h / 2) / w)); // 直段终点
   const out: number[] = [0.25 * fCap];
-  for (let i = 0; i <= 12; i++) out.push(fCap + (0.5 - fCap) * (i / 12));
+  for (let i = 0; i <= 6; i++) out.push(fCap + (0.5 - fCap) * (i / 6));
   return out;
+}
+
+/** 端口面板补片：壁面外侧铺一圈**平面环**（外边界矩形 → 内边界精确圆角开口）。
+ *  根因（用户 2026-09-10 圈出的"梳齿"）：墙体的开孔是 patch 的**格子 mask**，孔边是阶梯状；
+ *  阶梯处格子被多删 → 直接看进机身内部，内部铝面反射环境 → 开口两侧垂下亮条纹（射线取证：
+ *  条纹像素首命中是 y=0.55 的底盖内表面，而不是墙面）。补片把阶梯整片盖住，只留精确开口。 */
+function portBezel(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz: number, w: number, h: number, kind: string, cseg: number, yMin: number, yMax: number): void {
+  const rr = Math.min(kind === 'jack' ? h / 2 : kind === 'usbc' || kind === 'magsafe' ? 1.15 : 0.9, h / 2 - 0.01, w / 2 - 0.01);
+  const inner = roundedRectPath(w, h, rr, cseg);
+  // 外边界必须落在**侧壁的竖直平面段**内（yMin..yMax 是上下倒角的切点）：
+  // 超出就会浮在圆弧面上，露出补片边缘（MagSafe 上边距 1.6mm 会越过 y=9.95 的切点）。
+  const mw = w / 2 + 1.6;
+  const mh = Math.min(h / 2 + 1.6, Math.max(h / 2 + 0.5, yMax - cy - 0.05), Math.max(h / 2 + 0.5, cy - yMin - 0.05));
+  // 机外方向 = +side（side=-1 是左壁，机外 = -x）；补片贴在壁面外侧 0.02mm
+  const x = wallX + side * 0.07;
+  const nx = side;
+  const V = (y: number, z: number): number => b.vertex(v3(x, y, z), v3(nx, 0, 0), 0, 0);
+  const inIds: number[] = [], outIds: number[] = [];
+  for (const p of inner) {
+    const dy = p.z, dz = p.x;
+    inIds.push(V(cy + dy, cz + dz));
+    const ty = Math.abs(dy) > 1e-9 ? mh / Math.abs(dy) : Infinity;
+    const tz = Math.abs(dz) > 1e-9 ? mw / Math.abs(dz) : Infinity;
+    const t = Math.min(ty, tz);
+    outIds.push(V(cy + dy * t, cz + dz * t));
+  }
+  b.material(M.ALU);
+  const n = inner.length;
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    // 绕序必须让**几何法线朝机外**：three.js 的 DoubleSide 对背面会翻转法线 →
+    // 绕序反了补片就整片变暗（射线取证：补片区 face.normal = +x，墙面 = −x）。
+    if (side > 0) b.quad(outIds[i], inIds[i], inIds[j], outIds[j]);
+    else b.quad(outIds[i], outIds[j], inIds[j], inIds[i]);
+  }
 }
 
 function portCavity(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz: number, w: number, h: number, depth: number, kind: string, jseg = 16, cseg = 8): void {
@@ -310,7 +346,7 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     const prof = bodyProfile(B.bottomY, deckY, B.fillet, hq(8, 1));
     const surf0 = sweepSurface(path, prof);
     // 前缘开盖凹槽（宽 50mm、深 1.5mm，前壁中部）
-    const GROOVE_W = 50.0, GROOVE_D = 1.5;
+    const GROOVE_W = 50.0, GROOVE_D = 1.2;
     const groove = (p: Vec3): number => {
       if (p.z < B.d / 2 - 6 || Math.abs(p.x) > GROOVE_W / 2) return 0;
       const t = clamp(1 - Math.abs(p.x) / (GROOVE_W / 2), 0, 1);
@@ -324,7 +360,9 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       const g = groove(p);
       if (g <= 0) return p;
       const pt = pathAt(path, u);
-      return v3(p.x + pt.nx * g, p.y, p.z + pt.nz * g);
+      // 凹槽 = **内凹**。旧版沿外法线 +g → 前壁中段外凸 1.5mm，合盖时底座比上盖多出 1.1mm
+      // 的台阶（用户 2026-09-10：「上下盖子平齐……尺寸可能错了」；实测底座 z 到 111.5 > 名义 110.6）。
+      return v3(p.x - pt.nx * g, p.y, p.z - pt.nz * g);
     };
     const allPorts = [...S.ports.left.map((p) => ({ ...p, side: -1 as const })), ...S.ports.right.map((p) => ({ ...p, side: 1 as const }))];
     const zToU = (z: number, side: number): number => {
@@ -376,15 +414,18 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       for (const q of allPorts) {
         if (q.side !== side) continue;
         if (q.kind === 'jack') {
-          if (Math.hypot(p.z - q.z, p.y - S.ports.centerY) < q.w / 2) return true;
+          if (Math.hypot(p.z - q.z, p.y - S.ports.centerY) < q.w / 2 + 0.4) return true;
           continue;
         }
         // 圆角矩形开孔（实测圆角 r≈1.0–1.2mm，不是两端半圆 stadium：ports-1 逐行剖面
         // 显示开口在距顶 1px 处仍有 42/50 宽度，stadium 只会有 ~8px）
-        const rx = Math.min(q.h / 2, 1.15);
+        // 外扩 0.4mm：孔边由 portBezel 的精确开口负责，墙体这里只要"挖穿"即可
+        const PAD = 0.4;
+        const rx = Math.min((q.h + PAD * 2) / 2, 1.15);
         const ax = Math.abs(p.z - q.z), ay = Math.abs(p.y - S.ports.centerY);
-        if (ax < q.w / 2 && ay < q.h / 2) {
-          const dx = Math.max(0, ax - (q.w / 2 - rx)), dy = Math.max(0, ay - (q.h / 2 - rx));
+        const hw2 = q.w / 2 + PAD, hh2 = q.h / 2 + PAD;
+        if (ax < hw2 && ay < hh2) {
+          const dx = Math.max(0, ax - (hw2 - rx)), dy = Math.max(0, ay - (hh2 - rx));
           if (dx * dx + dy * dy < rx * rx) return true;
         }
       }
@@ -528,20 +569,18 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       cylinderSide(b, fx, fz, 0.12, 0.14, f.d / 2 * 0.93, sc(24, 12));
       disk(b, fx, 0.14, fz, f.d / 2 * 0.93, sc(24, 12), true);
     }
-    // 底盖螺丝（4 颗 pentalobe，后缘一排）+ 螺丝孔凹槽
+    // 底盖螺丝（4 颗 pentalobe，后缘一排）：与底面**齐平**。
+    // 旧版整组吊在底面下方（B.bottomY−0.75 … −0.30）→ 整机 y 到 −0.20mm，
+    // 底面看是四个凸点、侧视后缘多出一层皮（用户 2026-09-10「上下盖子平齐…尺寸可能错了」）。
     b.material(M.SCREW);
     for (const sx of [-1, 1]) {
       for (const xo of [33.0, 118.0]) {
         const sxv = sx * xo, szv = -B.d / 2 + S.screws.insetZ;
-        // 凹槽环（略暗）
-        cylinderSide(b, sxv, szv, B.bottomY - 0.75, B.bottomY - 0.30, S.screws.d / 2 + 0.55, sc(18, 5));
-        disk(b, sxv, B.bottomY - 0.75, szv, S.screws.d / 2 + 0.55, sc(18, 5), false);
-        // 螺丝头（略高）
-        cylinderSide(b, sxv, szv, B.bottomY - 0.75, B.bottomY - 0.48, S.screws.d / 2 + 0.1, sc(16, 5));
-        disk(b, sxv, B.bottomY - 0.48, szv, S.screws.d / 2 + 0.1, sc(16, 5), true);
+        // 螺丝头面（法线朝下，沉入 0.02mm 避免与底板共面）
+        disk(b, sxv, B.bottomY - 0.02, szv, S.screws.d / 2, sc(18, 6), true);
         // 十字槽
         b.material(M.PORT_DARK);
-        disk(b, sxv, B.bottomY - 0.50, szv, S.screws.d / 4.2, sc(10, 4), true);
+        disk(b, sxv, B.bottomY - 0.03, szv, S.screws.d / 4.2, sc(10, 4), true);
         b.material(M.SCREW);
       }
     }
@@ -576,8 +615,14 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
   // ============ 6. 接口腔体 ============
   {
     const wallL = -B.w / 2 + 0.05, wallR = B.w / 2 - 0.05;
-    for (const p of S.ports.left) portCavity(b, -1, wallL, S.ports.centerY, p.z, p.w, p.h, 9.0, p.kind, sc(16, 6), hq(10, 4));
-    for (const p of S.ports.right) portCavity(b, 1, wallR, S.ports.centerY, p.z, p.w, p.h, 9.0, p.kind, sc(16, 6), hq(10, 4));
+    for (const p of S.ports.left) {
+      portBezel(b, -1, wallL, S.ports.centerY, p.z, p.w, p.h, p.kind, hq(16, 6), B.bottomY + B.fillet, deckY - B.fillet);
+      portCavity(b, -1, wallL, S.ports.centerY, p.z, p.w, p.h, 9.0, p.kind, sc(16, 6), hq(10, 4));
+    }
+    for (const p of S.ports.right) {
+      portBezel(b, 1, wallR, S.ports.centerY, p.z, p.w, p.h, p.kind, hq(16, 6), B.bottomY + B.fillet, deckY - B.fillet);
+      portCavity(b, 1, wallR, S.ports.centerY, p.z, p.w, p.h, 9.0, p.kind, sc(16, 6), hq(10, 4));
+    }
   }
 
   // ============ 7. 上盖 ============
