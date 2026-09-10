@@ -9,7 +9,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 
 const R = process.cwd()
-const OUT = path.join(R, 'web/draw/v10')
+const OUT = path.join(R, 'web/draw/v11')
 fs.mkdirSync(OUT, { recursive: true })
 
 const copy = (src, dst) => {
