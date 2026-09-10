@@ -72,6 +72,7 @@ const hexOf = built.materials.map((m) => {
 // 端口附近列宽 0.1–0.3mm 而墙面列宽 1–3mm → 同一个共享边上的平均法线不一致 →
 // 端口两侧出现竖直高光条纹（用户 2026-09-10 圈的"接口粗糙"里有这一条）。
 // 带法线焊接后页面直接用解析法线，条纹消失；同时硬边（键帽棱、腔口）不再被抹圆。
+const NOWELD = process.argv.includes('--no-weld');   // 诊断用：跳过焊接/去 sliver，看原始几何
 const TOL = 2e-4;
 const NRM = mesh.nrm;
 const isLid = (i) => (LID && i >= LID.from && i < LID.to ? 1 : 0);
@@ -84,6 +85,7 @@ const key = (a, b, c, f, n) => a + ',' + b + ',' + c + '|' + f + '|' + n;
 for (let i = 0; i < mesh.pos.length / 3; i++) {
   const x = mesh.pos[i * 3], y = mesh.pos[i * 3 + 1], z = mesh.pos[i * 3 + 2];
   const f = isLid(i), n = nq(i);
+  if (NOWELD) { remap[i] = vertices.length; vertices.push([+x.toFixed(6), +y.toFixed(6), +z.toFixed(6)]); norms.push([+NRM[i*3].toFixed(4), +NRM[i*3+1].toFixed(4), +NRM[i*3+2].toFixed(4)]); continue; }
   const gx = Math.floor(x / TOL), gy = Math.floor(y / TOL), gz = Math.floor(z / TOL);
   let hit = -1;
   outer:
@@ -126,7 +128,7 @@ for (let t = 0; t < mesh.mat.length; t++) {
   const cx = uy * vz - uz * vy, cy = uz * vx - ux * vz, cz = ux * vy - uy * vx;
   if (0.5 * Math.hypot(cx, cy, cz) < 1e-9) { dropped++; continue; }
   const minE = Math.min(Math.hypot(ux, uy, uz), Math.hypot(x2 - x1, y2 - y1, z2 - z1), Math.hypot(x2 - x0, y2 - y0, z2 - z0));
-  if (minE < 2e-5) { dropped++; continue; }
+  if (!NOWELD && minE < 2e-5) { dropped++; continue; }
   if (LID && lidFrom >= 0) {
     const la = a >= lidFrom && a <= lidTo, lb = b >= lidFrom && b <= lidTo, lc = c >= lidFrom && c <= lidTo;
     if ((la || lb || lc) && !(la && lb && lc)) mixedTris++;

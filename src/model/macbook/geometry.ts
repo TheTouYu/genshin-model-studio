@@ -390,32 +390,14 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
 
   // ============ 1. 机身主体 ============
   {
-    const path = roundedRectPath(B.w, B.d, B.r, hq(48, 6), hq(120, 16));
+    const path = roundedRectPath(B.w, B.d, B.r, hq(48, 6), hq(240, 16));  // 直边段 240：前缘凹槽肩部需要足够 u 采样（旧 120 在肩部只有 ~5 个点）
     const prof = bodyProfile(B.bottomY, deckY, S.base.filletTop ?? B.fillet, hq(8, 1), B.fillet);
     const surf0 = sweepSurface(path, prof);
-    // 前缘开盖凹槽（宽 50mm、深 1.5mm，前壁中部）
-    // 前缘开盖凹槽：真机是**浅槽 + 明确唇边**（design-reference：宽≈1/8 机宽≈39mm、深≈1.5mm），
-    // 旧值宽 70mm/深 0.55mm + cos 形过渡 → 渲染成一片柔光斑（用户 2026-09-10「细节需要打磨」）。
-    const GROOVE_W = 44.0, GROOVE_D = 1.25;
-    const groove = (p: Vec3): number => {
-      if (p.z < B.d / 2 - 6 || Math.abs(p.x) > GROOVE_W / 2) return 0;
-      const t = clamp(1 - Math.abs(p.x) / (GROOVE_W / 2), 0, 1);   // 0 端 → 1 中心
-      // 中段平底、两端 32% 做 smoothstep 肩：读作"一条槽"而不是"一个坑"
-      const sh = clamp((t - 0.66) / 0.34, 0, 1);
-      const shape = sh * sh * (3 - 2 * sh);
-      const y = p.y;
-      const ym = clamp(Math.min((y - B.bottomY - 0.40) / 0.35, (deckY - 0.40 - y) / 0.35), 0, 1);
-      return GROOVE_D * shape * ym;
-    };
-    const surf = (u: number, v: number): Vec3 => {
-      const p = surf0(u, v);
-      const g = groove(p);
-      if (g <= 0) return p;
-      const pt = pathAt(path, u);
-      // 凹槽 = **内凹**。旧版沿外法线 +g → 前壁中段外凸 1.5mm，合盖时底座比上盖多出 1.1mm
-      // 的台阶（用户 2026-09-10：「上下盖子平齐……尺寸可能错了」；实测底座 z 到 111.5 > 名义 110.6）。
-      return v3(p.x - pt.nx * g, p.y, p.z - pt.nz * g);
-    };
+    // 前缘开盖凹槽（scoop）：**不在这一层做** —— 见函数末尾的 SCOOP 置换段。
+    // v1–v3 的错法：把整面前壁沿外法线内凹（宽 44mm/深 1.25mm）→ 前视轮廓一动不动，
+    // 只在唇口留下两处"掐痕"（用户 2026-09-11「正前方凹槽的细节需要打磨」）。
+    // 真机是**唇口顶部下沉**：前视图唇线在中段下凹、槽底前倾受光（官方/用户前视图逐列实测）。
+    const surf = (u: number, v: number): Vec3 => surf0(u, v);
     const allPorts = [...S.ports.left.map((p) => ({ ...p, side: -1 as const })), ...S.ports.right.map((p) => ({ ...p, side: 1 as const }))];
     const zToU = (z: number, side: number): number => {
       let best = 0, bd = 1e9;
@@ -523,7 +505,7 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       { cx: 0, cz: hslot.cz, w: hslot.w, d: hslot.d, r: hslot.r },
     ];
     b.material(M.ALU);
-    plateWithHoles(b, outline, holes, deckY, { maxCell: mc(3) });
+    plateWithHoles(b, outline, holes, deckY, { maxCell: mc(1.5) });  // 1.5mm：凹槽肩部在台面前沿带上的采样密度
     // 转轴槽：台面后缘挖一条凹槽（槽底 + 槽壁），转轴筒藏在槽里 —— 真机开盖时看到的就是这条槽。
     b.material(M.HINGE);
     plateFill(b, { cx: 0, cz: hslot.cz, w: hslot.w, d: hslot.d, r: hslot.r }, deckY - hslot.depth, { nu: sc(64, 10), nt: 2, cornerSegs: sc(6, 4), vertexSampling: true });
@@ -794,8 +776,78 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
   }
 
   stats['tris'] = b.triCount;
-  // 单位：规格为 mm，渲染/相机为 m → 统一缩放到米
   const raw = b.build();
+  // ============ 前缘开盖凹槽（scoop）— 顶点置换 ============
+  // 真机（官方前视图 reference/macbook/img + 用户 正视图.png / 设计图.png 关闭前视图）逐列实测：
+  //   · 唇线（上盖/底座分缝那条线）在中段下沉，暗带 872..948px（1.441 px/mm）= **53.4mm**；
+  //     打开前视图 212..291px（1.619 px/mm）= **49.4mm** → 取 **51mm**，居中（实测中心偏 −1.0mm）。
+  //   · 下沉深度：打开前视图唇口亮面带 306..311px = **2.8mm**（关闭前视图暗带 616..618px ≈ 2.1mm）→ 取 **2.8mm**。
+  //   · 形状：中段近平台、两端约 3mm 的平滑肩（关闭前视图亮区 880..940 平坦、872/948 两列骤起 = 端墙）。
+  //   · z 向坡度：参考图关闭前视里凹槽面在图上占 ~5–6mm（暗口 2.9mm + 亮底 3mm）→ 坡长取 9mm。
+  //   实测（设计图.png 关闭前视）：亮底行 619..623、暗口行 616..618。
+  // 置换对象：**底座前缘唇口 + 台面前沿带**（y 近台面、z 近前缘、|x| 在槽宽内）。
+  // 上界 y ≤ deckY+0.02 是为了不碰合盖时的上盖底面（closedY=11.58，离上界 0.06mm）。
+  {
+    const SCOOP_W = 51.0, SCOOP_D = 3.0, SCOOP_RAMP = 9.0;
+    const zStart = B.d / 2 - SCOOP_RAMP;          // 再往后不再下沉
+    // 只动唇口附近；下界保证底缘倒角/脚垫不受影响。上端做成**平台**（y ≥ deckY−1.2 一律同位移）：
+    // 唇口外缘与台面前沿带两套网格在 z 上互相搭接 0.4mm，若位移量差一丝就会互相穿插 → 渲染出黑点。
+    const yLo = deckY - 5.0, yHi = deckY - 1.2, yCap = deckY + 0.02;
+    const p = raw.pos;
+    const moved = new Uint8Array(p.length / 3);
+    let nMoved = 0;
+    for (let i = 0; i < p.length; i += 3) {
+      const y = p[i + 1], z = p[i + 2];
+      if (z <= zStart || y <= yLo || y >= yCap) continue;
+      const t = Math.abs(p[i]) / (SCOOP_W / 2);
+      if (t >= 1) continue;
+      // 端肩占外侧 24%（≈6mm）：参考图里凹槽两端是两道明确的"端墙"；
+      // 再窄（曾试 12%）会在台面前沿带（格距 ~6mm）折出黑色尖楔 —— 置换梯度超过一个格子宽就会自交。
+      const sh = clamp((1 - t) / 0.45, 0, 1);
+      const nx = sh * sh * (3 - 2 * sh);                                   // 沿 x：中段平、两端肩
+      const az = clamp((z - zStart) / SCOOP_RAMP, 0, 1);
+      const zx = az * az * (3 - 2 * az);                                   // 沿 z：向后平滑收口
+      const wy = y >= yHi ? 1 : clamp((y - yLo) / (yHi - yLo), 0, 1);
+      const w2 = wy * wy * (3 - 2 * wy);                                   // 沿 y：越靠唇口越深
+      // 台面前沿带（法线朝天、恰在 deckY 的那张平板）额外下沉 0.06mm：
+      // 唇口外缘的圆角面与它在 z 上互相搭接、相切于同一点，凹槽区两者采样密度不同（2.3mm vs 3mm）
+      // → 插值后互相穿插，渲染成肩部的黑斑（实测 2026-09-11；与焊接无关，--no-weld 同样出现）。
+      const flatTop = Math.abs(raw.nrm[i + 1]) > 0.999 && Math.abs(y - deckY) < 0.01;
+      p[i + 1] = y - SCOOP_D * nx * zx * w2 - (flatTop ? 0.06 * nx * zx : 0);
+      moved[i / 3] = 1; nMoved++;
+    }
+    // 位移后必须**重算法线**：MeshBuilder 的顶点法线是按未位移几何给的，
+    // 直接沿用会让凹槽区读成块状明暗 + 端墙处黑斑（实测 2026-09-11）。
+    // 只重算"脏顶点"（动过的顶点 ∪ 与之共三角形的顶点），不动其余（键帽/屏幕的硬边法线必须保留）。
+    if (nMoved) {
+      const idx = raw.idx, nV = p.length / 3;
+      const dirty = new Uint8Array(nV);
+      for (let i = 0; i < nV; i++) if (moved[i]) dirty[i] = 1;
+      for (let t = 0; t < idx.length; t += 3) {
+        const a = idx[t], b2 = idx[t + 1], c = idx[t + 2];
+        if (moved[a] || moved[b2] || moved[c]) { dirty[a] = 1; dirty[b2] = 1; dirty[c] = 1; }
+      }
+      const acc = new Float64Array(nV * 3);
+      for (let t = 0; t < idx.length; t += 3) {
+        const a = idx[t], b2 = idx[t + 1], c = idx[t + 2];
+        if (!dirty[a] && !dirty[b2] && !dirty[c]) continue;
+        const ax = p[a * 3], ay = p[a * 3 + 1], az2 = p[a * 3 + 2];
+        const ux = p[b2 * 3] - ax, uy = p[b2 * 3 + 1] - ay, uz = p[b2 * 3 + 2] - az2;
+        const vx = p[c * 3] - ax, vy = p[c * 3 + 1] - ay, vz = p[c * 3 + 2] - az2;
+        const fx = uy * vz - uz * vy, fy = uz * vx - ux * vz, fz = ux * vy - uy * vx;   // 面积加权
+        for (const v of [a, b2, c]) { acc[v * 3] += fx; acc[v * 3 + 1] += fy; acc[v * 3 + 2] += fz; }
+      }
+      const nr = raw.nrm;
+      for (let v = 0; v < nV; v++) {
+        if (!dirty[v]) continue;
+        const L = Math.hypot(acc[v * 3], acc[v * 3 + 1], acc[v * 3 + 2]);
+        if (L < 1e-12) continue;
+        nr[v * 3] = acc[v * 3] / L; nr[v * 3 + 1] = acc[v * 3 + 1] / L; nr[v * 3 + 2] = acc[v * 3 + 2] / L;
+      }
+      stats['scoopVerts'] = nMoved;
+    }
+  }
+  // 单位：规格为 mm，渲染/相机为 m → 统一缩放到米
   const S_M = 1e-3;
   for (let i = 0; i < raw.pos.length; i++) raw.pos[i] *= S_M;
   stats['verts'] = raw.pos.length / 3;
