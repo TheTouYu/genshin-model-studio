@@ -903,7 +903,13 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       };
       for (let v = 0; v < nV; v++) {
         if (!dirty[v]) continue;
-        if (flat[v] || moved[v]) {   // R65 正式修复：解析法线覆盖窗口内所有被位移顶点（原仅 flatTop）
+        // R70：解析法线的覆盖面必须包含**整张台面平板**，而不只是被位移的顶点。窗口外的台面顶点
+        // 没被位移，却与位移顶点共三角形 → 落到"位置键平均法线"分支，其平均值被邻接的位移面拉歪 →
+        // 与窗口内的解析法线在边界处不连续；粗栅格跨越该边界时逐格交替明暗 = 用户看到的**点状白虚线**
+        //（R69 射线取证：虚线点命中台面板，坐标恰在窗口边界 x≈-25.5 / z≈102.6）。台面平板位移前是
+        // 平面，解析法线 (0,±1,0)+凹槽梯度对整张板都是真值 → 用它统一两套机制，边界自然消失。
+        const deckPlane = Math.abs(raw.nrm[v * 3 + 1]) > 0.999 && Math.abs(p[v * 3 + 1] - deckY) < 0.01;
+        if (flat[v] || moved[v] || deckPlane) {
           // **必须保留原法线的符号**：台面板 plateWithHoles 是反绕序（存储法线朝下），页面材质是
           // DoubleSide → three.js 对背面会再翻转一次法线。若这里一律写成 +Y，反绕序那张网格
           // 翻转后变成朝下着色 → 凹槽两侧整片发黑 + 与相邻面颜色突变（用户 r39 第 2 条）。
