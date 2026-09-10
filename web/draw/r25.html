@@ -1,0 +1,34 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><title>MacBook 六条修复对照 · r25</title>
+<style>
+ body{margin:0;background:#141516;color:#e8e8ea;font:14px/1.6 -apple-system,"Segoe UI",system-ui,sans-serif}
+ h1{font-size:18px;margin:18px 22px 4px} .sub{color:#9aa0a6;margin:0 22px 14px}
+ .grid{display:grid;grid-template-columns:1fr;gap:18px;padding:0 22px 40px}
+ .card{background:#1c1e20;border:1px solid #2c2f33;border-radius:10px;padding:12px 14px}
+ .card h2{margin:2px 0 4px;font-size:15px} .card p{margin:2px 0 10px;color:#a8adb3;font-size:13px}
+ .row{display:flex;gap:12px;flex-wrap:wrap} .row figure{margin:0;flex:1 1 320px}
+ img{width:100%;border-radius:6px;display:block} figcaption{color:#8b9096;font-size:12px;margin-top:6px}
+ code{background:#2a2d31;padding:1px 5px;border-radius:4px;font-size:12px}
+</style></head><body>
+<h1>MacBook Pro 14″ · 六条反馈逐条修复对照（r25 · commit a98b917）</h1>
+<p class="sub">左=我的页面渲染（photo.html，900–1100px，深色影棚）；右侧为官方/你的参考图。全部数字见 <code>delivery/REPORT-r25-six-fixes.md</code>。</p>
+<div class="grid">
+  <div class="card"><h2>#1 合盖缝（不平齐 / 有间隔）</h2>
+    <p>实测：底座与上盖侧壁 <b>台阶 0.000mm</b>（同一竖直面）；暗缝 <b>0.68mm</b>（官方侧视图实测 0.69mm）。</p>
+    <div class="row"><figure><img src="./r25/p3-leftseam.png"><figcaption>我的：合盖左侧缝（深色影棚）</figcaption></figure></div></div>
+  <div class="card"><h2>#2 键盘异常白线</h2>
+    <p>根因是<b>系统性几何 bug</b>：<code>roundedRectOutline</code> 的直边点漏加 cx/cz（只有圆弧点加了），凡是 cz≠0 的轮廓（转轴槽 −107、键盘井 −42.5、栅格…）直边内部点全部落到 z≈0，在机身中部生成横贯“游墙”。修复后该窗口亮像素 <b>108 → 12</b>，键帽侧壁改近黑哑光。</p>
+    <div class="row"><figure><img src="./r25/p1-kb.png"><figcaption>我的：键盘俯视（白线已消失）</figcaption></figure></div></div>
+  <div class="card"><h2>#3 键位偏移（需要左边偏移）</h2>
+    <p>各行首/末修饰键按官方正交俯视图<b>逐键标定</b>对齐：<code>'</code> 1.065→1.0u、tab 1.568→1.5u、caps 1.809→1.75u、lshift 2.312→2.244u…；底行总宽 14.564→<b>14.65u</b>（左侧簇整体左移 0.82mm）。逐键中心对比 Δ 由 +0.40…+0.65mm 收到 <b>±0.22mm</b>。</p>
+    <div class="row"><figure><img src="./r25/p1-kb.png"><figcaption>我的键盘俯视</figcaption></figure>
+      <figure><img src="../v13-ref-kb.png" onerror="this.style.display='none'"><figcaption>参考：官方 13″ top-case 正交俯视（键盘区）</figcaption></figure></div></div>
+  <div class="card"><h2>#4 正前方凹槽细节</h2>
+    <p>旧版机身路径的前后直边只切 <b>2–3 段</b>（≈100mm/段）→ 凹槽被抹平成柔光斑。<code>roundedRectPath</code> 新增 <code>edgeSegs</code>，机身用 <b>120 段</b>；凹槽改 44mm 宽 / 1.25mm 深 / 平底 + 34% 肩部。</p>
+    <div class="row"><figure><img src="./r25/p5-groove34.png"><figcaption>我的：前缘凹槽 3/4 特写</figcaption></figure></div></div>
+  <div class="card"><h2>#5 / #6 左右接口细节</h2>
+    <p>细分提高后：USB-C 开口成标准 stadium、内舌可见；MagSafe 5 触点清晰；耳机口正圆。上一轮已把开孔改成“外接矩形 + 四角弧扇”，孔宽实测 <b>8.35mm</b>（开口 8.34mm）。</p>
+    <div class="row"><figure><img src="./r25/p4-portclose.png"><figcaption>我的：左壁接口特写（MagSafe / 2×USB-C / 耳机）</figcaption></figure></div></div>
+  <div class="card"><h2>#7 键盘字母异常变大（回归）</h2>
+    <p><code>make-kb-legends.py</code> 把字形裁到墨迹 bbox 后，又按<b>原矩形尺寸</b>贴回 → 每个字形被放大 (rect/bbox) 倍。改为按 bbox 占比缩放。官方 top-case 实测单字墨迹 <b>2.75×4.45mm</b>，我的 <b>3.11×4.67mm</b> ✓。</p>
+    <div class="row"><figure><img src="./r25/p1-kb.png"><figcaption>我的：字标恢复真实尺寸</figcaption></figure></div></div>
+</div></body></html>
