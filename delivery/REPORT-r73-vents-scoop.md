@@ -38,3 +38,9 @@
 ## 产物
 `delivery/r73/`：`vent-vs-official.png`（官方 vs 我方同尺度对照）、`vent-graze.png`（掠射斜视）、
 `vent-right-wall.png`（右壁）、`scoop-{lipfront,groove34,ofrontz}.png`（凹槽三视角）。
+
+## 固定核验机位（页面按钮）
+- **左壁散热槽 / 右壁散热槽**（`ventL` / `ventR`，azim 270/90、elev 2°、dist 0.30m、fov 10°）：一屏装下整条槽，
+  实测槽在画面里是 y459..467 的 9px 暗带（≈0.62mm 暗部 + 下唇），下方紧跟底缘倒角亮带 ✓。
+- **前缘凹槽 3/4**（`groove34`）、**前唇正视(凹槽)**（`lipfront`）、**开盖前视**（`ofrontz`）：凹槽减深后的固定口径。
+- 证据：`delivery/r73/p1-ventL.png`（固定机位实拍）。HUD 戳 `53b57e8`。
