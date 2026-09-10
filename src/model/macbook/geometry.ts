@@ -499,7 +499,11 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     // 一圈"异常白线"（用户 2026-09-10 箭头所指；r12 曾用"井口内缩 0.4"去补，补错了地方）。
     // 现在内缩 0.05mm（比壳顶环外 0.25mm），并把 maxCell 收到 3mm（弦高 0.055mm）保证
     // 多边形近似不会在弦中点缩回缝里。
-    const outline: RRect = { cx: 0, cz: 0, w: B.w - 0.1, d: B.d - 0.1, r: B.r - 0.05 };
+    // R54 单源化：壳顶圆角带（bodyProfile 顶环 o=0.30、近水平）与台面板此前在 o∈[0.05,0.30]
+    // 这条 0.25mm 环带上共存（细分密度差 2–3 倍）→ 逐像素抢面 = 沿轮廓的白描边/点划。
+    // 收在壳顶环处（内缩 0.22mm：留 0.08mm 覆盖余量避免射线打空，同时比壳顶环低 11µm → 顶面唯一所有者=台面板）。
+    // 旧值 0.05mm 是为了修「内缩 1.35mm 造成的一圈缝」——两个极端都错，正解是刚好接在切线点内侧。
+    const outline: RRect = { cx: 0, cz: 0, w: B.w - 0.44, d: B.d - 0.44, r: B.r - 0.22 };
     const hslot = S.hinge.slot;
     const SHRINK = 0.4;
     const tpW = S.trackpad.w, tpD = S.trackpad.d, tpR = S.trackpad.r;
