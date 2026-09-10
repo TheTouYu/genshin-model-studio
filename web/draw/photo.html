@@ -130,6 +130,7 @@
     // 凹槽的轮廓宽度与下沉深度只能在这两个口径下判（用户 2026-09-11：「正前方凹槽的细节需要打磨」）
     // 凹槽特写（用户 2026-09-11 放大后指出「弧度太大 / 质感与旁边差别太大 / 该用更细的拼装」）
     scoopz:   { azim: 8,   elev: 14, dist: 0.075, fov: 24, target: [0.018, 0.0102, 0.1010] },
+    lipfront: { azim: 0,   elev: 8,  dist: 0.060, fov: 26, target: [0.010, 0.0095, 0.1030] },
     scoopg:   { azim: 26,  elev: 7,  dist: 0.065, fov: 26, target: [0.010, 0.0104, 0.1060] },
     // 凹槽**两端**特写：r39 用户箭头所指的「边缘的块 + 两侧发黑」出现在凹槽深度衰减到 0 的肩部
     scooplip: { azim: 6,   elev: 11, dist: 0.052, fov: 26, target: [0.000, 0.0102, 0.1040] },
@@ -791,7 +792,7 @@
     // 上盖局部坐标已按 R(-angle0) 反解，所以「渲染成网格姿态」= rotation.x 取 -lidAngle0。
     // 旧版少了这一步，任何 angle0≠0 的网格静态出图都会静默合盖（2026-09-10 修）。
     var lidDeg = 0, lidAnimId = 0
-    var BUILD = 'r70'              // HUD 里显示：用于识别浏览器缓存的旧页面（本轮踩过）
+    var BUILD = 'r71'              // HUD 里显示：用于识别浏览器缓存的旧页面（本轮踩过）
     var SCREEN_BASE = 1.40          // 屏幕自发光标定值（对贴图实测均值 222）
     function lidScreen(deg) {
       // 合盖息屏：0° 全灭、≥12° 全亮（真机合盖屏幕不发光；旧版合盖后光会从盖缝漏出来）
@@ -1280,8 +1281,8 @@
     var VIEW_LABEL = { hero: '3/4 视角', front: '正面', closedtop: '闭合俯视', screenfront: '屏幕正面',
                        screen34: '屏幕 3/4', kb: '键盘俯视', top: '顶视', ports: '接口特写', portstele: '接口长焦', sidetele: '侧面长焦',
                        side: '侧面', lid: '上盖特写', bottom: '底面',
-                       hinge: '转轴特写', hingel: '转轴侧面', bezel: '边框特写', cornerL: '左前角', cornerR: '右前角', deckL: '台面左前角', deckR: '台面右前角', leftseam: '合盖侧缝', portclose: '接口特写', groove: '前缘凹槽', groove34: '前缘凹槽 3/4', cfront: '合盖前视(凹槽)', ofront: '开盖前视' }
-    var VIEW_ORDER = ['hero', 'front', 'closedtop', 'screenfront', 'screen34', 'kb', 'top', 'ports', 'side', 'lid', 'hinge', 'hingel', 'bezel', 'cornerL', 'cornerR', 'deckL', 'deckR', 'leftseam', 'portclose', 'groove', 'groove34', 'cfront', 'ofront', 'bottom']
+                       hinge: '转轴特写', hingel: '转轴侧面', bezel: '边框特写', cornerL: '左前角', cornerR: '右前角', deckL: '台面左前角', deckR: '台面右前角', leftseam: '合盖侧缝', portclose: '接口特写', groove: '前缘凹槽', groove34: '前缘凹槽 3/4', lipfront: '前唇正视(凹槽)', cfront: '合盖前视(凹槽)', ofront: '开盖前视' }
+    var VIEW_ORDER = ['hero', 'front', 'closedtop', 'screenfront', 'screen34', 'kb', 'top', 'ports', 'side', 'lid', 'hinge', 'hingel', 'bezel', 'cornerL', 'cornerR', 'deckL', 'deckR', 'leftseam', 'portclose', 'groove', 'groove34', 'lipfront', 'cfront', 'ofront', 'bottom']
     var PRESET_LABEL = { white: '白底', dark: '深色', grey: '灰底' }
     var rowView = document.getElementById('rowView')
     var rowPreset = document.getElementById('rowPreset')
