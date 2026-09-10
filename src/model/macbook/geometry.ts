@@ -8,7 +8,7 @@ import { Texture } from '../../render/image.js';
 import { Vec3, v3, clamp } from '../../render/math.js';
 import {
   roundedRectPath, pathAt, sweepSurface, patch, lin, disk, cylinderSide,
-  polygonFill, roundedRectOutline, extrudeOutline, plateWithHoles, plateFill, RRect, PathPt,
+  polygonFill, roundedRectOutline, extrudeOutline, plateWithHoles, plateFill, plateHoleCorners, RRect, PathPt,
 } from '../../geom/solids.js';
 import { S, KB_ROWS } from './spec.js';
 
@@ -604,7 +604,15 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       scoopZBreaks.push(z);
       z += step;
     }
-    plateWithHoles(b, outline, holes, deckY, { maxCell: mc(1.0), zBreaks: scoopZBreaks });
+    plateWithHoles(b, outline, holes.map((h) => ({ ...h, r: 0 })), deckY, { maxCell: mc(1.0), zBreaks: scoopZBreaks });
+    // R74「键盘四个角换新算法」：扫描线开孔把圆角弧量化成 maxCell(≈1mm) 方阶梯
+    // （实测井后左角真弧 x=−134.65mm、网格 x=−142.45mm → 缺料 7.8mm，渲染即用户截图的阶梯）。
+    // 新算法（端口第四版同族）：孔按**矩形**切（直边扫描线精确），四角用真弧扇补回。
+    // 分段数按半径给（r=4 → 24 段/角 → 弦高 4·(1−cos1.875°)=2µm，远低于 1px）。
+    for (const h of holes) {
+      const segs = hq(Math.max(8, Math.min(32, Math.round(h.r * 6))), Math.max(4, Math.round(h.r * 1.5)));
+      plateHoleCorners(b, h, deckY, { segs });
+    }
     // 转轴槽：台面后缘挖一条凹槽（槽底 + 槽壁），转轴筒藏在槽里 —— 真机开盖时看到的就是这条槽。
     b.material(M.HINGE);
     plateFill(b, { cx: 0, cz: hslot.cz, w: hslot.w, d: hslot.d, r: hslot.r }, deckY - hslot.depth, { nu: sc(64, 10), nt: 2, cornerSegs: sc(6, 4), vertexSampling: true });

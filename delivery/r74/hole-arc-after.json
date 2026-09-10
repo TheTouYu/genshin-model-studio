@@ -1,0 +1,221 @@
+{
+  "file": "web/draw/macbook-current.json",
+  "y": 11.5,
+  "color": "0xf3f3f4",
+  "planeTris": 54625,
+  "boundarySegs": 3335,
+  "tol": 0.1,
+  "holes": [
+    {
+      "name": "keyboard-well",
+      "hole": {
+        "name": "keyboard-well",
+        "cx": 0,
+        "cz": -42.49999999999999,
+        "w": 284.90000000000003,
+        "d": 113.8,
+        "r": 4
+      },
+      "maxArcDev": 0.06076898795114971,
+      "worstCorner": "FL",
+      "cornerXlevels": 34,
+      "maxFlatRun": 0,
+      "corners": [
+        {
+          "corner": "BL",
+          "arcDev": 0.03478940183856287,
+          "samples": 181,
+          "localSegs": 54
+        },
+        {
+          "corner": "BR",
+          "arcDev": 0.03478940183854771,
+          "samples": 181,
+          "localSegs": 53
+        },
+        {
+          "corner": "FL",
+          "arcDev": 0.06076898795114971,
+          "samples": 181,
+          "localSegs": 53
+        },
+        {
+          "corner": "FR",
+          "arcDev": 0.03478940183854771,
+          "samples": 181,
+          "localSegs": 55
+        }
+      ],
+      "pass": true
+    },
+    {
+      "name": "grille-L",
+      "hole": {
+        "name": "grille-L",
+        "cx": -148.25,
+        "cz": -42.49999999999999,
+        "w": 11.6,
+        "d": 111.6,
+        "r": 3
+      },
+      "maxArcDev": 0.16314187219796808,
+      "worstCorner": "BR",
+      "cornerXlevels": 22,
+      "maxFlatRun": 2.9960000000000093,
+      "corners": [
+        {
+          "corner": "BL",
+          "arcDev": 0.1610885588988142,
+          "samples": 181,
+          "localSegs": 46
+        },
+        {
+          "corner": "BR",
+          "arcDev": 0.16314187219796808,
+          "samples": 181,
+          "localSegs": 45
+        },
+        {
+          "corner": "FL",
+          "arcDev": 0.10000000000002274,
+          "samples": 181,
+          "localSegs": 48
+        },
+        {
+          "corner": "FR",
+          "arcDev": 0.09999999999999609,
+          "samples": 181,
+          "localSegs": 47
+        }
+      ],
+      "pass": false
+    },
+    {
+      "name": "grille-R",
+      "hole": {
+        "name": "grille-R",
+        "cx": 148.25,
+        "cz": -42.49999999999999,
+        "w": 11.6,
+        "d": 111.6,
+        "r": 3
+      },
+      "maxArcDev": 0.16314187219796808,
+      "worstCorner": "FR",
+      "cornerXlevels": 24,
+      "maxFlatRun": 0,
+      "corners": [
+        {
+          "corner": "BL",
+          "arcDev": 0.1230953606031753,
+          "samples": 181,
+          "localSegs": 47
+        },
+        {
+          "corner": "BR",
+          "arcDev": 0.12309536060315984,
+          "samples": 181,
+          "localSegs": 49
+        },
+        {
+          "corner": "FL",
+          "arcDev": 0.1610885588988142,
+          "samples": 181,
+          "localSegs": 46
+        },
+        {
+          "corner": "FR",
+          "arcDev": 0.16314187219796808,
+          "samples": 181,
+          "localSegs": 45
+        }
+      ],
+      "pass": false
+    },
+    {
+      "name": "hinge-slot",
+      "hole": {
+        "name": "hinge-slot",
+        "cx": 0,
+        "cz": -107,
+        "w": 286,
+        "d": 3.4,
+        "r": 1.7
+      },
+      "maxArcDev": 0.12399744016493414,
+      "worstCorner": "BL",
+      "cornerXlevels": 11,
+      "maxFlatRun": 0.3830000000000098,
+      "corners": [
+        {
+          "corner": "BL",
+          "arcDev": 0.12399744016493414,
+          "samples": 181,
+          "localSegs": 34
+        },
+        {
+          "corner": "BR",
+          "arcDev": 0.10026827852468351,
+          "samples": 181,
+          "localSegs": 34
+        },
+        {
+          "corner": "FL",
+          "arcDev": 0.12399744016493414,
+          "samples": 181,
+          "localSegs": 34
+        },
+        {
+          "corner": "FR",
+          "arcDev": 0.10026827852468351,
+          "samples": 181,
+          "localSegs": 34
+        }
+      ],
+      "pass": false
+    },
+    {
+      "name": "trackpad",
+      "hole": {
+        "name": "trackpad",
+        "cx": 0,
+        "cz": 63.599999999999994,
+        "w": 134.9,
+        "d": 76.9,
+        "r": 5.15
+      },
+      "maxArcDev": 0.16549122592951124,
+      "worstCorner": "BR",
+      "cornerXlevels": 38,
+      "maxFlatRun": 4.993999999999996,
+      "corners": [
+        {
+          "corner": "BL",
+          "arcDev": 0.06098834858802617,
+          "samples": 181,
+          "localSegs": 57
+        },
+        {
+          "corner": "BR",
+          "arcDev": 0.16549122592951124,
+          "samples": 181,
+          "localSegs": 64
+        },
+        {
+          "corner": "FL",
+          "arcDev": 0.06098834858802617,
+          "samples": 181,
+          "localSegs": 57
+        },
+        {
+          "corner": "FR",
+          "arcDev": 0.16549122592951124,
+          "samples": 181,
+          "localSegs": 64
+        }
+      ],
+      "pass": false
+    }
+  ],
+  "verdict": "FAIL"
+}

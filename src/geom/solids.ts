@@ -446,8 +446,59 @@ export function rrectInterval(q: RRect, z: number): [number, number] | null {
 }
 
 /**
+ * R74 孔的「真弧四角」补片 —— 扫描线开孔的对症解法。
+ *
+ * 问题：`plateWithHoles` 按 z 分带（步长 maxCell ≈ 1mm）、每带只在带中点求一次孔的 x 区间，
+ * 于是孔的**圆角弧**被量化成 maxCell 量级的方阶梯。实测键盘井后左角：真弧应到 x=−134.65mm，
+ * 网格里却是 −142.45mm —— **缺料 7.8mm**，渲染出来就是用户看到的「阶梯」。
+ *
+ * 解法（端口第四版同族）：把孔以 `r: 0`（纯矩形）交给 `plateWithHoles`（直边扫描线精确、无阶梯），
+ * 再用本函数把「方角 − 四分之一圆」之间本该属于板件的区域，按**真弧**分段补回。
+ *
+ * 不变量：法线与绕序与 `plateWithHoles` 的 `emit()` 完全一致
+ * （存储法线 (0, flip, 0)，几何绕序反向 —— 与整块板同族，DoubleSide 下明暗一致）。
+ * @returns 发射的三角形数
+ */
+export function plateHoleCorners(
+  b: MeshBuilder, q: RRect, y: number,
+  opts: { segs?: number; flip?: boolean; uvScale?: [number, number]; uvOffset?: [number, number] } = {},
+): number {
+  const flip = opts.flip ? -1 : 1;
+  const rr = Math.min(q.r, Math.min(q.w / 2, q.d / 2));
+  if (!(rr > 1e-6)) return 0;
+  const segs = Math.max(2, Math.round(opts.segs ?? 12));
+  const hw = q.w / 2, hd = q.d / 2;
+  const uvS = opts.uvScale ?? [1, 1], uvO = opts.uvOffset ?? [0, 0];
+  const n = v3(0, flip, 0);
+  const uvf = (x: number, z: number): [number, number] => [uvO[0] + (x - q.cx) * uvS[0], uvO[1] + (z - q.cz) * uvS[1]];
+  let nt = 0;
+  for (const sx of [-1, 1]) {
+    for (const sz of [-1, 1]) {
+      const ocx = q.cx + sx * (hw - rr), ocz = q.cz + sz * (hd - rr);   // 弧心
+      const cornerX = q.cx + sx * hw, cornerZ = q.cz + sz * hd;          // 方角
+      const pts: [number, number][] = [];
+      for (let i = 0; i <= segs; i++) {
+        const t = (i / segs) * (Math.PI / 2);
+        pts.push([ocx + sx * rr * Math.cos(t), ocz + sz * rr * Math.sin(t)]);
+      }
+      // 扇心 = 方角；区域凸（两条直边 + 凸弧）→ 三角扇刚好铺满
+      const vc = b.vertex(v3(cornerX, y, cornerZ), n, ...uvf(cornerX, cornerZ));
+      const va = pts.map((p) => b.vertex(v3(p[0], y, p[1]), n, ...uvf(p[0], p[1])));
+      for (let i = 0; i < segs; i++) {
+        // 绕序：tri(C, A, B) 的几何法线 y 分量符号 = sx*sz；要它等于 −flip 才与 emit() 同族
+        if (sx * sz === -flip) b.tri(vc, va[i], va[i + 1]); else b.tri(vc, va[i + 1], va[i]);
+        nt++;
+      }
+    }
+  }
+  return nt;
+}
+
+/**
  * 带孔平板：outline 为外轮廓（圆角矩形），holes 为孔（圆角矩形）。
  * 扫描线沿 z 分带，每带内做区间减法 → 孔边缘精确、无锯齿。
+ * ⚠ 孔的**圆角**会被量化成 maxCell 量级阶梯（见 `plateHoleCorners`）：
+ * 需要真弧的孔请把 `r` 置 0 交给本函数，再用 `plateHoleCorners` 补角。
  */
 export function plateWithHoles(
   b: MeshBuilder, outline: RRect, holes: RRect[], y: number,
