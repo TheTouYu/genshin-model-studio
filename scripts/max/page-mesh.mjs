@@ -73,19 +73,34 @@ const hexOf = built.materials.map((m) => {
 // 端口两侧出现竖直高光条纹（用户 2026-09-10 圈的"接口粗糙"里有这一条）。
 // 带法线焊接后页面直接用解析法线，条纹消失；同时硬边（键帽棱、腔口）不再被抹圆。
 const NOWELD = process.argv.includes('--no-weld');   // 诊断用：跳过焊接/去 sliver，看原始几何
+// R77：容差保持 2e-4 m（=0.2mm）——**不要为端口细节调小**。
+// 实测：调到 2e-5 会让「前唇凹槽带」里原本被焊在一起的重合面各自留下独立法线
+// （一侧是解析法线的斜面、另一侧是 (0,0,1) 平面）→ 前壁出现一条点状虚线（A/B 像素实证）。
+// R77 最终方案 = **两级焊接**：
+//   · 端口区（|x|>150mm 的侧壁、y 3..12.5mm、z -96..-28mm）用 2e-5 m：端口有 0.02mm 唇口、
+//     2mm 腔深、~0.17mm 弧段弦长，用 0.2mm 容差会把腔壁整圈焊退化成洞（射线穿过开口打到
+//     机身底板 —— 实测 nHit=1@底板）。
+//   · 其余区域保持 2e-4 m（历史值）：前唇凹槽带存在一层与扫掠面贴得 0.1–0.2mm 的薄双层，
+//     细容差会让两层各自留面、法线不一致 → 前壁一条点状虚线（A/B 像素实证 164px）。
+// 判据：**同一对顶点里只要有一个在端口区，就用细容差；两个都在端口区才细**（反之用粗容差）。
 const TOL = 2e-4;
+const TOL_FINE = 2e-5;
+const PORT_BOX = { xa: 0.150, y0: 0.003, y1: 0.0125, z0: -0.096, z1: -0.028 };
+const isPortVert = (x, y, z) => Math.abs(x) > PORT_BOX.xa && y > PORT_BOX.y0 && y < PORT_BOX.y1 && z > PORT_BOX.z0 && z < PORT_BOX.z1;
 const NRM = mesh.nrm;
 const isLid = (i) => (LID && i >= LID.from && i < LID.to ? 1 : 0);
 const cells = new Map();
 const remap = new Int32Array(mesh.pos.length / 3);
 const vertices = [];
 const norms = [];
+const fineArr = [];
 const nq = (i) => Math.round(NRM[i * 3] * 1000) + ',' + Math.round(NRM[i * 3 + 1] * 1000) + ',' + Math.round(NRM[i * 3 + 2] * 1000);
 const key = (a, b, c, f, n) => a + ',' + b + ',' + c + '|' + f + '|' + n;
 for (let i = 0; i < mesh.pos.length / 3; i++) {
   const x = mesh.pos[i * 3], y = mesh.pos[i * 3 + 1], z = mesh.pos[i * 3 + 2];
   const f = isLid(i), n = nq(i);
-  if (NOWELD) { remap[i] = vertices.length; vertices.push([+x.toFixed(6), +y.toFixed(6), +z.toFixed(6)]); norms.push([+NRM[i*3].toFixed(4), +NRM[i*3+1].toFixed(4), +NRM[i*3+2].toFixed(4)]); continue; }
+  if (NOWELD) { remap[i] = vertices.length; vertices.push([+x.toFixed(6), +y.toFixed(6), +z.toFixed(6)]); norms.push([+NRM[i*3].toFixed(4), +NRM[i*3+1].toFixed(4), +NRM[i*3+2].toFixed(4)]); fineArr.push(isPortVert(x, y, z)); continue; }
+  const fineI = isPortVert(x, y, z);
   const gx = Math.floor(x / TOL), gy = Math.floor(y / TOL), gz = Math.floor(z / TOL);
   let hit = -1;
   outer:
@@ -96,13 +111,15 @@ for (let i = 0; i < mesh.pos.length / 3; i++) {
         if (!arr) continue;
         for (const j of arr) {
           const v = vertices[j];
-          if (Math.abs(v[0] - x) <= TOL && Math.abs(v[1] - y) <= TOL && Math.abs(v[2] - z) <= TOL) { hit = j; break outer; }
+          const tol = fineI && fineArr[j] ? TOL_FINE : TOL;
+          if (Math.abs(v[0] - x) <= tol && Math.abs(v[1] - y) <= tol && Math.abs(v[2] - z) <= tol) { hit = j; break outer; }
         }
       }
   if (hit < 0) {
     hit = vertices.length;
     vertices.push([+x.toFixed(6), +y.toFixed(6), +z.toFixed(6)]);
     norms.push([+NRM[i * 3].toFixed(4), +NRM[i * 3 + 1].toFixed(4), +NRM[i * 3 + 2].toFixed(4)]);
+    fineArr.push(fineI);
     const k = key(gx, gy, gz, f, n);
     if (!cells.has(k)) cells.set(k, []);
     cells.get(k).push(hit);
