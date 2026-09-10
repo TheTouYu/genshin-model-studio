@@ -205,7 +205,7 @@ function portFracs(kind: string, w: number, h: number): number[] {
 function portCorners(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz: number, w: number, h: number, kind: string, cseg: number): void {
   const rMax = Math.min(h / 2, w / 2) - 0.01;
   const rr = Math.min(kind === 'jack' ? h / 2 : kind === 'usbc' || kind === 'magsafe' ? 1.15 : 0.9, rMax);
-  const x = wallX + side * 0.02;
+  const x = wallX;
   const nx = side;
   b.material(M.ALU);
   for (const sx of [1, -1]) {
@@ -236,122 +236,91 @@ function portCorners(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz
  * 端口都在机身平直侧壁上（该高度区间 profile 偏移 = 0），所以 x 直接取墙面平面。
  */
 const PORT_MARGIN = 0.55; // 画框宽度（mm）
-function portFrame(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz: number, w: number, h: number, kind: string, cseg: number, margin: number): void {
+/** portOutlineZY —— (z,y) 平面的圆角矩形/胶囊轮廓（带外法线）。
+ *  不用 roundedRectPath：stadium（rr=h/2）时它的侧直边退化为 0 长，生成重复点 + 零长段，
+ *  开口一端会炸出一排细刺（用户 2026-09-10「接口放大存在异常」）。 */
+function portOutlineZY(w: number, h: number, rr: number, cseg: number): { z: number; y: number; nz: number; ny: number }[] {
   const hw = w / 2, hh = h / 2;
-  const rr = Math.min((kind as string) === 'usbc' || (kind as string) === 'magsafe' ? hh - 0.01 : 0.9, hh - 0.01, hw - 0.01);
-  const pts: [number, number][] = [];
-  if ((kind as string) === 'jack') {
-    const n = Math.max(24, cseg * 4);
-    for (let i = 0; i < n; i++) {
-      const a = (i / n) * Math.PI * 2;
-      pts.push([Math.cos(a) * hw, Math.sin(a) * hh]);
-    }
-  } else {
-    for (const p of roundedRectPath(w, h, rr, cseg)) pts.push([p.x, p.z]);
-  }
-  // 画框外沿**多盖 0.35mm**：墙面格子是按格心挖的，画框外沿若正好贴在挖空边界上，
-  // 两者顶点不重合 → T 型接缝漏光（侧视里读成一排黑点）。多盖一点让画框压住墙面，
-  // 接缝后面是墙面而不是机内空腔 → 不可见。
-  const OV = 1.20;
-  const hwO = hw + margin + OV, hhO = hh + margin + OV;
-  // 画框比墙面**凸出 0.004mm**：墙面格子按「格心」挖孔，跨边界的格子会被保留并压在画框上
-  // → 共面 z-fighting（侧视里读成一排虚线斑点）。0.004mm 在验收尺度 = 0.03px，肉眼不可见。
-  const V = (dz: number, dy: number): number => b.vertex(v3(wallX + side * 0.004, cy + dy, cz + dz), v3(side, 0, 0), 0, 0);
-  b.material(M.ALU);
-  const n = pts.length;
-  for (let i = 0; i < n; i++) {
-    const [z0, y0] = pts[i], [z1, y1] = pts[(i + 1) % n];
-    const t0 = Math.max(Math.abs(z0) / hwO, Math.abs(y0) / hhO, 1e-9);
-    const t1 = Math.max(Math.abs(z1) / hwO, Math.abs(y1) / hhO, 1e-9);
-    const a0 = V(z0, y0), a1 = V(z1, y1), b1 = V(z1 / t1, y1 / t1), b0 = V(z0 / t0, y0 / t0);
-    if (side > 0) b.quad(a0, a1, b1, b0); else b.quad(a0, b0, b1, a1);
-  }
+  const r = Math.min(rr, hw - 1e-4, hh - 1e-4);
+  const ax = hw - r, ay = hh - r;
+  const pts: { z: number; y: number; nz: number; ny: number }[] = [];
+  const add = (z: number, y: number, nz: number, ny: number): void => {
+    const last = pts[pts.length - 1];
+    if (last && Math.hypot(last.z - z, last.y - y) < 1e-5) return;
+    pts.push({ z, y, nz, ny });
+  };
+  if (ax > 1e-4) add(-ax, hh, 0, 1);
+  for (let i = 0; i <= cseg; i++) { const a = (Math.PI / 2) * (1 - (2 * i) / cseg); add(ax + r * Math.cos(a), ay + r * Math.sin(a), Math.cos(a), Math.sin(a)); }
+  if (ax > 1e-4) add(ax, -hh, 0, -1);
+  for (let i = 0; i <= cseg; i++) { const a = -(Math.PI / 2) * (1 + (2 * i) / cseg); add(-ax + r * Math.cos(a), ay + r * Math.sin(a), Math.cos(a), Math.sin(a)); }
+  const f = pts[0], l = pts[pts.length - 1];
+  if (pts.length > 1 && Math.hypot(f.z - l.z, f.y - l.y) < 1e-5) pts.pop();
+  return pts;
 }
 
-function portCavity(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz: number, w: number, h: number, depth: number, kind: string, jseg = 16, cseg = 8): void {
-  const x0 = wallX, x1 = wallX - side * depth;
-  const V = (x: number, y: number, z: number, nx: number, ny: number, nz: number): number => b.vertex(v3(x, y, z), v3(nx, ny, nz), 0, 0);
-  // 开口是**圆角矩形**（真机 USB-C 开口 8.34×2.56 近 stadium，r≈1.15；MagSafe r≈1.4；HDMI/SDXC r≈0.9）。
-  // 旧版是直角盒 → 开口四角是尖角，特写下像 CAD 挖的方槽（用户 2026-09-10「接口有点粗糙」）。
-  const rr = Math.min(kind === 'usbc' || kind === 'magsafe' ? h / 2 - 0.01 : 0.9, h / 2 - 0.01, w / 2 - 0.01);
-  const prof = roundedRectPath(w, h, rr, cseg); // path.x → z、path.z → y
+/**
+ * portOpening —— 接口开口「贴面件」（第四版，也是最后一版）。
+ *
+ * 前三版全部失败的教训（都记在这里，别再走回头路）：
+ *   v1 外墙挖孔 + 圆角腔管 + 端盖：掠射角看穿到机身内部（用户：「可以看到对面去了」）。
+ *   v2 挖孔 + 四角弧扇补片：孔端炸出细刺扇形（用户圈出）。
+ *   v3 挖孔 + 精确画框环：画框与墙面差 4µm → 亮度差 1 级的矩形补丁（用户圈出，边缘肉眼可见）。
+ *   v4（本版）**完全不碰外墙**：接口 = 两片贴在墙面上的薄片
+ *        ① 开口底板：深色圆角矩形/胶囊，凸出墙面 0.05mm —— 读作"黑色开口"
+ *        ② 内舌（USB-C/HDMI/SDXC）或 5 个触点（MagSafe）：凸出 0.09mm
+ *      闭合实体、零孔洞、零共面 → 看不穿、无细刺、无补丁、不扰动墙面着色。
+ *   代价：没有真实腔深。验收尺度（≥6px/mm）与官方参考图观感一致。
+ */
+function portOpening(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz: number, w: number, h: number, kind: string, cseg: number): void {
+  const hh = h / 2, hw = w / 2;
+  // 圆角半径：USB-C/MagSafe 用 stadium（= h/2）；耳机口是**正圆**；HDMI/SDXC 是 R0.9 圆角矩形
+  const rr = (kind as string) === 'jack' || (kind as string) === 'usbc' || (kind as string) === 'magsafe'
+    ? Math.min(hh, hw) - 0.01
+    : Math.min(0.9, hh - 0.01, hw - 0.01);
+  const pts = portOutlineZY(w, h, rr, cseg);
+  const PLATE = 0.05, DETAIL = 0.09;
+  const V = (dx: number, y: number, z: number): number => b.vertex(v3(wallX + side * dx, y, z), v3(side, 0, 0), 0, 0);
   b.material(M.PORT_DARK);
-  const ring0: number[] = [], ring1: number[] = [];
-  for (const p of prof) {
-    const y = cy + p.z, z = cz + p.x;
-    const ny = -p.nz, nz = -p.nx; // 腔壁朝内
-    ring0.push(V(x0, y, z, ny, 0, nz));
-    ring1.push(V(x1, y, z, ny, 0, nz));
-  }
-  const np = prof.length;
-  for (let i = 0; i < np; i++) {
-    const j = (i + 1) % np;
-    b.quad(ring0[i], ring1[i], ring1[j], ring0[j]);
-  }
-  const capC = V(x1, cy, cz, side, 0, 0);
-  for (let i = 0; i < np; i++) {
-    const j = (i + 1) % np;
-    if (side > 0) b.tri(capC, ring1[i], ring1[j]); else b.tri(capC, ring1[j], ring1[i]);
-  }
-  if (kind === 'jack') {
-    // 耳机口：圆柱内腔
-    b.material(M.PORT_DARK);
-    const rr = w / 2;
-    const segs = jseg;
-    for (let i = 0; i < segs; i++) {
-      const a0 = (i / segs) * Math.PI * 2, a1 = ((i + 1) / segs) * Math.PI * 2;
-      const p0 = v3(x0, cy + Math.sin(a0) * rr, cz + Math.cos(a0) * rr);
-      const p1 = v3(x0, cy + Math.sin(a1) * rr, cz + Math.cos(a1) * rr);
-      const p2 = v3(x1, cy + Math.sin(a1) * rr, cz + Math.cos(a1) * rr);
-      const p3 = v3(x1, cy + Math.sin(a0) * rr, cz + Math.cos(a0) * rr);
-      const n0 = v3(0, -Math.sin(a0), -Math.cos(a0)), n1 = v3(0, -Math.sin(a1), -Math.cos(a1));
-      const i0 = b.vertex(p0, n0, 0, 0), i1 = b.vertex(p1, n1, 0, 0), i2 = b.vertex(p2, n1, 0, 0), i3 = b.vertex(p3, n0, 0, 0);
-      b.quad(i0, i1, i2, i3);
+  // 底板用**沿 z 的条带**三角化（不要从中心扇形）：长条形开口的扇形三角化会产生
+  // 又长又细的退化三角形，侧视下出现贯穿开口的斜向色带（实测到的"梯形"）。
+  {
+    const ax = Math.max(0, hw - rr);
+    const yAt = (z: number): number => {
+      const az = Math.abs(z);
+      if (az <= ax) return hh;
+      const d = Math.min(rr, az - ax);
+      return Math.min(hh, (hh - rr) + Math.sqrt(Math.max(0, rr * rr - d * d)));
+    };
+    const N = Math.max(8, cseg * 2);
+    let prev: { t: number; b: number } | null = null;
+    for (let i = 0; i <= N; i++) {
+      const z = -hw + (2 * hw * i) / N;
+      const yt = yAt(z);
+      const cur = { t: V(PLATE, cy + yt, cz + z), b: V(PLATE, cy - yt, cz + z) };
+      if (prev) {
+        if (side > 0) { b.quad(prev.t, prev.b, cur.b, cur.t); }
+        else { b.quad(prev.t, cur.t, cur.b, prev.b); }
+      }
+      prev = cur;
     }
-    const nOut = v3(side, 0, 0);
-    const c0 = b.vertex(v3(x1, cy, cz), nOut, 0, 0);
-    const ring: number[] = [];
-    for (let i = 0; i < segs; i++) {
-      const a = (i / segs) * Math.PI * 2;
-      ring.push(b.vertex(v3(x1, cy + Math.sin(a) * rr, cz + Math.cos(a) * rr), nOut, 0, 0));
-    }
-    for (let i = 0; i < segs; i++) {
-      if (side > 0) b.tri(c0, ring[i], ring[(i + 1) % segs]); else b.tri(c0, ring[(i + 1) % segs], ring[i]);
-    }
-    return;
   }
-  if (kind === 'magsafe') {
-    // MagSafe 内腔没有 USB-C 式内舌（真机是 5 个弹性触点），只有深腔
+  if ((kind as string) === 'magsafe') {
     b.material(M.GOLD);
-    const gold = M.GOLD;
-    b.material(gold);
     for (let i = 0; i < 5; i++) {
       const zc = cz - 3.2 + i * 1.6;
-      const px = wallX - side * 1.15;
-      const nf = v3(side, 0, 0);
-      const a = b.vertex(v3(px, cy - 0.34, zc), nf, 0, 0);
-      const c = b.vertex(v3(px, cy + 0.34, zc), nf, 0, 0);
-      const d = b.vertex(v3(px, cy + 0.34, zc + 0.62), nf, 0, 0);
-      const e = b.vertex(v3(px, cy - 0.34, zc + 0.62), nf, 0, 0);
+      const a = V(DETAIL, cy - 0.32, zc), c = V(DETAIL, cy + 0.32, zc), d = V(DETAIL, cy + 0.32, zc + 0.55), e = V(DETAIL, cy - 0.32, zc + 0.55);
       if (side > 0) b.quad(a, c, d, e); else b.quad(a, e, d, c);
     }
     return;
   }
-  b.material(kind === 'usbc' ? M.PORT_TONGUE : M.PORT_METAL);
-  // 内舌尺寸：USB-C 真机开口 8.34×2.56mm，内舌（PCB）≈0.62mm 厚、6.35mm 宽 →
-  // 旧值 1.15mm 厚 / 6.2mm 宽把开口填掉 44%×75%，渲染出来像"填满的槽"而非"腔+舌"。
-  const mh = kind === 'usbc' ? 0.62 : kind === 'hdmi' ? 3.6 : kind === 'sdxc' ? 1.0 : 1.7;
-  const mw = kind === 'usbc' ? 6.35 : kind === 'hdmi' ? 12.8 : kind === 'sdxc' ? 25.0 : 7.6;
-  const md = Math.min(depth - 0.4, kind === 'magsafe' ? 2.6 : 6.2);
-  const mx0 = wallX - side * (kind === 'usbc' ? 2.2 : 1.6), mx1 = wallX - side * md;
-  const zc0 = cz - mw / 2, zc1 = cz + mw / 2, yc0 = cy - mh / 2, yc1 = cy + mh / 2;
-  const P = (x: number, y: number, z: number, nx: number, ny: number, nz: number): number => b.vertex(v3(x, y, z), v3(nx, ny, nz), 0, 0);
-  b.quad(P(mx0, yc1, zc0, 0, 1, 0), P(mx1, yc1, zc0, 0, 1, 0), P(mx1, yc1, zc1, 0, 1, 0), P(mx0, yc1, zc1, 0, 1, 0));
-  b.quad(P(mx0, yc0, zc0, 0, -1, 0), P(mx0, yc0, zc1, 0, -1, 0), P(mx1, yc0, zc1, 0, -1, 0), P(mx1, yc0, zc0, 0, -1, 0));
-  b.quad(P(mx0, yc0, zc0, 0, 0, -1), P(mx1, yc0, zc0, 0, 0, -1), P(mx1, yc1, zc0, 0, 0, -1), P(mx0, yc1, zc0, 0, 0, -1));
-  b.quad(P(mx0, yc0, zc1, 0, 0, 1), P(mx0, yc1, zc1, 0, 0, 1), P(mx1, yc1, zc1, 0, 0, 1), P(mx1, yc0, zc1, 0, 0, 1));
-  const f1 = P(mx0, yc0, zc0, side, 0, 0), f2 = P(mx0, yc0, zc1, side, 0, 0), f3 = P(mx0, yc1, zc1, side, 0, 0), f4 = P(mx0, yc1, zc0, side, 0, 0);
-  if (side > 0) b.quad(f1, f2, f3, f4); else b.quad(f1, f4, f3, f2);
+  // 耳机口没有内舌（真机是圆孔 + 深色内腔）——旧值给了 7.6×1.7mm 的"舌"，
+  // 比 Ø3.5 的开口还大 → 渲染成一个十字（本轮实测到的那个十字）。
+  if ((kind as string) === 'jack') return;
+  b.material(M.PORT_TONGUE);
+  const mh = kind === 'usbc' ? 0.62 : kind === 'hdmi' ? 1.15 : kind === 'sdxc' ? 0.9 : 1.7;
+  const mw = kind === 'usbc' ? 6.35 : kind === 'hdmi' ? 11.6 : kind === 'sdxc' ? 24.0 : 7.6;
+  const a = V(DETAIL, cy - mh / 2, cz - mw / 2), b2 = V(DETAIL, cy - mh / 2, cz + mw / 2), c = V(DETAIL, cy + mh / 2, cz + mw / 2), d = V(DETAIL, cy + mh / 2, cz - mw / 2);
+  if (side > 0) b.quad(a, b2, c, d); else b.quad(a, d, c, b2);
 }
 
 function logoPatch(b: MeshBuilder, shape: LogoShape, cx: number, cy: number, cz: number, w: number, h: number, mat: number): void {
@@ -463,21 +432,7 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     // 0.06mm 断点还大 → 细化断点被整批丢掉，孔角又变回锯齿。实测周长 ~1040mm，
     // 0.005/312.6 = 1.6e-5 u ≈ 0.017mm：既留住 0.06mm 细化，又不产生退化格。
     const uB = snapB(uBreaks, 0.005 / 312.6);
-    const mask = (u: number, v: number): boolean => {
-      const p = surf(u, v);
-      if (Math.abs(p.x) < B.w / 2 - 1.4) return false;
-      const side = p.x > 0 ? 1 : -1;
-      for (const q of allPorts) {
-        if (q.side !== side) continue;
-        // 开孔 = 开口**外接矩形**（u 断点精确落在 ±w/2、v 断点落在 ±h/2 → 孔边是直线，
-        // 不再是网格台阶）。圆角/圆由 portCorners 的四块弧扇补出，外边界与这里完全重合。
-        const hw2 = q.w / 2, hh2 = q.kind === 'jack' ? q.w / 2 : q.h / 2;
-        const dz = Math.abs(p.z - q.z), dy = Math.abs(p.y - S.ports.centerY);
-        if (dz > hw2 + PORT_MARGIN || dy > hh2 + PORT_MARGIN) continue;
-        return true; // 外接矩形整块挖掉；开口的真实形状（圆角矩形/圆）由 portFrame 精确补出
-      }
-      return false;
-    };
+    // 外墙不挖孔：接口由 portOpening 贴面实现。
     b.material(M.ALU);
     // 分段 patch：单个张量网格里，任一端口的高度断点会污染整圈（96 段 × 0.3–1.1mm 窄带
     // 全是细针）。按 u 区间逐段发射，每段只带「与自己重叠的端口」的 v 断点——
@@ -499,7 +454,7 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
         vs.push(vForY(prof, cy - hh - PORT_MARGIN), vForY(prof, cy + hh + PORT_MARGIN));
       }
       vs.sort((a, c) => a - c);
-      patch(b, surf, [u0, u1], snapByY(vs, 0.02), { mask });
+      patch(b, surf, [u0, u1], snapByY(vs, 0.02));
     }
   }
 
@@ -666,17 +621,10 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     }
   }
 
-  // ============ 6. 接口腔体 ============
+  // ============ 6. 接口（贴面开口，外墙不挖孔） ============
   {
-    const wallL = -B.w / 2 + 0.05, wallR = B.w / 2 - 0.05;
-    for (const p of S.ports.left) {
-      portFrame(b, -1, -B.w / 2 + 0.002, S.ports.centerY, p.z, p.w, p.h, p.kind, hq(16, 6), PORT_MARGIN);
-      portCavity(b, -1, wallL, S.ports.centerY, p.z, p.w, p.h, 9.0, p.kind, sc(28, 10), hq(12, 5));
-    }
-    for (const p of S.ports.right) {
-      portFrame(b, 1, B.w / 2 - 0.002, S.ports.centerY, p.z, p.w, p.h, p.kind, hq(16, 6), PORT_MARGIN);
-      portCavity(b, 1, wallR, S.ports.centerY, p.z, p.w, p.h, 9.0, p.kind, sc(28, 10), hq(12, 5));
-    }
+    for (const p of S.ports.left) portOpening(b, -1, -B.w / 2, S.ports.centerY, p.z, p.w, p.h, p.kind, hq(20, 8));
+    for (const p of S.ports.right) portOpening(b, 1, B.w / 2, S.ports.centerY, p.z, p.w, p.h, p.kind, hq(20, 8));
   }
 
   // ============ 7. 上盖 ============
