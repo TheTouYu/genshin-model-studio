@@ -187,43 +187,44 @@ function portFracs(kind: string, w: number, h: number): number[] {
   return out;
 }
 
-/** 端口面板补片：壁面外侧铺一圈**平面环**（外边界矩形 → 内边界精确圆角开口）。
- *  根因（用户 2026-09-10 圈出的"梳齿"）：墙体的开孔是 patch 的**格子 mask**，孔边是阶梯状；
- *  阶梯处格子被多删 → 直接看进机身内部，内部铝面反射环境 → 开口两侧垂下亮条纹（射线取证：
- *  条纹像素首命中是 y=0.55 的底盖内表面，而不是墙面）。补片把阶梯整片盖住，只留精确开口。 */
-function portBezel(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz: number, w: number, h: number, kind: string, cseg: number, yMin: number, yMax: number): void {
-  const rr = Math.min(kind === 'jack' ? h / 2 : kind === 'usbc' || kind === 'magsafe' ? 1.15 : 0.9, h / 2 - 0.01, w / 2 - 0.01);
-  const inner = roundedRectPath(w, h, rr, cseg);
-  // 外边界必须落在**侧壁的竖直平面段**内（yMin..yMax 是上下倒角的切点）：
-  // 超出就会浮在圆弧面上，露出补片边缘（MagSafe 上边距 1.6mm 会越过 y=9.95 的切点）。
-  const mw = w / 2 + 1.6;
-  // 上下边距**分开算**：MagSafe 上边距只有 2.2mm（倒角切点 9.95），下边距有 5.55mm。
-  // 旧版取两者的 min（对称）→ 补片下缘 5.5 而墙体开孔（含 PAD 0.8 + 阶梯）到 5.35 → 开口下沿留
-  // 一条 0.15mm 缝，透视下就是"接口下方的竖条"（用户 2026-09-10 圈的第二处）。
-  const mhUp = Math.min(h / 2 + 1.6, Math.max(h / 2 + 0.5, yMax - cy - 0.05));
-  const mhDn = Math.min(h / 2 + 1.6, Math.max(h / 2 + 0.5, cy - yMin - 0.05));
-  // 机外方向 = +side（side=-1 是左壁，机外 = -x）；补片贴在壁面外侧 0.02mm
-  const x = wallX + side * 0.07;
+/**
+ * 端口开口**四角补片** —— 把「墙体矩形开孔」补成「圆角/正圆开口」。
+ *
+ * 根因（用户 2026-09-10/11 两条反馈「接口有点粗糙」的可复现来源，29 px/mm 侧视取证）：
+ *   ① 墙体开孔用「圆角矩形 + 0.8mm 外扩」谓词、按 patch 的**格心**判定 → 孔边只能是网格
+ *      步长的台阶；台阶处格子被多删 → 看进机身内部 → 开口边缘是锯齿块；
+ *   ② 旧版再拿一块外扩 1.6mm、凸出 0.07mm 的**大补片**去盖这些台阶 → 补片外边界自身在壁上
+ *      留下两条细黑线（截图里开口上方那两条横线），且补片内边界（16 点圆角矩形）与墙体开孔
+ *      对不齐时，墙体的锯齿从补片后面探出来。
+ * 现在：墙体开孔 = 开口**外接矩形**（u/v 断点精确落在 ±w/2、±h/2 → 孔边是直线，无台阶），
+ * 圆角由本补片用三角扇补出：弧与矩形两条边相切，扇心 = 矩形角点。
+ *   - side 方向凸出 0.02mm（远小于像素，视觉等价 flush）；
+ *   - 外边界与墙体开孔边**重合** → 不引入任何新接缝线。
+ * jack 传 rr = h/2（弧心 = 开口中心）→ 四块扇拼成一个**正圆**，不再有六边形/方块。
+ */
+function portCorners(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz: number, w: number, h: number, kind: string, cseg: number): void {
+  const rMax = Math.min(h / 2, w / 2) - 0.01;
+  const rr = Math.min(kind === 'jack' ? h / 2 : kind === 'usbc' || kind === 'magsafe' ? 1.15 : 0.9, rMax);
+  const x = wallX + side * 0.02;
   const nx = side;
-  const V = (y: number, z: number): number => b.vertex(v3(x, y, z), v3(nx, 0, 0), 0, 0);
-  const inIds: number[] = [], outIds: number[] = [];
-  for (const p of inner) {
-    const dy = p.z, dz = p.x;
-    inIds.push(V(cy + dy, cz + dz));
-    const mh = dy > 0 ? mhUp : mhDn;
-    const ty = Math.abs(dy) > 1e-9 ? mh / Math.abs(dy) : Infinity;
-    const tz = Math.abs(dz) > 1e-9 ? mw / Math.abs(dz) : Infinity;
-    const t = Math.min(ty, tz);
-    outIds.push(V(cy + dy * t, cz + dz * t));
-  }
   b.material(M.ALU);
-  const n = inner.length;
-  for (let i = 0; i < n; i++) {
-    const j = (i + 1) % n;
-    // 绕序必须让**几何法线朝机外**：three.js 的 DoubleSide 对背面会翻转法线 →
-    // 绕序反了补片就整片变暗（射线取证：补片区 face.normal = +x，墙面 = −x）。
-    if (side > 0) b.quad(outIds[i], inIds[i], inIds[j], outIds[j]);
-    else b.quad(outIds[i], outIds[j], inIds[j], inIds[i]);
+  for (const sx of [1, -1]) {
+    for (const sy of [1, -1]) {
+      const ax = w / 2 - rr, ay = h / 2 - rr; // 弧心（相对开口中心）
+      const ids: number[] = [];
+      for (let i = 0; i <= cseg; i++) {
+        const a = (i / cseg) * (Math.PI / 2);
+        const pz = sx * (ax + rr * Math.sin(a)); // a=0 → 水平边切点；a=π/2 → 竖直边切点
+        const py = sy * (ay + rr * Math.cos(a));
+        ids.push(b.vertex(v3(x, cy + py, cz + pz), v3(nx, 0, 0), 0, 0));
+      }
+      const cId = b.vertex(v3(x, cy + (sy * h) / 2, cz + (sx * w) / 2), v3(nx, 0, 0), 0, 0);
+      for (let i = 0; i < cseg; i++) {
+        // 绕序 = 几何法线朝机外（three.js DoubleSide 对背面翻转法线，绕反整片变暗）
+        if (side > 0) b.tri(cId, ids[i + 1], ids[i]);
+        else b.tri(cId, ids[i], ids[i + 1]);
+      }
+    }
   }
 }
 
@@ -419,22 +420,10 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       const side = p.x > 0 ? 1 : -1;
       for (const q of allPorts) {
         if (q.side !== side) continue;
-        if (q.kind === 'jack') {
-          if (Math.hypot(p.z - q.z, p.y - S.ports.centerY) < q.w / 2 + 0.8) return true;
-          continue;
-        }
-        // 圆角矩形开孔（实测圆角 r≈1.0–1.2mm，不是两端半圆 stadium：ports-1 逐行剖面
-        // 显示开口在距顶 1px 处仍有 42/50 宽度，stadium 只会有 ~8px）
-        // 外扩 0.4mm：孔边由 portBezel 的精确开口负责，墙体这里只要"挖穿"即可
-        // 0.8mm：补片开口必须完全落在墙体开孔之内，否则阶梯齿会探进开口（残余竖条）
-        const PAD = 0.8;
-        const rx = Math.min((q.h + PAD * 2) / 2, 1.15);
-        const ax = Math.abs(p.z - q.z), ay = Math.abs(p.y - S.ports.centerY);
-        const hw2 = q.w / 2 + PAD, hh2 = q.h / 2 + PAD;
-        if (ax < hw2 && ay < hh2) {
-          const dx = Math.max(0, ax - (hw2 - rx)), dy = Math.max(0, ay - (hh2 - rx));
-          if (dx * dx + dy * dy < rx * rx) return true;
-        }
+        // 开孔 = 开口**外接矩形**（u 断点精确落在 ±w/2、v 断点落在 ±h/2 → 孔边是直线，
+        // 不再是网格台阶）。圆角/圆由 portCorners 的四块弧扇补出，外边界与这里完全重合。
+        const hw2 = q.w / 2, hh2 = q.kind === 'jack' ? q.w / 2 : q.h / 2;
+        if (Math.abs(p.z - q.z) < hw2 && Math.abs(p.y - S.ports.centerY) < hh2) return true;
       }
       return false;
     };
@@ -628,12 +617,12 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
   {
     const wallL = -B.w / 2 + 0.05, wallR = B.w / 2 - 0.05;
     for (const p of S.ports.left) {
-      portBezel(b, -1, wallL, S.ports.centerY, p.z, p.w, p.h, p.kind, hq(16, 6), B.bottomY + B.fillet, deckY - (S.base.filletTop ?? B.fillet));
-      portCavity(b, -1, wallL, S.ports.centerY, p.z, p.w, p.h, 9.0, p.kind, sc(16, 6), hq(10, 4));
+      portCorners(b, -1, wallL, S.ports.centerY, p.z, p.w, p.h, p.kind, (p.kind as string) === 'jack' ? hq(24, 8) : hq(12, 5));
+      portCavity(b, -1, wallL, S.ports.centerY, p.z, p.w, p.h, 9.0, p.kind, sc(28, 10), hq(12, 5));
     }
     for (const p of S.ports.right) {
-      portBezel(b, 1, wallR, S.ports.centerY, p.z, p.w, p.h, p.kind, hq(16, 6), B.bottomY + B.fillet, deckY - (S.base.filletTop ?? B.fillet));
-      portCavity(b, 1, wallR, S.ports.centerY, p.z, p.w, p.h, 9.0, p.kind, sc(16, 6), hq(10, 4));
+      portCorners(b, 1, wallR, S.ports.centerY, p.z, p.w, p.h, p.kind, (p.kind as string) === 'jack' ? hq(24, 8) : hq(12, 5));
+      portCavity(b, 1, wallR, S.ports.centerY, p.z, p.w, p.h, 9.0, p.kind, sc(28, 10), hq(12, 5));
     }
   }
 
