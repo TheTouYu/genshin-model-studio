@@ -20,6 +20,16 @@ if (args.includes('--list') || !args.length) {
 const re = new RegExp(arg('match', 'draw/photo\\.html$'));
 const targets = pages.filter((t) => re.test(t.url));
 if (!targets.length) { console.error('没有匹配的页签:', re); process.exit(1); }
+if (arg('id')) {
+  // --id <targetId>：按页签 id 精确关闭（同一 URL 开了多个页签时 --match 无法区分）
+  const id = arg('id');
+  const list = await (await fetch('http://127.0.0.1:9222/json/list')).json();
+  const t = list.find((x) => x.id === id);
+  if (!t) { console.log('没有该页签:', id); process.exit(1); }
+  await fetch('http://127.0.0.1:9222/json/close/' + id);
+  console.log('closed', t.url);
+  process.exit(0);
+}
 if (args.includes('--close')) {
   for (const t of targets) { await fetch('http://127.0.0.1:9222/json/close/' + t.id); console.log('closed', t.url.slice(0, 80)); }
   process.exit(0);
