@@ -642,7 +642,7 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     // 上盖**下缘**倒角必须与底座**顶角**倒角同半径（0.80），否则合盖时上盖边缘比底座边缘外凸
     // 0.45mm → 转角处一圈台阶（用户 2026-09-11：「问题还在！！！！」而箭头正指转角）。
     // 真机两片边缘对齐，合盖是一条对称 V 缝。
-    const prof = bodyProfile(0, L.h, 1.30, hq(8, 1), S.base.filletTop ?? 0.8);
+    const prof = bodyProfile(0, L.h, 1.30, hq(8, 1), S.base.filletTop ?? 0.30);
     const surf0 = sweepSurface(path, prof);
     // path 中心在原点 → 平移到 [0, L.d]（与 plates 的局部坐标一致）
     const surf = (u: number, v: number): Vec3 => { const p = surf0(u, v); return v3(p.x, p.y, p.z + L.d / 2); };
