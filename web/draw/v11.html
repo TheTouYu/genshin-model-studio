@@ -1,48 +1,4 @@
-#!/usr/bin/env node
-/**
- * make-v10-gallery.mjs —— r10 修复后的看图页（协议 6 张 + 用户点名两处的对照特写）。
- * 用法：node scripts/max/make-v10-gallery.mjs
- * 用户 2026-09-10 反馈：①接口粗糙 ②合盖侧缝对不上（官方严丝闭合）。
- * 本页把修复后的成图 + 与官方侧视图的同尺度并排放在一起，1:1 可看。
- */
-import fs from 'node:fs'
-import path from 'node:path'
-
-const R = process.cwd()
-const OUT = path.join(R, 'web/draw/v10')
-fs.mkdirSync(OUT, { recursive: true })
-
-const copy = (src, dst) => {
-  if (!fs.existsSync(src)) { console.warn('missing: ' + src); return false }
-  fs.copyFileSync(src, dst)
-  return true
-}
-
-const protocol = [
-  ['p1-closedtop.png', 'delivery/macbook-v11w/p1-closedtop.png', '1 闭合俯视 closedtop', '900×724 · 白底', '俯视图.png'],
-  ['p2-screenfront.png', 'delivery/macbook-v11w/p1-screenfront.png', '2 屏幕正面 screenfront', '1000×627 · 白底', '正视图.png'],
-  ['p3-kb.png', 'delivery/macbook-v11w/p1-kb.png', '3 键盘+触控板 kb', '880×680 · 白底', '键盘和触控板.png'],
-  ['p4-ports.png', 'delivery/macbook-v11d/p1-portstele.png', '4 左侧接口 portstele（长焦侧视）', '1180×395 · 暗底', 'official-mbp14-ports-1.jpg'],
-  ['p5-hero.png', 'delivery/macbook-v11d/p1-hero.png', '5 3/4 开盖 hero', '860×520 · 暗底', 'official-mbp14-hero.jpg'],
-  ['p6-bottom.png', 'delivery/macbook-v11g/p1-bottom.png', '6 底面 bottom', '880×600 · 灰底', 'apple-mbp13-bottom-case-official.jpg'],
-].map(([f, s, t, c, r]) => ({ file: f, title: t, sub: c, ref: r, ok: copy(path.join(R, s), path.join(OUT, f)) }))
-
-const qa = [
-  ['qa/closedtop-vs-official.png', 'delivery/macbook-v11/compare-v11.png', '协议图 ←→ 配对参考并排', '上=我方 下/右=参考'],
-  ['qa/kb-clean.png', '.scratch/r12/w-kb34.png', '键盘 3/4（白线修复后）', '井口/栅格之间 0.15mm 缝已消（台面开孔内缩 0.4mm + 栅格内边与井口重叠 0.4mm）'],
-  ['qa/front-seam.png', '.scratch/r12/z-frontseam.png', '合盖前缝', '前缘凹槽改内凹后，底座不再外凸，合盖是一条细缝'],
-].map(([f, s, t, c]) => {
-  fs.mkdirSync(path.join(OUT, path.dirname(f)), { recursive: true })
-  return { file: f, title: t, sub: c, ok: copy(path.join(R, s), path.join(OUT, f)) }
-})
-
-const card = (x) => `
-    <figure>
-      <a href="./v11/${x.file}" target="_blank"><img src="./v11/${x.file}" alt="${x.title}" loading="lazy"></a>
-      <figcaption><b>${x.title}</b><br><span class="meta">${x.sub}${x.ref ? ' · 配对参考：' + x.ref : ''}</span></figcaption>
-    </figure>`
-
-const html = `<!doctype html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
@@ -73,11 +29,47 @@ const html = `<!doctype html>
     新增长焦侧视机位（3 m / fov 1.6° ≈ 正交），与官方侧视图同尺度可直接叠看。</p>
 
   <h2>协议 6 张（与 v7/v8 同条件：配对参考图 / 画布 / 背景）</h2>
-  <div class="grid">${protocol.map(card).join('')}
+  <div class="grid">
+    <figure>
+      <a href="./v11/p1-closedtop.png" target="_blank"><img src="./v11/p1-closedtop.png" alt="1 闭合俯视 closedtop" loading="lazy"></a>
+      <figcaption><b>1 闭合俯视 closedtop</b><br><span class="meta">900×724 · 白底 · 配对参考：俯视图.png</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v11/p2-screenfront.png" target="_blank"><img src="./v11/p2-screenfront.png" alt="2 屏幕正面 screenfront" loading="lazy"></a>
+      <figcaption><b>2 屏幕正面 screenfront</b><br><span class="meta">1000×627 · 白底 · 配对参考：正视图.png</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v11/p3-kb.png" target="_blank"><img src="./v11/p3-kb.png" alt="3 键盘+触控板 kb" loading="lazy"></a>
+      <figcaption><b>3 键盘+触控板 kb</b><br><span class="meta">880×680 · 白底 · 配对参考：键盘和触控板.png</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v11/p4-ports.png" target="_blank"><img src="./v11/p4-ports.png" alt="4 左侧接口 portstele（长焦侧视）" loading="lazy"></a>
+      <figcaption><b>4 左侧接口 portstele（长焦侧视）</b><br><span class="meta">1180×395 · 暗底 · 配对参考：official-mbp14-ports-1.jpg</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v11/p5-hero.png" target="_blank"><img src="./v11/p5-hero.png" alt="5 3/4 开盖 hero" loading="lazy"></a>
+      <figcaption><b>5 3/4 开盖 hero</b><br><span class="meta">860×520 · 暗底 · 配对参考：official-mbp14-hero.jpg</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v11/p6-bottom.png" target="_blank"><img src="./v11/p6-bottom.png" alt="6 底面 bottom" loading="lazy"></a>
+      <figcaption><b>6 底面 bottom</b><br><span class="meta">880×600 · 灰底 · 配对参考：apple-mbp13-bottom-case-official.jpg</span></figcaption>
+    </figure>
   </div>
 
   <h2>用户点名的两处 + 修复依据</h2>
-  <div class="grid">${qa.map(card).join('')}
+  <div class="grid">
+    <figure>
+      <a href="./v11/qa/closedtop-vs-official.png" target="_blank"><img src="./v11/qa/closedtop-vs-official.png" alt="协议图 ←→ 配对参考并排" loading="lazy"></a>
+      <figcaption><b>协议图 ←→ 配对参考并排</b><br><span class="meta">上=我方 下/右=参考</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v11/qa/kb-clean.png" target="_blank"><img src="./v11/qa/kb-clean.png" alt="键盘 3/4（白线修复后）" loading="lazy"></a>
+      <figcaption><b>键盘 3/4（白线修复后）</b><br><span class="meta">井口/栅格之间 0.15mm 缝已消（台面开孔内缩 0.4mm + 栅格内边与井口重叠 0.4mm）</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v11/qa/front-seam.png" target="_blank"><img src="./v11/qa/front-seam.png" alt="合盖前缝" loading="lazy"></a>
+      <figcaption><b>合盖前缝</b><br><span class="meta">前缘凹槽改内凹后，底座不再外凸，合盖是一条细缝</span></figcaption>
+    </figure>
   </div>
 
   <div class="note">
@@ -93,8 +85,3 @@ const html = `<!doctype html>
   </div>
 </body>
 </html>
-`
-fs.writeFileSync(path.join(R, 'web/draw/v11.html'), html)
-const missing = [...protocol, ...qa].filter((x) => !x.ok)
-console.log(`gallery written: web/draw/v11.html（协议 ${protocol.length} + 特写 ${qa.length}${missing.length ? `，缺 ${missing.length} 张` : ''}）`)
-missing.forEach((m) => console.log('  missing ' + m.title))
