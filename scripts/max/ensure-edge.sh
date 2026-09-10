@@ -4,6 +4,13 @@
 # 一挂 page-shots 就全线 FAIL 且看不出原因。渲染前先跑这个（幂等）。
 set -u
 PORT=9222
+# --force：CDP 端口活着但 **WebGL 上下文创建失败**（GPU 进程卡死，表现为页面
+# "boot failed: Error creating WebGL context"）时用。杀 Windows 侧 msedge 再拉起。
+if [ "${1:-}" = "--force" ]; then
+  echo "force restart: killing msedge"
+  taskkill.exe /F /IM msedge.exe >/dev/null 2>&1 || true
+  sleep 4
+fi
 if curl -s -m 4 "http://127.0.0.1:${PORT}/json/version" | grep -q webSocketDebuggerUrl; then
   echo "edge ok (${PORT})"; exit 0
 fi

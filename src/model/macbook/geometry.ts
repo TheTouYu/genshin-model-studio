@@ -8,7 +8,7 @@ import { Texture } from '../../render/image.js';
 import { Vec3, v3, clamp } from '../../render/math.js';
 import {
   roundedRectPath, pathAt, sweepSurface, patch, lin, disk, cylinderSide,
-  polygonFill, roundedRectOutline, extrudeOutline, plateWithHoles, plateFill, plateHoleCorners, RRect, PathPt,
+  polygonFill, roundedRectOutline, extrudeOutline, plateWithHoles, plateFill, RRect, PathPt,
 } from '../../geom/solids.js';
 import { S, KB_ROWS } from './spec.js';
 
@@ -604,15 +604,12 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       scoopZBreaks.push(z);
       z += step;
     }
-    plateWithHoles(b, outline, holes.map((h) => ({ ...h, r: 0 })), deckY, { maxCell: mc(1.0), zBreaks: scoopZBreaks });
-    // R74「键盘四个角换新算法」：扫描线开孔把圆角弧量化成 maxCell(≈1mm) 方阶梯
-    // （实测井后左角真弧 x=−134.65mm、网格 x=−142.45mm → 缺料 7.8mm，渲染即用户截图的阶梯）。
-    // 新算法（端口第四版同族）：孔按**矩形**切（直边扫描线精确），四角用真弧扇补回。
-    // 分段数按半径给（r=4 → 24 段/角 → 弦高 4·(1−cos1.875°)=2µm，远低于 1px）。
-    for (const h of holes) {
-      const segs = hq(Math.max(8, Math.min(32, Math.round(h.r * 6))), Math.max(4, Math.round(h.r * 1.5)));
-      plateHoleCorners(b, h, deckY, { segs });
-    }
+    // 孔**按真实圆角**交给扫描线：`plateWithHoles` 自 R76 起逐角把落在孔内的角按该 z 的
+    // 真实孔边界夹回（solids.ts `clampOutX`）→ 边界是跟着弧走的折线，既无阶梯也无针形三角。
+    // 历史：R74 曾把孔压成矩形 + 用 `plateHoleCorners` 三角扇补四个角 —— 弧精度达标
+    // （键盘井 1.088→0.061mm）但扇在近切点处是 0.026mm×4.8mm 的针形三角，渲染成四角
+    // 一圈**点状白虚线**（用户 r75「触控板四个角可以看到小的白线」）。补片已整体删除。
+    plateWithHoles(b, outline, holes, deckY, { maxCell: mc(1.0), zBreaks: scoopZBreaks });
     // 转轴槽：台面后缘挖一条凹槽（槽底 + 槽壁），转轴筒藏在槽里 —— 真机开盖时看到的就是这条槽。
     b.material(M.HINGE);
     plateFill(b, { cx: 0, cz: hslot.cz, w: hslot.w, d: hslot.d, r: hslot.r }, deckY - hslot.depth, { nu: sc(64, 10), nt: 2, cornerSegs: sc(6, 4), vertexSampling: true });

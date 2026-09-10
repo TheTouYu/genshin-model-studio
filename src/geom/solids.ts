@@ -446,59 +446,10 @@ export function rrectInterval(q: RRect, z: number): [number, number] | null {
 }
 
 /**
- * R74 孔的「真弧四角」补片 —— 扫描线开孔的对症解法。
- *
- * 问题：`plateWithHoles` 按 z 分带（步长 maxCell ≈ 1mm）、每带只在带中点求一次孔的 x 区间，
- * 于是孔的**圆角弧**被量化成 maxCell 量级的方阶梯。实测键盘井后左角：真弧应到 x=−134.65mm，
- * 网格里却是 −142.45mm —— **缺料 7.8mm**，渲染出来就是用户看到的「阶梯」。
- *
- * 解法（端口第四版同族）：把孔以 `r: 0`（纯矩形）交给 `plateWithHoles`（直边扫描线精确、无阶梯），
- * 再用本函数把「方角 − 四分之一圆」之间本该属于板件的区域，按**真弧**分段补回。
- *
- * 不变量：法线与绕序与 `plateWithHoles` 的 `emit()` 完全一致
- * （存储法线 (0, flip, 0)，几何绕序反向 —— 与整块板同族，DoubleSide 下明暗一致）。
- * @returns 发射的三角形数
- */
-export function plateHoleCorners(
-  b: MeshBuilder, q: RRect, y: number,
-  opts: { segs?: number; flip?: boolean; uvScale?: [number, number]; uvOffset?: [number, number] } = {},
-): number {
-  const flip = opts.flip ? -1 : 1;
-  const rr = Math.min(q.r, Math.min(q.w / 2, q.d / 2));
-  if (!(rr > 1e-6)) return 0;
-  const segs = Math.max(2, Math.round(opts.segs ?? 12));
-  const hw = q.w / 2, hd = q.d / 2;
-  const uvS = opts.uvScale ?? [1, 1], uvO = opts.uvOffset ?? [0, 0];
-  const n = v3(0, flip, 0);
-  const uvf = (x: number, z: number): [number, number] => [uvO[0] + (x - q.cx) * uvS[0], uvO[1] + (z - q.cz) * uvS[1]];
-  let nt = 0;
-  for (const sx of [-1, 1]) {
-    for (const sz of [-1, 1]) {
-      const ocx = q.cx + sx * (hw - rr), ocz = q.cz + sz * (hd - rr);   // 弧心
-      const cornerX = q.cx + sx * hw, cornerZ = q.cz + sz * hd;          // 方角
-      const pts: [number, number][] = [];
-      for (let i = 0; i <= segs; i++) {
-        const t = (i / segs) * (Math.PI / 2);
-        pts.push([ocx + sx * rr * Math.cos(t), ocz + sz * rr * Math.sin(t)]);
-      }
-      // 扇心 = 方角；区域凸（两条直边 + 凸弧）→ 三角扇刚好铺满
-      const vc = b.vertex(v3(cornerX, y, cornerZ), n, ...uvf(cornerX, cornerZ));
-      const va = pts.map((p) => b.vertex(v3(p[0], y, p[1]), n, ...uvf(p[0], p[1])));
-      for (let i = 0; i < segs; i++) {
-        // 绕序：tri(C, A, B) 的几何法线 y 分量符号 = sx*sz；要它等于 −flip 才与 emit() 同族
-        if (sx * sz === -flip) b.tri(vc, va[i], va[i + 1]); else b.tri(vc, va[i + 1], va[i]);
-        nt++;
-      }
-    }
-  }
-  return nt;
-}
-
-/**
  * 带孔平板：outline 为外轮廓（圆角矩形），holes 为孔（圆角矩形）。
  * 扫描线沿 z 分带，每带内做区间减法 → 孔边缘精确、无锯齿。
- * ⚠ 孔的**圆角**会被量化成 maxCell 量级阶梯（见 `plateHoleCorners`）：
- * 需要真弧的孔请把 `r` 置 0 交给本函数，再用 `plateHoleCorners` 补角。
+ * 孔的圆角自 R76 起**精确跟随弧**：逐角在各自 z 处按真实孔边界夹回（`clampOutX`），
+ * 边界是弦高 ≤ maxCell²/8r 的折线；旧版只按带中点求区间 → 圆角被量化成 maxCell 方阶梯。
  */
 export function plateWithHoles(
   b: MeshBuilder, outline: RRect, holes: RRect[], y: number,
@@ -525,7 +476,25 @@ export function plateWithHoles(
     return out;
   };
   const SNAP = opts.snapGap ?? 0.3;
-  const zList = snap([...zs].sort((a, c) => a - c), SNAP);
+  // R76：孔的四角弧在**近切点**附近近乎水平，1mm 粗 z 带会把弧截成弦 → 孔边内缩
+  // （实测触控板角 θ=85° 处缺料 0.36mm、键盘井角 0.28mm）。给每个孔的两个 z 端按弧长补断点，
+  // 使角部每带跨角 ≤11.25°（弦高 rr(1−cos5.6°)：r=5.15 → 0.025mm）。
+  // ⚠ 必须加在 `snap` **之后**：近切点处这些断点本来就密（0.02–0.2mm），会被 SNAP=0.3 吃掉。
+  const zBase = snap([...zs].sort((a, c) => a - c), SNAP);
+  const zCorner: number[] = [];
+  for (const h of holes) {
+    const hd = h.d / 2, rr = Math.min(h.r, Math.min(h.w / 2, hd));
+    if (!(rr > 0.4)) continue;
+    for (const sgn of [-1, 1]) {
+      const zc = h.cz + sgn * (hd - rr);
+      for (let k = 1; k <= 7; k++) {
+        const z = zc + sgn * rr * Math.sin((k * 11.25 * Math.PI) / 180);
+        if (z > outline.cz - outline.d / 2 && z < outline.cz + outline.d / 2) zCorner.push(Math.round(z * 1e6) / 1e6);
+      }
+    }
+  }
+  const zList: number[] = [];
+  for (const v of [...zBase, ...zCorner].sort((a, c) => a - c)) if (!zList.length || v - zList[zList.length - 1] > 0.05) zList.push(v);
   const xs = new Set<number>();
   for (const x of opts.xBreaks ?? []) xs.add(x);
   const xList = [...xs].sort((a, c) => a - c);
@@ -542,6 +511,59 @@ export function plateWithHoles(
     const e = b.vertex(p(x0, zb), n, ...uvf(x0, zb));
     if (flip > 0) b.quad(a, c, d, e); else b.quad(a, e, d, c);
   };
+  // R76：孔的四角**真弧**逐角裁剪（扫描线 + 精确边界投影）。
+  // 病根：扫描线只在带中点求一次孔区间 → 整块面用「带中点的孔宽」铺到带两端，
+  // 端点处越界一个弦高（触控板 r=5.15、1mm 带 → 实测孔边偏离理想弧 0.1655mm）；
+  // 而旧对策 `plateHoleCorners`（从方角拉的三角扇）在近切点处的三角形是
+  // 0.026mm 宽 × 4.8mm 长的**针形**，光栅化后成了四角一圈**点状白虚线**（用户 r75 反馈）。
+  // 现在的做法（每个角独立两步）：
+  //   (b) x 若落在「本带中点边界」与「本 z 处边界」之间 → 贴到该 z 的真边界
+  //       （补上带端点处缺的那条料；这也是 x 向切点的解）；
+  //   (a) 仍在孔内 → 按圆角矩形**精确投影**到孔边（直边区推 x/z、角区沿弧心径向推；
+  //       z 向切点——边界近乎水平、x 推不动——只有这一步能解）。
+  // 两步都不产生针形三角（投影只动被裁的角），也不再有「谁拥有这段边」的重叠。
+  const projectOut = (h: RRect, x: number, z: number): [number, number] => {
+    const hw = h.w / 2, hd = h.d / 2, rr = Math.min(h.r, Math.min(hw, hd));
+    const dx = x - h.cx, dz = z - h.cz;
+    if (Math.abs(dx) <= hw - rr + 1e-9) return [x, h.cz + (dz >= 0 ? hd : -hd)];
+    if (Math.abs(dz) <= hd - rr + 1e-9) return [h.cx + (dx >= 0 ? hw : -hw), z];
+    const ox = h.cx + (dx >= 0 ? hw - rr : -(hw - rr)), oz = h.cz + (dz >= 0 ? hd - rr : -(hd - rr));
+    const vx = x - ox, vz = z - oz, L = Math.hypot(vx, vz) || 1;
+    return [ox + (vx / L) * rr, oz + (vz / L) * rr];
+  };
+  // 「在孔内」必须是**严格**在孔内：z 正好落在上下直边（= 孔边界）时不算孔内。
+  // 否则 projectOut 把点推到 z=cz±hd 后仍被判定在孔里 → 6 轮推不出去 → 整块面作废
+  // （实测触控板角 θ=85° 处那条 0.36mm 缺料就是这么来的）。x 同理要带 eps。
+  const inHole = (h: RRect, x: number, z: number): boolean => {
+    const iv = rrectInterval(h, z);
+    if (!iv) return false;
+    if (Math.abs(z - h.cz) >= h.d / 2 - 1e-9) return false;
+    return x > iv[0] + 1e-9 && x < iv[1] - 1e-9;
+  };
+  // 返回 null = 这个角落在**多孔重叠区**里推不出去（该面作废，别硬塞成覆盖空腔的面）
+  const clipCorner = (x: number, z: number, zm: number, owner: RRect | undefined): [number, number] | null => {
+    // (b) z 向真边界吸附：**只对这个 x 断点所属的孔**做（孔与孔相切时按别人的边界拉会跑偏）
+    if (owner) {
+      const ivz = rrectInterval(owner, z), ivm = rrectInterval(owner, zm);   // ⚠ ivm 用带中点 zm
+      if (ivz) for (const side of [0, 1] as const) {
+        const a = ivz[side], b2 = ivm ? ivm[side] : a;
+        if ((x - a) * (x - b2) <= 0) x = a;
+      }
+    }
+    // (a) 迭代投影出所有孔（重叠孔之间可能要两三轮才落到材料侧）
+    for (let pass = 0; pass < 6; pass++) {
+      let hit: RRect | null = null;
+      for (const h of holes) if (inHole(h, x, z)) { hit = h; break; }
+      if (!hit) return [x, z];
+      [x, z] = projectOut(hit, x, z);
+    }
+    for (const h of holes) if (inHole(h, x, z)) return null;
+    return [x, z];
+  };
+  const quadAreaXZ = (p0: Vec3, p1: Vec3, p2: Vec3, p3: Vec3): number =>
+    ((p1.x - p0.x) * (p2.z - p0.z) - (p1.z - p0.z) * (p2.x - p0.x))
+    + ((p2.x - p0.x) * (p3.z - p0.z) - (p2.z - p0.z) * (p3.x - p0.x));
+
   for (let i = 0; i < zList.length - 1; i++) {
     const za = zList[i], zb = zList[i + 1];
     const zm = (za + zb) / 2;
@@ -557,6 +579,14 @@ export function plateWithHoles(
     // 该带的 x 分割点：外轮廓用「两端区间的并」而非各自端点——
     // 否则圆角处两端相差 0.02–0.2mm 会切出一条同宽的针形列（边界倾斜是正常的）
     const xsLocal = new Set<number>([Math.min(oa[0], ob[0]), Math.max(oa[1], ob[1])]);
+    // 每个「孔区间 x 断点」记下它属于哪个孔（(b) 吸附要用；两孔相切时取后者，效果相同）
+    const k6 = (v: number): number => Math.round(v * 1e6);
+    const cutOwner = new Map<number, RRect>();
+    for (let hi = 0; hi < holes.length; hi++) {
+      const iv = rrectInterval(holes[hi], zm);
+      if (!iv) continue;
+      cutOwner.set(k6(iv[0]), holes[hi]); cutOwner.set(k6(iv[1]), holes[hi]);
+    }
     for (const c of cut) { xsLocal.add(c[0]); xsLocal.add(c[1]); }
     // 孔的 x 断点只在「该孔在本带内存在」时生效：全局生效会在孔不存在的带里
     // 切出无用窄列（实测 0.8mm 宽的铝条被切成 200+ 片）
@@ -588,10 +618,19 @@ export function plateWithHoles(
         const za0 = Math.max(oa[0], Math.min(oa[1], x0)), za1 = Math.max(oa[0], Math.min(oa[1], x1));
         const zb0 = Math.max(ob[0], Math.min(ob[1], x0)), zb1 = Math.max(ob[0], Math.min(ob[1], x1));
         if (za1 - za0 < 1e-7 && zb1 - zb0 < 1e-7) continue;
-        const p0 = v3(za0, y, za), p1 = v3(za1, y, za), p2 = v3(zb1, y, zb), p3 = v3(zb0, y, zb);
+        // 四角各自裁到孔边界（R76 见上）；任一角推不出孔 → 整块作废（多孔重叠区）
+        const g0 = clipCorner(za0, za, zm, cutOwner.get(k6(za0)));
+        const g1 = clipCorner(za1, za, zm, cutOwner.get(k6(za1)));
+        const g2 = clipCorner(zb1, zb, zm, cutOwner.get(k6(zb1)));
+        const g3 = clipCorner(zb0, zb, zm, cutOwner.get(k6(zb0)));
+        if (!g0 || !g1 || !g2 || !g3) continue;
+        const p0 = v3(g0[0], y, g0[1]), p1 = v3(g1[0], y, g1[1]);
+        const p2 = v3(g2[0], y, g2[1]), p3 = v3(g3[0], y, g3[1]);
+        if (quadAreaXZ(p0, p1, p2, p3) < 1e-9) continue;
         const nv = v3(0, flip, 0);
         const uvf = (p: Vec3): [number, number] => [uvO[0] + (p.x - outline.cx) * uvS[0], uvO[1] + (p.z - outline.cz) * uvS[1]];
         if (opts.mask && opts.mask((p0.x + p1.x) / 2, (p0.z + p2.z) / 2)) continue;
+
         const ia = b.vertex(p0, nv, ...uvf(p0));
         const ib = b.vertex(p1, nv, ...uvf(p1));
         const ic = b.vertex(p2, nv, ...uvf(p2));
