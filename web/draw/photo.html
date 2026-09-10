@@ -283,6 +283,14 @@
           envMapIntensity: 0.25,
         })
       }
+      // 侧壁散热槽（M.VENT，0x272729，R73 新增）：机加工细槽，哑光深色、几乎不吃环境反射
+      // （吃反射会在掠射角变成一条亮线——正是端口腔体贴面当初的病）。
+      if (hex === 0x272729) {
+        return new THREE.MeshStandardMaterial({
+          color: new THREE.Color(0x202022), metalness: 0.0, roughness: 0.78, side: THREE.DoubleSide,
+          envMapIntensity: 0.30,
+        })
+      }
       // Apple 标：镜面 PVD 嵌件（metal 1 / rough 0.04）。参考图 俯视图 里 logo 比上盖**更亮**
       // （反射影棚主光），若按普通铝面（rough 0.30）渲染则读作灰苹果 + 暗边。
       if (hex === 0xfbfbfc) {

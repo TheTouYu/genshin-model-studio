@@ -40,7 +40,7 @@ export interface BuildResult { mesh: MeshData; materials: Material[]; stats: Rec
 
 const M = {
   ALU: 0, ALU_DARK: 1, GLASS: 2, SCREEN: 3, KEY: 4, LEGEND: 5, TRACKPAD: 6, LOGO: 7,
-  PORT_DARK: 8, PORT_METAL: 9, RUBBER: 10, GRILLE: 11, SCREW: 12, HINGE: 13, LENS: 14, GRILLE_RIM: 15, ALU_GLOSS: 16, ETCH: 17, WELL: 18, PORT_TONGUE: 19, GOLD: 20, DEBUG: 21, TPSEAM: 22,
+  PORT_DARK: 8, PORT_METAL: 9, RUBBER: 10, GRILLE: 11, SCREW: 12, HINGE: 13, LENS: 14, GRILLE_RIM: 15, ALU_GLOSS: 16, ETCH: 17, WELL: 18, PORT_TONGUE: 19, GOLD: 20, DEBUG: 21, TPSEAM: 22, VENT: 23,
 } as const;
 
 function baseMaterials(assets: Assets, color: 'silver' | 'spaceblack' = 'silver'): Material[] {
@@ -69,6 +69,9 @@ function baseMaterials(assets: Assets, color: 'silver' | 'spaceblack' = 'silver'
   // 渲染出来像"填满开口的亮条"（用户 2026-09-10：接口有点粗糙）。
   // 内舌做成**纯漫反射深色**：旧值带 0.15 金属度，掠射角会反成一道亮条（用户圈的「接口异常」之一）。
   mats[M.PORT_TONGUE] = makeMaterial({ name: 'port-tongue', baseColor: [0.018, 0.018, 0.020], metallic: 0.0, roughness: 0.92 });
+  // R73 侧壁散热槽：真机是一条深色细槽（官方 connections-1/2 实测，见 wallSlot 注释），
+  // 材质取「粗糙哑光深色」——比腔体稍亮一点点，避免整条读成纯黑贴纸。
+  mats[M.VENT] = makeMaterial({ name: 'side-vent', baseColor: [0.020, 0.020, 0.022], metallic: 0, roughness: 0.66 });
   // MagSafe 弹性触点 = 镀金（真机 5 个金色触点）
   mats[M.GOLD] = makeMaterial({ name: 'port-gold', baseColor: [0.58, 0.58, 0.585], metallic: 1, roughness: 0.34 });
   mats[M.DEBUG] = makeMaterial({ name: 'debug', baseColor: [1.0, 0.05, 0.05], metallic: 0, roughness: 0.5 });
@@ -357,6 +360,77 @@ function portOpening(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz
   const mw = kind === 'usbc' ? 6.35 : kind === 'hdmi' ? 11.6 : kind === 'sdxc' ? 24.0 : 7.6;
   const a = V(DETAIL, cy - mh / 2, cz - mw / 2), b2 = V(DETAIL, cy - mh / 2, cz + mw / 2), c = V(DETAIL, cy + mh / 2, cz + mw / 2), d = V(DETAIL, cy + mh / 2, cz - mw / 2);
   if (side > 0) b.quad(a, b2, c, d); else b.quad(a, d, c, b2);
+}
+
+/**
+ * wallSlot —— 侧壁散热槽（贴面内嵌件，与 portOpening 同族：不切墙）。
+ *
+ * 依据（官方 official-mbp14-connections-1/2.jpg，3772×300，**17.02 px/mm**；
+ * 标尺用四个端口中心交叉标定：USB-C1 预测 792.8 实测 792.5、USB-C2 1044.7/1050、
+ * jack 1262.6/1266.5 → 映射 x = 1885.5 + 17.02·z 误差 ≤0.3mm）：
+ *   · 左壁槽：后端正圆帽 z = −20.1，前端正圆帽 z = +84.4（长 104.5mm）；
+ *   · 右壁（ports-2.jpg，818 宽，5.97 px/mm）后帽 z = −20.3 ✓ 两侧对称；
+ *   · 槽中心 ≈ 底面之上 1.25mm，槽高 ≈ 0.9mm（高分辨图上 6px 的暗带）。
+ * 它坐在**底缘倒角（R1.55）的曲面上**，所以贴面必须跟着剖面走（o(y) 插值），
+ * 否则槽的前后两端会从壁上浮起来（掠射角一眼可见）。
+ * 参考图里槽的下方紧跟着一条亮边 = 底缘倒角本身的高光，由机身扫掠提供，这里不画。
+ */
+function wallSlot(
+  b: MeshBuilder, side: 1 | -1, wallX: number, prof: { o: number; y: number }[],
+  z0: number, z1: number, cy: number, h: number, cseg: number, mat: number,
+): void {
+  const hh = h / 2, rr = hh;
+  const P = 0.06;   // 凸出墙面 0.06mm（与 portOpening 同口径：0.05 以下掠射会有穿透斑纹）
+  const oAt = (y: number): number => {
+    for (let i = 0; i < prof.length - 1; i++) {
+      const a = prof[i], c = prof[i + 1];
+      if (y <= a.y && y >= c.y) {
+        const t = Math.abs(a.y - c.y) < 1e-9 ? 0 : (a.y - y) / (a.y - c.y);
+        return a.o + (c.o - a.o) * t;
+      }
+    }
+    return y > prof[0].y ? prof[0].o : prof[prof.length - 1].o;
+  };
+  const V = (y: number, z: number): number => {
+    // wallX 已带符号（±B.w/2）→ 贴壁面：x = wallX − side·o(y)；再向外凸 P。
+    // 曾写成 side·(wallX − (o−P))（side 用了两次）→ 两条槽都落在右壁、互相重叠。
+    const x = wallX - side * (oAt(y) - P);
+    return b.vertex(v3(x, y, z), v3(side, 0, 0), 0, 0);
+  };
+  // 同上，但多一个「相对贴面」的进退量 extra（负 = 往墙里退，用于槽内下唇的倾斜面）
+  const V2 = (y: number, z: number, extra: number): number => {
+    const x = wallX - side * (oAt(y) - P + extra);
+    return b.vertex(v3(x, y, z), v3(side, 0, 0), 0, 0);
+  };
+  b.material(mat);
+  const zA = z0 + rr, zB = z1 - rr;             // 两端圆心（stadium 端帽）
+  // 槽内下唇：真机照片里槽不是一条纯黑线，而是「上暗下亮」的凹槽——槽底下缘朝上、吃到主光，
+  // 在槽内形成一条细亮线（官方 connections-1/2 与用户 键盘和触控板.png 同款）。
+  // 做法：把暗片的上部缩短 hl，下唇用一片**朝上倾斜**的窄面补上（下缘后退 0.10mm、上缘与暗片齐平）。
+  // 不切墙、不共面、不与暗片重叠，只在槽内换一条面。
+  const hl = 0.22;
+  const yLo = cy - hh, yHi = cy + hh;
+  const r1 = V(yLo + hl, zA), r2 = V(yLo + hl, zB), r3 = V(yHi, zB), r4 = V(yHi, zA);
+  if (side > 0) { b.tri(r1, r2, r3); b.tri(r1, r3, r4); } else { b.tri(r1, r3, r2); b.tri(r1, r4, r3); }
+  b.material(M.ALU_DARK);
+  {
+    const b1 = V2(yLo, zA, -0.10), b2 = V2(yLo, zB, -0.10), b3 = V(yLo + hl, zB), b4 = V(yLo + hl, zA);
+    if (side > 0) { b.quad(b1, b2, b3, b4); } else { b.quad(b1, b4, b3, b2); }
+  }
+  b.material(mat);
+  // 端帽绕序必须同时看 side 与 dir（portOpening 的教训：只按 side 翻面会让一端朝墙内 → 暗块/梳齿）
+  const capFan = (dir: number): void => {
+    const zc = dir > 0 ? zB : zA;
+    const apex = V(cy, zc);            // 端帽扇心 = 半圆圆心（在矩形端边上）——写成 zc±rr 会扇到弧上 → 缺半个端帽
+    const vs: number[] = [];
+    for (let i = 0; i <= cseg; i++) {
+      const th = (Math.PI / 2) * (1 - (2 * i) / cseg);   // 上半圆 θ 90°→−90°
+      vs.push(V(cy + rr * Math.sin(th), zc + dir * rr * Math.cos(th)));
+    }
+    const flip = (side > 0) !== (dir > 0);
+    for (let i = 0; i < vs.length - 1; i++) { if (!flip) b.tri(apex, vs[i], vs[i + 1]); else b.tri(apex, vs[i + 1], vs[i]); }
+  };
+  capFan(1); capFan(-1);
 }
 
 function logoPatch(b: MeshBuilder, shape: LogoShape, cx: number, cy: number, cz: number, w: number, h: number, mat: number): void {
@@ -665,6 +739,17 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     for (const p of S.ports.right) portOpening(b, 1, B.w / 2, S.ports.centerY, p.z, p.w, p.h, p.kind, hq(20, 8));
   }
 
+  // ============ 6.5 侧壁散热槽（用户 2026-09-11：「做侧壁散热」） ============
+  {
+    const prof = bodyProfile(B.bottomY, deckY, S.base.filletTop ?? B.fillet, hq(8, 1), B.fillet);
+    for (const side of [-1, 1] as const) {
+      // cseg 只能取 5：端帽半径 = 槽高/2 = 0.45mm，半圆分 14 段时相邻点距仅 0.10mm
+      // **小于 page-mesh 的焊接容差 0.2mm** → 弧点被焊接合并 → 退化三角形被去 sliver 丢掉
+      // （实测 60 → 24 面）。5 段时点距 0.278mm ✓，弧的多边形误差仅 r(1−cos18°) = 22µm。
+      wallSlot(b, side, (side * B.w) / 2, prof, -20.0, 84.4, B.bottomY + 1.25, 0.90, hq(5, 3), M.VENT);
+    }
+  }
+
   // ============ 7. 上盖 ============
   const theta = (opts.openAngle * Math.PI) / 180;
   const cs = Math.cos(theta), sn = Math.sin(theta);
@@ -812,7 +897,9 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     // 试过 20mm：凹槽一直挖到触控板底下，而触控板 y=deckY+0.25 在位移窗口之上不动 →
     // 前缘悬空 1.6mm，渲染出一条黑缝（2026-09-11 实测）。
     // 「更细的拼装」不靠加长坡，靠加密行距（见 deck 板的 zBreaks 0.6mm）。
-    const SCOOP_W = 51.0, SCOOP_D = 1.5, SCOOP_RAMP = 8.0;   // D 由 2.7 减到 1.5（用户：「需要减少向下凹的深度」）
+    const SCOOP_W = 51.0, SCOOP_D = 1.0, SCOOP_RAMP = 8.0;   // D 由 2.7 减到 1.5（用户：「需要减少向下凹的深度」）
+    // R73：1.5 → 1.0（用户第二轮：「下凹感需要减弱」）。宽度 51mm 来自参考实测（设计图关闭前视暗带
+    // 53.4mm、用户正视图 49.4mm），不再动；只减深度，弧型（余弦拱）与两端余弦肩保持不变。
     // RAMP=8（不是 9）：zStart = 110.6 − 8 = 102.6，必须落在触控板**暗缝环前缘 101.95mm 之外**。
     // 暗缝环是独立扫掠件（y = deckY+0.12），不参与台面下沉；RAMP=9 时下沉正好从 101.6 起，
     // 环的前缘被"露"在下沉的台面之上 → 渲染出 V 缺口 + 一排阶梯块（实测 2026-09-11 出图可见）。
