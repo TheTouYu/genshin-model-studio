@@ -18,7 +18,10 @@ const OUT = arg('out', 'delivery/macbook-page')
 const VIEWS = arg('views', 'hero,front,kb,ports,screen34,top').split(',')
 const W = Number(arg('w', 1416)), H = Number(arg('h', 840))
 const PORT = Number(arg('port', 9222))
-const URL_ = arg('url', 'http://localhost:8787/draw/photo.html')
+// 默认带 cache-buster：photo.html 被浏览器缓存时，改了页面却渲染出旧行为（已踩两次）。
+// 传了 ?v= 的 URL 原样使用。
+const URL_RAW = arg('url', 'http://localhost:8787/draw/photo.html')
+const URL_ = URL_RAW.indexOf('?') >= 0 ? URL_RAW : URL_RAW + '?v=' + Date.now()
 const PRESET = arg('preset', 'dark')
 const POST = arg('post', '')            // JSON：{noise,vignette,ca,aperture,maxBlur,exposure}
 const SEED0 = Number(arg('seed', 20260909))

@@ -103,7 +103,7 @@
     // 闭合上盖俯视（配对 `/mnt/e/模型/笔记本/俯视图.png`）：参考图机身几乎填满画幅（~96% 宽）
     closedtop:{ azim: 0,   elev: 89, dist: 0.550, fov: 30, target: [0, 0.008, 0.000] },  // 0.385 时 312.6mm 宽被画框裁掉两侧
     // 底盖俯视（配对 `底盖和100°侧面姿态.png` 的底盖部分）
-    bottom:   { azim: 0,   elev: -88, dist: 0.50, fov: 30, target: [0, 0.000, 0.000], noRefl: true },  // 0.40 时底面被裁
+    bottom:   { azim: 180, elev: -88, dist: 0.50, fov: 30, target: [0, 0.000, 0.000], noRefl: true },  // 0.40 时底面被裁；azim 180 = 画面下方对前缘（与用户 底盖面板 同朝向）
     // 转轴特写（左后方低角度）：看槽内筒、端面、盖缝。用户 2026-09-10 点名的位置。
     hinge:    { azim: 212, elev: 16, dist: 0.34, fov: 30, target: [-0.010, 0.013, -0.095] },
     hingel:   { azim: 262, elev: 9,  dist: 0.30, fov: 28, target: [-0.090, 0.011, -0.090] },
@@ -279,6 +279,13 @@
           clearcoat: 0.85, clearcoatRoughness: 0.08,
         })
       }
+      // 脚垫（M.RUBBER，baseColor 0.028 → hex 0x2f2f30）：哑光橡胶。走通用深色分支（metalness 0.06）
+      // 会被环境照亮成灰盘，参考图里脚垫是近黑的（用户 底盖和100°侧面姿态.png）。
+      if (hex === 0x2f2f30) {
+        return new THREE.MeshPhysicalMaterial({
+          color: col, metalness: 0.0, roughness: 0.78, envMapIntensity: 0.30, side: THREE.DoubleSide,
+        })
+      }
       // 键帽 PBT 微磨砂：参考图 键盘和触控板.png 键帽顶面 36–48（p5 21 / p95 49 有光泽梯度），
       // 旧值 roughness 0.55 / env 0.65 读作 27 过黑 → 加深层清漆把表面光泽补回来。
       if (hex === 0x1d1d1f) {
@@ -350,6 +357,52 @@
       }
       groups.forEach(function (idx, colHex) {
         var pos = posArray()
+        // 底盖激光雕刻铭牌组（M.ETCH，baseColor 0.80/0.80/0.81 → 0xe7e7e8）：
+        // 一块 70×14mm 贴图（scripts/max/make-bottom-etch.py）。UV 用世界 (x,z) 平面映射，
+        // 贴图底色 = 铝色本身，故 color 必须设白（与键帽同一套路，否则乘出深色块）。
+        if (hexOf(colHex) === 0xe7e7e8) {
+          var EB = window.__etchBox || null
+          if (!EB) {
+            var x0 = 1e9, x1 = -1e9, z0 = 1e9, z1 = -1e9
+            for (var ei = 0; ei < idx.length; ei++) {
+              var ev = V[idx[ei]]
+              if (ev[0] < x0) x0 = ev[0]; if (ev[0] > x1) x1 = ev[0]
+              if (ev[2] < z0) z0 = ev[2]; if (ev[2] > z1) z1 = ev[2]
+            }
+            EB = window.__etchBox = { x0: x0, x1: x1, z0: z0, z1: z1 }
+          }
+          var uvE = new Float32Array(V.length * 2)
+          for (var vi3 = 0; vi3 < V.length; vi3++) {
+            uvE[vi3 * 2] = (V[vi3][0] - EB.x0) / (EB.x1 - EB.x0)
+            // 竖直方向：底视时"画面上方 = 前缘"，而贴图的第 0 行在上 → 用 +（渲染实测过，
+            // 反过来字是倒的）
+            uvE[vi3 * 2 + 1] = (V[vi3][2] - EB.z0) / (EB.z1 - EB.z0)
+          }
+          var gE = new THREE.BufferGeometry()
+          gE.setAttribute('position', new THREE.BufferAttribute(pos, 3))
+          gE.setIndex(idx)
+          gE.setAttribute('uv', new THREE.BufferAttribute(uvE, 2))
+          setN(gE)
+          var matE = makeMat(hexOf(colHex))
+          var tlE = new THREE.TextureLoader()
+          tlE.load('./bottom-etch.png?t=' + BUILD, function (tx) {
+            tx.colorSpace = THREE.SRGBColorSpace
+            tx.anisotropy = 8
+            matE.map = tx
+            matE.color.set(0xffffff)
+            // 与浅色铝分支**逐项一致**（metalness 0.92 / roughness 0.30 / clearcoat 0.25 / env 1.0）：
+            // 只要有一项不同，铭牌区反射就与周围铝不同 → 渲染成一块"可见的矩形贴纸"（踩过）。
+            matE.metalness = 0.92
+            matE.roughness = 0.30
+            matE.clearcoat = 0.25
+            matE.clearcoatRoughness = 0.35
+            matE.envMapIntensity = 1.08   // 补偿 metal+map 路径比纯 color 路径暗 ~5 级（实测 194 vs 199），否则铭牌是一块可见矩形
+            matE.needsUpdate = true
+          })
+          root.add(new THREE.Mesh(gE, matE))
+          window.__etchDebug = { tris: idx.length / 3, box: EB }; window.__etchMat = matE
+          return
+        }
         // 键帽组：顶面(ny>0.55)贴字标图，侧面保持纯色（字标是蚀刻在键帽顶面的）
         // hexOf 归一：mesh JSON 的 colors 可能是 '0x1d1d1f' 也可能是整数 1907998
         if (hexOf(colHex) === 0x1d1d1f) {
@@ -712,7 +765,7 @@
     // 上盖局部坐标已按 R(-angle0) 反解，所以「渲染成网格姿态」= rotation.x 取 -lidAngle0。
     // 旧版少了这一步，任何 angle0≠0 的网格静态出图都会静默合盖（2026-09-10 修）。
     var lidDeg = 0, lidAnimId = 0
-    var BUILD = 'r33'              // HUD 里显示：用于识别浏览器缓存的旧页面（本轮踩过）
+    var BUILD = 'r36'              // HUD 里显示：用于识别浏览器缓存的旧页面（本轮踩过）
     var SCREEN_BASE = 1.40          // 屏幕自发光标定值（对贴图实测均值 222）
     function lidScreen(deg) {
       // 合盖息屏：0° 全灭、≥12° 全亮（真机合盖屏幕不发光；旧版合盖后光会从盖缝漏出来）

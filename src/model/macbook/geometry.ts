@@ -73,7 +73,8 @@ function baseMaterials(assets: Assets, color: 'silver' | 'spaceblack' = 'silver'
   mats[M.GRILLE] = makeMaterial({ name: 'grille', baseColor: [0.020, 0.020, 0.021], metallic: 0.25, roughness: 0.90, baseTex: assets.grilleTex });
   mats[M.SCREW] = makeMaterial({ name: 'screw', baseColor: [0.70, 0.70, 0.71], metallic: 1, roughness: 0.24 });
   // 激光雕刻/丝印（裁判证据：底盖"无法规文字"）——浅灰哑光，比铝面略暗、无金属反射
-  mats[M.ETCH] = makeMaterial({ name: 'etch', baseColor: [0.46, 0.46, 0.47], metallic: 0.05, roughness: 0.55 });
+  // 0.80/0.80/0.81 → hex 0xe7e7e8：页面按这个 hex 认出「底盖铭牌组」并贴 bottom-etch.png
+  mats[M.ETCH] = makeMaterial({ name: 'etch', baseColor: [0.80, 0.80, 0.81], metallic: 0.85, roughness: 0.34 });
   // 键盘井底：比键帽更黑（参考图实测井底 rgb(15,14,14) vs 键帽 rgb(39,39,40)）
   mats[M.WELL] = makeMaterial({ name: 'kb-well', baseColor: [0.0035, 0.0035, 0.0037], metallic: 0, roughness: 0.50 });
   mats[M.HINGE] = makeMaterial({ name: 'hinge', baseColor: [0.42, 0.42, 0.43], metallic: 1, roughness: 0.34 });
@@ -614,31 +615,19 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
         b.material(M.SCREW);
       }
     }
-    // 激光雕刻区（真机底盖中央偏前：法规/型号/认证三行小字，极细极淡）。
-    // 早期版本用一块 92×7.5mm 深色矩形代表它 → 照片里就是一条"神秘黑条"，一眼被识破；
-    // 后来整块删掉 → 裁判又指出"底盖无法规文字"（E3）。现改为按行生成的细横条
-    // （每行由 8–14 段 0.4–2.6mm 短条组成，读作文字块而非黑条）。
+    // 激光雕刻铭牌（真机底盖中央偏前，约 70×14mm 的 3–4 行淡色小字 + 认证标记）。
+    // 演进：① 92×7.5mm 深色矩形 → 照片里是一条"神秘黑条"；② 整块删掉 → 裁判 E3「底盖无激光刻字」；
+    // ③ 按行拼 34 段细横条 → 渲染读作"虚线块"（本轮用户参考图对比后判定）。
+    // ④ 现在：**一块贴图承载**（scripts/max/make-bottom-etch.py 生成 web/draw/bottom-etch.png，
+    //    底色 = 铝色 #f3f3f4、字色略深，页面按世界 bbox 给平面 UV 并 map）——文字纹理在
+    //    880px 验收图集里才读得出"一片字"，几何小条永远读不出来。
+    // 位置标定：用户 底盖和100°侧面姿态.png —— 铭牌宽 82px/1.177px/mm ≈ 70mm、居中、
+    // 距**前缘** 33mm（机身 221mm 方向：图面上方是转轴/后缘）。
     b.material(M.ETCH);
     {
-      const Vd = (x: number, y: number, z: number): number => b.vertex(v3(x, y, z), v3(0, -1, 0), 0, 0);
-      const ex = 0, ez = 34.0;              // 中央偏前（真机铭牌在前缘附近）
-      const rows = [
-        { dz: -3.2, segs: 14, w: 1.5, gap: 0.55, h: 0.30 },
-        { dz: 0.0, segs: 11, w: 1.9, gap: 0.70, h: 0.34 },
-        { dz: 3.1, segs: 9, w: 1.4, gap: 0.65, h: 0.26 },
-      ];
-      for (const row of rows) {
-        let x0 = ex - (row.segs * (row.w + row.gap) - row.gap) / 2;
-        for (let i = 0; i < row.segs; i++) {
-          const cxs = x0 + row.w / 2;
-          const ye = B.bottomY - 0.05, za = ez + row.dz - row.h / 2, zb = ez + row.dz + row.h / 2;
-          b.quad(
-            Vd(cxs - row.w / 2, ye, za), Vd(cxs + row.w / 2, ye, za),
-            Vd(cxs + row.w / 2, ye, zb), Vd(cxs - row.w / 2, ye, zb),
-          );
-          x0 += row.w + row.gap;
-        }
-      }
+      const ez = B.d / 2 - 30.0, w = 78.0, d = 14.0, ye = B.bottomY - 0.05;   // 距前缘 30mm
+      const Vd = (x: number, z: number): number => b.vertex(v3(x, ye, z), v3(0, -1, 0), 0, 0);
+      b.quad(Vd(-w / 2, ez - d / 2), Vd(w / 2, ez - d / 2), Vd(w / 2, ez + d / 2), Vd(-w / 2, ez + d / 2));
     }
   }
 
