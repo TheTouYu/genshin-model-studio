@@ -502,11 +502,14 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     const outline: RRect = { cx: 0, cz: 0, w: B.w - 0.1, d: B.d - 0.1, r: B.r - 0.05 };
     const hslot = S.hinge.slot;
     const SHRINK = 0.4;
+    const tpW = S.trackpad.w, tpD = S.trackpad.d, tpR = S.trackpad.r;
     const holes: RRect[] = [
       { cx: 0, cz: wellCz, w: wellW - SHRINK, d: wellD - SHRINK, r: 4.0 },
       { cx: -grilleCx, cz: wellCz, w: S.grille.w - SHRINK, d: S.grille.d - SHRINK, r: S.grille.r },
       { cx: grilleCx, cz: wellCz, w: S.grille.w - SHRINK, d: S.grille.d - SHRINK, r: S.grille.r },
       { cx: 0, cz: hslot.cz, w: hslot.w, d: hslot.d, r: hslot.r },
+      // 触控板孔（比玻璃大 0.5mm → 四周 0.25mm 真缝；r40 起缝由这个孔提供，不再是凸起环）
+      { cx: 0, cz: (S.deck.tpBackZ + S.deck.tpFrontZ) / 2, w: tpW + 0.5, d: tpD + 0.5, r: tpR + 0.25 },
     ];
     b.material(M.ALU);
     // 前缘带 z 断点加密到 0.6mm：凹槽坡面（前缘 26mm 内）需要足够行数，否则 1.5mm 格距在坡上
@@ -575,23 +578,14 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     // 缝隙：真机玻璃四周与掌托之间有可见细缝（照片里读作一圈暗线，是触控板"看得见"的主因；
     // 只靠 0.96 的亮度比在渐变掌托上会完全糊掉）。0.35mm 暗缝 + 玻璃略暗于掌托。
     // 沿触控板外沿扫掠一圈 0.7mm 暗带：圆角处是精确圆弧（plateWithHoles 的网格会在圆角断线）
-    {
-      const seamPath = roundedRectPath(tp.w + 0.3, tp.d + 0.3, tp.r + 0.15, sc(48, 10), sc(160, 24));
-      // 触控板四周细缝：真机是与掌托**共面**的玻璃 + 一圈发丝级暗线（参考图实测 trackpad/deck 亮度比
-      // 0.960–0.986，缝本身只有 1–2 px）。旧版 0.7mm 宽的黑带（M.GLASS、高 0.12mm）在斜视角读成
-      // "两侧整片发黑"（用户 r39 第 2 条），且环内沿受光成一道白边。
-      // 现在：宽度 0.3mm、抬升 0.03mm（仅高出台面 30µm，斜视不再见厚度）、材质 M.TPSEAM（哑光深灰，
-      // 页面里 roughness 0.62 / metalness 0 → 不再镜面反射环境，不会发黑也不会起白边）。
-      const seamProf = [{ o: 0, y: deckY + 0.03 }, { o: 0.3, y: deckY + 0.03 }];
-      const seam0 = sweepSurface(seamPath, seamProf);
-      const seam = (u: number, v: number): Vec3 => { const p = seam0(u, v); return v3(p.x, p.y, p.z + cz); };
-      b.material(M.TPSEAM);
-      patch(b, seam, lin(0, 1, sc(720, 48)), [0, 1]);
-    }
+    // 触控板四周的缝 = **台面板上真的挖一个孔**，玻璃嵌在孔里、四周留 0.25mm 缝。
+    // 历史：①0.7mm 黑带(M.GLASS) 斜视读成"两侧整片发黑"；②0.3mm 哑光凸起环 → 环的外沿是一道
+    // **白线**（用户 r40「这一圈白线是 bug 吧？」）。根因是形状错了：真机的缝是**凹槽**，
+    // 不是贴在台面上的凸起环 —— 凸起环在掠射角必然露出被照亮的外沿。
+    // 现在孔与缝都由台面板的孔提供：孔的侧壁 + 玻璃边之间的 0.25mm 空隙在掠射角自然读成一条暗线，
+    // 没有任何凸起面，因此不可能再出现亮边。
     b.material(M.TRACKPAD);
-    // 触控板与掌托**共面**（真机）：旧版 deckY+0.25 是一块凸台，斜视角看到 0.25mm 台阶 + 阴影线。
-    // 抬 0.05mm 只为避开与台面板的 z-fighting（实测共面 0.1µm 级才会闪），远小于可见台阶。
-    plateFill(b, { cx: 0, cz, w: tp.w, d: tp.d, r: tp.r }, deckY + 0.05, { nu: sc(48, 8), nt: 2, cornerSegs: sc(8, 5), vertexSampling: true });
+    plateFill(b, { cx: 0, cz, w: tp.w, d: tp.d, r: tp.r }, deckY + 0.02, { nu: sc(48, 8), nt: 2, cornerSegs: sc(12, 6), vertexSampling: true });
   }
 
   // ============ 5. 底面 + 脚垫 + 螺丝 ============

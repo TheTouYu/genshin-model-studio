@@ -18,11 +18,13 @@ export default async ({ evalJS, sleep }) => {
   const q = await evalJS('location.search');
   const params = new URLSearchParams(q.replace(/^\?/, ''));
   const view = params.get('view') || 'hero';
+  // ⚠ 画布口径必须与出图一致，否则像素坐标全错（r40 踩过：默认 1300×700 去打 1400×500 的图）
+  const W = Number(params.get('w') || 1300), H = Number(params.get('h') || 700);
   const picks = (params.get('pick') || '650,350')
     .split(';').map((s) => s.split(',').map(Number)).filter((a) => a.length === 2 && a.every((v) => Number.isFinite(v)));
 
   // 用 __photo.shoot 把画布尺寸/机位固定成与出图完全一致的口径
-  const shot = await evalJS(`(()=>{const r=__photo.shoot(${JSON.stringify(view)},1300,700);return JSON.stringify(r)})()`);
+  const shot = await evalJS(`(()=>{const r=__photo.shoot(${JSON.stringify(view)},${W},${H});return JSON.stringify(r)})()`);
   await sleep(300);
 
   const code = `(() => {
@@ -56,5 +58,11 @@ export default async ({ evalJS, sleep }) => {
     return JSON.stringify(out);
   })()`;
   const res = await evalJS(code);
-  return { view, shot, picks: JSON.parse(res) };
+  const rows = JSON.parse(res);
+  // 同时给一份**紧凑文本表**：日志混排时 JSON 不好解析（r40 踩过两次）
+  const table = rows.map((r) => {
+    const p = r.p ? r.p.map((v) => v.toFixed(3)).join(',') : 'MISS';
+    return `px=${r.px},${r.py} col=${r.col} p=(${p}) nHit=${r.nHit} next=${r.col2 || '-'}`;
+  }).join('\n');
+  return { view, shot, table, picks: rows };
 };
