@@ -131,6 +131,14 @@
     // 凹槽特写（用户 2026-09-11 放大后指出「弧度太大 / 质感与旁边差别太大 / 该用更细的拼装」）
     scoopz:   { azim: 8,   elev: 14, dist: 0.075, fov: 24, target: [0.018, 0.0102, 0.1010] },
     scoopg:   { azim: 26,  elev: 7,  dist: 0.065, fov: 26, target: [0.010, 0.0104, 0.1060] },
+    // 凹槽**两端**特写：r39 用户箭头所指的「边缘的块 + 两侧发黑」出现在凹槽深度衰减到 0 的肩部
+    scooplip: { azim: 6,   elev: 11, dist: 0.052, fov: 26, target: [0.000, 0.0102, 0.1040] },
+    scoopend: { azim: 30,  elev: 13, dist: 0.050, fov: 26, target: [0.024, 0.0103, 0.1000] },
+    scoopendL:{ azim: -30, elev: 13, dist: 0.050, fov: 26, target: [-0.024, 0.0103, 0.1000] },
+    // 触控板转角（r39 用户三条反馈的真正对象：长条=触控板、两端黑=0.7mm 暗缝环、边缘的块=环上的阶梯）
+    tpcorner: { azim: -38, elev: 22, dist: 0.060, fov: 26, target: [0.052, 0.0118, 0.0920] },
+    tpcornerL:{ azim: 38,  elev: 22, dist: 0.060, fov: 26, target: [-0.052, 0.0118, 0.0920] },
+    tpedge:   { azim: -10, elev: 8,  dist: 0.050, fov: 24, target: [0.020, 0.0120, 0.0985] },
     cfront:   { azim: 0,   elev: 0,  dist: 2.00, fov: 10, target: [0, 0.0078, 0.110] },
     cfrontz:  { azim: 0,   elev: 3.0, dist: 2.00, fov: 2.0, target: [0, 0.0085, 0.110] },
     ofront:   { azim: 0,   elev: 0,  dist: 2.00, fov: 10, target: [0, 0.090, 0.105] },
@@ -254,9 +262,18 @@
       // 深色镜面玻璃在垂直视角只有 4% 反射率 → 实测读 93（过暗 2.4×），物理上不可能到 222。
       // ⚠ 必须排在 isLight 之前：0x909093 三通道和 435 > 阈值 300，否则被当成"浅色铝"。
       if (hex === 0x909093) {
+        // r39：roughness 0.10 → 0.22。0.10 是镜面级 → 斜视角整块反射暗环境读作"纯黑板"，
+        // 主光在板中央成硬边过曝白斑（用户第 2/3 条）。真机玻璃是**有光泽的磨砂**，高光是宽渐变。
         return new THREE.MeshPhysicalMaterial({
-          color: new THREE.Color(0xe6e6e8), metalness: 0.0, roughness: 0.10, side: THREE.DoubleSide,
-          envMapIntensity: 1.1, clearcoat: 0.6, clearcoatRoughness: 0.06,
+          color: new THREE.Color(0xe6e6e8), metalness: 0.0, roughness: 0.22, side: THREE.DoubleSide,
+          envMapIntensity: 1.0, clearcoat: 0.35, clearcoatRoughness: 0.18,
+        })
+      }
+      // 触控板细缝（M.TPSEAM，哑光深灰 0x424344）：真机是一圈发丝暗线，不能镜面反射环境。
+      if (hex === 0x424344) {
+        return new THREE.MeshStandardMaterial({
+          color: new THREE.Color(0x3a3a3c), metalness: 0.0, roughness: 0.62, side: THREE.DoubleSide,
+          envMapIntensity: 0.25,
         })
       }
       // Apple 标：镜面 PVD 嵌件（metal 1 / rough 0.04）。参考图 俯视图 里 logo 比上盖**更亮**

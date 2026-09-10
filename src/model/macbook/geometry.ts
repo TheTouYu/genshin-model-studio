@@ -40,7 +40,7 @@ export interface BuildResult { mesh: MeshData; materials: Material[]; stats: Rec
 
 const M = {
   ALU: 0, ALU_DARK: 1, GLASS: 2, SCREEN: 3, KEY: 4, LEGEND: 5, TRACKPAD: 6, LOGO: 7,
-  PORT_DARK: 8, PORT_METAL: 9, RUBBER: 10, GRILLE: 11, SCREW: 12, HINGE: 13, LENS: 14, GRILLE_RIM: 15, ALU_GLOSS: 16, ETCH: 17, WELL: 18, PORT_TONGUE: 19, GOLD: 20, DEBUG: 21,
+  PORT_DARK: 8, PORT_METAL: 9, RUBBER: 10, GRILLE: 11, SCREW: 12, HINGE: 13, LENS: 14, GRILLE_RIM: 15, ALU_GLOSS: 16, ETCH: 17, WELL: 18, PORT_TONGUE: 19, GOLD: 20, DEBUG: 21, TPSEAM: 22,
 } as const;
 
 function baseMaterials(assets: Assets, color: 'silver' | 'spaceblack' = 'silver'): Material[] {
@@ -59,6 +59,9 @@ function baseMaterials(assets: Assets, color: 'silver' | 'spaceblack' = 'silver'
   // 触控板玻璃：真机是**浅灰**玻璃（用户参考图 键盘和触控板.png 里触控板比掌托更亮），
   // 旧值 0.030（近黑）在页面渲染里读作一块黑砖，与参考图完全不符。
   mats[M.TRACKPAD] = makeMaterial({ name: 'trackpad-glass', baseColor: [0.28, 0.28, 0.29], metallic: 0.10, roughness: 0.085, ior: 1.52 });
+  // 触控板细缝：真机是与掌托同色的一圈发丝暗线，**哑光**（不是镜面玻璃）。
+  // 页面按 hex 分支给 roughness 0.62 / metalness 0 / envMapIntensity 0.25 → 斜视不会反成黑带也不起白边。
+  mats[M.TPSEAM] = makeMaterial({ name: 'trackpad-seam', baseColor: [0.055, 0.056, 0.058], metallic: 0, roughness: 0.62 });
   mats[M.LOGO] = makeMaterial({ name: 'logo-mirror', baseColor: [0.965, 0.965, 0.97], metallic: 1, roughness: 0.022 });
   mats[M.PORT_DARK] = makeMaterial({ name: 'port-cavity', baseColor: [0.012, 0.012, 0.013], metallic: 0, roughness: 0.72 });
   mats[M.PORT_METAL] = makeMaterial({ name: 'port-metal', baseColor: [0.62, 0.62, 0.635], metallic: 1, roughness: 0.30 });
@@ -573,17 +576,22 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     // 只靠 0.96 的亮度比在渐变掌托上会完全糊掉）。0.35mm 暗缝 + 玻璃略暗于掌托。
     // 沿触控板外沿扫掠一圈 0.7mm 暗带：圆角处是精确圆弧（plateWithHoles 的网格会在圆角断线）
     {
-      const seamPath = roundedRectPath(tp.w + 0.7, tp.d + 0.7, tp.r + 0.35, sc(32, 8));
-      // 触控板四周 0.7mm 暗缝。旧版 y=deckY+0.06 与台面共面 → 页面 5x 放大呈"断续虚线"
-      // （z-fighting，裁判 B 铁证）；抬到与其它共面微偏移同一档 0.25mm。
-      const seamProf = [{ o: 0, y: deckY + 0.12 }, { o: 0.7, y: deckY + 0.12 }];
+      const seamPath = roundedRectPath(tp.w + 0.3, tp.d + 0.3, tp.r + 0.15, sc(48, 10), sc(160, 24));
+      // 触控板四周细缝：真机是与掌托**共面**的玻璃 + 一圈发丝级暗线（参考图实测 trackpad/deck 亮度比
+      // 0.960–0.986，缝本身只有 1–2 px）。旧版 0.7mm 宽的黑带（M.GLASS、高 0.12mm）在斜视角读成
+      // "两侧整片发黑"（用户 r39 第 2 条），且环内沿受光成一道白边。
+      // 现在：宽度 0.3mm、抬升 0.03mm（仅高出台面 30µm，斜视不再见厚度）、材质 M.TPSEAM（哑光深灰，
+      // 页面里 roughness 0.62 / metalness 0 → 不再镜面反射环境，不会发黑也不会起白边）。
+      const seamProf = [{ o: 0, y: deckY + 0.03 }, { o: 0.3, y: deckY + 0.03 }];
       const seam0 = sweepSurface(seamPath, seamProf);
       const seam = (u: number, v: number): Vec3 => { const p = seam0(u, v); return v3(p.x, p.y, p.z + cz); };
-      b.material(M.GLASS);
+      b.material(M.TPSEAM);
       patch(b, seam, lin(0, 1, sc(720, 48)), [0, 1]);
     }
     b.material(M.TRACKPAD);
-    plateFill(b, { cx: 0, cz, w: tp.w, d: tp.d, r: tp.r }, deckY + 0.25, { nu: sc(48, 8), nt: 2, cornerSegs: sc(6, 4), vertexSampling: true });
+    // 触控板与掌托**共面**（真机）：旧版 deckY+0.25 是一块凸台，斜视角看到 0.25mm 台阶 + 阴影线。
+    // 抬 0.05mm 只为避开与台面板的 z-fighting（实测共面 0.1µm 级才会闪），远小于可见台阶。
+    plateFill(b, { cx: 0, cz, w: tp.w, d: tp.d, r: tp.r }, deckY + 0.05, { nu: sc(48, 8), nt: 2, cornerSegs: sc(8, 5), vertexSampling: true });
   }
 
   // ============ 5. 底面 + 脚垫 + 螺丝 ============
@@ -798,6 +806,7 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     const yLo = deckY - 5.0, yHi = deckY - 1.2, yCap = deckY + 0.02;
     const p = raw.pos;
     const moved = new Uint8Array(p.length / 3);
+    const flat = new Uint8Array(p.length / 3);   // 原始法线朝天的平面顶点 → 用解析法线（见下）
     let nMoved = 0;
     for (let i = 0; i < p.length; i += 3) {
       const y = p[i + 1], z = p[i + 2];
@@ -818,6 +827,7 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       // → 插值后互相穿插，渲染成肩部的黑斑（实测 2026-09-11；与焊接无关，--no-weld 同样出现）。
       const flatTop = Math.abs(raw.nrm[i + 1]) > 0.999 && Math.abs(y - deckY) < 0.01;
       p[i + 1] = y - SCOOP_D * nx * zx * w2 - (flatTop ? 0.06 * nx * zx : 0);
+      if (flatTop) flat[i / 3] = raw.nrm[i + 1] < 0 ? 2 : 1;   // 保留原法线符号：台面板是反绕序的
       moved[i / 3] = 1; nMoved++;
     }
     // 位移后必须**重算法线**：MeshBuilder 的顶点法线是按未位移几何给的，
@@ -831,7 +841,16 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
         const a = idx[t], b2 = idx[t + 1], c = idx[t + 2];
         if (moved[a] || moved[b2] || moved[c]) { dirty[a] = 1; dirty[b2] = 1; dirty[c] = 1; }
       }
-      const acc = new Float64Array(nV * 3);
+      const acc = new Map<string, number[]>();
+      // 按**位置**聚合面法线，而不是按顶点索引：plateWithHoles 每个小 quad 都发射自己的顶点
+      // （互不共享），逐索引累加时每个小面片只累到自己那张三角形 → 各自的平面法线 →
+      // 相邻 0.6mm z 带之间法线离散 → 凹槽面读成细密竖条纹 / 两侧发黑（用户 r39 反馈）。
+      // 位置键量化到 1e-5 m = 0.01mm；把 key 缓存在 posOf 里避免重复字符串构造。
+      const posOf = new Array<string>(nV);
+      for (let v = 0; v < nV; v++) {
+        if (!dirty[v]) continue;
+        posOf[v] = `${Math.round(p[v * 3] * 1e5)},${Math.round(p[v * 3 + 1] * 1e5)},${Math.round(p[v * 3 + 2] * 1e5)}`;
+      }
       for (let t = 0; t < idx.length; t += 3) {
         const a = idx[t], b2 = idx[t + 1], c = idx[t + 2];
         if (!dirty[a] && !dirty[b2] && !dirty[c]) continue;
@@ -839,15 +858,50 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
         const ux = p[b2 * 3] - ax, uy = p[b2 * 3 + 1] - ay, uz = p[b2 * 3 + 2] - az2;
         const vx = p[c * 3] - ax, vy = p[c * 3 + 1] - ay, vz = p[c * 3 + 2] - az2;
         const fx = uy * vz - uz * vy, fy = uz * vx - ux * vz, fz = ux * vy - uy * vx;   // 面积加权
-        for (const v of [a, b2, c]) { acc[v * 3] += fx; acc[v * 3 + 1] += fy; acc[v * 3 + 2] += fz; }
+        for (const v of [a, b2, c]) {
+          const k = posOf[v];
+          if (k === undefined) continue;
+          let e = acc.get(k);
+          if (!e) { e = [0, 0, 0]; acc.set(k, e); }
+          e[0] += fx; e[1] += fy; e[2] += fz;
+        }
       }
       const nr = raw.nrm;
+      // 凹槽区有两张**几何重合**的网格（台面板 plateWithHoles 与壳顶环带 sweepSurface，实测相差
+      // 0.1µm 完全贴合），但细分密度差 2–3 倍 → 面法线平均出的结果两边不同 → 端部出现斜向硬边
+      // （用户 r39「边缘的块 / 两侧颜色突变」）。平面区（原始法线朝天、恰在 deckY）改用**解析法线**
+      // ——直接由凹槽位移场的梯度算，与细分无关，两张网格必然给出同一个法线。
+      const dS = (x: number, z: number): [number, number] => {
+        // S(x,z) = SCOOP_D·nx(t)·zx(z) + flatTop 附加项 0.06·nx·zx；返回 (∂S/∂x, ∂S/∂z)
+        const t = Math.abs(x) / (SCOOP_W / 2);
+        if (t >= 1) return [0, 0];
+        const sgn = x >= 0 ? 1 : -1;
+        const dnx = -0.5 * Math.PI * Math.sin(Math.PI * t) * sgn / (SCOOP_W / 2);
+        const az = clamp((z - zStart) / SCOOP_RAMP, 0, 1);
+        const dzx = 6 * az * (1 - az) / SCOOP_RAMP;
+        const nx = 0.5 * (1 + Math.cos(Math.PI * t));
+        const zx = az * az * (3 - 2 * az);
+        return [(SCOOP_D + 0.06) * dnx * zx, (SCOOP_D + 0.06) * nx * dzx];
+      };
       for (let v = 0; v < nV; v++) {
         if (!dirty[v]) continue;
-        const L = Math.hypot(acc[v * 3], acc[v * 3 + 1], acc[v * 3 + 2]);
+        if (flat[v]) {
+          // **必须保留原法线的符号**：台面板 plateWithHoles 是反绕序（存储法线朝下），页面材质是
+          // DoubleSide → three.js 对背面会再翻转一次法线。若这里一律写成 +Y，反绕序那张网格
+          // 翻转后变成朝下着色 → 凹槽两侧整片发黑 + 与相邻面颜色突变（用户 r39 第 2 条）。
+          const sg = flat[v] === 2 ? -1 : 1;
+          const [gx2, gz2] = dS(p[v * 3], p[v * 3 + 2]);
+          const L2 = Math.hypot(gx2, 1, gz2);
+          nr[v * 3] = (sg * -gx2) / L2; nr[v * 3 + 1] = (sg * 1) / L2; nr[v * 3 + 2] = (sg * -gz2) / L2;
+          continue;
+        }
+        const e = acc.get(posOf[v]);
+        if (!e) continue;
+        const L = Math.hypot(e[0], e[1], e[2]);
         if (L < 1e-12) continue;
-        nr[v * 3] = acc[v * 3] / L; nr[v * 3 + 1] = acc[v * 3 + 1] / L; nr[v * 3 + 2] = acc[v * 3 + 2] / L;
+        nr[v * 3] = e[0] / L; nr[v * 3 + 1] = e[1] / L; nr[v * 3 + 2] = e[2] / L;
       }
+      void acc;
       stats['scoopVerts'] = nMoved;
     }
   }

@@ -523,10 +523,16 @@ export function plateWithHoles(
       let inHole = false;
       for (const c of cut) if (xm > c[0] && xm < c[1]) { inHole = true; break; }
       if (inHole) continue;
-      // 细分：沿 x 均匀切
-      const n = Math.max(1, Math.ceil((xb - xa) / maxCell));
-      for (let k = 0; k < n; k++) {
-        const x0 = xa + ((xb - xa) * k) / n, x1 = xa + ((xb - xa) * (k + 1)) / n;
+      // 细分：沿 x 切，断点落在**全局栅格**上（相对 outline.cx 的 maxCell 倍数）。
+      // 旧版按「本带区间等分」→ 相邻 z 带的内部断点天生错开（实测带A 23.25/24.75/26.25 = 1.500mm 网格，
+      // 带B 23.19/24.69/26.18 = 1.494mm 网格）→ T 型接缝。平面时看不出来；一旦被 deform 位移
+      // （前缘凹槽），两条带对同一平滑场的插值不一致 → 接缝处一亮一黑 + 一排阶梯块（r39 用户反馈）。
+      const gridPts: number[] = [xa];
+      const g0 = Math.ceil((xa - outline.cx) / maxCell - 1e-9) * maxCell + outline.cx;
+      for (let gx = g0; gx < xb - 1e-9; gx += maxCell) if (gx > xa + 1e-9) gridPts.push(gx);
+      gridPts.push(xb);
+      for (let k = 0; k < gridPts.length - 1; k++) {
+        const x0 = gridPts[k], x1 = gridPts[k + 1];
         // 两端 z 处的实际边界裁剪
         const za0 = Math.max(oa[0], Math.min(oa[1], x0)), za1 = Math.max(oa[0], Math.min(oa[1], x1));
         const zb0 = Math.max(ob[0], Math.min(ob[1], x0)), zb1 = Math.max(ob[0], Math.min(ob[1], x1));
