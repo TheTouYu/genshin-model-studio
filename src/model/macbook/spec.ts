@@ -113,12 +113,12 @@ export const S = {
       { kind: 'magsafe', w: 11.0, h: 2.5, z: -82.5 },
       { kind: 'usbc', w: 8.34, h: 2.67, z: -64.2 },
       { kind: 'usbc', w: 8.34, h: 2.67, z: -49.4 },
-      { kind: 'jack', w: 3.6, h: 3.6, z: -36.6 },
+      { kind: 'jack', w: 3.5, h: 3.5, z: -36.6 },
     ],
     right: [
-      { kind: 'hdmi', w: 14.67, h: 4.33, z: -83.0 },
+      { kind: 'hdmi', w: 14.67, h: 4.7, z: -83.0 },
       { kind: 'usbc', w: 8.34, h: 2.67, z: -64.7 },
-      { kind: 'sdxc', w: 26.7, h: 2.67, z: -39.8 },
+      { kind: 'sdxc', w: 26.7, h: 2.55, z: -39.8 },
     ],
   },
   /** 键盘块与触控板在台面上的位置（z） */
