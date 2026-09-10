@@ -299,9 +299,14 @@ def main():
         # 最后一个字母（用户 2026-09-10 看到 "contro" / "comman"）。按**墨迹 bbox** 重新贴合：
         # 宽高都按 bbox 比例缩放，并限制在键宽的 86%、键高的 52% 以内。
         mb = bbox(m)
-        if mb is not None and mb.any():
-            m = mb
         wmm, hmm = e['aw'] * SCALE, e['ah'] * SCALE
+        if mb is not None and mb.any():
+            # ⚠️ 回归修复（用户 2026-09-10「键盘字母全部异常变大」）：
+            # 裁到墨迹 bbox 之后必须**按 bbox 占原矩形的比例**重算尺寸，否则小图又被拉回原矩形尺寸，
+            # 等于把每个字形整体放大 (rect/bbox) 倍（单个字母约 1.4–3×）——r12 就是这么引入的。
+            wmm *= mb.shape[1] / m.shape[1]
+            hmm *= mb.shape[0] / m.shape[0]
+            m = mb
         key_w = e.get('keyW', 17.35) * PPM
         key_h = e.get('keyH', 16.95) * PPM
         lim_w, lim_h = key_w * 0.86, key_h * 0.52

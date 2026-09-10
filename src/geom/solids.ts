@@ -10,7 +10,7 @@ export type Surface = (u: number, v: number) => Vec3;
 export interface PathPt { x: number; z: number; nx: number; nz: number; u: number }
 
 /** 圆角矩形闭合路径（逆时针），u = 归一化周长参数 */
-export function roundedRectPath(w: number, d: number, r: number, segsPerCorner = 16): PathPt[] {
+export function roundedRectPath(w: number, d: number, r: number, segsPerCorner = 16, edgeSegs = 0): PathPt[] {
   const hw = w / 2, hd = d / 2;
   const rr = Math.min(r, Math.min(hw, hd) - 1e-6);
   const pts: PathPt[] = [];
@@ -20,6 +20,11 @@ export function roundedRectPath(w: number, d: number, r: number, segsPerCorner =
     { cx: -hw + rr, cz: -hd + rr, a0: Math.PI, a1: 1.5 * Math.PI },     // 后左
     { cx: hw - rr, cz: -hd + rr, a0: 1.5 * Math.PI, a1: 2 * Math.PI },  // 后右
   ];
+  // edgeSegs>0 = 直边统一细分段数（0 = 历史默认 2/3 段）。
+  // 前端凹槽 / 侧壁接口都是靠"沿路径的位移与开孔"实现的：直边只切 2–3 段时，
+  // 一条 312mm 前边被拉成 3 根 100mm 的直线段，凹槽被抹平成柔光斑（用户 2026-09-10
+  // 「正前方凹槽的细节需要打磨」），侧壁端口边也同样被粗化。
+  const nEdge = (fallback: number): number => (edgeSegs > 0 ? edgeSegs : fallback);
   const straight = (x0: number, z0: number, x1: number, z1: number, n: number): void => {
     for (let i = 0; i < n; i++) {
       const t = i / n;
@@ -42,13 +47,13 @@ export function roundedRectPath(w: number, d: number, r: number, segsPerCorner =
   };
   // 右侧直边：从后右角（a1=2π）到前右角（a0=0）
   const hwv = hw, hdv = hd;
-  straight(hwv, -hdv + rr, hwv, hdv - rr, 2);
+  straight(hwv, -hdv + rr, hwv, hdv - rr, nEdge(2));
   cornerPts(corners[0], segsPerCorner);
-  straight(hwv - rr, hdv, -hwv + rr, hdv, 3);
+  straight(hwv - rr, hdv, -hwv + rr, hdv, nEdge(3));
   cornerPts(corners[1], segsPerCorner);
-  straight(-hwv, hdv - rr, -hwv, -hdv + rr, 2);
+  straight(-hwv, hdv - rr, -hwv, -hdv + rr, nEdge(2));
   cornerPts(corners[2], segsPerCorner);
-  straight(-hwv + rr, -hdv, hwv - rr, -hdv, 3);
+  straight(-hwv + rr, -hdv, hwv - rr, -hdv, nEdge(3));
   cornerPts(corners[3], segsPerCorner);
   // 去重：圆弧终点与相邻直边起点重合（4 处零长段）→ 弧长参数化后相邻 u 落在同一点，
   // 任何扇形/环带镶嵌都会在这里产出细针三角形（实测 0.1–0.2mm 边长）。
@@ -377,15 +382,18 @@ export function roundedRectOutline(w: number, d: number, r: number, cx = 0, cz =
     for (let i = 1; i < n; i++) out.push({ x: x0 + ((x1 - x0) * i) / n, z: z0 + ((z1 - z0) * i) / n });
   };
   const HALF = Math.PI / 2;
-  // 逆时针：前右角 → 前边 → 前左角 → 左边 → 后左角 → 后边 → 后右角 → 右边
+  // ⚠️ 直边点必须带 cx/cz 绝对偏移：`edge` 内部**不再**加 cx/cz（只有 arc 加）。
+  // 旧版把 arc 用的"相对偏移"直接喂给 edge → 凡是 cz≠0 的轮廓（转轴槽 cz=-107、键盘井 cz=-42.5、
+  // 栅格 cz、触控板井…）直边内部点全部落在 z≈0 附近，在机身中部生成**横向游墙**：
+  // 渲染上是键盘区一条贯穿亮线（用户 2026-09-10「异常的白线」），几何上是穿模碎面。
+  // cz=0 的轮廓（台面板）看不见这个 bug，所以一直没暴露。
   arc(hw - rr, hd - rr, 0, HALF);
-  edge(hw - rr, hd, -hw + rr, hd);
-  arc(-hw + rr, hd - rr, HALF, Math.PI);
-  edge(-hw, hd - rr, -hw, -hd + rr);
+  edge(cx + hw - rr, cz + hd, cx - hw + rr, cz + hd);
+  arc(-hw + rr, hd - rr, HALF, Math.PI);  edge(cx - hw, cz + hd - rr, cx - hw, cz - hd + rr);
   arc(-hw + rr, -hd + rr, Math.PI, 1.5 * Math.PI);
-  edge(-hw + rr, -hd, hw - rr, -hd);
+  edge(cx - hw + rr, cz - hd, cx + hw - rr, cz - hd);
   arc(hw - rr, -hd + rr, 1.5 * Math.PI, 2 * Math.PI);
-  edge(hw, -hd + rr, hw, hd - rr);
+  edge(cx + hw, cz - hd + rr, cx + hw, cz + hd - rr);
   return out;
 }
 

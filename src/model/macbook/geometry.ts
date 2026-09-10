@@ -349,17 +349,21 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
 
   // ============ 1. 机身主体 ============
   {
-    const path = roundedRectPath(B.w, B.d, B.r, hq(48, 6));
+    const path = roundedRectPath(B.w, B.d, B.r, hq(48, 6), hq(120, 16));
     const prof = bodyProfile(B.bottomY, deckY, S.base.filletTop ?? B.fillet, hq(8, 1), B.fillet);
     const surf0 = sweepSurface(path, prof);
     // 前缘开盖凹槽（宽 50mm、深 1.5mm，前壁中部）
-    const GROOVE_W = 70.0, GROOVE_D = 0.55;
+    // 前缘开盖凹槽：真机是**浅槽 + 明确唇边**（design-reference：宽≈1/8 机宽≈39mm、深≈1.5mm），
+    // 旧值宽 70mm/深 0.55mm + cos 形过渡 → 渲染成一片柔光斑（用户 2026-09-10「细节需要打磨」）。
+    const GROOVE_W = 44.0, GROOVE_D = 1.25;
     const groove = (p: Vec3): number => {
       if (p.z < B.d / 2 - 6 || Math.abs(p.x) > GROOVE_W / 2) return 0;
-      const t = clamp(1 - Math.abs(p.x) / (GROOVE_W / 2), 0, 1);
-      const shape = Math.pow(t, 1.3);   // 平滑过渡，旧值 0.45 次幂是硬边梯形
+      const t = clamp(1 - Math.abs(p.x) / (GROOVE_W / 2), 0, 1);   // 0 端 → 1 中心
+      // 中段平底、两端 32% 做 smoothstep 肩：读作"一条槽"而不是"一个坑"
+      const sh = clamp((t - 0.66) / 0.34, 0, 1);
+      const shape = sh * sh * (3 - 2 * sh);
       const y = p.y;
-      const ym = clamp(Math.min((y - B.bottomY - 0.7) / 1.4, (deckY - 0.7 - y) / 1.4), 0, 1);
+      const ym = clamp(Math.min((y - B.bottomY - 0.40) / 0.35, (deckY - 0.40 - y) / 0.35), 0, 1);
       return GROOVE_D * shape * ym;
     };
     const surf = (u: number, v: number): Vec3 => {
@@ -460,12 +464,13 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
   // 栅格内边贴住井口（旧值 +0.8mm 留出一条窄台面，掠射下成亮线）
   const grilleCx = kb.blockW / 2 + kb.wellMargin + S.grille.w / 2 - 0.4;  // 内边与井口重叠 0.4mm，杜绝缝
   {
-    // 内缩必须 ≥ 顶部倒角(B.fillet=1.55)，否则板角穿出圆角管（实测 0.45mm 黑色楔形）
-    const outline: RRect = { cx: 0, cz: 0, w: B.w - 2.7, d: B.d - 2.7, r: B.r - 1.35 };
+    // 台面板必须**盖住**壳顶环：壳顶倒角 filletTop=0.30mm（俯视时侧壁顶沿内缩 0.30），
+    // 旧值内缩 1.35mm → 板边与壳顶环之间留出 ~1mm 环形缝，射线打空 → 从上方看是
+    // 一圈"异常白线"（用户 2026-09-10 箭头所指；r12 曾用"井口内缩 0.4"去补，补错了地方）。
+    // 现在内缩 0.05mm（比壳顶环外 0.25mm），并把 maxCell 收到 3mm（弦高 0.055mm）保证
+    // 多边形近似不会在弦中点缩回缝里。
+    const outline: RRect = { cx: 0, cz: 0, w: B.w - 0.1, d: B.d - 0.1, r: B.r - 0.05 };
     const hslot = S.hinge.slot;
-    // 台面开孔必须比它下面的板/井**小 0.4mm**：plateWithHoles 的 snap(minGap 0.3) 会把
-    // 相邻 0.15mm 的边界吸掉 → 井口与栅格之间留下一条贯穿的 0.15mm 缝，3/4 视角下读成
-    // "键盘两侧异常白线"（用户 2026-09-10；射线取证：那条线处射线打空）。
     const SHRINK = 0.4;
     const holes: RRect[] = [
       { cx: 0, cz: wellCz, w: wellW - SHRINK, d: wellD - SHRINK, r: 4.0 },
@@ -474,9 +479,7 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       { cx: 0, cz: hslot.cz, w: hslot.w, d: hslot.d, r: hslot.r },
     ];
     b.material(M.ALU);
-    // maxCell=24mm 时圆角外轮廓被 z 带切成台阶（R20 角最多内缩 ~3.6mm）→ 台面在四角够不到侧壁，
-    // 露出内部（用户 2026-09-10 圈出的"透明角"，左右两侧都有）。6mm 档把台阶压到 0.23mm 以内。
-    plateWithHoles(b, outline, holes, deckY, { maxCell: mc(6) });
+    plateWithHoles(b, outline, holes, deckY, { maxCell: mc(3) });
     // 转轴槽：台面后缘挖一条凹槽（槽底 + 槽壁），转轴筒藏在槽里 —— 真机开盖时看到的就是这条槽。
     b.material(M.HINGE);
     plateFill(b, { cx: 0, cz: hslot.cz, w: hslot.w, d: hslot.d, r: hslot.r }, deckY - hslot.depth, { nu: sc(64, 10), nt: 2, cornerSegs: sc(6, 4), vertexSampling: true });

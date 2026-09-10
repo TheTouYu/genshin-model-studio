@@ -118,6 +118,9 @@
     deckR:    { azim: 46,  elev: 42, dist: 0.26, fov: 32, target: [0.140, 0.010, 0.098] },
     // 合盖侧缝（用户 2026-09-10：侧面看闭合线对不上）
     leftseam: { azim: 254, elev: 26, dist: 0.30, fov: 32, target: [-0.132, 0.014, 0.010] },
+    // 前缘开盖凹槽特写（用户：「正前方凹槽的细节需要打磨」）
+    groove:   { azim: 0,   elev: 6,  dist: 0.17, fov: 26, target: [0, 0.010, 0.108] },
+    groove34: { azim: 34,  elev: 14, dist: 0.20, fov: 30, target: [0.02, 0.011, 0.104] },
     // 接口特写（左壁）：MagSafe / 2×USB-C / 耳机孔
     portclose:{ azim: 268, elev: 4,  dist: 0.15, fov: 26, target: [-0.150, 0.008, -0.052] },
   }
@@ -352,7 +355,14 @@
           var gSide = new THREE.BufferGeometry()
           gSide.setAttribute('position', new THREE.BufferAttribute(pos.slice(), 3))
           gSide.setIndex(sideIdx); setN(gSide)
-          root.add(new THREE.Mesh(gSide, makeMat(0x1d1d1f)))
+          // 键帽**侧面**单独用近黑哑光材质：俯视时行间看到的是相邻键帽侧壁的一条掠射窄条，
+          // 旧版沿用键帽面材质（envMapIntensity 0.95）→ 那条窄条被环境照亮成"异常白线"
+          // （用户 2026-09-10 圈出、r12 误判为碟面高光）。真机 PBT 侧壁在缝隙里是近黑的。
+          var matCapSide = new THREE.MeshPhysicalMaterial({
+            color: new THREE.Color(0x0e0e0f), metalness: 0.02, roughness: 0.95,
+            envMapIntensity: 0.22, side: THREE.DoubleSide,
+          })
+          root.add(new THREE.Mesh(gSide, matCapSide))
           var gTop = new THREE.BufferGeometry()
           gTop.setAttribute('position', new THREE.BufferAttribute(pos.slice(), 3))
           gTop.setIndex(topIdx)
@@ -1180,8 +1190,8 @@
     var VIEW_LABEL = { hero: '3/4 视角', front: '正面', closedtop: '闭合俯视', screenfront: '屏幕正面',
                        screen34: '屏幕 3/4', kb: '键盘俯视', top: '顶视', ports: '接口特写', portstele: '接口长焦', sidetele: '侧面长焦',
                        side: '侧面', lid: '上盖特写', bottom: '底面',
-                       hinge: '转轴特写', hingel: '转轴侧面', bezel: '边框特写', cornerL: '左前角', cornerR: '右前角', deckL: '台面左前角', deckR: '台面右前角', leftseam: '合盖侧缝', portclose: '接口特写' }
-    var VIEW_ORDER = ['hero', 'front', 'closedtop', 'screenfront', 'screen34', 'kb', 'top', 'ports', 'side', 'lid', 'hinge', 'hingel', 'bezel', 'cornerL', 'cornerR', 'deckL', 'deckR', 'leftseam', 'portclose', 'bottom']
+                       hinge: '转轴特写', hingel: '转轴侧面', bezel: '边框特写', cornerL: '左前角', cornerR: '右前角', deckL: '台面左前角', deckR: '台面右前角', leftseam: '合盖侧缝', portclose: '接口特写', groove: '前缘凹槽', groove34: '前缘凹槽 3/4' }
+    var VIEW_ORDER = ['hero', 'front', 'closedtop', 'screenfront', 'screen34', 'kb', 'top', 'ports', 'side', 'lid', 'hinge', 'hingel', 'bezel', 'cornerL', 'cornerR', 'deckL', 'deckR', 'leftseam', 'portclose', 'groove', 'groove34', 'bottom']
     var PRESET_LABEL = { white: '白底', dark: '深色', grey: '灰底' }
     var rowView = document.getElementById('rowView')
     var rowPreset = document.getElementById('rowPreset')
