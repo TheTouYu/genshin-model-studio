@@ -32,12 +32,13 @@ const argv = process.argv.slice(2);
 const meshPath = argv[0];
 if (!meshPath) { console.error('usage: deck-qa.mjs <mesh.json> [--x0 .. --x1 .. --z0 .. --z1 .. --cell .. --out ..]'); process.exit(2); }
 const arg = (k, d) => { const i = argv.indexOf('--' + k); return i < 0 ? d : argv[i + 1]; };
-const X0 = +arg('x0', -160), X1 = +arg('x1', 160);
-const Z0 = +arg('z0', 50), Z1 = +arg('z1', 110.6);
-const CELL = +arg('cell', 0.25);              // mm/格
+const X0 = +arg('x0', -134), X1 = +arg('x1', 134);
+const Z0 = +arg('z0', 60), Z1 = +arg('z1', 110.3);
+const CELL = +arg('cell', 0.25);
+const clampInt = (v, a, b) => Math.max(a, Math.min(b, v));              // mm/格
 const OUT = arg('out', path.join('.scratch', 'deckqa', path.basename(meshPath).replace(/\W+/g, '_')));
 // 判据门（默认值 = 2026-09-11 基线标定；用户口径：「连续、精细、别凹太深」）
-const GATES = JSON.parse(arg('gates', '{"holes":0,"step_max":0.05,"kink_max":0.35,"kink_px":40,"depth_max":1.8,"depth_min":0.5,"jag":0.20,"nang_max":12,"nang_px":400}'));
+const GATES = JSON.parse(arg('gates', '{"holes":0,"step_max":0.05,"kink_max":0.35,"kink_px":40,"depth_max":1.8,"depth_min":0.5,"jag":0.20,"nang_max":12,"nang_px":400,"plateau_pct":45}'));
 
 fs.mkdirSync(OUT, { recursive: true });
 const raw = JSON.parse(fs.readFileSync(meshPath, 'utf8'));
@@ -234,6 +235,27 @@ for (let k = 0; k < H.length; k++) {
   if (Number.isFinite(H[k])) { if (H[k] < yMin) yMin = H[k]; if (H[k] > yMax) yMax = H[k]; }
   if (Number.isFinite(dev[k])) { if (dev[k] < dMin) dMin = dev[k]; if (dev[k] > dMax) dMax = dev[k]; }
 }
+// ---- 「弧度存不存在」：最深点所在横剖面的平台占比 + 肩部斜率 ----
+// 用户口径：凹槽要是一条**连续弧**，不是平底方槽。平台占比高 / 肩部陡 = 弧度几乎没有。
+let plateauPct = 0, shoulderSlope = 0;
+{
+  const zDeep = depthXZ ? depthXZ[1] : Z1;      // depthXZ = [x, z]
+  const dj = clampInt(Math.round((zDeep - Z0) / CELL), 0, NZ - 1);
+  const row = [];
+  for (let i = 0; i < NX; i++) {
+    const y = H[dj * NX + i];
+    if (!Number.isFinite(y)) continue;
+    const x = X0 + i * CELL;
+    row.push([x, plane(x, zDeep) - y]);
+  }
+  const sunk = row.filter(r => r[1] > 0.3);                      // 只统计真正下沉的区间
+  let flat = 0, n = 0, maxSl = 0;
+  for (let i = 1; i < sunk.length; i++) {
+    const sl = Math.abs((sunk[i][1] - sunk[i - 1][1]) / (sunk[i][0] - sunk[i - 1][0]));
+    n++; if (sl < 0.05) flat++; if (sl > maxSl) maxSl = sl;
+  }
+  plateauPct = n ? 100 * flat / n : 0; shoulderSlope = maxSl;
+}
 const rep = {
   mesh: meshPath, region: { X0, X1, Z0, Z1, cell: CELL }, grid: { NX, NZ },
   y_range: [+yMin.toFixed(3), +yMax.toFixed(3)], dev_range: [+dMin.toFixed(3), +dMax.toFixed(3)],
@@ -245,6 +267,7 @@ const rep = {
   depth: +depth.toFixed(3), depth_at: depthXZ,
   nang_max_deg: +nangMax.toFixed(2), nang_at: nangXZ, nang_px5: nangPx, tilt_max_deg: +tiltMax.toFixed(2),
   boundary_px: boundary, perimeter_mm: +perim.toFixed(1), corners, jag: +jag.toFixed(4),
+  plateau_pct: +plateauPct.toFixed(1), shoulder_deg: +(Math.atan(shoulderSlope) * 180 / Math.PI).toFixed(1),
   hole_samples: holeXZ.slice(0, 20),
   gates: GATES,
 };
@@ -265,9 +288,45 @@ if (rep.depth < GATES.depth_min) fail.push(`depth=${rep.depth}<${GATES.depth_min
 if (rep.jag > GATES.jag) fail.push(`jag=${rep.jag}>${GATES.jag}（边界锯齿）`);
 if (rep.nang_max_deg > GATES.nang_max) fail.push(`nang_max=${rep.nang_max_deg}°>${GATES.nang_max}°（法线硬折=质感割裂）`);
 if (rep.nang_px5 > GATES.nang_px) fail.push(`nang_px5=${rep.nang_px5}>${GATES.nang_px}`);
+if (rep.plateau_pct > GATES.plateau_pct) fail.push(`plateau=${rep.plateau_pct}%>${GATES.plateau_pct}%（平底方槽=弧度几乎没有）`);
+// ---- 剖面打印（--profile）：凹槽的「弧度」到底有没有，必须看真实剖面，而不是只看判据总分 ----
+if (argv.includes('--profile')) {
+  let jz = 0, best = Infinity;
+  for (let j = 0; j < NZ; j++) for (let i = 0; i < NX; i++) {
+    const y = H[j * NX + i];
+    if (Number.isFinite(y) && y - plane(X0 + i * CELL, Z0 + j * CELL) < best) { best = y - plane(X0 + i * CELL, Z0 + j * CELL); jz = j; }
+  }
+  const zStar = Z0 + jz * CELL;
+  const xs = [], prof = [];
+  for (let i = 0; i < NX; i++) { const y = H[jz * NX + i]; if (Number.isFinite(y)) { const x = X0 + i * CELL; xs.push(x); prof.push(plane(x, zStar) - y); } }
+  const stepP = Math.max(1, Math.round(xs.length / 55));
+  console.log(`\n—— 横向剖面 depth(x)（z=${zStar.toFixed(1)}mm）——`);
+  console.log('  x(mm):D(mm)  ' + xs.filter((_, i) => i % stepP === 0).map((x, k) => `${x.toFixed(0)}:${prof[k * stepP].toFixed(2)}`).join(' '));
+  let flat = 0, n = 0, maxSlope = 0;
+  for (let i = 1; i < xs.length; i++) { const sl = Math.abs((prof[i] - prof[i - 1]) / (xs[i] - xs[i - 1])); n++; if (sl < 0.05) flat++; if (sl > maxSlope) maxSlope = sl; }
+  console.log(`  平台占比(|dD/dx|<0.05)=${(100 * flat / n).toFixed(0)}%  肩部最大斜率=${maxSlope.toFixed(3)} (${(Math.atan(maxSlope) * 180 / Math.PI).toFixed(1)}°)`);
+  const ix0 = Math.round((0 - X0) / CELL), zs = [], pz = [];
+  for (let j = 0; j < NZ; j++) { const y = H[j * NX + ix0]; if (Number.isFinite(y)) { const z = Z0 + j * CELL; zs.push(z); pz.push(plane(0, z) - y); } }
+  const sZ = Math.max(1, Math.round(zs.length / 40));
+  console.log(`—— 进深剖面 depth(z)（x=0）——`);
+  console.log('  z(mm):D(mm)  ' + zs.filter((_, i) => i % sZ === 0).map((z, k) => `${z.toFixed(0)}:${pz[k * sZ].toFixed(2)}`).join(' '));
+  const jm = pz.indexOf(Math.max(...pz));
+  if (jm > 2 && jm < pz.length - 3) {
+    const d2 = (pz[jm + 2] - 2 * pz[jm + 1] + pz[jm]) / (CELL * CELL);
+    const R = Math.abs(d2) > 1e-6 ? (1 / Math.abs(d2)).toFixed(1) + 'mm' : '∞(无曲率)';
+    console.log(`  最深 z=${zs[jm].toFixed(1)} depth=${pz[jm].toFixed(2)}mm  二阶差分=${d2.toFixed(4)}/mm → 曲率半径≈${R}`);
+    console.log(`  半深宽度=${(pz.filter(d => d > pz[jm] * 0.5).length * CELL).toFixed(1)}mm（进深方向；越宽=坡越缓）`);
+  }
+  // 进深方向的「坡度分布」：凹槽是否只是两段斜坡 + 一块平台
+  const slopes = [];
+  for (let j = 1; j < pz.length; j++) slopes.push(Math.abs((pz[j] - pz[j - 1]) / CELL));
+  const sMax = Math.max(...slopes);
+  console.log(`  进深最大斜率=${sMax.toFixed(3)} (${(Math.atan(sMax) * 180 / Math.PI).toFixed(1)}°)  斜坡格数=${slopes.filter(v => v > 0.05).length}/${slopes.length}`);
+}
+
 rep.verdict = fail.length ? 'FAIL' : 'PASS';
 rep.fail = fail;
 fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(rep, null, 1));
-console.log(`holes=${rep.holes} step_max=${rep.step_max}mm @${JSON.stringify(rep.step_at)} kink_max=${rep.kink_max} @${JSON.stringify(rep.kink_at)} kink_px=${rep.kink_px} depth=${rep.depth}mm @${JSON.stringify(rep.depth_at)} jag=${rep.jag}/mm (perim ${rep.perimeter_mm}mm)`);
+console.log(`holes=${rep.holes} step_max=${rep.step_max}mm @${JSON.stringify(rep.step_at)} kink_max=${rep.kink_max} @${JSON.stringify(rep.kink_at)} kink_px=${rep.kink_px} depth=${rep.depth}mm plateau=${rep.plateau_pct}%/肩${rep.shoulder_deg}° @${JSON.stringify(rep.depth_at)} jag=${rep.jag}/mm (perim ${rep.perimeter_mm}mm)`);
 console.log(`${rep.verdict}${fail.length ? ' :: ' + fail.join(' | ') : ''}  → ${path.join(OUT, 'report.json')}`);
 process.exit(fail.length ? 1 : 0);
