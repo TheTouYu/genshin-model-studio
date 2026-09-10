@@ -97,6 +97,8 @@
     // 近轴特写（elev≥3）看不出问题 → 每次接口改动必须用它复核。
     portoblq:{ azim: 115, elev: -10, dist: 0.30, fov: 26, target: [0.05, 0.004, -0.045] },
     portoblqL:{ azim: 245, elev: -10, dist: 0.30, fov: 26, target: [-0.05, 0.004, -0.045] },
+    portzoomL:{ azim: 270, elev: 3, dist: 0.023, fov: 20, target: [-0.1563, 0.0077, -0.0642] },
+    portzoomR:{ azim: 90, elev: 3, dist: 0.023, fov: 20, target: [0.1563, 0.0077, -0.0830] },
     sidetele: { azim: 90,  elev: 0.0, dist: 3.00, fov: 1.6, target: [0, 0.008, 0.0] },
     // R73 侧壁散热槽固定机位：一屏装下整条槽（z −20…+84），口径 ≈ 官方侧视图量级
     ventL:    { azim: 270, elev: 2.0, dist: 0.30, fov: 10, target: [-0.1563, 0.0077, 0.032] },
@@ -1299,10 +1301,10 @@
 
     // ---------- 按钮面板 ----------
     var VIEW_LABEL = { hero: '3/4 视角', front: '正面', closedtop: '闭合俯视', screenfront: '屏幕正面',
-                       screen34: '屏幕 3/4', kb: '键盘俯视', top: '顶视', ports: '接口特写', portstele: '接口长焦', portoblq: '接口斜下(右)', portoblqL: '接口斜下(左)', sidetele: '侧面长焦', ventL: '左壁散热槽', ventR: '右壁散热槽',
+                       screen34: '屏幕 3/4', kb: '键盘俯视', top: '顶视', ports: '接口特写', portstele: '接口长焦', portoblq: '接口斜下(右)', portoblqL: '接口斜下(左)', portzoomL: '接口微距(左USB-C)', portzoomR: '接口微距(右HDMI)', sidetele: '侧面长焦', ventL: '左壁散热槽', ventR: '右壁散热槽',
                        side: '侧面', lid: '上盖特写', bottom: '底面',
                        hinge: '转轴特写', hingel: '转轴侧面', bezel: '边框特写', cornerL: '左前角', cornerR: '右前角', deckL: '台面左前角', deckR: '台面右前角', leftseam: '合盖侧缝', portclose: '接口特写', groove: '前缘凹槽', groove34: '前缘凹槽 3/4', lipfront: '前唇正视(凹槽)', cfront: '合盖前视(凹槽)', ofront: '开盖前视', wellcorner: '键盘井角', tpFR: '触控板右前角', tpFL: '触控板左前角', tpBR: '触控板右后角', tpBL: '触控板左后角' }
-    var VIEW_ORDER = ['hero', 'front', 'closedtop', 'screenfront', 'screen34', 'kb', 'top', 'ports', 'portoblq', 'portoblqL', 'side', 'lid', 'hinge', 'hingel', 'bezel', 'cornerL', 'cornerR', 'deckL', 'deckR', 'leftseam', 'portclose', 'groove', 'groove34', 'lipfront', 'cfront', 'ofront', 'ventL', 'ventR', 'wellcorner', 'tpFR', 'tpFL', 'tpBR', 'tpBL', 'bottom']
+    var VIEW_ORDER = ['hero', 'front', 'closedtop', 'screenfront', 'screen34', 'kb', 'top', 'ports', 'portoblq', 'portoblqL', 'portzoomL', 'portzoomR', 'side', 'lid', 'hinge', 'hingel', 'bezel', 'cornerL', 'cornerR', 'deckL', 'deckR', 'leftseam', 'portclose', 'groove', 'groove34', 'lipfront', 'cfront', 'ofront', 'ventL', 'ventR', 'wellcorner', 'tpFR', 'tpFL', 'tpBR', 'tpBL', 'bottom']
     var PRESET_LABEL = { white: '白底', dark: '深色', grey: '灰底' }
     var rowView = document.getElementById('rowView')
     var rowPreset = document.getElementById('rowPreset')
