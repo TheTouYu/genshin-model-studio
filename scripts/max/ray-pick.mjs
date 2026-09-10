@@ -62,9 +62,22 @@ export default async ({ evalJS, sleep }) => {
   // 同时给一份**紧凑文本表**：日志混排时 JSON 不好解析（r40 踩过两次）
   const table = rows.map((r) => {
     const p = r.p ? r.p.map((v) => v.toFixed(3)).join(',') : 'MISS';
+    // 命中分类（r43 教训）：r41-r43 五组对照全部量错对象——把机身**前缘唇口**（z≈110）的
+    // 掠射亮带当成「触控板缝」。以后每次 pick 必须自带分类，禁止凭机位想象。
+    const cls = (() => {
+      const [x, y, z] = r.p || [NaN, NaN, NaN];
+      if (!isFinite(x)) return 'MISS';
+      if (z > 108.5) return 'LIP(前缘唇口)';
+      if (z < -108.5) return 'BACK(后缘/转轴)';
+      if (z < -104) return 'HINGE-SLOT(转轴槽)';
+      if (Math.abs(x) > 150) return 'WALL(侧壁/端口)';
+      if (Math.abs(x) < 70 && Math.abs(z) > 94 && Math.abs(z) < 104.5 && y > 11.3 && y < 11.6) return 'TP-EDGE(触控板缝)';
+      if (z < -60 && y > 11.5) return 'KB(键盘区)';
+      return 'OTHER';
+    })();
     const q = r.p2 ? r.p2.map((v) => v.toFixed(3)).join(',') : '-';
     const f = r.face ? r.face.map((v) => v.toFixed(2)).join(',') : '-';
-    return `px=${r.px},${r.py} col=${r.col} p=(${p}) face=(${f}) nHit=${r.nHit} next=${r.col2 || '-'}@(${q})`;
+    return `[${cls}] px=${r.px},${r.py} col=${r.col} p=(${p}) face=(${f}) nHit=${r.nHit} next=${r.col2 || '-'}@(${q})`;
   }).join('\n');
   return { view, shot, table, picks: rows };
 };
