@@ -38,9 +38,11 @@ const CELL = +arg('cell', 0.25);
 const clampInt = (v, a, b) => Math.max(a, Math.min(b, v));              // mm/格
 const OUT = arg('out', path.join('.scratch', 'deckqa', path.basename(meshPath).replace(/\W+/g, '_')));
 // 判据门（默认值 = 2026-09-11 基线标定；用户口径：「连续、精细、别凹太深」）
-const GATES = JSON.parse(arg('gates', '{"holes":0,"step_max":0.05,"kink_max":0.35,"kink_px":40,"depth_max":1.8,"depth_min":0.5,"jag":0.20,"nang_max":12,"nang_px":400,"plateau_pct":45}'));
+const GATES = JSON.parse(arg('gates', '{"holes":0,"step_max":0.05,"kink_max":0.35,"kink_px":40,"depth_max":1.8,"depth_min":0.5,"jag":0.20,"nang_max":12,"nang_px":400,"plateau_pct":45,"step_slope":0.6,"jag":0.40,"arc_resid":20}'));
 
 fs.mkdirSync(OUT, { recursive: true });
+// 触控板矩形（|x|<68 且 z<101.7）不是台面：它是独立的玻璃板，与台面之间本来就有一道缝。
+// 不掩掉的话它的 0.25mm 凸台会被算成 step/kink（实测 step 0.259 @z=101.5，2026-09-11 误报一次）。
 const raw = JSON.parse(fs.readFileSync(meshPath, 'utf8'));
 const V = raw.vertices.map((v) => [v[0] * 1000, v[1] * 1000, v[2] * 1000]);   // → mm
 const F = raw.faces;
@@ -96,8 +98,14 @@ const NX = Math.floor((X1 - X0) / CELL) + 1, NZ = Math.floor((Z1 - Z0) / CELL) +
 const H = new Float32Array(NX * NZ).fill(NaN);
 const C = new Int32Array(NX * NZ).fill(-1);
 const NXa = new Float32Array(NX * NZ * 3).fill(NaN);
+// 触控板矩形（|x|<68 且 z<101.7）不是台面：它是独立玻璃板，与台面之间本来就有一道缝。
+// 不掩掉的话它的 0.25mm 凸台会被算成 step/kink（实测 step 0.259 @z=101.5 —— 2026-09-11 误报一次）。
+const TP = { x: 68, z: 102.3 };
+const EXCL = new Uint8Array(NX * NZ);   // 排他区（触控板）
 for (let j = 0; j < NZ; j++) for (let i = 0; i < NX; i++) {
-  const h = topHit(X0 + i * CELL, Z0 + j * CELL);
+  const _x = X0 + i * CELL, _z = Z0 + j * CELL;
+  if (Math.abs(_x) < TP.x && _z < TP.z) { EXCL[j * NX + i] = 1; continue; }   // 触控板区不参与判据
+  const h = topHit(_x, _z);
   if (h) {
     H[j * NX + i] = h.y; C[j * NX + i] = h.tri;
     if (h.n) { const L = Math.hypot(h.n[0], h.n[1], h.n[2]) || 1; const k = (j * NX + i) * 3;
@@ -144,7 +152,7 @@ const KINK_BAD = 0.20;   // 斜率跳变 >0.20 (≈11° / 0.25mm) 记一处「�
 const stepPx = Math.max(1, Math.round(0.5 / CELL));  // 0.5mm 步长
 for (let j = 0; j < NZ; j++) for (let i = 0; i < NX; i++) {
   const y = at(i, j);
-  if (!Number.isFinite(y)) { if (j >= FRONT) { holes++; if (holeXZ.length < 40) holeXZ.push([+(X0 + i * CELL).toFixed(2), +(Z0 + j * CELL).toFixed(2)]); } continue; }
+  if (!Number.isFinite(y) && !EXCL[j * NX + i]) { if (j >= FRONT) { holes++; if (holeXZ.length < 40) holeXZ.push([+(X0 + i * CELL).toFixed(2), +(Z0 + j * CELL).toFixed(2)]); } continue; }
   dev[j * NX + i] = plane(X0 + i * CELL, Z0 + j * CELL) - y;   // >0 = 比台面低
   if (j < FRONT) continue;
   const d = dev[j * NX + i];
@@ -237,7 +245,8 @@ for (let k = 0; k < H.length; k++) {
 }
 // ---- 「弧度存不存在」：最深点所在横剖面的平台占比 + 肩部斜率 ----
 // 用户口径：凹槽要是一条**连续弧**，不是平底方槽。平台占比高 / 肩部陡 = 弧度几乎没有。
-let plateauPct = 0, shoulderSlope = 0;
+let plateauPct = 0, shoulderSlope = 0, shape = 'n/a', arcResid = 0, boxResid = 0;
+  let span = [];
 {
   const zDeep = depthXZ ? depthXZ[1] : Z1;      // depthXZ = [x, z]
   const dj = clampInt(Math.round((zDeep - Z0) / CELL), 0, NZ - 1);
@@ -255,6 +264,57 @@ let plateauPct = 0, shoulderSlope = 0;
     n++; if (sl < 0.05) flat++; if (sl > maxSl) maxSl = sl;
   }
   plateauPct = n ? 100 * flat / n : 0; shoulderSlope = maxSl;
+
+  // ---- 形状判据：「这条凹槽是弧，还是平底方槽？」----
+  // 把下沉段的正规化剖面 D(x)/Dmax 分别拟合两个假设，谁残差小谁是它：
+  //   弧：0.5*(1+cos(π·s))    平底方槽：clamp((1-|s|)/shoulder, 0, 1)
+  {
+    // 基线 = 该行两端（凹槽外）的中位数；整段 = 相对基线还高出 5% 最大值的范围（不截断 → 不把余弦拉伸）
+    const outer = row.filter(r => Math.abs(r[0]) > 0.85 * Math.max(...row.map(v => Math.abs(v[0])))).map(r => r[1]).sort((a, b) => a - b);
+    const base = outer.length ? outer[Math.floor(outer.length / 2)] : 0;
+    const rel = row.map(([x, d]) => [x, d - base]);
+    const dmaxAll = Math.max(...rel.map(r => r[1]));
+    span = rel.filter(r => r[1] > 0.05 * dmaxAll);
+  }
+  if (span.length >= 8) {
+    const xa = span[0][0], xb = span[span.length - 1][0];
+    const dmax = Math.max(...span.map(r => r[1]));
+    // 拱心 xc 与半宽 hw 一起拟合（凹槽未必严格对称；固定用 span 中点会把误差算成"不够弧"）
+    let hw = (xb - xa) / 2, xc = (xa + xb) / 2;
+    let eArc = 0, eArc2 = 0, eBox = Infinity;
+    for (const sh of [0.12, 0.18, 0.25, 0.35, 0.5]) {
+      let e = 0;
+      for (const [x, d] of span) {
+        const s = Math.abs((x - xc) / hw);
+        const model = dmax * Math.max(0, Math.min(1, (1 - s) / sh));
+        e = Math.max(e, Math.abs(d - model));
+      }
+      eBox = Math.min(eBox, e);
+    }
+    for (const [x, d] of span) {
+      const s = (x - xc) / hw;
+      const cos_m = dmax * (Math.abs(s) <= 1 ? 0.5 * (1 + Math.cos(Math.PI * s)) : 0);
+      const par_m = dmax * (Math.abs(s) <= 1 ? (1 - s * s) : 0);          // 抛物线弧（尾部衰减更慢）
+      eArc = Math.max(eArc, Math.abs(d - cos_m));
+      eArc2 = Math.max(eArc2, Math.abs(d - par_m));
+    }
+    eArc = Math.min(eArc, eArc2);                                          // 弧族取最优拟合
+    for (let dx = -3; dx <= 3.01; dx += 0.25) {                            // 拱心微调
+      for (const [sc2, isCos] of [[0.85, true], [1.0, true], [0.85, false], [1.0, false]]) {
+        const xc2 = xc + dx, hw2 = hw * sc2;
+        let e = 0;
+        for (const [x, d] of span) {
+          const ss = (x - xc2) / hw2;
+          const model = Math.abs(ss) <= 1 ? dmax * (isCos ? 0.5 * (1 + Math.cos(Math.PI * ss)) : (1 - ss * ss)) : 0;
+          e = Math.max(e, Math.abs(d - model));
+        }
+        eArc = Math.min(eArc, e);
+      }
+    }
+    arcResid = +(100 * eArc / dmax).toFixed(1);
+    boxResid = +(100 * eBox / dmax).toFixed(1);
+    shape = arcResid < boxResid ? 'arc' : 'box';
+  }
 }
 const rep = {
   mesh: meshPath, region: { X0, X1, Z0, Z1, cell: CELL }, grid: { NX, NZ },
@@ -267,7 +327,8 @@ const rep = {
   depth: +depth.toFixed(3), depth_at: depthXZ,
   nang_max_deg: +nangMax.toFixed(2), nang_at: nangXZ, nang_px5: nangPx, tilt_max_deg: +tiltMax.toFixed(2),
   boundary_px: boundary, perimeter_mm: +perim.toFixed(1), corners, jag: +jag.toFixed(4),
-  plateau_pct: +plateauPct.toFixed(1), shoulder_deg: +(Math.atan(shoulderSlope) * 180 / Math.PI).toFixed(1),
+  plateau_pct: +plateauPct.toFixed(1),
+  shape, arc_resid_pct: arcResid, box_resid_pct: boxResid, shapeOK: shape === 'arc' && arcResid <= (GATES.arc_resid ?? 20) && arcResid < 0.6 * boxResid, shoulder_deg: +(Math.atan(shoulderSlope) * 180 / Math.PI).toFixed(1),
   hole_samples: holeXZ.slice(0, 20),
   gates: GATES,
 };
@@ -280,7 +341,9 @@ if (yMax - yMin < 0.05) {
   fail.push('flat_height_field');
 }
 if (rep.holes > GATES.holes) fail.push(`holes=${rep.holes}>${GATES.holes}`);
-if (rep.step_max > GATES.step_max) fail.push(`step_max=${rep.step_max}>${GATES.step_max}`);
+// step 用**斜率**口径：0.25mm 网格上 0.05mm 的绝对高差 = 11° 坡，会把凹槽正常的进深坡全判失败。
+// 真正的 ledge（不连续台阶）由 kink（二阶差分）抓。
+if (rep.step_max / CELL > (GATES.step_slope ?? 0.6)) fail.push(`step_slope=${(rep.step_max / CELL).toFixed(2)}>${GATES.step_slope ?? 0.6}（每格高差 ${rep.step_max}mm）`);
 if (rep.kink_max > GATES.kink_max) fail.push(`kink_max=${rep.kink_max}>${GATES.kink_max}（折/台阶）`);
 if (rep.kink_px > GATES.kink_px) fail.push(`kink_px=${rep.kink_px}>${GATES.kink_px}`);
 if (rep.depth > GATES.depth_max) fail.push(`depth=${rep.depth}>${GATES.depth_max}（凹太深）`);
@@ -289,6 +352,51 @@ if (rep.jag > GATES.jag) fail.push(`jag=${rep.jag}>${GATES.jag}（边界锯齿�
 if (rep.nang_max_deg > GATES.nang_max) fail.push(`nang_max=${rep.nang_max_deg}°>${GATES.nang_max}°（法线硬折=质感割裂）`);
 if (rep.nang_px5 > GATES.nang_px) fail.push(`nang_px5=${rep.nang_px5}>${GATES.nang_px}`);
 if (rep.plateau_pct > GATES.plateau_pct) fail.push(`plateau=${rep.plateau_pct}%>${GATES.plateau_pct}%（平底方槽=弧度几乎没有）`);
+if (!rep.shapeOK) fail.push(`shape=${rep.shape}(弧残差 ${rep.arc_resid_pct}% vs 方槽 ${rep.box_resid_pct}%)（要的是连续弧）`);
+// ---- 射线命中全层（--hits x,z）：近乎共面的两层几何会互争像素（渲染成断续虚线/阶梯）----
+{
+  const hi = argv.indexOf('--hits');
+  if (hi > 0) {
+    const [hx, hz] = argv[hi + 1].split(',').map(Number);
+    const i = Math.floor((hx - X0) / B), j = Math.floor((hz - Z0) / B);
+    const arr = buckets.get(bkey(i, j)) || [];
+    const out = [];
+    for (const ti of arr) {
+      const a = V[F[ti * 3]], b = V[F[ti * 3 + 1]], c = V[F[ti * 3 + 2]];
+      const d = (b[2] - c[2]) * (a[0] - c[0]) + (c[0] - b[0]) * (a[2] - c[2]);
+      if (Math.abs(d) < 1e-12) continue;
+      const l1 = ((b[2] - c[2]) * (hx - c[0]) + (c[0] - b[0]) * (hz - c[2])) / d;
+      const l2 = ((c[2] - a[2]) * (hx - c[0]) + (a[0] - c[0]) * (hz - c[2])) / d;
+      const l3 = 1 - l1 - l2;
+      if (l1 < -1e-9 || l2 < -1e-9 || l3 < -1e-9) continue;
+      out.push([l1 * a[1] + l2 * b[1] + l3 * c[1], COL[ti] ?? COL[ti * 3] ?? '?', ti]);
+    }
+    out.sort((x, y) => y[0] - x[0]);
+    console.log(`\n—— 射线命中层 (x=${hx}, z=${hz})：共 ${out.length} 层 ——`);
+    for (const [y, col, ti] of out.slice(0, 16)) console.log(`   y=${y.toFixed(4).padStart(9)}mm  color=${col}  tri#${ti}`);
+  }
+}
+
+// ---- 局部高度场打印（--probe x,z）：step/kink 报警点到底是一道什么样的坡 ----
+{
+  const pi = argv.indexOf('--probe');
+  if (pi > 0) {
+    const [px, pz] = argv[pi + 1].split(',').map(Number);
+    const rad = +(arg('probe-rad', 3));
+    console.log(`\n—— 局部高度场 y(mm) @ x∈[${(px - rad).toFixed(1)},${(px + rad).toFixed(1)}] z∈[${(pz - rad).toFixed(1)},${(pz + rad).toFixed(1)}] ——`);
+    const i0 = Math.max(0, Math.round((px - rad - X0) / CELL)), i1 = Math.min(NX - 1, Math.round((px + rad - X0) / CELL));
+    const j0 = Math.max(0, Math.round((pz - rad - Z0) / CELL)), j1 = Math.min(NZ - 1, Math.round((pz + rad - Z0) / CELL));
+    for (let j = j1; j >= j0; j--) {
+      let line = `  z=${(Z0 + j * CELL).toFixed(2).padStart(7)} `;
+      for (let i = i0; i <= i1; i++) { const y = H[j * NX + i]; line += (Number.isFinite(y) ? y.toFixed(2) : ' -- ').padStart(6); }
+      console.log(line);
+    }
+    let head = '           x=';
+    for (let i = i0; i <= i1; i++) head += (X0 + i * CELL).toFixed(1).padStart(6);
+    console.log(head);
+  }
+}
+
 // ---- 剖面打印（--profile）：凹槽的「弧度」到底有没有，必须看真实剖面，而不是只看判据总分 ----
 if (argv.includes('--profile')) {
   let jz = 0, best = Infinity;
@@ -327,6 +435,6 @@ if (argv.includes('--profile')) {
 rep.verdict = fail.length ? 'FAIL' : 'PASS';
 rep.fail = fail;
 fs.writeFileSync(path.join(OUT, 'report.json'), JSON.stringify(rep, null, 1));
-console.log(`holes=${rep.holes} step_max=${rep.step_max}mm @${JSON.stringify(rep.step_at)} kink_max=${rep.kink_max} @${JSON.stringify(rep.kink_at)} kink_px=${rep.kink_px} depth=${rep.depth}mm plateau=${rep.plateau_pct}%/肩${rep.shoulder_deg}° @${JSON.stringify(rep.depth_at)} jag=${rep.jag}/mm (perim ${rep.perimeter_mm}mm)`);
+console.log(`holes=${rep.holes} step_max=${rep.step_max}mm @${JSON.stringify(rep.step_at)} kink_max=${rep.kink_max} @${JSON.stringify(rep.kink_at)} kink_px=${rep.kink_px} depth=${rep.depth}mm plateau=${rep.plateau_pct}%/肩${rep.shoulder_deg}° shape=${rep.shape}(弧${rep.arc_resid_pct}%/方${rep.box_resid_pct}%) @${JSON.stringify(rep.depth_at)} jag=${rep.jag}/mm (perim ${rep.perimeter_mm}mm)`);
 console.log(`${rep.verdict}${fail.length ? ' :: ' + fail.join(' | ') : ''}  → ${path.join(OUT, 'report.json')}`);
 process.exit(fail.length ? 1 : 0);

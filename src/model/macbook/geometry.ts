@@ -788,7 +788,10 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     // 试过 20mm：凹槽一直挖到触控板底下，而触控板 y=deckY+0.25 在位移窗口之上不动 →
     // 前缘悬空 1.6mm，渲染出一条黑缝（2026-09-11 实测）。
     // 「更细的拼装」不靠加长坡，靠加密行距（见 deck 板的 zBreaks 0.6mm）。
-    const SCOOP_W = 51.0, SCOOP_D = 2.7, SCOOP_RAMP = 8.0;
+    const SCOOP_W = 51.0, SCOOP_D = 1.5, SCOOP_RAMP = 8.0;   // D 由 2.7 减到 1.5（用户：「需要减少向下凹的深度」）
+    // RAMP=8（不是 9）：zStart = 110.6 − 8 = 102.6，必须落在触控板**暗缝环前缘 101.95mm 之外**。
+    // 暗缝环是独立扫掠件（y = deckY+0.12），不参与台面下沉；RAMP=9 时下沉正好从 101.6 起，
+    // 环的前缘被"露"在下沉的台面之上 → 渲染出 V 缺口 + 一排阶梯块（实测 2026-09-11 出图可见）。
     const zStart = B.d / 2 - SCOOP_RAMP;          // 再往后不再下沉
     // 只动唇口附近；下界保证底缘倒角/脚垫不受影响。上端做成**平台**（y ≥ deckY−1.2 一律同位移）：
     // 唇口外缘与台面前沿带两套网格在 z 上互相搭接 0.4mm，若位移量差一丝就会互相穿插 → 渲染出黑点。
@@ -801,10 +804,11 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       if (z <= zStart || y <= yLo || y >= yCap) continue;
       const t = Math.abs(p[i]) / (SCOOP_W / 2);
       if (t >= 1) continue;
-      // 端肩占外侧 24%（≈6mm）：参考图里凹槽两端是两道明确的"端墙"；
-      // 再窄（曾试 12%）会在台面前沿带（格距 ~6mm）折出黑色尖楔 —— 置换梯度超过一个格子宽就会自交。
-      const sh = clamp((1 - t) / 0.45, 0, 1);
-      const nx = sh * sh * (3 - 2 * sh);                                   // 沿 x：中段平、两端肩
+      // 沿 x：**真弧**（余弦拱）—— 两端 t=±1 处切向归零，中间没有平台。
+      // 旧值 (1-t)/0.45 截断后 smoothstep：|x|≤14mm 全是 1.0 的平台 → 实测 plateau 92%、
+      // 横向剖面在 -11..+14mm 恒 2.59mm，用户当即指出「它很明显弧度几乎没有」（2026-09-11）。
+      // 弧面处处有曲率，这才是「连续、精细」的几何前提；端墙式收口一律不用。
+      const nx = 0.5 * (1 + Math.cos(Math.PI * t));
       const az = clamp((z - zStart) / SCOOP_RAMP, 0, 1);
       const zx = az * az * (3 - 2 * az);                                   // 沿 z：向后平滑收口
       const wy = y >= yHi ? 1 : clamp((y - yLo) / (yHi - yLo), 0, 1);

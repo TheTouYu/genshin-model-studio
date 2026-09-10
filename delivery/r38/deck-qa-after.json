@@ -1,0 +1,84 @@
+{
+ "mesh": "web/draw/macbook-current.json",
+ "region": {
+  "X0": -134,
+  "X1": 134,
+  "Z0": 60,
+  "Z1": 110.3,
+  "cell": 0.25
+ },
+ "grid": {
+  "NX": 1073,
+  "NZ": 202
+ },
+ "y_range": [
+  9.954,
+  11.5
+ ],
+ "dev_range": [
+  0,
+  1.546
+ ],
+ "samples": {
+  "c100": null,
+  "plane100": 11.5
+ },
+ "deckPlane": {
+  "a": 0,
+  "b": 0,
+  "c": 11.5
+ },
+ "holes": 0,
+ "step_max": 0.1304,
+ "step_at": [
+  0,
+  105.5,
+  0.13
+ ],
+ "kink_max": 0.1265,
+ "kink_at": [
+  0,
+  109.25,
+  0.1265
+ ],
+ "kink_px": 0,
+ "depth": 1.546,
+ "depth_at": [
+  -0.75,
+  110.25
+ ],
+ "nang_max_deg": 3.63,
+ "nang_at": [
+  1.25,
+  109.75
+ ],
+ "nang_px5": 0,
+ "tilt_max_deg": 14.5,
+ "boundary_px": 340,
+ "perimeter_mm": 85,
+ "corners": 21,
+ "jag": 0.2471,
+ "plateau_pct": 22.9,
+ "shape": "arc",
+ "arc_resid_pct": 14.5,
+ "box_resid_pct": 38.1,
+ "shapeOK": true,
+ "shoulder_deg": 5.4,
+ "hole_samples": [],
+ "gates": {
+  "holes": 0,
+  "step_max": 0.05,
+  "kink_max": 0.35,
+  "kink_px": 40,
+  "depth_max": 1.8,
+  "depth_min": 0.5,
+  "jag": 0.4,
+  "nang_max": 12,
+  "nang_px": 400,
+  "plateau_pct": 45,
+  "step_slope": 0.6,
+  "arc_resid": 20
+ },
+ "verdict": "PASS",
+ "fail": []
+}
