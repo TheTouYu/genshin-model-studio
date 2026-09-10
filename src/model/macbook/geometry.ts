@@ -299,25 +299,35 @@ function portOpening(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz
     // stadium 下塌成 0.02mm 细条（用户截图里的"哑铃"）→ r31 四角弧画到**外侧象限**
     // （应朝矩形内部）→ 四角露出墙面亮方块 = 用户截图里的"撕裂角"。
     // 规则：圆弧一律取「从角心指向矩形内部」的象限 = z 向 cos θ、y 向 sin θ，θ∈[0°,90°]，四角同式。
+    // 端部 = **真正的圆角矩形端**：角弧必须同时与「端边 z=±hw」和「上下直边 y=±hh」相切，
+    // 故下角弧圆心 (zc, cy-hh+rr)、上角弧圆心 (zc, cy+hh-rr)，zc = ±(hw-rr)。
+    // 旧实现把两个角弧当成绕中心线的半圆（圆心 (zc,cy)、半径 rr）→ |y|∈[rr,hh] 的端部
+    // 小方块没被盖住（USB-C 落差 0.175mm）→ 用户截图里开口两端的"凸耳"；
+    // 端外露出的那圈墙面被逐行切碎 → 端点旁的"梳齿"。两者同一根因。
     const capFan = (dir: number): void => {
       const zc = cz + dir * ax;
+      const Ye = Math.max(0, hh - rr);                          // 端边半高（stadium 下 = 0）
       const pts: Array<[number, number]> = [[zc, cy - hh]];
       for (let i = 0; i <= cseg; i++) {                        // 下角弧 θ -90°→0°
         const th = (-90 + 90 * (i / cseg)) * Math.PI / 180;
-        pts.push([zc + dir * rr * Math.cos(th), (cy - ay) + rr * Math.sin(th)]);
+        pts.push([zc + dir * rr * Math.cos(th), (cy - hh + rr) + rr * Math.sin(th)]);
       }
-      pts.push([cz + dir * hw, cy + ay]);                      // 端边（圆角矩形才有长度，stadium 下退化）
+      if (Ye > 1e-4) pts.push([cz + dir * hw, cy + Ye]);        // 端边（圆角矩形才有长度，stadium 下退化）
       for (let i = 0; i <= cseg; i++) {                        // 上角弧 θ 0°→90°
         const th = (90 * (i / cseg)) * Math.PI / 180;
-        pts.push([zc + dir * rr * Math.cos(th), (cy + ay) + rr * Math.sin(th)]);
+        pts.push([zc + dir * rr * Math.cos(th), (cy + hh - rr) + rr * Math.sin(th)]);
       }
       pts.push([zc, cy + hh]);
       // 注意：capFan 的链点已是**绝对** (z,y)，必须走 V 而不能走 q（q 会再加一次 cz/cy 偏移，
       // 曾因此把端帽画到 2× 位置 → 开口两端只剩细"凸耳"、墙面出现梳齿三角）。
       const apex = V(PLATE, cy, zc);
       const vs = pts.map(([z, y]) => V(PLATE, y, z));
+      // 绕序必须**同时**看 side 和 dir：dir=+1 的链点在图平面里是逆时针、dir=-1 是顺时针，
+      // 只按 side 翻面会让其中一个端帽朝墙内 → 法线反 → 该端渲成暗块（用户截图的"凸耳"），
+      // 耳机口四个方向的端帽各错一半 → 开口周围一圈明暗交替的"梳齿"。两者同一根因。
+      const flip = (side > 0) !== (dir > 0);
       for (let i = 0; i < vs.length - 1; i++) {
-        if (side > 0) b.tri(apex, vs[i], vs[i + 1]); else b.tri(apex, vs[i + 1], vs[i]);
+        if (!flip) b.tri(apex, vs[i], vs[i + 1]); else b.tri(apex, vs[i + 1], vs[i]);
       }
     };
     capFan(1); capFan(-1);
@@ -457,6 +467,7 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     // 端口附近保留精确孔边，其余区域只剩剖面本身的 3 个带。
     // 区间要覆盖到**画框外沿**（开口 ± PORT_MARGIN）：否则边距带里的 v 断点不会被加进去，
     // 那些格子又高又粗、格心落在挖空区内被整块丢掉 → 孔四周留下一圈黑缝（实测的「黑条」）。
+    const PORT_WALL_CUT = false;   // 见下：v4 不挖孔，端口断点仅为历史残留
     const portU = allPorts.map((p) => {
       const a = zToU(p.z - p.w / 2 - PORT_MARGIN, p.side), c = zToU(p.z + p.w / 2 + PORT_MARGIN, p.side);
       return { lo: Math.min(a, c), hi: Math.max(a, c), p };
@@ -464,12 +475,18 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     for (let i = 0; i < uB.length - 1; i++) {
       const u0 = uB[i], u1 = uB[i + 1], um = (u0 + u1) / 2;
       const vs = [...profV];
-      for (const q of portU) {
-        if (um < q.lo - 1e-4 || um > q.hi + 1e-4) continue;
-        const hh = q.p.h / 2, cy = S.ports.centerY;
-        vs.push(vForY(prof, cy - hh), vForY(prof, cy + hh));
-        for (const f of portFracs(q.p.kind, q.p.w, q.p.h)) vs.push(vForY(prof, cy - hh * 2 * f), vForY(prof, cy + hh * 2 * f));
-        vs.push(vForY(prof, cy - hh - PORT_MARGIN), vForY(prof, cy + hh + PORT_MARGIN));
+      // 端口不再在墙体上挖孔（v4：开口 = 贴在墙面上的薄件 portOpening），
+      // 于是这段"为挖孔而插的 v 断点"成了纯残留：它在孔位处切出一圈细长墙带，
+      // 掠射/侧光下逐行读作开口两端的"凸耳"与耳机口上下的"梳齿"（用户 2026-09-11 截图）。
+      // 只有 PORT_WALL_CUT = true（回到挖孔方案）时才需要。
+      if (PORT_WALL_CUT) {
+        for (const q of portU) {
+          if (um < q.lo - 1e-4 || um > q.hi + 1e-4) continue;
+          const hh = q.p.h / 2, cy = S.ports.centerY;
+          vs.push(vForY(prof, cy - hh), vForY(prof, cy + hh));
+          for (const f of portFracs(q.p.kind, q.p.w, q.p.h)) vs.push(vForY(prof, cy - hh * 2 * f), vForY(prof, cy + hh * 2 * f));
+          vs.push(vForY(prof, cy - hh - PORT_MARGIN), vForY(prof, cy + hh + PORT_MARGIN));
+        }
       }
       vs.sort((a, c) => a - c);
       patch(b, surf, [u0, u1], snapByY(vs, 0.02));

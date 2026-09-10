@@ -706,7 +706,7 @@
     // 上盖局部坐标已按 R(-angle0) 反解，所以「渲染成网格姿态」= rotation.x 取 -lidAngle0。
     // 旧版少了这一步，任何 angle0≠0 的网格静态出图都会静默合盖（2026-09-10 修）。
     var lidDeg = 0, lidAnimId = 0
-    var BUILD = 'r30'              // HUD 里显示：用于识别浏览器缓存的旧页面（本轮踩过）
+    var BUILD = 'r32'              // HUD 里显示：用于识别浏览器缓存的旧页面（本轮踩过）
     var SCREEN_BASE = 1.40          // 屏幕自发光标定值（对贴图实测均值 222）
     function lidScreen(deg) {
       // 合盖息屏：0° 全灭、≥12° 全亮（真机合盖屏幕不发光；旧版合盖后光会从盖缝漏出来）
