@@ -506,7 +506,11 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       { cx: 0, cz: hslot.cz, w: hslot.w, d: hslot.d, r: hslot.r },
     ];
     b.material(M.ALU);
-    plateWithHoles(b, outline, holes, deckY, { maxCell: mc(1.5) });  // 1.5mm：凹槽肩部在台面前沿带上的采样密度
+    // 前缘带 z 断点加密到 0.6mm：凹槽坡面（前缘 26mm 内）需要足够行数，否则 1.5mm 格距在坡上
+    // 只有 4–6 环 → 反射面读出多边形台阶（用户 2026-09-11「可以考虑使用更细的拼装」）
+    const scoopZBreaks: number[] = [];
+    for (let z = B.d / 2 - 26; z < B.d / 2; z += 0.6) scoopZBreaks.push(z);
+    plateWithHoles(b, outline, holes, deckY, { maxCell: mc(1.5), zBreaks: scoopZBreaks });
     // 转轴槽：台面后缘挖一条凹槽（槽底 + 槽壁），转轴筒藏在槽里 —— 真机开盖时看到的就是这条槽。
     b.material(M.HINGE);
     plateFill(b, { cx: 0, cz: hslot.cz, w: hslot.w, d: hslot.d, r: hslot.r }, deckY - hslot.depth, { nu: sc(64, 10), nt: 2, cornerSegs: sc(6, 4), vertexSampling: true });
@@ -777,7 +781,14 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
   // 置换对象：**底座前缘唇口 + 台面前沿带**（y 近台面、z 近前缘、|x| 在槽宽内）。
   // 上界 y ≤ deckY+0.02 是为了不碰合盖时的上盖底面（closedY=11.58，离上界 0.06mm）。
   {
-    const SCOOP_W = 51.0, SCOOP_D = 3.0, SCOOP_RAMP = 9.0;
+    // 用户 2026-09-11 放大复核：①「弧度太大」②「质感与旁边差别太大、很突兀」③「更细的拼装」。
+    // 对策：坡长 9→20mm（坡度 2.6mm/6mm ≈ 23° → 2.7mm/20mm ≈ 7.7°，与周围台面的明暗差收敛）、
+    // 深度 3.0→2.7mm（仍在前视标定 2.5–2.8mm 内），台面前缘带行距另加密（见 deck 板处）。
+    // ⚠ 坡长上限 = 触控板前缘到机身前面板的净距：触控板前缘 z=101.6，机身前缘 110.6 → 最多 9mm。
+    // 试过 20mm：凹槽一直挖到触控板底下，而触控板 y=deckY+0.25 在位移窗口之上不动 →
+    // 前缘悬空 1.6mm，渲染出一条黑缝（2026-09-11 实测）。
+    // 「更细的拼装」不靠加长坡，靠加密行距（见 deck 板的 zBreaks 0.6mm）。
+    const SCOOP_W = 51.0, SCOOP_D = 2.7, SCOOP_RAMP = 8.0;
     const zStart = B.d / 2 - SCOOP_RAMP;          // 再往后不再下沉
     // 只动唇口附近；下界保证底缘倒角/脚垫不受影响。上端做成**平台**（y ≥ deckY−1.2 一律同位移）：
     // 唇口外缘与台面前沿带两套网格在 z 上互相搭接 0.4mm，若位移量差一丝就会互相穿插 → 渲染出黑点。
