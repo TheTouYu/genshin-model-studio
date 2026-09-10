@@ -597,15 +597,11 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     // 缝底：比台面**低 0.15mm** 的哑光带（M.TPSEAM），铺满孔与玻璃之间的整圈空隙。
     // 为什么必须下沉：缝里若露出**台面铝**，掠射角下金属菲涅尔反射率≈100% → 一圈白线
     // （用户 r41「多个角度看，都发现有明显的白线」）。真机的缝是凹槽，凹槽里看到的是**暗的槽壁/槽底**。
-    {
-      const collarPath = roundedRectPath(tp.w + 0.9, tp.d + 0.9, tp.r + 0.45, sc(48, 10), sc(160, 24));
-      // r42：槽底与台面**完全共面**（原 deckY-0.15 的台阶在掠射角下沿孔边挂出一条亮带；
-      // 真机参考图 键盘和触控板.png 实测缝只有约 25 级的柔和暗线，没有台阶高光）→ 靠材质读成发丝暗线
-      const collar0 = sweepSurface(collarPath, [{ o: 0, y: deckY }, { o: 1.2, y: deckY }]);
-      const collar = (u: number, v: number): Vec3 => { const p = collar0(u, v); return v3(p.x, p.y, p.z + cz); };
-      b.material(M.TPSEAM);
-      patch(b, collar, lin(0, 1, sc(720, 48)), [0, 1]);
-    }
+    // R52：这段「领圈」是 r40→r41 改走「缝由台面板的孔提供」之后的**残留**：
+    // 它在 y=deckY 上又铺了一圈 1.2mm 宽、与台面板**完全共面且重叠**的哑光带
+    // （台面板在同一位置已经挖了孔）。共面的两层在掠射角必然互相抢像素（z-fight 类），
+    // 是唇口带 417 个共面面的来源。孔 + 玻璃边之间 0.25mm 的空隙本身就构成缝，无需再铺面。
+    void cz;
     b.material(M.TRACKPAD);
     plateFill(b, { cx: 0, cz, w: tp.w, d: tp.d, r: tp.r }, deckY + 0.02, { nu: sc(48, 8), nt: 2, cornerSegs: sc(12, 6), vertexSampling: true });
   }
