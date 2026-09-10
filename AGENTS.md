@@ -54,6 +54,21 @@
    轴端与侧壁齐平（Ø4mm 外露）、盖板高出台面（0.6mm）、上盖后缘穿入机身（6.60mm）、键位语义错误（空格键 x=+0.0950）。
    复盘权威文档：`docs/game-engine-knowledge/retrospective-2026-09-09-laptop-macbook-design-fidelity.md`。
 
+11. **视觉 bug 定位纪律（2026-09-11 前唇白线复盘固化，全任务耗时最长的 bug：19 提交/32 轮/3.6 小时）**：
+    ① **归属优先于消融**——任何亮点/亮线/暗带，先回答「这段像素属于哪个面/哪张网格/哪个材质」
+    （`scripts/max/ray-pick.mjs` 命中分类 + 色标 mesh + `tri-at.mjs` 竖直柱堆栈），**再**做消融；
+    跳过归属的消融 5 次里 5 次打在错误对象上（实测：把前唇当触控板缝）。
+    ② **空实验门**——每个实验必须自带「实验确实发生了」的证据：补丁替换计数 ≥1（python `str.replace`
+    锚点不匹配会**静默 0 替换**；`cp && python` 会因 cp 失败短路吞掉整段）、改 `src/**` 后 `npm run build`
+    并 `grep dist`（`scripts/max/page-mesh.mjs` **import 的是 `dist/`**）、网格 verts/tris 或渲染 md5 必须变化；
+    读数不变时先证伪「实验没发生」，再解释成「假设不成立」。
+    ③ **补丁按不变量判定，不按「被谁碰过」**——批量改法线/材质/可见性时判据只能写「这个面是什么」
+    （面族、原始法线方向、材质、共享边），写 `moved[v]`（被某操作移动过）必然误伤窗口内异向面：
+    实测修好凹槽黑带却把整段竖直前壁按台面着色 → 同一块面一亮一暗。
+    ④ 指标与验收目标必须来自**参考物**（官方图/用户图同部位实测）+ **固定机位/ROI**；自写阈值
+    （如「≤80 级跳变」「消灭白线」）在真机上可能本来就成立（真机底座顶沿本就是 1px 硬亮线）。
+    复盘权威文档：`docs/game-engine-knowledge/retrospective-2026-09-11-front-lip-white-line.md`。
+
 ## 常用命令
 - 构建/测试：`npm run build --silent`、`npm test`。
 - 面板化导出：`node dist/src/cli/export-mesh.js <mesh.json> --out-dir <dir> --format gia --force`
