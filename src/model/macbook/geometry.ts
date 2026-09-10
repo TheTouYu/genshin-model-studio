@@ -349,7 +349,7 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
   // ============ 1. 机身主体 ============
   {
     const path = roundedRectPath(B.w, B.d, B.r, hq(48, 6));
-    const prof = bodyProfile(B.bottomY, deckY, B.fillet, hq(8, 1));
+    const prof = bodyProfile(B.bottomY, deckY, S.base.filletTop ?? B.fillet, hq(8, 1), B.fillet);
     const surf0 = sweepSurface(path, prof);
     // 前缘开盖凹槽（宽 50mm、深 1.5mm，前壁中部）
     const GROOVE_W = 70.0, GROOVE_D = 0.55;
@@ -628,11 +628,11 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
   {
     const wallL = -B.w / 2 + 0.05, wallR = B.w / 2 - 0.05;
     for (const p of S.ports.left) {
-      portBezel(b, -1, wallL, S.ports.centerY, p.z, p.w, p.h, p.kind, hq(16, 6), B.bottomY + B.fillet, deckY - B.fillet);
+      portBezel(b, -1, wallL, S.ports.centerY, p.z, p.w, p.h, p.kind, hq(16, 6), B.bottomY + B.fillet, deckY - (S.base.filletTop ?? B.fillet));
       portCavity(b, -1, wallL, S.ports.centerY, p.z, p.w, p.h, 9.0, p.kind, sc(16, 6), hq(10, 4));
     }
     for (const p of S.ports.right) {
-      portBezel(b, 1, wallR, S.ports.centerY, p.z, p.w, p.h, p.kind, hq(16, 6), B.bottomY + B.fillet, deckY - B.fillet);
+      portBezel(b, 1, wallR, S.ports.centerY, p.z, p.w, p.h, p.kind, hq(16, 6), B.bottomY + B.fillet, deckY - (S.base.filletTop ?? B.fillet));
       portCavity(b, 1, wallR, S.ports.centerY, p.z, p.w, p.h, 9.0, p.kind, sc(16, 6), hq(10, 4));
     }
   }
