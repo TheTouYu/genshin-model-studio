@@ -265,8 +265,8 @@
         // r39：roughness 0.10 → 0.22。0.10 是镜面级 → 斜视角整块反射暗环境读作"纯黑板"，
         // 主光在板中央成硬边过曝白斑（用户第 2/3 条）。真机玻璃是**有光泽的磨砂**，高光是宽渐变。
         return new THREE.MeshPhysicalMaterial({
-          color: new THREE.Color(0xe6e6e8), metalness: 0.0, roughness: 0.22, side: THREE.DoubleSide,
-          envMapIntensity: 1.0, clearcoat: 0.35, clearcoatRoughness: 0.18,
+          color: new THREE.Color(0xdcdcde), metalness: 0.0, roughness: 0.22, side: THREE.DoubleSide,
+          envMapIntensity: 0.88, clearcoat: 0.35, clearcoatRoughness: 0.18,
         })
       }
       // 触控板细缝（M.TPSEAM，哑光深灰 0x424344）：真机是一圈发丝暗线，不能镜面反射环境。
