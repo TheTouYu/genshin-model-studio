@@ -7,8 +7,15 @@ PORT=9222
 # --force：CDP 端口活着但 **WebGL 上下文创建失败**（GPU 进程卡死，表现为页面
 # "boot failed: Error creating WebGL context"）时用。杀 Windows 侧 msedge 再拉起。
 if [ "${1:-}" = "--force" ]; then
-  echo "force restart: killing msedge"
-  taskkill.exe /F /IM msedge.exe >/dev/null 2>&1 || true
+  # 只关 CDP 实例（Browser.close）——**不杀用户自己的 Edge 窗口**。
+  # 只有 --force-all 才退回到 taskkill（会连用户窗口一起杀）。
+  echo "force restart: closing CDP instance (Browser.close)"
+  node "$(dirname "$0")/edge-close.mjs" "${PORT}" >/dev/null 2>&1 || true
+  sleep 4
+fi
+if [ "${1:-}" = "--force-all" ]; then
+  echo "force-all: killing every msedge"
+  /mnt/c/Windows/System32/taskkill.exe /F /IM msedge.exe >/dev/null 2>&1 || true
   sleep 4
 fi
 if curl -s -m 4 "http://127.0.0.1:${PORT}/json/version" | grep -q webSocketDebuggerUrl; then
