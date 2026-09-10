@@ -838,7 +838,9 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       // 唇口外缘的圆角面与它在 z 上互相搭接、相切于同一点，凹槽区两者采样密度不同（2.3mm vs 3mm）
       // → 插值后互相穿插，渲染成肩部的黑斑（实测 2026-09-11；与焊接无关，--no-weld 同样出现）。
       const flatTop = Math.abs(raw.nrm[i + 1]) > 0.999 && Math.abs(y - deckY) < 0.01;
-      p[i + 1] = y - SCOOP_D * nx * zx * w2 - (flatTop ? 0.06 * nx * zx : 0);
+      // R53：附加下沉 0.06 原先只加在 flatTop 顶点上，而解析法线的梯度用的是 (SCOOP_D + 0.06)
+      //（假设处处都有）→ 位移场与自己的梯度不自洽，边界处留下一道 0.06mm 台阶 = 沿凹槽轮廓的亮线。
+      p[i + 1] = y - SCOOP_D * nx * zx * w2 - 0.06 * nx * zx;   // 0.06 对所有位移顶点一致（原只加在 flatTop 上）
       if (flatTop) flat[i / 3] = raw.nrm[i + 1] < 0 ? 2 : 1;   // 保留原法线符号：台面板是反绕序的
       moved[i / 3] = 1; nMoved++;
     }
