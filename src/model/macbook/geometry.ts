@@ -148,7 +148,7 @@ function keycap(
   const ksc = (n: number, min = 1): number => Math.max(min, Math.round(n * lod));
   // 键帽顶面圆角分段：ksc(4,1) 在 lod=1 只有 4 段/角 → 90°/4 = 22.5° 折角，880px 验收图上
   // 键帽读作「八边形/方体」（裁判 v5/v7 多次点名）。12 段/角 → 7.5°、弦长 0.39mm，肉眼看是圆角。
-  const path = roundedRectPath(w, d, rr, ksc(12, 4));
+  const path = roundedRectPath(w, d, rr, ksc(16, 4));
   const prof = bodyProfile(-hh, hh, rb, 1);
   const surf = sweepSurface(path, prof);
   b.material(o.matSide);
@@ -169,9 +169,13 @@ function keycap(
   // nt 随键帽进深走：半高方向键（d≈7.8mm）在 nt=1 时每格 0.67×7.8mm 极度狭长，
   // deform 使格子强烈非平面 → 拆分后出现退化三角 → 顶面缺口（实测方向键顶边 V 形缺口）
   const ntK = Math.max(1, Math.round(d / 5));
-  plateFill(b, q, topY, { nu: ksc(26, 4), nt: ntK, deform, uv: uvFn, cornerSegs: ksc(4, 1) });
+  // 顶/底面必须**用侧壁同一条路径的顶点**（vertexSampling）且同等角分段：
+  // 旧值 cornerSegs = ksc(4,1) = 4 段/角、nu 按均匀弧长取 26 点 → 圆角弧上只落到 2~3 点，
+  // 顶面边界是 22.5° 折线、比侧壁路径小一圈 → 圆角处侧壁内表面外露，渲染成**角上的暗三角/亮切面**
+  // （用户 2026-09-11 三张截图：键帽四角"不够圆滑"）。两者同源，一处修好。
+  plateFill(b, q, topY, { nu: ksc(26, 4), nt: ntK, deform, uv: uvFn, cornerSegs: ksc(16, 4), vertexSampling: true });
   b.material(o.matSide);
-  plateFill(b, q, topY - h, { nu: ksc(26, 4), nt: 1, flip: true, cornerSegs: ksc(4, 1) });
+  plateFill(b, q, topY - h, { nu: ksc(26, 4), nt: 1, flip: true, cornerSegs: ksc(16, 4), vertexSampling: true });
 }
 
 /** 端口开孔的采样分数（0..0.5 半宽比例）：端帽弧上密、直段上疏。

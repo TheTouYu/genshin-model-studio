@@ -291,6 +291,17 @@ def main():
             stat['fn'] += 1
             continue
 
+        if name in ('control', 'option', 'command') and FONT is not None:
+            # 图集（reference/macbook/legend-atlas.png）里这三个词的**墨迹本身被裁**：渲染成
+            # "contro"/"comman"（用户 2026-09-11 截图点名）。改为字体重绘，尺寸按其余文字键标定：
+            # 图集实测 ~1.60mm/字母（return 9.53/6、delete 9.74/6、shift 7.41/5、tab 4.87/3），词高 2.4mm。
+            tmp = Image.new('L', (1600, 400), 0)
+            ImageDraw.Draw(tmp).text((12, 12), name, font=FONT, fill=255)
+            em = bbox(np.asarray(tmp) > 110)
+            if em is not None and em.any():
+                paste(sheet, em, sx, sy, 1.60 * len(name) * PPM, 2.4 * PPM)
+                stat['keys'] += 1
+                continue
         m = clean_inplace(sub)
         if not m.any():
             stat['empty'] += 1

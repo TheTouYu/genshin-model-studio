@@ -298,7 +298,7 @@
     var meshReady = false
     var screenTex = null
     var texLoader = new THREE.TextureLoader()
-    texLoader.load('./screen-ui.png', function (t) {
+    texLoader.load('./screen-ui.png?t=' + BUILD, function (t) {
       t.colorSpace = THREE.SRGBColorSpace
       t.anisotropy = 8
       screenTex = t
@@ -382,7 +382,7 @@
           setN(gTop)
           var matTop = makeMat(0x1d1d1f)
           var tl = new THREE.TextureLoader()
-          tl.load('./kb-legends.png', function (tx) {
+          tl.load('./kb-legends.png?t=' + BUILD, function (tx) {
             tx.colorSpace = THREE.SRGBColorSpace
             tx.anisotropy = 8
             matTop.map = tx
