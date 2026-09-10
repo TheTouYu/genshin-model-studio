@@ -64,7 +64,8 @@ function baseMaterials(assets: Assets, color: 'silver' | 'spaceblack' = 'silver'
   mats[M.PORT_METAL] = makeMaterial({ name: 'port-metal', baseColor: [0.62, 0.62, 0.635], metallic: 1, roughness: 0.30 });
   // USB-C 内舌 = 深灰塑料/PCB（真机舌片是深色，触点才是金色）——旧版用 port-metal 亮银，
   // 渲染出来像"填满开口的亮条"（用户 2026-09-10：接口有点粗糙）。
-  mats[M.PORT_TONGUE] = makeMaterial({ name: 'port-tongue', baseColor: [0.035, 0.035, 0.038], metallic: 0.15, roughness: 0.55 });
+  // 内舌做成**纯漫反射深色**：旧值带 0.15 金属度，掠射角会反成一道亮条（用户圈的「接口异常」之一）。
+  mats[M.PORT_TONGUE] = makeMaterial({ name: 'port-tongue', baseColor: [0.018, 0.018, 0.020], metallic: 0.0, roughness: 0.92 });
   // MagSafe 弹性触点 = 镀金（真机 5 个金色触点）
   mats[M.GOLD] = makeMaterial({ name: 'port-gold', baseColor: [0.58, 0.58, 0.585], metallic: 1, roughness: 0.34 });
   mats[M.DEBUG] = makeMaterial({ name: 'debug', baseColor: [1.0, 0.05, 0.05], metallic: 0, roughness: 0.5 });
@@ -281,27 +282,28 @@ function portOpening(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz
   const PLATE = 0.05, DETAIL = 0.09;
   const V = (dx: number, y: number, z: number): number => b.vertex(v3(wallX + side * dx, y, z), v3(side, 0, 0), 0, 0);
   b.material(M.PORT_DARK);
-  // 底板用**沿 z 的条带**三角化（不要从中心扇形）：长条形开口的扇形三角化会产生
-  // 又长又细的退化三角形，侧视下出现贯穿开口的斜向色带（实测到的"梯形"）。
+  // 底板 = 中央矩形 + 四角三角扇（不要中心扇形：长条开口会产生细长退化三角形；
+  // 也不要沿 z 的条带：半圆端按均匀 z 采样覆盖不满，端点会露出墙面的亮色"梳齿"）。
   {
-    const ax = Math.max(0, hw - rr);
-    const yAt = (z: number): number => {
-      const az = Math.abs(z);
-      if (az <= ax) return hh;
-      const d = Math.min(rr, az - ax);
-      return Math.min(hh, (hh - rr) + Math.sqrt(Math.max(0, rr * rr - d * d)));
-    };
-    const N = Math.max(8, cseg * 2);
-    let prev: { t: number; b: number } | null = null;
-    for (let i = 0; i <= N; i++) {
-      const z = -hw + (2 * hw * i) / N;
-      const yt = yAt(z);
-      const cur = { t: V(PLATE, cy + yt, cz + z), b: V(PLATE, cy - yt, cz + z) };
-      if (prev) {
-        if (side > 0) { b.quad(prev.t, prev.b, cur.b, cur.t); }
-        else { b.quad(prev.t, cur.t, cur.b, prev.b); }
+    const ax = Math.max(0, hw - rr), ay = Math.max(0, hh - rr);
+    const q = (z: number, y: number): number => V(PLATE, cy + y * 0 + y, cz + z);
+    // 中央矩形（两三角）
+    const r1 = q(-ax, -ay), r2 = q(ax, -ay), r3 = q(ax, ay), r4 = q(-ax, ay);
+    if (side > 0) { b.tri(r1, r2, r3); b.tri(r1, r3, r4); } else { b.tri(r1, r3, r2); b.tri(r1, r4, r3); }
+    // 四角扇：扇心 = 角点(±ax, ±ay)，半径 rr
+    for (const sx of [1, -1]) {
+      for (const sy of [1, -1]) {
+        const cz0 = sx * ax, cy0 = sy * ay;
+        const cId = V(PLATE, cy + cy0, cz + cz0);
+        const ids: number[] = [];
+        for (let i = 0; i <= cseg; i++) {
+          const a = (Math.PI / 2) * (i / cseg);
+          ids.push(V(PLATE, cy + cy0 + sy * rr * Math.cos(a), cz + cz0 + sx * rr * Math.sin(a)));
+        }
+        for (let i = 0; i < cseg; i++) {
+          if (side > 0) b.tri(cId, ids[i], ids[i + 1]); else b.tri(cId, ids[i + 1], ids[i]);
+        }
       }
-      prev = cur;
     }
   }
   if ((kind as string) === 'magsafe') {
