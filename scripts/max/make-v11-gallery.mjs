@@ -31,8 +31,6 @@ const qa = [
   ['qa/closedtop-vs-official.png', 'delivery/macbook-v11/compare-v11.png', '协议图 ←→ 配对参考并排', '上=我方 下/右=参考'],
   ['qa/kb-clean.png', '.scratch/r12/w-kb34.png', '键盘 3/4（白线修复后）', '井口/栅格之间 0.15mm 缝已消（台面开孔内缩 0.4mm + 栅格内边与井口重叠 0.4mm）'],
   ['qa/front-seam.png', '.scratch/r12/z-frontseam.png', '合盖前缝', '前缘凹槽改内凹后，底座不再外凸，合盖是一条细缝'],
-  ['qa/ports-tele.png', 'delivery/macbook-v11/compare-ports-tele.png', '左/右壁 ←→ 官方侧视图并排', '上=我方 下=官方（official-mbp14-ports-1/2.jpg）'],
-  ['qa/cmp-all.png', 'delivery/macbook-v11/compare-v10.png', '协议 4 张 ←→ 配对参考并排', '左=我方 右=参考'],
 ].map(([f, s, t, c]) => {
   fs.mkdirSync(path.join(OUT, path.dirname(f)), { recursive: true })
   return { file: f, title: t, sub: c, ok: copy(path.join(R, s), path.join(OUT, f)) }
