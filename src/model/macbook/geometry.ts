@@ -66,7 +66,7 @@ function baseMaterials(assets: Assets, color: 'silver' | 'spaceblack' = 'silver'
   // 渲染出来像"填满开口的亮条"（用户 2026-09-10：接口有点粗糙）。
   mats[M.PORT_TONGUE] = makeMaterial({ name: 'port-tongue', baseColor: [0.035, 0.035, 0.038], metallic: 0.15, roughness: 0.55 });
   // MagSafe 弹性触点 = 镀金（真机 5 个金色触点）
-  mats[M.GOLD] = makeMaterial({ name: 'port-gold', baseColor: [0.72, 0.55, 0.24], metallic: 1, roughness: 0.22 });
+  mats[M.GOLD] = makeMaterial({ name: 'port-gold', baseColor: [0.58, 0.58, 0.585], metallic: 1, roughness: 0.34 });
   mats[M.DEBUG] = makeMaterial({ name: 'debug', baseColor: [1.0, 0.05, 0.05], metallic: 0, roughness: 0.5 });
   mats[M.RUBBER] = makeMaterial({ name: 'foot', baseColor: [0.028, 0.028, 0.029], metallic: 0, roughness: 0.62 });
   mats[M.GRILLE] = makeMaterial({ name: 'grille', baseColor: [0.020, 0.020, 0.021], metallic: 0.25, roughness: 0.90, baseTex: assets.grilleTex });
@@ -228,12 +228,52 @@ function portCorners(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz
   }
 }
 
+/**
+ * portFrame —— 接口开口的「画框」。
+ * 外墙在开口**外接矩形**（开口 ± margin）内被 mask 整块挖掉，本函数用一圈 quad 把
+ * 「外接矩形」与「圆角矩形开口」之间补上：开口边界完全由几何决定（cseg 段/角），
+ * 不再受 mask 格心采样影响 → 不再出现阶梯/锯齿（用户 2026-09-10「接口有点粗糙」的根因）。
+ * 端口都在机身平直侧壁上（该高度区间 profile 偏移 = 0），所以 x 直接取墙面平面。
+ */
+const PORT_MARGIN = 0.55; // 画框宽度（mm）
+function portFrame(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz: number, w: number, h: number, kind: string, cseg: number, margin: number): void {
+  const hw = w / 2, hh = h / 2;
+  const rr = Math.min((kind as string) === 'usbc' || (kind as string) === 'magsafe' ? hh - 0.01 : 0.9, hh - 0.01, hw - 0.01);
+  const pts: [number, number][] = [];
+  if ((kind as string) === 'jack') {
+    const n = Math.max(24, cseg * 4);
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2;
+      pts.push([Math.cos(a) * hw, Math.sin(a) * hh]);
+    }
+  } else {
+    for (const p of roundedRectPath(w, h, rr, cseg)) pts.push([p.x, p.z]);
+  }
+  // 画框外沿**多盖 0.35mm**：墙面格子是按格心挖的，画框外沿若正好贴在挖空边界上，
+  // 两者顶点不重合 → T 型接缝漏光（侧视里读成一排黑点）。多盖一点让画框压住墙面，
+  // 接缝后面是墙面而不是机内空腔 → 不可见。
+  const OV = 1.20;
+  const hwO = hw + margin + OV, hhO = hh + margin + OV;
+  // 画框比墙面**凸出 0.004mm**：墙面格子按「格心」挖孔，跨边界的格子会被保留并压在画框上
+  // → 共面 z-fighting（侧视里读成一排虚线斑点）。0.004mm 在验收尺度 = 0.03px，肉眼不可见。
+  const V = (dz: number, dy: number): number => b.vertex(v3(wallX + side * 0.004, cy + dy, cz + dz), v3(side, 0, 0), 0, 0);
+  b.material(M.ALU);
+  const n = pts.length;
+  for (let i = 0; i < n; i++) {
+    const [z0, y0] = pts[i], [z1, y1] = pts[(i + 1) % n];
+    const t0 = Math.max(Math.abs(z0) / hwO, Math.abs(y0) / hhO, 1e-9);
+    const t1 = Math.max(Math.abs(z1) / hwO, Math.abs(y1) / hhO, 1e-9);
+    const a0 = V(z0, y0), a1 = V(z1, y1), b1 = V(z1 / t1, y1 / t1), b0 = V(z0 / t0, y0 / t0);
+    if (side > 0) b.quad(a0, a1, b1, b0); else b.quad(a0, b0, b1, a1);
+  }
+}
+
 function portCavity(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz: number, w: number, h: number, depth: number, kind: string, jseg = 16, cseg = 8): void {
   const x0 = wallX, x1 = wallX - side * depth;
   const V = (x: number, y: number, z: number, nx: number, ny: number, nz: number): number => b.vertex(v3(x, y, z), v3(nx, ny, nz), 0, 0);
   // 开口是**圆角矩形**（真机 USB-C 开口 8.34×2.56 近 stadium，r≈1.15；MagSafe r≈1.4；HDMI/SDXC r≈0.9）。
   // 旧版是直角盒 → 开口四角是尖角，特写下像 CAD 挖的方槽（用户 2026-09-10「接口有点粗糙」）。
-  const rr = Math.min(kind === 'usbc' ? 1.15 : kind === 'magsafe' ? 1.15 : 0.9, h / 2 - 0.01, w / 2 - 0.01);
+  const rr = Math.min(kind === 'usbc' || kind === 'magsafe' ? h / 2 - 0.01 : 0.9, h / 2 - 0.01, w / 2 - 0.01);
   const prof = roundedRectPath(w, h, rr, cseg); // path.x → z、path.z → y
   b.material(M.PORT_DARK);
   const ring0: number[] = [], ring1: number[] = [];
@@ -398,6 +438,8 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       for (const f of portFracs(p.kind, p.w, p.h)) {
         uBreaks.push(zToU(p.z - hw * 2 * f, p.side), zToU(p.z + hw * 2 * f, p.side));
       }
+      // 画框外沿（外接矩形）必须落在格线上
+      uBreaks.push(zToU(p.z - hw - PORT_MARGIN, p.side), zToU(p.z + hw + PORT_MARGIN, p.side));
     }
     uBreaks.sort((a, c) => a - c);
     const snapB = (list: number[], gap: number): number[] => {
@@ -417,7 +459,10 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       for (const v of list) if (!out.length || Math.abs(yOfV(v) - yOfV(out[out.length - 1])) > minMm) out.push(v);
       return out;
     };
-    const uB = snapB(uBreaks, 0.02 / 312.6);
+    // snapB 的 gap 是「去重阈值」：旧值 0.02/312.6 = 6.4e-5 u ≈ 0.066mm，比我给圆角弧补的
+    // 0.06mm 断点还大 → 细化断点被整批丢掉，孔角又变回锯齿。实测周长 ~1040mm，
+    // 0.005/312.6 = 1.6e-5 u ≈ 0.017mm：既留住 0.06mm 细化，又不产生退化格。
+    const uB = snapB(uBreaks, 0.005 / 312.6);
     const mask = (u: number, v: number): boolean => {
       const p = surf(u, v);
       if (Math.abs(p.x) < B.w / 2 - 1.4) return false;
@@ -427,7 +472,9 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
         // 开孔 = 开口**外接矩形**（u 断点精确落在 ±w/2、v 断点落在 ±h/2 → 孔边是直线，
         // 不再是网格台阶）。圆角/圆由 portCorners 的四块弧扇补出，外边界与这里完全重合。
         const hw2 = q.w / 2, hh2 = q.kind === 'jack' ? q.w / 2 : q.h / 2;
-        if (Math.abs(p.z - q.z) < hw2 && Math.abs(p.y - S.ports.centerY) < hh2) return true;
+        const dz = Math.abs(p.z - q.z), dy = Math.abs(p.y - S.ports.centerY);
+        if (dz > hw2 + PORT_MARGIN || dy > hh2 + PORT_MARGIN) continue;
+        return true; // 外接矩形整块挖掉；开口的真实形状（圆角矩形/圆）由 portFrame 精确补出
       }
       return false;
     };
@@ -435,8 +482,10 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     // 分段 patch：单个张量网格里，任一端口的高度断点会污染整圈（96 段 × 0.3–1.1mm 窄带
     // 全是细针）。按 u 区间逐段发射，每段只带「与自己重叠的端口」的 v 断点——
     // 端口附近保留精确孔边，其余区域只剩剖面本身的 3 个带。
+    // 区间要覆盖到**画框外沿**（开口 ± PORT_MARGIN）：否则边距带里的 v 断点不会被加进去，
+    // 那些格子又高又粗、格心落在挖空区内被整块丢掉 → 孔四周留下一圈黑缝（实测的「黑条」）。
     const portU = allPorts.map((p) => {
-      const a = zToU(p.z - p.w / 2, p.side), c = zToU(p.z + p.w / 2, p.side);
+      const a = zToU(p.z - p.w / 2 - PORT_MARGIN, p.side), c = zToU(p.z + p.w / 2 + PORT_MARGIN, p.side);
       return { lo: Math.min(a, c), hi: Math.max(a, c), p };
     });
     for (let i = 0; i < uB.length - 1; i++) {
@@ -447,6 +496,7 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
         const hh = q.p.h / 2, cy = S.ports.centerY;
         vs.push(vForY(prof, cy - hh), vForY(prof, cy + hh));
         for (const f of portFracs(q.p.kind, q.p.w, q.p.h)) vs.push(vForY(prof, cy - hh * 2 * f), vForY(prof, cy + hh * 2 * f));
+        vs.push(vForY(prof, cy - hh - PORT_MARGIN), vForY(prof, cy + hh + PORT_MARGIN));
       }
       vs.sort((a, c) => a - c);
       patch(b, surf, [u0, u1], snapByY(vs, 0.02), { mask });
@@ -620,11 +670,11 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
   {
     const wallL = -B.w / 2 + 0.05, wallR = B.w / 2 - 0.05;
     for (const p of S.ports.left) {
-      portCorners(b, -1, wallL, S.ports.centerY, p.z, p.w, p.h, p.kind, (p.kind as string) === 'jack' ? hq(24, 8) : hq(12, 5));
+      portFrame(b, -1, -B.w / 2 + 0.002, S.ports.centerY, p.z, p.w, p.h, p.kind, hq(16, 6), PORT_MARGIN);
       portCavity(b, -1, wallL, S.ports.centerY, p.z, p.w, p.h, 9.0, p.kind, sc(28, 10), hq(12, 5));
     }
     for (const p of S.ports.right) {
-      portCorners(b, 1, wallR, S.ports.centerY, p.z, p.w, p.h, p.kind, (p.kind as string) === 'jack' ? hq(24, 8) : hq(12, 5));
+      portFrame(b, 1, B.w / 2 - 0.002, S.ports.centerY, p.z, p.w, p.h, p.kind, hq(16, 6), PORT_MARGIN);
       portCavity(b, 1, wallR, S.ports.centerY, p.z, p.w, p.h, 9.0, p.kind, sc(28, 10), hq(12, 5));
     }
   }
