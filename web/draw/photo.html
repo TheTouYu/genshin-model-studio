@@ -269,8 +269,10 @@
       // 旧值 roughness 0.55 / env 0.65 读作 27 过黑 → 加深层清漆把表面光泽补回来。
       if (hex === 0x1d1d1f) {
         return new THREE.MeshPhysicalMaterial({
-          color: col, metalness: 0.10, roughness: 0.52, side: THREE.DoubleSide,
-          clearcoat: 0.16, clearcoatRoughness: 0.62, envMapIntensity: 0.95,
+          // r12：碟面高光在掠射角成一条细白线（用户 2026-09-10「键盘异常的白线」）——
+          // 真机键帽是 PBT 微磨砂（规格图：表面微磨砂），不该有镜面亮线 → 粗糙度抬高、清漆压到近乎无
+          color: col, metalness: 0.06, roughness: 0.80, side: THREE.DoubleSide,
+          clearcoat: 0.04, clearcoatRoughness: 0.85, envMapIntensity: 0.95,
         })
       }
       // 屏幕玻璃边框 0x151516：深色、弱反射（真机黑边近乎纯黑）

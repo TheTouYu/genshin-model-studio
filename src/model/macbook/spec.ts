@@ -69,7 +69,9 @@ export const S = {
   feet: { d: 15.0, h: 0.55, insetX: 22.0, insetZ: 20.0 },
   /** 底盖后缘螺丝（pentalobe，可见） */
   screws: { d: 3.2, insetX: 33.0, insetZ: 6.5 },
-  grille: { w: 12.0, d: 96.0, r: 3.0, dotD: 0.42, dotPitch: 0.86, depth: 0.30 },
+  // d 96 → 112：扬声器栅格要盖住键盘块**整个进深**。旧值 96mm 中心对齐井口后，
+  // 键盘后段（z −99 … −90）两侧露出 3mm 台面窄条，3/4 视角下就是那两条"异常白线"（用户 2026-09-10）。
+  grille: { w: 12.0, d: 112.0, r: 3.0, dotD: 0.42, dotPitch: 0.86, depth: 0.30 },
   /** 侧壁接口：左（前→后）MagSafe3 / USB-C / USB-C / 3.5mm；右（前→后）HDMI / USB-C / SDXC */
   ports: {
     // 接口中心距底面的高度。旧值 4.4（= 整机高的 28%，肉眼「贴底」）。

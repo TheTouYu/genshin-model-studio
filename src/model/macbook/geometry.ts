@@ -69,7 +69,7 @@ function baseMaterials(assets: Assets, color: 'silver' | 'spaceblack' = 'silver'
   mats[M.GOLD] = makeMaterial({ name: 'port-gold', baseColor: [0.72, 0.55, 0.24], metallic: 1, roughness: 0.22 });
   mats[M.DEBUG] = makeMaterial({ name: 'debug', baseColor: [1.0, 0.05, 0.05], metallic: 0, roughness: 0.5 });
   mats[M.RUBBER] = makeMaterial({ name: 'foot', baseColor: [0.028, 0.028, 0.029], metallic: 0, roughness: 0.62 });
-  mats[M.GRILLE] = makeMaterial({ name: 'grille', baseColor: [0.020, 0.020, 0.021], metallic: 0.35, roughness: 0.55, baseTex: assets.grilleTex });
+  mats[M.GRILLE] = makeMaterial({ name: 'grille', baseColor: [0.020, 0.020, 0.021], metallic: 0.25, roughness: 0.90, baseTex: assets.grilleTex });
   mats[M.SCREW] = makeMaterial({ name: 'screw', baseColor: [0.70, 0.70, 0.71], metallic: 1, roughness: 0.24 });
   // 激光雕刻/丝印（裁判证据：底盖"无法规文字"）——浅灰哑光，比铝面略暗、无金属反射
   mats[M.ETCH] = makeMaterial({ name: 'etch', baseColor: [0.46, 0.46, 0.47], metallic: 0.05, roughness: 0.55 });
@@ -77,7 +77,8 @@ function baseMaterials(assets: Assets, color: 'silver' | 'spaceblack' = 'silver'
   mats[M.WELL] = makeMaterial({ name: 'kb-well', baseColor: [0.0035, 0.0035, 0.0037], metallic: 0, roughness: 0.50 });
   mats[M.HINGE] = makeMaterial({ name: 'hinge', baseColor: [0.42, 0.42, 0.43], metallic: 1, roughness: 0.34 });
   mats[M.LENS] = makeMaterial({ name: 'lens', baseColor: [0.004, 0.005, 0.012], metallic: 0, roughness: 0.045, ior: 1.6 });
-  mats[M.GRILLE_RIM] = makeMaterial({ name: 'grille-rim', baseColor: [0.55, 0.55, 0.56], metallic: 1, roughness: 0.42 });
+  // 栅格边框：真机是黑色阳极氧化，旧值浅银（0.55 金属）→ 键盘两侧渲染成两条亮带（用户 2026-09-10「异常的白线」）
+  mats[M.GRILLE_RIM] = makeMaterial({ name: 'grille-rim', baseColor: [0.030, 0.030, 0.032], metallic: 0.2, roughness: 0.9 });
   // 上盖外面/底面：大平面阳极氧化面（镜面度略高于键盘面，对应官方图上的平滑渐变）
   mats[M.ALU_GLOSS] = makeMaterial({ name: 'alu-gloss-' + color, baseColor: aluCol, metallic: 1, roughness: color === 'spaceblack' ? 0.20 : 0.125 });
   return mats;
@@ -196,7 +197,11 @@ function portBezel(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz: 
   // 外边界必须落在**侧壁的竖直平面段**内（yMin..yMax 是上下倒角的切点）：
   // 超出就会浮在圆弧面上，露出补片边缘（MagSafe 上边距 1.6mm 会越过 y=9.95 的切点）。
   const mw = w / 2 + 1.6;
-  const mh = Math.min(h / 2 + 1.6, Math.max(h / 2 + 0.5, yMax - cy - 0.05), Math.max(h / 2 + 0.5, cy - yMin - 0.05));
+  // 上下边距**分开算**：MagSafe 上边距只有 2.2mm（倒角切点 9.95），下边距有 5.55mm。
+  // 旧版取两者的 min（对称）→ 补片下缘 5.5 而墙体开孔（含 PAD 0.8 + 阶梯）到 5.35 → 开口下沿留
+  // 一条 0.15mm 缝，透视下就是"接口下方的竖条"（用户 2026-09-10 圈的第二处）。
+  const mhUp = Math.min(h / 2 + 1.6, Math.max(h / 2 + 0.5, yMax - cy - 0.05));
+  const mhDn = Math.min(h / 2 + 1.6, Math.max(h / 2 + 0.5, cy - yMin - 0.05));
   // 机外方向 = +side（side=-1 是左壁，机外 = -x）；补片贴在壁面外侧 0.02mm
   const x = wallX + side * 0.07;
   const nx = side;
@@ -205,6 +210,7 @@ function portBezel(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz: 
   for (const p of inner) {
     const dy = p.z, dz = p.x;
     inIds.push(V(cy + dy, cz + dz));
+    const mh = dy > 0 ? mhUp : mhDn;
     const ty = Math.abs(dy) > 1e-9 ? mh / Math.abs(dy) : Infinity;
     const tz = Math.abs(dz) > 1e-9 ? mw / Math.abs(dz) : Infinity;
     const t = Math.min(ty, tz);
@@ -346,11 +352,11 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     const prof = bodyProfile(B.bottomY, deckY, B.fillet, hq(8, 1));
     const surf0 = sweepSurface(path, prof);
     // 前缘开盖凹槽（宽 50mm、深 1.5mm，前壁中部）
-    const GROOVE_W = 50.0, GROOVE_D = 1.2;
+    const GROOVE_W = 70.0, GROOVE_D = 0.55;
     const groove = (p: Vec3): number => {
       if (p.z < B.d / 2 - 6 || Math.abs(p.x) > GROOVE_W / 2) return 0;
       const t = clamp(1 - Math.abs(p.x) / (GROOVE_W / 2), 0, 1);
-      const shape = Math.pow(t, 0.45);
+      const shape = Math.pow(t, 1.3);   // 平滑过渡，旧值 0.45 次幂是硬边梯形
       const y = p.y;
       const ym = clamp(Math.min((y - B.bottomY - 0.7) / 1.4, (deckY - 0.7 - y) / 1.4), 0, 1);
       return GROOVE_D * shape * ym;
@@ -414,13 +420,14 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       for (const q of allPorts) {
         if (q.side !== side) continue;
         if (q.kind === 'jack') {
-          if (Math.hypot(p.z - q.z, p.y - S.ports.centerY) < q.w / 2 + 0.4) return true;
+          if (Math.hypot(p.z - q.z, p.y - S.ports.centerY) < q.w / 2 + 0.8) return true;
           continue;
         }
         // 圆角矩形开孔（实测圆角 r≈1.0–1.2mm，不是两端半圆 stadium：ports-1 逐行剖面
         // 显示开口在距顶 1px 处仍有 42/50 宽度，stadium 只会有 ~8px）
         // 外扩 0.4mm：孔边由 portBezel 的精确开口负责，墙体这里只要"挖穿"即可
-        const PAD = 0.4;
+        // 0.8mm：补片开口必须完全落在墙体开孔之内，否则阶梯齿会探进开口（残余竖条）
+        const PAD = 0.8;
         const rx = Math.min((q.h + PAD * 2) / 2, 1.15);
         const ax = Math.abs(p.z - q.z), ay = Math.abs(p.y - S.ports.centerY);
         const hw2 = q.w / 2 + PAD, hh2 = q.h / 2 + PAD;
@@ -461,15 +468,20 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
   const wellRear = 1.0;
   const wellW = kb.blockW + kb.wellMargin * 2, wellD = kbDepth + kb.wellMargin + wellRear;
   const wellCz = S.deck.kbBackZ + (kbDepth + kb.wellMargin - wellRear) / 2;
-  const grilleCx = kb.blockW / 2 + kb.wellMargin + S.grille.w / 2 + 0.8;
+  // 栅格内边贴住井口（旧值 +0.8mm 留出一条窄台面，掠射下成亮线）
+  const grilleCx = kb.blockW / 2 + kb.wellMargin + S.grille.w / 2 - 0.4;  // 内边与井口重叠 0.4mm，杜绝缝
   {
     // 内缩必须 ≥ 顶部倒角(B.fillet=1.55)，否则板角穿出圆角管（实测 0.45mm 黑色楔形）
     const outline: RRect = { cx: 0, cz: 0, w: B.w - 2.7, d: B.d - 2.7, r: B.r - 1.35 };
     const hslot = S.hinge.slot;
+    // 台面开孔必须比它下面的板/井**小 0.4mm**：plateWithHoles 的 snap(minGap 0.3) 会把
+    // 相邻 0.15mm 的边界吸掉 → 井口与栅格之间留下一条贯穿的 0.15mm 缝，3/4 视角下读成
+    // "键盘两侧异常白线"（用户 2026-09-10；射线取证：那条线处射线打空）。
+    const SHRINK = 0.4;
     const holes: RRect[] = [
-      { cx: 0, cz: wellCz, w: wellW, d: wellD, r: 4.0 },
-      { cx: -grilleCx, cz: wellCz, w: S.grille.w, d: S.grille.d, r: S.grille.r },
-      { cx: grilleCx, cz: wellCz, w: S.grille.w, d: S.grille.d, r: S.grille.r },
+      { cx: 0, cz: wellCz, w: wellW - SHRINK, d: wellD - SHRINK, r: 4.0 },
+      { cx: -grilleCx, cz: wellCz, w: S.grille.w - SHRINK, d: S.grille.d - SHRINK, r: S.grille.r },
+      { cx: grilleCx, cz: wellCz, w: S.grille.w - SHRINK, d: S.grille.d - SHRINK, r: S.grille.r },
       { cx: 0, cz: hslot.cz, w: hslot.w, d: hslot.d, r: hslot.r },
     ];
     b.material(M.ALU);
@@ -541,11 +553,11 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       const seamPath = roundedRectPath(tp.w + 0.7, tp.d + 0.7, tp.r + 0.35, sc(32, 8));
       // 触控板四周 0.7mm 暗缝。旧版 y=deckY+0.06 与台面共面 → 页面 5x 放大呈"断续虚线"
       // （z-fighting，裁判 B 铁证）；抬到与其它共面微偏移同一档 0.25mm。
-      const seamProf = [{ o: 0, y: deckY + 0.25 }, { o: 0.7, y: deckY + 0.25 }];
+      const seamProf = [{ o: 0, y: deckY + 0.12 }, { o: 0.7, y: deckY + 0.12 }];
       const seam0 = sweepSurface(seamPath, seamProf);
       const seam = (u: number, v: number): Vec3 => { const p = seam0(u, v); return v3(p.x, p.y, p.z + cz); };
       b.material(M.GLASS);
-      patch(b, seam, lin(0, 1, sc(256, 32)), [0, 1]);
+      patch(b, seam, lin(0, 1, sc(720, 48)), [0, 1]);
     }
     b.material(M.TRACKPAD);
     plateFill(b, { cx: 0, cz, w: tp.w, d: tp.d, r: tp.r }, deckY + 0.25, { nu: sc(48, 8), nt: 2, cornerSegs: sc(6, 4), vertexSampling: true });

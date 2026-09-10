@@ -249,7 +249,10 @@ def main():
         key, name = e['key'], e['name']
         sx = (e['cx'] - BX0) * PPM
         sy = (e['cz'] - Z0) * PPM
-        sub = at[e['ay']:e['ay'] + e['ah'], e['ax']:e['ax'] + e['aw']] > THRESH
+        # 注：尝试过"向右扩 90px 重取墨迹"来救 control/command 被裁的尾字母，实测会把整块区域
+        # 变空（empty 4→9），已回退。真正的修法要在 extract-legends.py 里重算这些键的矩形。
+        ax, ay, aw, ah = e['ax'], e['ay'], e['aw'], e['ah']
+        sub = at[ay:ay + ah, ax:ax + aw] > THRESH
         wmm, hmm = e['aw'] * SCALE, e['ah'] * SCALE
 
         if key == '0:esc':
@@ -292,6 +295,19 @@ def main():
         if not m.any():
             stat['empty'] += 1
             continue
+        # 文字块图集的矩形常比键宽（command 258px=18.4mm > 键 17.25mm）→ 直接居中贴会被键边裁掉
+        # 最后一个字母（用户 2026-09-10 看到 "contro" / "comman"）。按**墨迹 bbox** 重新贴合：
+        # 宽高都按 bbox 比例缩放，并限制在键宽的 86%、键高的 52% 以内。
+        mb = bbox(m)
+        if mb is not None and mb.any():
+            m = mb
+        wmm, hmm = e['aw'] * SCALE, e['ah'] * SCALE
+        key_w = e.get('keyW', 17.35) * PPM
+        key_h = e.get('keyH', 16.95) * PPM
+        lim_w, lim_h = key_w * 0.86, key_h * 0.52
+        k = min(lim_w / wmm, lim_h / hmm, 1.0)
+        if k < 1.0:
+            wmm, hmm = wmm * k, hmm * k
         paste(sheet, m, sx, sy, wmm, hmm)
         stat['keys'] += 1
 
