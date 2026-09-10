@@ -279,7 +279,7 @@ function portOpening(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz
     ? Math.min(hh, hw) - 0.01
     : Math.min(0.9, hh - 0.01, hw - 0.01);
   const pts = portOutlineZY(w, h, rr, cseg);
-  const PLATE = 0.05, DETAIL = 0.09;
+  const PLATE = 0.30, DETAIL = 0.34;   // 抬离墙面 0.30mm：0.05mm 时掠射角会出现穿透斑纹与锯齿边（逐口特写实测）
   const V = (dx: number, y: number, z: number): number => b.vertex(v3(wallX + side * dx, y, z), v3(side, 0, 0), 0, 0);
   b.material(M.PORT_DARK);
   // 底板 = 中央矩形 + 四角三角扇（不要中心扇形：长条开口会产生细长退化三角形；
@@ -288,7 +288,11 @@ function portOpening(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz
     const ax = Math.max(0, hw - rr), ay = Math.max(0, hh - rr);
     const q = (z: number, y: number): number => V(PLATE, cy + y * 0 + y, cz + z);
     // 中央矩形（两三角）
-    const r1 = q(-ax, -ay), r2 = q(ax, -ay), r3 = q(ax, ay), r4 = q(-ax, ay);
+    // 中央矩形必须取**全高 ±hh**（不是 ±ay）：stadium 开口的 ay = h/2-r ≈ 0.01mm，
+    // 取 ±ay 会让中央矩形塌成 0.02mm 细条 → 开口中段完全没被覆盖，透出墙面亮色，
+    // 只剩内舌一条横杠 = 用户截图里的"哑铃"。四角扇只负责补四个角方块。
+    void ay;
+    const r1 = q(-ax, -hh), r2 = q(ax, -hh), r3 = q(ax, hh), r4 = q(-ax, hh);
     if (side > 0) { b.tri(r1, r2, r3); b.tri(r1, r3, r4); } else { b.tri(r1, r3, r2); b.tri(r1, r4, r3); }
     // 四角扇：扇心 = 角点(±ax, ±ay)，半径 rr
     for (const sx of [1, -1]) {
