@@ -5,7 +5,7 @@
 import { MeshBuilder, MeshData } from '../../render/geom.js';
 import { Material, makeMaterial } from '../../render/integrator.js';
 import { Texture } from '../../render/image.js';
-import { Vec3, v3, clamp } from '../../render/math.js';
+import { Vec3, v3, clamp, sub, dot, cross, norm, len, scale } from '../../render/math.js';
 import {
   roundedRectPath, pathAt, sweepSurface, patch, lin, disk, cylinderSide,
   polygonFill, roundedRectOutline, extrudeOutline, plateWithHoles, plateFill, RRect, PathPt,
@@ -185,72 +185,28 @@ function keycap(
   plateFill(b, q, topY - h, { nu: ksc(26, 4), nt: 1, flip: true, cornerSegs: ksc(16, 4), vertexSampling: true });
 }
 
-/** 端口开孔的采样分数（0..0.5 半宽比例）：端帽弧上密、直段上疏。
- *  旧版非圆孔端口只给 [0.25,0.5,0.75] 三个分数 → 圆角被量化成直角（用户 2026-09-10「接口有点粗糙」）。 */
-function portFracs(kind: string, w: number, h: number): number[] {
-  if (kind === 'jack') {
-    const out: number[] = [];
-    for (let i = 1; i <= 12; i++) out.push((i / 12.5) * 0.5);
-    return out;
-  }
-  const fCap = Math.max(0.05, Math.min(0.5, (w / 2 - h / 2) / w)); // 直段终点
-  const out: number[] = [0.25 * fCap];
-  for (let i = 0; i <= 6; i++) out.push(fCap + (0.5 - fCap) * (i / 6));
-  return out;
+/** 端口窗口的边距（mm）：窗口 = 开口外接盒 + 这个边距，也就是墙板孔的「可见墙面宽度」。
+ *  v7 关键：窗口四边会被显式插进全局 u/v 断点 → 挖空区正好是**整格矩形**，
+ *  孔边零毛边，于是不需要任何补片/领圈（v2/v3/v6 三次翻车都是拿补片去盖格心判定的毛边）。 */
+const PORT_WIN_MARGIN = 1.6;
+
+/** 端口窗口（世界坐标 z/y，mm） */
+interface PortWin {
+  side: 1 | -1; cz: number; cy: number; hw: number; hh: number; rr: number;
+  zA: number; zB: number; yA: number; yB: number;
 }
 
 /**
- * 端口开口**四角补片** —— 把「墙体矩形开孔」补成「圆角/正圆开口」。
+ * portOutlineZY —— (z,y) 平面的**真圆角矩形/胶囊/正圆**轮廓（带外法线）。
  *
- * 根因（用户 2026-09-10/11 两条反馈「接口有点粗糙」的可复现来源，29 px/mm 侧视取证）：
- *   ① 墙体开孔用「圆角矩形 + 0.8mm 外扩」谓词、按 patch 的**格心**判定 → 孔边只能是网格
- *      步长的台阶；台阶处格子被多删 → 看进机身内部 → 开口边缘是锯齿块；
- *   ② 旧版再拿一块外扩 1.6mm、凸出 0.07mm 的**大补片**去盖这些台阶 → 补片外边界自身在壁上
- *      留下两条细黑线（截图里开口上方那两条横线），且补片内边界（16 点圆角矩形）与墙体开孔
- *      对不齐时，墙体的锯齿从补片后面探出来。
- * 现在：墙体开孔 = 开口**外接矩形**（u/v 断点精确落在 ±w/2、±h/2 → 孔边是直线，无台阶），
- * 圆角由本补片用三角扇补出：弧与矩形两条边相切，扇心 = 矩形角点。
- *   - side 方向凸出 0.02mm（远小于像素，视觉等价 flush）；
- *   - 外边界与墙体开孔边**重合** → 不引入任何新接缝线。
- * jack 传 rr = h/2（弧心 = 开口中心）→ 四块扇拼成一个**正圆**，不再有六边形/方块。
+ * ⚠ R79 修：旧实现把每一端写成**一条 180° 大弧**（圆心 (ax,0)、半径 rr）——
+ * 那在 rr = hh（stadium）时正确，但 rr < hh 的圆角矩形（HDMI R0.9 / SDXC R0.9）里，
+ * 它在角区把边界内缩最多 rr = 0.9mm（dy = ±(hh−rr) 处 z 从 hw 缩到 hw−rr）→
+ * 腔体口沿比墙板孔边小一圈 → 角上留下**最宽 ~0.23mm 的进机身的缝**（R79 新尺子 wall-scan 实测）。
+ * 现在按标准圆角矩形发射：4 段直边 + 4 个各 90° 的角弧（退化直边由 add() 去重吃掉，
+ * 所以 stadium（ay=0）/正圆（ax≈ay≈0）仍然正确）。
+ * 不用 roundedRectPath：它的侧直边在 stadium 下退化会生成重复点 + 零长段（历史坑）。
  */
-function portCorners(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz: number, w: number, h: number, kind: string, cseg: number): void {
-  const rMax = Math.min(h / 2, w / 2) - 0.01;
-  const rr = Math.min(kind === 'jack' ? h / 2 : kind === 'usbc' || kind === 'magsafe' ? 1.15 : 0.9, rMax);
-  const x = wallX;
-  const nx = side;
-  b.material(M.ALU);
-  for (const sx of [1, -1]) {
-    for (const sy of [1, -1]) {
-      const ax = w / 2 - rr, ay = h / 2 - rr; // 弧心（相对开口中心）
-      const ids: number[] = [];
-      for (let i = 0; i <= cseg; i++) {
-        const a = (i / cseg) * (Math.PI / 2);
-        const pz = sx * (ax + rr * Math.sin(a)); // a=0 → 水平边切点；a=π/2 → 竖直边切点
-        const py = sy * (ay + rr * Math.cos(a));
-        ids.push(b.vertex(v3(x, cy + py, cz + pz), v3(nx, 0, 0), 0, 0));
-      }
-      const cId = b.vertex(v3(x, cy + (sy * h) / 2, cz + (sx * w) / 2), v3(nx, 0, 0), 0, 0);
-      for (let i = 0; i < cseg; i++) {
-        // 绕序 = 几何法线朝机外（three.js DoubleSide 对背面翻转法线，绕反整片变暗）
-        if (side > 0) b.tri(cId, ids[i + 1], ids[i]);
-        else b.tri(cId, ids[i], ids[i + 1]);
-      }
-    }
-  }
-}
-
-/**
- * portFrame —— 接口开口的「画框」。
- * 外墙在开口**外接矩形**（开口 ± margin）内被 mask 整块挖掉，本函数用一圈 quad 把
- * 「外接矩形」与「圆角矩形开口」之间补上：开口边界完全由几何决定（cseg 段/角），
- * 不再受 mask 格心采样影响 → 不再出现阶梯/锯齿（用户 2026-09-10「接口有点粗糙」的根因）。
- * 端口都在机身平直侧壁上（该高度区间 profile 偏移 = 0），所以 x 直接取墙面平面。
- */
-const PORT_MARGIN = 0.55; // 画框宽度（mm）
-/** portOutlineZY —— (z,y) 平面的圆角矩形/胶囊轮廓（带外法线）。
- *  不用 roundedRectPath：stadium（rr=h/2）时它的侧直边退化为 0 长，生成重复点 + 零长段，
- *  开口一端会炸出一排细刺（用户 2026-09-10「接口放大存在异常」）。 */
 function portOutlineZY(w: number, h: number, rr: number, cseg: number): { z: number; y: number; nz: number; ny: number }[] {
   const hw = w / 2, hh = h / 2;
   const r = Math.min(rr, hw - 1e-4, hh - 1e-4);
@@ -261,27 +217,40 @@ function portOutlineZY(w: number, h: number, rr: number, cseg: number): { z: num
     if (last && Math.hypot(last.z - z, last.y - y) < 1e-5) return;
     pts.push({ z, y, nz, ny });
   };
-  if (ax > 1e-4) add(-ax, hh, 0, 1);
-  for (let i = 0; i <= cseg; i++) { const a = (Math.PI / 2) * (1 - (2 * i) / cseg); add(ax + r * Math.cos(a), ay + r * Math.sin(a), Math.cos(a), Math.sin(a)); }
-  if (ax > 1e-4) add(ax, -hh, 0, -1);
-  for (let i = 0; i <= cseg; i++) { const a = -(Math.PI / 2) * (1 + (2 * i) / cseg); add(-ax + r * Math.cos(a), ay + r * Math.sin(a), Math.cos(a), Math.sin(a)); }
+  const arc = (cz: number, cy: number, a0: number, a1: number): void => {
+    for (let i = 0; i <= cseg; i++) {
+      const a = a0 + (a1 - a0) * (i / cseg);
+      add(cz + r * Math.cos(a), cy + r * Math.sin(a), Math.cos(a), Math.sin(a));
+    }
+  };
+  const D = Math.PI / 180;
+  add(-ax, hh, 0, 1);                 // 上边（左上 → 右上）
+  arc(ax, ay, 90 * D, 0);             // 右上角
+  add(hw, -ay, 1, 0);                 // 右边
+  arc(ax, -ay, 0, -90 * D);           // 右下角
+  add(-ax, -hh, 0, -1);               // 下边
+  arc(-ax, -ay, -90 * D, -180 * D);   // 左下角
+  add(-hw, ay, -1, 0);                // 左边
+  arc(-ax, ay, 180 * D, 90 * D);      // 左上角
   const f = pts[0], l = pts[pts.length - 1];
   if (pts.length > 1 && Math.hypot(f.z - l.z, f.y - l.y) < 1e-5) pts.pop();
   return pts;
 }
 
 /**
- * portOpening —— 接口开口「贴面件」（第四版，也是最后一版）。
+ * portOpening —— 接口开口 = **真腔体（浅盲孔）+ 由墙板精确裁出的开口**（第七版）。
  *
- * 前三版全部失败的教训（都记在这里，别再走回头路）：
- *   v1 外墙挖孔 + 圆角腔管 + 端盖：掠射角看穿到机身内部（用户：「可以看到对面去了」）。
- *   v2 挖孔 + 四角弧扇补片：孔端炸出细刺扇形（用户圈出）。
- *   v3 挖孔 + 精确画框环：画框与墙面差 4µm → 亮度差 1 级的矩形补丁（用户圈出，边缘肉眼可见）。
- *   v4（本版）**完全不碰外墙**：接口 = 两片贴在墙面上的薄片
- *        ① 开口底板：深色圆角矩形/胶囊，凸出墙面 0.05mm —— 读作"黑色开口"
- *        ② 内舌（USB-C/HDMI/SDXC）或 5 个触点（MagSafe）：凸出 0.09mm
- *      闭合实体、零孔洞、零共面 → 看不穿、无细刺、无补丁、不扰动墙面着色。
- *   代价：没有真实腔深。验收尺度（≥6px/mm）与官方参考图观感一致。
+ * 六次翻车的谱系（别再走回头路）：
+ *   v1 挖孔 + 圆角腔管 + 端盖：掠射角看穿到机身内部。
+ *   v2 挖孔 + 四角弧扇补片：孔端炸出细刺扇形。
+ *   v3 挖孔 + 精确画框环：画框与墙面差 4µm → 亮度差 1 级的矩形补丁。
+ *   v4 完全不挖墙、贴面薄片：闭合无洞、看不穿，但**没有腔深**（用户裁决要中间路线：浅盲孔 + 暗内壁）。
+ *   v5/v6 挖大孔 + 领圈盖毛边：开口边界仍是「格心判定」的台阶，斜视（elev ≤ 0）下毛边落在
+ *        领圈之外 → 露出腔体内部 = 用户截图里 HDMI 左端的"阶梯"与 SDXC 端的大"黑楔"（已回滚）。
+ *   v7（本版）**可见边界 = 开口真实轮廓**：墙体只在一个与格线对齐的整格矩形窗口里被挖空，
+ *        窗口由墙板（portWallPlate，见 buildMacbook14 机身段）严丝合缝填回，孔边由解析轮廓
+ *        逐行精确裁剪（顶点落在真弧上）；本函数只画**腔**（腔壁 + 腔底 + 内舌/触点），
+ *        口沿与墙板孔边是同一条解析曲线 → page-mesh 焊接合并成一条边。
  */
 function portOpening(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz: number, w: number, h: number, kind: string, cseg: number): void {
   const hh = h / 2, hw = w / 2;
@@ -290,76 +259,55 @@ function portOpening(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz
     ? Math.min(hh, hw) - 0.01
     : Math.min(0.9, hh - 0.01, hw - 0.01);
   const pts = portOutlineZY(w, h, rr, cseg);
-  const PLATE = 0.30, DETAIL = 0.34;   // 抬离墙面 0.30mm：0.05mm 时掠射角会出现穿透斑纹与锯齿边（逐口特写实测）
-  const V = (dx: number, y: number, z: number): number => b.vertex(v3(wallX + side * dx, y, z), v3(side, 0, 0), 0, 0);
+  const DEPTH = 2.0;    // 浅盲孔深度（贴面件读不出深度、深腔费面，取中间路线）
+  const DETAIL = 1.10;  // 内舌/触点离口面的进深（太浅被口沿挡住、太深读作黑洞）
+  const axisN = v3(side, 0, 0);
+  interface Vt { i: number; p: Vec3 }
+  const mk = (dx: number, y: number, z: number, n: Vec3): Vt => {
+    const p = v3(wallX + side * dx, y, z);
+    return { i: b.vertex(p, n, 0, 0), p };
+  };
+  // 绕序按**期望可见法线**定向：只按 side 翻面会让一半面朝腔内 → 渲成暗块 / 一圈"梳齿"（v2/v6 老病）
+  const tri3 = (a: Vt, b2: Vt, c: Vt, n: Vec3): void => {
+    if (dot(cross(sub(b2.p, a.p), sub(c.p, a.p)), n) < 0) b.tri(a.i, c.i, b2.i); else b.tri(a.i, b2.i, c.i);
+  };
+  const quad3 = (a: Vt, b2: Vt, c: Vt, d: Vt, n: Vec3): void => { tri3(a, b2, c, n); tri3(a, c, d, n); };
   b.material(M.PORT_DARK);
-  // 底板 = 中央矩形 + 四角三角扇（不要中心扇形：长条开口会产生细长退化三角形；
-  // 也不要沿 z 的条带：半圆端按均匀 z 采样覆盖不满，端点会露出墙面的亮色"梳齿"）。
-  {
-    const ax = Math.max(0, hw - rr), ay = Math.max(0, hh - rr);
-    const q = (z: number, y: number): number => V(PLATE, cy + y * 0 + y, cz + z);
-    // 中央矩形（两三角）
-    // 中央矩形必须取**全高 ±hh**（不是 ±ay）：stadium 开口的 ay = h/2-r ≈ 0.01mm，
-    // 取 ±ay 会让中央矩形塌成 0.02mm 细条 → 开口中段完全没被覆盖，透出墙面亮色，
-    // 只剩内舌一条横杠 = 用户截图里的"哑铃"。四角扇只负责补四个角方块。
-    void ay;
-    const r1 = q(-ax, -hh), r2 = q(ax, -hh), r3 = q(ax, hh), r4 = q(-ax, hh);
-    if (side > 0) { b.tri(r1, r2, r3); b.tri(r1, r3, r4); } else { b.tri(r1, r3, r2); b.tri(r1, r4, r3); }
-    // 两个端帽：端帽内用「角弧 + 端帽中心扇形」铺满。
-    // 教训链（同一症状跨代复发三次，别再犯）：r27 u-snap 吃断点 → r30 中央矩形取 ±ay 在
-    // stadium 下塌成 0.02mm 细条（用户截图里的"哑铃"）→ r31 四角弧画到**外侧象限**
-    // （应朝矩形内部）→ 四角露出墙面亮方块 = 用户截图里的"撕裂角"。
-    // 规则：圆弧一律取「从角心指向矩形内部」的象限 = z 向 cos θ、y 向 sin θ，θ∈[0°,90°]，四角同式。
-    // 端部 = **真正的圆角矩形端**：角弧必须同时与「端边 z=±hw」和「上下直边 y=±hh」相切，
-    // 故下角弧圆心 (zc, cy-hh+rr)、上角弧圆心 (zc, cy+hh-rr)，zc = ±(hw-rr)。
-    // 旧实现把两个角弧当成绕中心线的半圆（圆心 (zc,cy)、半径 rr）→ |y|∈[rr,hh] 的端部
-    // 小方块没被盖住（USB-C 落差 0.175mm）→ 用户截图里开口两端的"凸耳"；
-    // 端外露出的那圈墙面被逐行切碎 → 端点旁的"梳齿"。两者同一根因。
-    const capFan = (dir: number): void => {
-      const zc = cz + dir * ax;
-      const Ye = Math.max(0, hh - rr);                          // 端边半高（stadium 下 = 0）
-      const pts: Array<[number, number]> = [[zc, cy - hh]];
-      for (let i = 0; i <= cseg; i++) {                        // 下角弧 θ -90°→0°
-        const th = (-90 + 90 * (i / cseg)) * Math.PI / 180;
-        pts.push([zc + dir * rr * Math.cos(th), (cy - hh + rr) + rr * Math.sin(th)]);
-      }
-      if (Ye > 1e-4) pts.push([cz + dir * hw, cy + Ye]);        // 端边（圆角矩形才有长度，stadium 下退化）
-      for (let i = 0; i <= cseg; i++) {                        // 上角弧 θ 0°→90°
-        const th = (90 * (i / cseg)) * Math.PI / 180;
-        pts.push([zc + dir * rr * Math.cos(th), (cy + hh - rr) + rr * Math.sin(th)]);
-      }
-      pts.push([zc, cy + hh]);
-      // 注意：capFan 的链点已是**绝对** (z,y)，必须走 V 而不能走 q（q 会再加一次 cz/cy 偏移，
-      // 曾因此把端帽画到 2× 位置 → 开口两端只剩细"凸耳"、墙面出现梳齿三角）。
-      const apex = V(PLATE, cy, zc);
-      const vs = pts.map(([z, y]) => V(PLATE, y, z));
-      // 绕序必须**同时**看 side 和 dir：dir=+1 的链点在图平面里是逆时针、dir=-1 是顺时针，
-      // 只按 side 翻面会让其中一个端帽朝墙内 → 法线反 → 该端渲成暗块（用户截图的"凸耳"），
-      // 耳机口四个方向的端帽各错一半 → 开口周围一圈明暗交替的"梳齿"。两者同一根因。
-      const flip = (side > 0) !== (dir > 0);
-      for (let i = 0; i < vs.length - 1; i++) {
-        if (!flip) b.tri(apex, vs[i], vs[i + 1]); else b.tri(apex, vs[i + 1], vs[i]);
-      }
-    };
-    capFan(1); capFan(-1);
+  // ① 腔壁：口沿（dx = 0，与墙板孔边同一条解析曲线）→ 腔底（dx = −DEPTH）；可见法线朝腔内
+  const rim: Vt[] = [], bot: Vt[] = [];
+  for (const p of pts) {
+    rim.push(mk(0, cy + p.y, cz + p.z, axisN));
+    const pb = v3(wallX - side * DEPTH, cy + p.y, cz + p.z);
+    bot.push({ i: b.vertex(pb, norm(v3(0, -p.ny, -p.nz)), 0, 0), p: pb });
   }
+  for (let i = 0; i < pts.length; i++) {
+    const j = (i + 1) % pts.length;
+    const n = norm(v3(0, -(pts[i].ny + pts[j].ny), -(pts[i].nz + pts[j].nz)));
+    quad3(rim[i], rim[j], bot[j], bot[i], n);
+  }
+  // ② 腔底：口沿轮廓的扇形（凸轮廓，扇心 = 开口中心在腔底平面的投影）
+  const cen: Vt = mk(-DEPTH, cy, cz, axisN);
+  for (let i = 0; i < pts.length; i++) tri3(cen, bot[i], bot[(i + 1) % pts.length], axisN);
+  // ③ 口内细节：MagSafe 5 触点 / USB-C·HDMI·SDXC 内舌；耳机口真机是圆孔 + 深色内腔，无内舌
   if ((kind as string) === 'magsafe') {
     b.material(M.GOLD);
     for (let i = 0; i < 5; i++) {
       const zc = cz - 3.2 + i * 1.6;
-      const a = V(DETAIL, cy - 0.32, zc), c = V(DETAIL, cy + 0.32, zc), d = V(DETAIL, cy + 0.32, zc + 0.55), e = V(DETAIL, cy - 0.32, zc + 0.55);
-      if (side > 0) b.quad(a, c, d, e); else b.quad(a, e, d, c);
+      quad3(
+        mk(-DETAIL, cy - 0.32, zc, axisN), mk(-DETAIL, cy - 0.32, zc + 0.55, axisN),
+        mk(-DETAIL, cy + 0.32, zc + 0.55, axisN), mk(-DETAIL, cy + 0.32, zc, axisN), axisN,
+      );
     }
     return;
   }
-  // 耳机口没有内舌（真机是圆孔 + 深色内腔）——旧值给了 7.6×1.7mm 的"舌"，
-  // 比 Ø3.5 的开口还大 → 渲染成一个十字（本轮实测到的那个十字）。
   if ((kind as string) === 'jack') return;
   b.material(M.PORT_TONGUE);
   const mh = kind === 'usbc' ? 0.62 : kind === 'hdmi' ? 1.15 : kind === 'sdxc' ? 0.9 : 1.7;
   const mw = kind === 'usbc' ? 6.35 : kind === 'hdmi' ? 11.6 : kind === 'sdxc' ? 24.0 : 7.6;
-  const a = V(DETAIL, cy - mh / 2, cz - mw / 2), b2 = V(DETAIL, cy - mh / 2, cz + mw / 2), c = V(DETAIL, cy + mh / 2, cz + mw / 2), d = V(DETAIL, cy + mh / 2, cz - mw / 2);
-  if (side > 0) b.quad(a, b2, c, d); else b.quad(a, d, c, b2);
+  quad3(
+    mk(-DETAIL, cy - mh / 2, cz - mw / 2, axisN), mk(-DETAIL, cy - mh / 2, cz + mw / 2, axisN),
+    mk(-DETAIL, cy + mh / 2, cz + mw / 2, axisN), mk(-DETAIL, cy + mh / 2, cz - mw / 2, axisN), axisN,
+  );
 }
 
 /**
@@ -491,17 +439,24 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     };
     const profV = [...lin(0, 1, prof.length - 1)];
     const uBreaks: number[] = [...lin(0, 1, sc(448, 96))];
-    for (const p of allPorts) {
-      const hw = p.w / 2;
-      uBreaks.push(zToU(p.z - hw, p.side), zToU(p.z + hw, p.side), zToU(p.z, p.side));
-      // 孔边界加密：patch 的 mask 按「格心」判定，格子粗 → 圆孔退化成方孔
-      // （实测 jack 渲染成方块、USB-C 两端圆角变直角）。按半宽比例补采样点。
-      for (const f of portFracs(p.kind, p.w, p.h)) {
-        uBreaks.push(zToU(p.z - hw * 2 * f, p.side), zToU(p.z + hw * 2 * f, p.side));
-      }
-      // 画框外沿（外接矩形）必须落在格线上
-      uBreaks.push(zToU(p.z - hw - PORT_MARGIN, p.side), zToU(p.z + hw + PORT_MARGIN, p.side));
-    }
+    // ---- 端口窗口（v7）：把「可见边界」交给墙板，墙体只在**整格矩形**里被挖空 ----
+    // 窗口上下边会被显式注入为 v 格线（见下面的分段循环），左右边注入为 u 格线 →
+    // mask 按格心判定删掉的正好是整格，孔边零毛边（不需要任何补片/领圈）。
+    const cyP = S.ports.centerY;
+    const flatLo = B.bottomY + B.fillet + 0.15, flatHi = deckY - (S.base.filletTop ?? B.fillet) - 0.15;
+    const wins: PortWin[] = allPorts.map((p) => {
+      const hh = p.h / 2, hw = p.w / 2;
+      return {
+        side: p.side, cz: p.z, cy: cyP, hw, hh,
+        rr: (p.kind === 'jack' || p.kind === 'usbc' || p.kind === 'magsafe')
+          ? Math.min(hh, hw) - 0.01
+          : Math.min(0.9, hh - 0.01, hw - 0.01),
+        zA: p.z - hw - PORT_WIN_MARGIN, zB: p.z + hw + PORT_WIN_MARGIN,
+        yA: Math.max(cyP - hh - PORT_WIN_MARGIN, flatLo),
+        yB: Math.min(cyP + hh + PORT_WIN_MARGIN, flatHi),
+      };
+    });
+    for (const w of wins) uBreaks.push(zToU(w.zA, w.side), zToU(w.zB, w.side));
     uBreaks.sort((a, c) => a - c);
     const snapB = (list: number[], gap: number): number[] => {
       const out: number[] = [];
@@ -524,37 +479,115 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     // 0.06mm 断点还大 → 细化断点被整批丢掉，孔角又变回锯齿。实测周长 ~1040mm，
     // 0.005/312.6 = 1.6e-5 u ≈ 0.017mm：既留住 0.06mm 细化，又不产生退化格。
     const uB = snapB(uBreaks, 0.005 / 312.6);
-    // 外墙不挖孔：接口由 portOpening 贴面实现。
+    // 挖空谓词：按 (z,y) 是否落在窗口内判定；必须**分左右壁**（左右端口窗口在 z 上相互重叠，
+    // 只用 (z,y) 判会把对侧墙也挖掉）。
+    const inWin = (x: number, z: number, y: number): boolean => wins.some((w) =>
+      (w.side < 0 ? x < 0 : x > 0) && z > w.zA && z < w.zB && y > w.yA && y < w.yB);
+    const wallMask = (u: number, v: number): boolean => { const p = surf(u, v); return inWin(p.x, p.z, p.y); };
+    /**
+     * 墙板（v7 正解）：把窗口里「非开口」的墙面填回，**孔边用腔体口沿的多边形本身**。
+     *
+     * 关键：孔边顶点 = portOutlineZY 的顶点（与 portOpening 的腔壁同一条曲线、同一批点），
+     * 于是 page-mesh 的焊接只会把它们并到已有顶点上（位置不变），**边界不会被拉偏**。
+     * 曾用「逐行解析求 z 半宽」：顶点落在真弧上、与多边形弦差 0.04mm，焊接把两套点混在
+     * 一起 → 边界偏 0.04mm（实测），且跨相切线的行会把开口四角整块堵住（0.30mm 假边界）。
+     *
+     * 结构 = 左带（窗口左沿 ↔ 口沿左链）+ 右带 + 上/下两条整幅横带（相切线以外到窗口边）。
+     */
+    const portWallPlate = (w: PortWin, cseg: number): void => {
+      const put = (z: number, y: number): { i: number; p: Vec3; n: Vec3 } => {
+        const u = zToU(z, w.side), v = vForY(prof, y), e = 1e-5;
+        const p = surf(u, v);
+        const du = sub(surf(Math.min(1, u + e), v), surf(Math.max(0, u - e), v));
+        const dv = sub(surf(u, Math.min(1, v + e)), surf(u, Math.max(0, v - e)));
+        let n = cross(du, dv);
+        const l = len(n);
+        n = l < 1e-14 ? v3(0, 1, 0) : scale(n, 1 / l);   // 与 patch 同式的中心差分法线
+        return { i: b.vertex(p, n, 0, 0), p, n };
+      };
+      type Vt = { i: number; p: Vec3; n: Vec3 };
+      // 孔边顶点与 portOpening 的腔壁**逐位相同**：直接落在墙平面（端口高度区间内墙面是纯平面
+      // x = ±w/2），不走 surf 的 u 反查 —— zToU 是 16384 步扫描（0.063mm 量化），经它绕一圈
+      // 孔边会有 ~0.03mm 的 z 偏移，焊接再把它和腔壁顶点混在一起 → 边界偏 0.05mm（实测）。
+      const wallN = v3(w.side, 0, 0);
+      const onRim = (z: number, y: number): Vt => {
+        const p = v3(w.side * (S.base.w / 2), y, z);
+        return { i: b.vertex(p, wallN, 0, 0), p, n: wallN };
+      };
+      const quad = (A: Vt, B: Vt, C: Vt, D: Vt): void => {
+        const tri = (a: Vt, c: Vt, d: Vt): void => {
+          if (dot(cross(sub(c.p, a.p), sub(d.p, a.p)), A.n) < 0) b.tri(a.i, d.i, c.i); else b.tri(a.i, c.i, d.i);
+        };
+        tri(A, B, C); tri(A, C, D);
+      };
+      const poly = portOutlineZY(w.hw * 2, w.hh * 2, w.rr, cseg);
+      const TOLN = 1e-6;
+      const Z = (p: { z: number }): number => w.cz + p.z;       // 相对 → 世界
+      const Y = (p: { y: number }): number => w.cy + p.y;
+      const right = poly.filter((p) => p.nz > TOLN);
+      const left = poly.filter((p) => p.nz < -TOLN);
+      // 相切点有**两个**（上下直边的左右两端），按 z 取：右链要右上/右下、左链要左下/左上。
+      // 曾用 find() 取"第一个" → 右链从左上端起步 → 口沿左上角留 0.147mm 缺口（实测 L-magsafe）。
+      const tan = (ny: number, wantMax: boolean) => poly
+        .filter((p) => Math.abs(p.nz) <= TOLN && (ny > 0 ? p.ny > 0 : p.ny < 0))
+        .sort((a, c) => (wantMax ? c.z - a.z : a.z - c.z))[0];
+      const topR = tan(1, true), topL = tan(1, false), botR = tan(-1, true), botL = tan(-1, false);
+      if (!right.length || !left.length || !topR || !topL || !botR || !botL) return;
+      /**
+       * 面板（panel）：把「窗口同侧边沿 ↔ 口沿细链」之间的带状区域铺满。
+       *   · **内沿 = 口沿多边形顶点本身**（与腔壁同一批点 → 焊接后位置不变，孔边零偏移）；
+       *   · 外沿按 ≥0.30mm 抽稀（> 焊接容差 0.2mm，避免外沿顶点互焊把四边形塌成扇形）；
+       *   · 每个外沿段用**扇形**连接中间那些细链点（旧版用四边形，外沿 0.1mm 间距被焊接
+       *     并掉 → 相切处冒 0.147mm 假边界；改抽稀后又变成 0.05mm 偏差）。
+       */
+      const panel = (chain: { z: number; y: number }[], edge: number): void => {
+        const outer: number[] = [0];
+        for (let i = 1; i < chain.length; i++) {
+          const last = chain[outer[outer.length - 1]];
+          const p = chain[i];
+          if (Math.hypot(p.z - last.z, p.y - last.y) >= 0.30 || i === chain.length - 1) outer.push(i);
+        }
+        // 两端最外点必须与相邻外沿点拉开 > 焊接容差 0.2mm：否则上下横带的角点会被焊到它上面，
+        // 横带边缘整体下沉 ~0.09mm → 侵入开口（R79 尺子实测 0.075mm，就是这一处）。
+        // 注意：要量的是**外沿顶点之间的距离**（都在同一条窗口边上 → 只差 y），
+        // 不是链上两点的弦长（沿弧量会把 0.09mm 的相邻点算成 0.35mm → 守卫失效）。
+        const gapOf = (i: number, j: number): number => Math.abs(chain[outer[i]].y - chain[outer[j]].y);
+        while (outer.length > 2 && gapOf(outer.length - 1, outer.length - 2) < 0.22) outer.splice(outer.length - 2, 1);
+        while (outer.length > 2 && gapOf(1, 0) < 0.22) outer.splice(1, 1);
+        for (let k = 0; k < outer.length - 1; k++) {
+          const ia = outer[k], ib = outer[k + 1];
+          const A = put(edge, Y(chain[ia]));
+          const B = put(edge, Y(chain[ib]));
+          const inner: Vt[] = [];
+          for (let i = ia; i <= ib; i++) inner.push(onRim(Z(chain[i]), Y(chain[i])));
+          const tri = (a: Vt, c: Vt, d: Vt): void => {
+            if (dot(cross(sub(c.p, a.p), sub(d.p, a.p)), A.n) < 0) b.tri(a.i, d.i, c.i); else b.tri(a.i, c.i, d.i);
+          };
+          for (let i = 0; i < inner.length - 1; i++) tri(A, inner[i], inner[i + 1]);
+          tri(A, inner[inner.length - 1], B);
+        }
+      };
+      b.material(M.ALU);
+      // 右链（poly 顺序 = y 递减）：上相切端 → 角弧 → 右直边 → 角弧 → 下相切端
+      panel([topR, ...right, botR], w.zB);
+      // 左链（poly 顺序 = y 递增）：下相切端 → 角弧 → 左直边 → 角弧 → 上相切端
+      panel([botL, ...left, topL], w.zA);
+      // 上下横带（相切线以外到窗口边，整幅宽度；开口的上/下边是直线，这里没有余料）
+      if (w.yB - (w.cy + w.hh) > 1e-4) quad(put(w.zA, w.yB), put(w.zB, w.yB), put(w.zB, w.cy + w.hh), put(w.zA, w.cy + w.hh));
+      if (w.cy - w.hh - w.yA > 1e-4) quad(put(w.zA, w.cy - w.hh), put(w.zB, w.cy - w.hh), put(w.zB, w.yA), put(w.zA, w.yA));
+    };
     b.material(M.ALU);
-    // 分段 patch：单个张量网格里，任一端口的高度断点会污染整圈（96 段 × 0.3–1.1mm 窄带
-    // 全是细针）。按 u 区间逐段发射，每段只带「与自己重叠的端口」的 v 断点——
-    // 端口附近保留精确孔边，其余区域只剩剖面本身的 3 个带。
-    // 区间要覆盖到**画框外沿**（开口 ± PORT_MARGIN）：否则边距带里的 v 断点不会被加进去，
-    // 那些格子又高又粗、格心落在挖空区内被整块丢掉 → 孔四周留下一圈黑缝（实测的「黑条」）。
-    const PORT_WALL_CUT = false;   // 见下：v4 不挖孔，端口断点仅为历史残留
-    const portU = allPorts.map((p) => {
-      const a = zToU(p.z - p.w / 2 - PORT_MARGIN, p.side), c = zToU(p.z + p.w / 2 + PORT_MARGIN, p.side);
-      return { lo: Math.min(a, c), hi: Math.max(a, c), p };
-    });
+    const winU = wins.map((w) => { const a = zToU(w.zA, w.side), c = zToU(w.zB, w.side); return { lo: Math.min(a, c), hi: Math.max(a, c), w }; });
+    // 分段 patch：单个张量网格里任一端口的高度断点会污染整圈（细针）→ 按 u 区间逐段发射
     for (let i = 0; i < uB.length - 1; i++) {
       const u0 = uB[i], u1 = uB[i + 1], um = (u0 + u1) / 2;
       const vs = [...profV];
-      // 端口不再在墙体上挖孔（v4：开口 = 贴在墙面上的薄件 portOpening），
-      // 于是这段"为挖孔而插的 v 断点"成了纯残留：它在孔位处切出一圈细长墙带，
-      // 掠射/侧光下逐行读作开口两端的"凸耳"与耳机口上下的"梳齿"（用户 2026-09-11 截图）。
-      // 只有 PORT_WALL_CUT = true（回到挖孔方案）时才需要。
-      if (PORT_WALL_CUT) {
-        for (const q of portU) {
-          if (um < q.lo - 1e-4 || um > q.hi + 1e-4) continue;
-          const hh = q.p.h / 2, cy = S.ports.centerY;
-          vs.push(vForY(prof, cy - hh), vForY(prof, cy + hh));
-          for (const f of portFracs(q.p.kind, q.p.w, q.p.h)) vs.push(vForY(prof, cy - hh * 2 * f), vForY(prof, cy + hh * 2 * f));
-          vs.push(vForY(prof, cy - hh - PORT_MARGIN), vForY(prof, cy + hh + PORT_MARGIN));
-        }
-      }
+      // 窗口上下边必须是格线：否则那一格横跨窗口边界，格心判定会把它整块删掉/留下 → 缝
+      for (const q of winU) if (um >= q.lo - 1e-9 && um <= q.hi + 1e-9) vs.push(vForY(prof, q.w.yA), vForY(prof, q.w.yB));
       vs.sort((a, c) => a - c);
-      patch(b, surf, [u0, u1], snapByY(vs, 0.02));
+      patch(b, surf, [u0, u1], snapByY(vs, 0.02), { mask: wallMask });
     }
+    for (const w of wins) portWallPlate(w, hq(20, 8));
   }
 
   // ============ 2. 台面 ============
