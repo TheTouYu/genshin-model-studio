@@ -1,0 +1,80 @@
+{
+ "mesh": "web/draw/macbook-current.json",
+ "region": {
+  "X0": -136,
+  "X1": 136,
+  "Z0": 55,
+  "Z1": 109,
+  "cell": 0.25
+ },
+ "grid": {
+  "NX": 1089,
+  "NZ": 217
+ },
+ "y_range": [
+  9.029,
+  11.75
+ ],
+ "dev_range": [
+  -0.127,
+  2.595
+ ],
+ "samples": {
+  "c100": 11.75,
+  "plane100": 11.623
+ },
+ "deckPlane": {
+  "a": 0,
+  "b": 0,
+  "c": 11.623
+ },
+ "holes": 0,
+ "step_max": 0.2662,
+ "step_at": [
+  15,
+  106.5,
+  0.266
+ ],
+ "kink_max": 1,
+ "kink_at": [
+  -68,
+  84,
+  1
+ ],
+ "kink_px": 6126,
+ "depth": 2.595,
+ "depth_at": [
+  -13.25,
+  109
+ ],
+ "nang_max_deg": 7.52,
+ "nang_at": [
+  -12.5,
+  103
+ ],
+ "nang_px5": 343,
+ "tilt_max_deg": 27.32,
+ "boundary_px": 425,
+ "perimeter_mm": 106.3,
+ "corners": 12,
+ "jag": 0.1129,
+ "hole_samples": [],
+ "gates": {
+  "holes": 0,
+  "step_max": 0.05,
+  "kink_max": 0.35,
+  "kink_px": 40,
+  "depth_max": 1.8,
+  "depth_min": 0.5,
+  "jag": 0.2,
+  "nang_max": 12,
+  "nang_px": 400
+ },
+ "verdict": "FAIL",
+ "fail": [
+  "step_max=0.2662>0.05",
+  "kink_max=1>0.35（折/台阶）",
+  "kink_px=6126>40",
+  "depth=2.595>1.8（凹太深）"
+ ]
+}
