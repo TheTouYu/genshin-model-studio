@@ -90,4 +90,6 @@ if (SCRIPT) {
 if (SHOT) out.shot = await shoot(SHOT, SHOT_W, SHOT_H)
 console.log(JSON.stringify(out, null, 2))
 ws.close()
-await closeTab(target.id)
+// 默认**保留**页签：用户要用同一个页面复核/给反馈（2026-09-11 用户要求）。
+// 需要收尾时显式加 --close。
+if (process.argv.includes('--close')) await closeTab(target.id)
