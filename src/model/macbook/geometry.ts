@@ -509,14 +509,24 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       { cx: grilleCx, cz: wellCz, w: S.grille.w - SHRINK, d: S.grille.d - SHRINK, r: S.grille.r },
       { cx: 0, cz: hslot.cz, w: hslot.w, d: hslot.d, r: hslot.r },
       // 触控板孔（比玻璃大 0.5mm → 四周 0.25mm 真缝；r40 起缝由这个孔提供，不再是凸起环）
-      { cx: 0, cz: (S.deck.tpBackZ + S.deck.tpFrontZ) / 2, w: tpW + 0.5, d: tpD + 0.5, r: tpR + 0.25 },
+      { cx: 0, cz: (S.deck.tpBackZ + S.deck.tpFrontZ) / 2, w: tpW + 0.9, d: tpD + 0.9, r: tpR + 0.45 },
     ];
     b.material(M.ALU);
     // 前缘带 z 断点加密到 0.6mm：凹槽坡面（前缘 26mm 内）需要足够行数，否则 1.5mm 格距在坡上
     // 只有 4–6 环 → 反射面读出多边形台阶（用户 2026-09-11「可以考虑使用更细的拼装」）
+    // 凹槽带的行距**分级加密**（用户 r41：「质感很割裂 / 不是连续的 / 多看几个角度都有白线」）。
+    // 根因：scoop 是顶点置换，落在分带的平板上；每带的法线是常量，带与带之间是硬折。
+    // 斜坡起点处 smoothstep 的二阶导最大 → 相邻两带法线差 2.3°，掠射角把这点角度差放大成一条白线
+    // （射线取证：最亮线在 z≈102.3、y=11.500，正是斜坡起点那一带的接缝）。
+    // 对策：坡起始段 0.15mm/行、中段 0.30mm/行、外段 0.60mm/行；x 向同步加密到 0.6mm。
     const scoopZBreaks: number[] = [];
-    for (let z = B.d / 2 - 26; z < B.d / 2; z += 0.6) scoopZBreaks.push(z);
-    plateWithHoles(b, outline, holes, deckY, { maxCell: mc(1.5), zBreaks: scoopZBreaks });
+    for (let z = B.d / 2 - 26; z < B.d / 2 - 0.001; ) {
+      const d2 = B.d / 2 - z;                 // 距前缘
+      const step = d2 > 8.2 ? 0.6 : d2 > 6.4 ? 0.3 : 0.15;
+      scoopZBreaks.push(z);
+      z += step;
+    }
+    plateWithHoles(b, outline, holes, deckY, { maxCell: mc(1.0), zBreaks: scoopZBreaks });
     // 转轴槽：台面后缘挖一条凹槽（槽底 + 槽壁），转轴筒藏在槽里 —— 真机开盖时看到的就是这条槽。
     b.material(M.HINGE);
     plateFill(b, { cx: 0, cz: hslot.cz, w: hslot.w, d: hslot.d, r: hslot.r }, deckY - hslot.depth, { nu: sc(64, 10), nt: 2, cornerSegs: sc(6, 4), vertexSampling: true });
@@ -584,6 +594,16 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
     // 不是贴在台面上的凸起环 —— 凸起环在掠射角必然露出被照亮的外沿。
     // 现在孔与缝都由台面板的孔提供：孔的侧壁 + 玻璃边之间的 0.25mm 空隙在掠射角自然读成一条暗线，
     // 没有任何凸起面，因此不可能再出现亮边。
+    // 缝底：比台面**低 0.15mm** 的哑光带（M.TPSEAM），铺满孔与玻璃之间的整圈空隙。
+    // 为什么必须下沉：缝里若露出**台面铝**，掠射角下金属菲涅尔反射率≈100% → 一圈白线
+    // （用户 r41「多个角度看，都发现有明显的白线」）。真机的缝是凹槽，凹槽里看到的是**暗的槽壁/槽底**。
+    {
+      const collarPath = roundedRectPath(tp.w + 0.9, tp.d + 0.9, tp.r + 0.45, sc(48, 10), sc(160, 24));
+      const collar0 = sweepSurface(collarPath, [{ o: 0, y: deckY - 0.15 }, { o: 1.2, y: deckY - 0.15 }]);
+      const collar = (u: number, v: number): Vec3 => { const p = collar0(u, v); return v3(p.x, p.y, p.z + cz); };
+      b.material(M.TPSEAM);
+      patch(b, collar, lin(0, 1, sc(720, 48)), [0, 1]);
+    }
     b.material(M.TRACKPAD);
     plateFill(b, { cx: 0, cz, w: tp.w, d: tp.d, r: tp.r }, deckY + 0.02, { nu: sc(48, 8), nt: 2, cornerSegs: sc(12, 6), vertexSampling: true });
   }

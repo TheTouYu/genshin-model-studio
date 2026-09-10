@@ -62,7 +62,9 @@ export default async ({ evalJS, sleep }) => {
   // 同时给一份**紧凑文本表**：日志混排时 JSON 不好解析（r40 踩过两次）
   const table = rows.map((r) => {
     const p = r.p ? r.p.map((v) => v.toFixed(3)).join(',') : 'MISS';
-    return `px=${r.px},${r.py} col=${r.col} p=(${p}) nHit=${r.nHit} next=${r.col2 || '-'}`;
+    const q = r.p2 ? r.p2.map((v) => v.toFixed(3)).join(',') : '-';
+    const f = r.face ? r.face.map((v) => v.toFixed(2)).join(',') : '-';
+    return `px=${r.px},${r.py} col=${r.col} p=(${p}) face=(${f}) nHit=${r.nHit} next=${r.col2 || '-'}@(${q})`;
   }).join('\n');
   return { view, shot, table, picks: rows };
 };
