@@ -903,11 +903,11 @@ export function buildMacbook14(opts: BuildOpts, assets: Assets): BuildResult {
       };
       for (let v = 0; v < nV; v++) {
         if (!dirty[v]) continue;
-        if (flat[v]) {
+        if (flat[v] || moved[v]) {   // R65 正式修复：解析法线覆盖窗口内所有被位移顶点（原仅 flatTop）
           // **必须保留原法线的符号**：台面板 plateWithHoles 是反绕序（存储法线朝下），页面材质是
           // DoubleSide → three.js 对背面会再翻转一次法线。若这里一律写成 +Y，反绕序那张网格
           // 翻转后变成朝下着色 → 凹槽两侧整片发黑 + 与相邻面颜色突变（用户 r39 第 2 条）。
-          const sg = flat[v] === 2 ? -1 : 1;
+          const sg = (flat[v] === 2 || (!flat[v] && raw.nrm[v * 3 + 1] < 0)) ? -1 : 1;   // 非 flatTop：沿用原存储法线符号
           const [gx2, gz2] = dS(p[v * 3], p[v * 3 + 2]);
           const L2 = Math.hypot(gx2, 1, gz2);
           nr[v * 3] = (sg * -gx2) / L2; nr[v * 3 + 1] = (sg * 1) / L2; nr[v * 3 + 2] = (sg * -gz2) / L2;
