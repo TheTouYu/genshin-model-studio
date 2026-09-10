@@ -15,6 +15,7 @@
  *   GET  /docs?file=...          文档页（Markdown 渲染）
  */
 import { createServer } from 'node:http';
+import { execFileSync } from 'node:child_process';
 import { readFileSync, writeFileSync, mkdirSync, readdirSync, existsSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { resolveStructure } from '../dist/src/core/structure.js';
@@ -43,11 +44,36 @@ const MIME = {
 function sendFile(res, file, fallbackType) {
     try {
         const ext = file.slice(file.lastIndexOf('.')).toLowerCase();
-        send(res, 200, readFileSync(file), MIME[ext] ?? fallbackType);
+        const body = readFileSync(file);
+        // HUD 版本戳由服务端注入（2026-09-11 白线战教训）：手工 bump 曾漏五轮，
+        // 用户截图里显示 r38 而实际已是 r43 —— 双方都无法确认看的是哪一代页面。
+        // 服务端注入后，「用户截图里的 BUILD」恒等于当前 git 代次，不依赖记性。
+        send(res, 200, ext === '.html' ? stampHtml(body) : body, MIME[ext] ?? fallbackType);
     }
     catch {
         send(res, 404, 'not found');
     }
+}
+let STAMP = null;
+let STAMP_AT = 0;
+function buildStamp() {
+    const now = Date.now();
+    if (STAMP && now - STAMP_AT < 3000)
+        return STAMP;
+    try {
+        const rev = execFileSync('git', ['rev-parse', '--short', 'HEAD'], { cwd: ROOT }).toString().trim();
+        const dirty = execFileSync('git', ['status', '--porcelain', '--untracked-files=no'], { cwd: ROOT }).toString().trim() ? '-dirty' : '';
+        STAMP = rev + dirty;
+    }
+    catch {
+        STAMP = 'dev';
+    }
+    STAMP_AT = now;
+    return STAMP;
+}
+/** 只替换页面里 `var BUILD = '...'` 的字面量，不动其它结构；没有该字面量的页面原样返回。 */
+function stampHtml(buf) {
+    return buf.toString('utf8').replace(/var BUILD = '[^']*'/, `var BUILD = '${buildStamp()}'`);
 }
 function send(res, code, body, type = 'text/plain; charset=utf-8') {
     // 预览页/贴图每轮都在改：一律 no-store，避免用户打开页面看到上一轮的缓存
