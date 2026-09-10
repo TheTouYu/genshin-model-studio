@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>MacBook 14″ · 接口与合盖侧缝修复（r10）</title>
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; padding: 26px 30px 70px; background: #14151a; color: #e8e9ec;
+         font: 14px/1.6 -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif; }
+  h1 { font-size: 19px; font-weight: 600; margin: 0 0 4px; }
+  h2 { font-size: 15px; font-weight: 600; margin: 34px 0 14px; color: #cfd2d9; }
+  p.lead { margin: 0 0 6px; color: #9a9da6; }
+  a { color: #7fb4ff; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(430px, 1fr)); gap: 22px; }
+  figure { margin: 0; background: #1c1d23; border: 1px solid #2b2d36; border-radius: 10px; overflow: hidden; }
+  figure img { display: block; width: 100%; height: auto; background: #000; }
+  figcaption { padding: 9px 13px 11px; font-size: 13px; color: #b9bcc4; }
+  figcaption b { color: #e8e9ec; font-weight: 600; }
+  .meta { color: #7e828c; font-size: 12px; }
+  .note { margin-top: 30px; padding: 14px 16px; background: #1c1d23; border: 1px solid #2b2d36;
+          border-radius: 10px; color: #b9bcc4; font-size: 13px; }
+  .note li { margin: 5px 0; }
+</style>
+</head>
+<body>
+  <h1>MacBook Pro 14″ · r10：接口细节 + 合盖严丝闭合</h1>
+  <p class="lead">同一份网格（<code>web/draw/macbook-current.json</code>）与同一影棚环境，全部由
+    <a href="./photo.html" target="_blank">/draw/photo.html</a> 实时渲染后直接读画布像素。
+    新增长焦侧视机位（3 m / fov 1.6° ≈ 正交），与官方侧视图同尺度可直接叠看。</p>
+
+  <h2>协议 6 张（与 v7/v8 同条件：配对参考图 / 画布 / 背景）</h2>
+  <div class="grid">
+    <figure>
+      <a href="./v9/p1-closedtop.png" target="_blank"><img src="./v9/p1-closedtop.png" alt="1 闭合俯视 closedtop" loading="lazy"></a>
+      <figcaption><b>1 闭合俯视 closedtop</b><br><span class="meta">900×724 · 白底 · 配对参考：俯视图.png</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v9/p2-screenfront.png" target="_blank"><img src="./v9/p2-screenfront.png" alt="2 屏幕正面 screenfront" loading="lazy"></a>
+      <figcaption><b>2 屏幕正面 screenfront</b><br><span class="meta">1000×627 · 白底 · 配对参考：正视图.png</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v9/p3-kb.png" target="_blank"><img src="./v9/p3-kb.png" alt="3 键盘+触控板 kb" loading="lazy"></a>
+      <figcaption><b>3 键盘+触控板 kb</b><br><span class="meta">880×680 · 白底 · 配对参考：键盘和触控板.png</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v9/p4-ports.png" target="_blank"><img src="./v9/p4-ports.png" alt="4 左侧接口 portstele（长焦侧视）" loading="lazy"></a>
+      <figcaption><b>4 左侧接口 portstele（长焦侧视）</b><br><span class="meta">1180×395 · 暗底 · 配对参考：official-mbp14-ports-1.jpg</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v9/p5-hero.png" target="_blank"><img src="./v9/p5-hero.png" alt="5 3/4 开盖 hero" loading="lazy"></a>
+      <figcaption><b>5 3/4 开盖 hero</b><br><span class="meta">860×520 · 暗底 · 配对参考：official-mbp14-hero.jpg</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v9/p6-bottom.png" target="_blank"><img src="./v9/p6-bottom.png" alt="6 底面 bottom" loading="lazy"></a>
+      <figcaption><b>6 底面 bottom</b><br><span class="meta">880×600 · 灰底 · 配对参考：apple-mbp13-bottom-case-official.jpg</span></figcaption>
+    </figure>
+  </div>
+
+  <h2>用户点名的两处 + 修复依据</h2>
+  <div class="grid">
+    <figure>
+      <a href="./v9/qa/ports-left.png" target="_blank"><img src="./v9/qa/ports-left.png" alt="左壁接口（长焦侧视）" loading="lazy"></a>
+      <figcaption><b>左壁接口（长焦侧视）</b><br><span class="meta">与官方图同尺度：MagSafe 11.0×2.5 + 5 金色触点、USB-C 8.34×2.67 圆角开口 + 深色内舌、耳机 Ø3.6</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v9/qa/ports-right.png" target="_blank"><img src="./v9/qa/ports-right.png" alt="右壁接口（长焦侧视）" loading="lazy"></a>
+      <figcaption><b>右壁接口（长焦侧视）</b><br><span class="meta">SDXC 26.7×2.67 / USB-C 8.34×2.67 / HDMI 14.67×4.33</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v9/qa/port-close.png" target="_blank"><img src="./v9/qa/port-close.png" alt="接口特写（暗底）" loading="lazy"></a>
+      <figcaption><b>接口特写（暗底）</b><br><span class="meta">圆角开口（r≈1.15mm）替换直角盒；墙面竖直高光条纹已消除（解析法线）</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v9/qa/seam-left.png" target="_blank"><img src="./v9/qa/seam-left.png" alt="合盖侧缝（左前 3/4）" loading="lazy"></a>
+      <figcaption><b>合盖侧缝（左前 3/4）</b><br><span class="meta">上盖侧壁与底座**齐平**（312.6 = 312.6），井口后边距 1mm、转轴槽贴上盖后缘</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v9/qa/cmp-ports.png" target="_blank"><img src="./v9/qa/cmp-ports.png" alt="左/右壁 ←→ 官方侧视图并排" loading="lazy"></a>
+      <figcaption><b>左/右壁 ←→ 官方侧视图并排</b><br><span class="meta">上=我方 下=官方（official-mbp14-ports-1/2.jpg）</span></figcaption>
+    </figure>
+    <figure>
+      <a href="./v9/qa/cmp-all.png" target="_blank"><img src="./v9/qa/cmp-all.png" alt="协议 6 张 ←→ 配对参考并排" loading="lazy"></a>
+      <figcaption><b>协议 6 张 ←→ 配对参考并排</b><br><span class="meta">左=我方 右=参考</span></figcaption>
+    </figure>
+  </div>
+
+  <div class="note">
+    <b>r10 改动（都在盘档，可复现）</b>
+    <ul>
+      <li><b>合盖侧缝</b>：上盖宽 311.6 → <b>312.6</b>（与底座齐平）；键盘井后边距 3 → <b>1 mm</b>（井口后缘 = 上盖后缘 −99.6）；转轴槽 −105 → <b>−102.8</b>（贴上盖后缘）；上盖下缘圆角 1.30 → <b>0.35 mm</b>（分缝面近直角，侧视只剩一条细黑线）。</li>
+      <li><b>接口</b>：开口改<b>圆角矩形</b>（实测 r≈1.0–1.2 mm，旧版直角盒）；尺寸按官方图逐列剖面重标（MagSafe 11.0×2.5、USB-C 8.34×2.67、耳机 Ø3.6、HDMI 14.67×4.33、SDXC 26.7×2.67）；MagSafe 改 5 个<b>镀金</b>小触点、USB-C 内舌改深色 PCB 并推深到 2.2 mm。</li>
+      <li><b>竖直高光条纹</b>：页面旧版对全部顶点 <code>computeVertexNormals()</code>，端口附近列宽 0.1–0.3 mm 与墙面 1–3 mm 的<b>平均法线不一致</b> → 端口两侧出现竖直亮条。改为网格 JSON 带<b>解析法线</b>（按位置+法线焊接），条纹消失、硬边也不再被抹圆。</li>
+      <li><b>取证机位</b>：<code>portstele/sidetele</code>（azim 270/90, elev 0, dist 3.0 m, fov 1.6°）——旧机位 0.26 m/fov24 透视太强，无法与官方侧视图逐项对照。</li>
+    </ul>
+    <p style="margin:10px 0 0">已知未修：<code>control</code>/<code>command</code> 字标缺尾字母、触控板暗缝左右不对称、底盖刻蚀读作虚线块、扬声器开孔。</p>
+  </div>
+</body>
+</html>

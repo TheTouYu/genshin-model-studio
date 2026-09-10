@@ -90,6 +90,10 @@
     // 端口特写：配对 official-mbp14-ports-1.jpg（左壁 MagSafe+2×USB-C+jack，z 36.7..82.5）。
     // 旧机位 target z=0.020 只框住 C2+jack；端口 z 实测后整簇中心在 z=62。
     ports:    { azim: 270, elev: 3,  dist: 0.26, fov: 24, target: [0, 0.008, -0.060] },
+    // 官方侧视图是长焦/近正交（机身 312mm 在画幅里几乎不变形）；0.26m+fov24 透视太强，
+    // 墙面被压缩、上盖顶面被放大 → 与官方图无法逐项对照。长焦版：2.1m + fov 8.5° ≈ 正交。
+    portstele:{ azim: 270, elev: 0.0, dist: 3.00, fov: 1.6, target: [0, 0.008, 0.0] },
+    sidetele: { azim: 90,  elev: 0.0, dist: 3.00, fov: 1.6, target: [0, 0.008, 0.0] },
     // 右壁全景：HDMI(82.7)+USB-C(64.4)+SDXC(39.8)，旧机位把 HDMI 切在画框外。
     side:     { azim: 90,  elev: 3,  dist: 0.40, fov: 24, target: [0, 0.008, -0.060] },
     screen34: { azim: 20,  elev: 9,  dist: 0.60, fov: 30, target: [0, 0.120, -0.010] },
@@ -112,6 +116,10 @@
     // 台面前角（掌托左侧，用户最后圈的那处：反光时像透明能看到里面）
     deckL:    { azim: -46, elev: 42, dist: 0.26, fov: 32, target: [-0.140, 0.010, 0.098] },
     deckR:    { azim: 46,  elev: 42, dist: 0.26, fov: 32, target: [0.140, 0.010, 0.098] },
+    // 合盖侧缝（用户 2026-09-10：侧面看闭合线对不上）
+    leftseam: { azim: 254, elev: 26, dist: 0.30, fov: 32, target: [-0.132, 0.014, 0.010] },
+    // 接口特写（左壁）：MagSafe / 2×USB-C / 耳机孔
+    portclose:{ azim: 268, elev: 4,  dist: 0.15, fov: 26, target: [-0.150, 0.008, -0.052] },
   }
 
   function boot(THREE) {
@@ -306,6 +314,19 @@
         groups.get(c).push(F[t * 3], F[t * 3 + 1], F[t * 3 + 2])
       }
       var V = data.vertices
+      var NR = data.normals || null
+      function nrmArray() {
+        if (!NR) return null
+        var a = new Float32Array(NR.length * 3)
+        for (var i = 0; i < NR.length; i++) { a[i * 3] = NR[i][0]; a[i * 3 + 1] = NR[i][1]; a[i * 3 + 2] = NR[i][2] }
+        return a
+      }
+      // 有解析法线就用它（硬边不糊、端口条纹消失），否则回退面法线平均
+      function setN(g) {
+        var a = nrmArray()
+        if (a) g.setAttribute('normal', new THREE.BufferAttribute(a, 3))
+        else g.computeVertexNormals()
+      }
       function posArray() {
         var pos = new Float32Array(V.length * 3)
         for (var i = 0; i < V.length; i++) { pos[i * 3] = V[i][0]; pos[i * 3 + 1] = V[i][1]; pos[i * 3 + 2] = V[i][2] }
@@ -328,7 +349,7 @@
           }
           var gSide = new THREE.BufferGeometry()
           gSide.setAttribute('position', new THREE.BufferAttribute(pos.slice(), 3))
-          gSide.setIndex(sideIdx); gSide.computeVertexNormals()
+          gSide.setIndex(sideIdx); setN(gSide)
           root.add(new THREE.Mesh(gSide, makeMat(0x1d1d1f)))
           var gTop = new THREE.BufferGeometry()
           gTop.setAttribute('position', new THREE.BufferAttribute(pos.slice(), 3))
@@ -341,7 +362,7 @@
             uvT[vi2 * 2 + 1] = 1 - (V[vi2][2] - KBZ0) / KBD
           }
           gTop.setAttribute('uv', new THREE.BufferAttribute(uvT, 2))
-          gTop.computeVertexNormals()
+          setN(gTop)
           var matTop = makeMat(0x1d1d1f)
           var tl = new THREE.TextureLoader()
           tl.load('./kb-legends.png', function (tx) {
@@ -358,7 +379,7 @@
         var g = new THREE.BufferGeometry()
         g.setAttribute('position', new THREE.BufferAttribute(pos, 3))
         g.setIndex(idx)
-        g.computeVertexNormals()
+        setN(g)
         var mat = makeMat(hexOf(colHex))
         // 屏幕活动区：**平面内** UV。不能用世界 bbox——上盖开 100° 时屏幕平面相对
         // 世界 z 压缩 cos(80°)=0.174，按 bbox 归一化会把桌面贴图竖向拉伸 5.76×：
@@ -1155,10 +1176,10 @@
 
     // ---------- 按钮面板 ----------
     var VIEW_LABEL = { hero: '3/4 视角', front: '正面', closedtop: '闭合俯视', screenfront: '屏幕正面',
-                       screen34: '屏幕 3/4', kb: '键盘俯视', top: '顶视', ports: '接口特写',
+                       screen34: '屏幕 3/4', kb: '键盘俯视', top: '顶视', ports: '接口特写', portstele: '接口长焦', sidetele: '侧面长焦',
                        side: '侧面', lid: '上盖特写', bottom: '底面',
-                       hinge: '转轴特写', hingel: '转轴侧面', bezel: '边框特写', cornerL: '左前角', cornerR: '右前角', deckL: '台面左前角', deckR: '台面右前角' }
-    var VIEW_ORDER = ['hero', 'front', 'closedtop', 'screenfront', 'screen34', 'kb', 'top', 'ports', 'side', 'lid', 'hinge', 'hingel', 'bezel', 'cornerL', 'cornerR', 'deckL', 'deckR', 'bottom']
+                       hinge: '转轴特写', hingel: '转轴侧面', bezel: '边框特写', cornerL: '左前角', cornerR: '右前角', deckL: '台面左前角', deckR: '台面右前角', leftseam: '合盖侧缝', portclose: '接口特写' }
+    var VIEW_ORDER = ['hero', 'front', 'closedtop', 'screenfront', 'screen34', 'kb', 'top', 'ports', 'side', 'lid', 'hinge', 'hingel', 'bezel', 'cornerL', 'cornerR', 'deckL', 'deckR', 'leftseam', 'portclose', 'bottom']
     var PRESET_LABEL = { white: '白底', dark: '深色', grey: '灰底' }
     var rowView = document.getElementById('rowView')
     var rowPreset = document.getElementById('rowPreset')

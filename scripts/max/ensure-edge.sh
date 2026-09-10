@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+# ensure-edge.sh —— 保证 CDP Edge（127.0.0.1:9222）在线。
+# 背景：WSL2 里浏览器是 Windows 侧 msedge.exe，长时间批量开/关标签会整进程挂掉（本会话已两次），
+# 一挂 page-shots 就全线 FAIL 且看不出原因。渲染前先跑这个（幂等）。
+set -u
+PORT=9222
+if curl -s -m 4 "http://127.0.0.1:${PORT}/json/version" | grep -q webSocketDebuggerUrl; then
+  echo "edge ok (${PORT})"; exit 0
+fi
+echo "edge down -> relaunching"
+cd /mnt/c/Users/touyu 2>/dev/null || exit 1
+setsid nohup "/mnt/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe" \
+  --remote-debugging-port=${PORT} --remote-debugging-address=0.0.0.0 \
+  --user-data-dir="C:\edge-cdp-fan" --no-first-run --no-default-browser-check about:blank \
+  >/dev/null 2>&1 &
+for i in $(seq 1 20); do
+  sleep 2
+  if curl -s -m 4 "http://127.0.0.1:${PORT}/json/version" | grep -q webSocketDebuggerUrl; then
+    echo "edge relaunched ok (${PORT})"; exit 0
+  fi
+done
+echo "edge relaunch FAILED"; exit 1

@@ -68,22 +68,29 @@ const hexOf = built.materials.map((m) => {
 // ---- 焊接（2e-4 m，同门禁 weldTolerance）----
 // 上盖标记进 cell key：上盖与本体/转轴在转轴附近可能贴得比容差还近，
 // 一旦焊到一起，开盖动画会把本体顶点一起拽走（转轴处撕开）。按部件隔离焊接即可根除。
+// 焊接键里带**量化法线**：页面旧版对所有顶点做 computeVertexNormals()（面法线平均），
+// 端口附近列宽 0.1–0.3mm 而墙面列宽 1–3mm → 同一个共享边上的平均法线不一致 →
+// 端口两侧出现竖直高光条纹（用户 2026-09-10 圈的"接口粗糙"里有这一条）。
+// 带法线焊接后页面直接用解析法线，条纹消失；同时硬边（键帽棱、腔口）不再被抹圆。
 const TOL = 2e-4;
+const NRM = mesh.nrm;
 const isLid = (i) => (LID && i >= LID.from && i < LID.to ? 1 : 0);
 const cells = new Map();
 const remap = new Int32Array(mesh.pos.length / 3);
 const vertices = [];
-const key = (a, b, c, f) => a + ',' + b + ',' + c + '|' + f;
+const norms = [];
+const nq = (i) => Math.round(NRM[i * 3] * 1000) + ',' + Math.round(NRM[i * 3 + 1] * 1000) + ',' + Math.round(NRM[i * 3 + 2] * 1000);
+const key = (a, b, c, f, n) => a + ',' + b + ',' + c + '|' + f + '|' + n;
 for (let i = 0; i < mesh.pos.length / 3; i++) {
   const x = mesh.pos[i * 3], y = mesh.pos[i * 3 + 1], z = mesh.pos[i * 3 + 2];
-  const f = isLid(i);
+  const f = isLid(i), n = nq(i);
   const gx = Math.floor(x / TOL), gy = Math.floor(y / TOL), gz = Math.floor(z / TOL);
   let hit = -1;
   outer:
   for (let dx = -1; dx <= 1 && hit < 0; dx++)
     for (let dy = -1; dy <= 1 && hit < 0; dy++)
       for (let dz = -1; dz <= 1 && hit < 0; dz++) {
-        const arr = cells.get(key(gx + dx, gy + dy, gz + dz, f));
+        const arr = cells.get(key(gx + dx, gy + dy, gz + dz, f, n));
         if (!arr) continue;
         for (const j of arr) {
           const v = vertices[j];
@@ -93,7 +100,8 @@ for (let i = 0; i < mesh.pos.length / 3; i++) {
   if (hit < 0) {
     hit = vertices.length;
     vertices.push([+x.toFixed(6), +y.toFixed(6), +z.toFixed(6)]);
-    const k = key(gx, gy, gz, f);
+    norms.push([+NRM[i * 3].toFixed(4), +NRM[i * 3 + 1].toFixed(4), +NRM[i * 3 + 2].toFixed(4)]);
+    const k = key(gx, gy, gz, f, n);
     if (!cells.has(k)) cells.set(k, []);
     cells.get(k).push(hit);
   }
@@ -127,7 +135,7 @@ for (let t = 0; t < mesh.mat.length; t++) {
   colors.push(hexOf[mesh.mat[t]]);
 }
 
-const out = { name: `macbook-pro-14-${color}-${openAngle === 0 ? 'closed' : 'open' + openAngle}-r4`, vertices, faces, colors };
+const out = { name: `macbook-pro-14-${color}-${openAngle === 0 ? 'closed' : 'open' + openAngle}-r4`, vertices, normals: norms, faces, colors };
 if (LID && lidFrom >= 0) {
   out.lid = { from: lidFrom, to: lidTo + 1, hingeY: LID.hingeY, hingeZ: LID.hingeZ, angle: LID.angle };
   console.log(`lid: verts [${lidFrom}, ${lidTo}] (${lidTo - lidFrom + 1}) | 原始动点 ${LID.moved} | 区间断裂 ${LID.holes} | 焊接后断裂 ${lidBreaks} | 跨部件三角 ${mixedTris} | 转轴 y=${LID.hingeY} z=${LID.hingeZ} @${LID.angle}°`);
