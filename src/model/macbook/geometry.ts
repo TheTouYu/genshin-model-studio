@@ -294,21 +294,33 @@ function portOpening(b: MeshBuilder, side: 1 | -1, wallX: number, cy: number, cz
     void ay;
     const r1 = q(-ax, -hh), r2 = q(ax, -hh), r3 = q(ax, hh), r4 = q(-ax, hh);
     if (side > 0) { b.tri(r1, r2, r3); b.tri(r1, r3, r4); } else { b.tri(r1, r3, r2); b.tri(r1, r4, r3); }
-    // 四角扇：扇心 = 角点(±ax, ±ay)，半径 rr
-    for (const sx of [1, -1]) {
-      for (const sy of [1, -1]) {
-        const cz0 = sx * ax, cy0 = sy * ay;
-        const cId = V(PLATE, cy + cy0, cz + cz0);
-        const ids: number[] = [];
-        for (let i = 0; i <= cseg; i++) {
-          const a = (Math.PI / 2) * (i / cseg);
-          ids.push(V(PLATE, cy + cy0 + sy * rr * Math.cos(a), cz + cz0 + sx * rr * Math.sin(a)));
-        }
-        for (let i = 0; i < cseg; i++) {
-          if (side > 0) b.tri(cId, ids[i], ids[i + 1]); else b.tri(cId, ids[i + 1], ids[i]);
-        }
+    // 两个端帽：端帽内用「角弧 + 端帽中心扇形」铺满。
+    // 教训链（同一症状跨代复发三次，别再犯）：r27 u-snap 吃断点 → r30 中央矩形取 ±ay 在
+    // stadium 下塌成 0.02mm 细条（用户截图里的"哑铃"）→ r31 四角弧画到**外侧象限**
+    // （应朝矩形内部）→ 四角露出墙面亮方块 = 用户截图里的"撕裂角"。
+    // 规则：圆弧一律取「从角心指向矩形内部」的象限 = z 向 cos θ、y 向 sin θ，θ∈[0°,90°]，四角同式。
+    const capFan = (dir: number): void => {
+      const zc = cz + dir * ax;
+      const pts: Array<[number, number]> = [[zc, cy - hh]];
+      for (let i = 0; i <= cseg; i++) {                        // 下角弧 θ -90°→0°
+        const th = (-90 + 90 * (i / cseg)) * Math.PI / 180;
+        pts.push([zc + dir * rr * Math.cos(th), (cy - ay) + rr * Math.sin(th)]);
       }
-    }
+      pts.push([cz + dir * hw, cy + ay]);                      // 端边（圆角矩形才有长度，stadium 下退化）
+      for (let i = 0; i <= cseg; i++) {                        // 上角弧 θ 0°→90°
+        const th = (90 * (i / cseg)) * Math.PI / 180;
+        pts.push([zc + dir * rr * Math.cos(th), (cy + ay) + rr * Math.sin(th)]);
+      }
+      pts.push([zc, cy + hh]);
+      // 注意：capFan 的链点已是**绝对** (z,y)，必须走 V 而不能走 q（q 会再加一次 cz/cy 偏移，
+      // 曾因此把端帽画到 2× 位置 → 开口两端只剩细"凸耳"、墙面出现梳齿三角）。
+      const apex = V(PLATE, cy, zc);
+      const vs = pts.map(([z, y]) => V(PLATE, y, z));
+      for (let i = 0; i < vs.length - 1; i++) {
+        if (side > 0) b.tri(apex, vs[i], vs[i + 1]); else b.tri(apex, vs[i + 1], vs[i]);
+      }
+    };
+    capFan(1); capFan(-1);
   }
   if ((kind as string) === 'magsafe') {
     b.material(M.GOLD);
