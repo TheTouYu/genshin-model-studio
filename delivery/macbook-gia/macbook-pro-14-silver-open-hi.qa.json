@@ -1,6 +1,6 @@
 {
   "ok": true,
-  "base": "macbook-pro-14-silver-open",
+  "base": "macbook-pro-14-silver-open-hi",
   "dir": "/home/h/genshin-model-studio/delivery/macbook-gia",
   "checks": {
     "id": {
@@ -14,15 +14,15 @@
           "resourceId": 10009003,
           "name": "平面",
           "status": "未校准",
-          "count": 9666,
+          "count": 67797,
           "index": 0
         },
         {
           "resourceId": 10009006,
           "name": "三棱锥",
           "status": "未校准",
-          "count": 29,
-          "index": 553
+          "count": 146,
+          "index": 1071
         }
       ],
       "unknown": [],
@@ -32,7 +32,7 @@
       "pass": true,
       "detail": {
         "requested": null,
-        "used": 9695,
+        "used": 67943,
         "exceeded": false,
         "gateState": "passed"
       },
@@ -44,14 +44,14 @@
         "gil": {
           "prefabId": 1077936129,
           "templateResourceId": 10005018,
-          "items": 9695,
+          "items": 67943,
           "closureComplete": true
         },
         "gia": {
-          "items": 9695,
+          "items": 67943,
           "idRange": [
             1073741825,
-            1073751519
+            1073809767
           ],
           "resourceIds": [
             10009003,
@@ -59,7 +59,7 @@
           ],
           "structureId": 1077936129,
           "templatePrefabId": 10005018,
-          "name": "macbook-pro-14-silver-open"
+          "name": "macbook-pro-14-silver-open-hi"
         }
       },
       "issues": []
@@ -69,28 +69,28 @@
       "detail": {
         "artifacts": [
           {
-            "path": "/home/h/genshin-model-studio/delivery/macbook-gia/macbook-pro-14-silver-open.structure.json",
+            "path": "/home/h/genshin-model-studio/delivery/macbook-gia/macbook-pro-14-silver-open-hi.structure.json",
             "exists": true,
-            "size": 4438072
+            "size": 31696211
           },
           {
-            "path": "/home/h/genshin-model-studio/delivery/macbook-gia/macbook-pro-14-silver-open.summary.json",
+            "path": "/home/h/genshin-model-studio/delivery/macbook-gia/macbook-pro-14-silver-open-hi.summary.json",
             "exists": true,
-            "size": 163022
+            "size": 1095043
           },
           {
-            "path": "/home/h/genshin-model-studio/delivery/macbook-gia/macbook-pro-14-silver-open.gil",
+            "path": "/home/h/genshin-model-studio/delivery/macbook-gia/macbook-pro-14-silver-open-hi.gil",
             "exists": true,
-            "size": 3089235
+            "size": 21790632
           },
           {
-            "path": "/home/h/genshin-model-studio/delivery/macbook-gia/macbook-pro-14-silver-open.gia",
+            "path": "/home/h/genshin-model-studio/delivery/macbook-gia/macbook-pro-14-silver-open-hi.gia",
             "exists": true,
-            "size": 1902252
+            "size": 13466075
           }
         ],
-        "items": 9695,
-        "units": 9695,
+        "items": 67943,
+        "units": 67943,
         "meshFaces": null
       },
       "issues": []
@@ -98,6 +98,6 @@
   },
   "failures": [],
   "notes": [
-    "资源覆盖：存在 2 类未校准基元（候选/待校准）：平面(10009003)×9666、三棱锥(10009006)×29"
+    "资源覆盖：存在 2 类未校准基元（候选/待校准）：平面(10009003)×67797、三棱锥(10009006)×146"
   ]
 }

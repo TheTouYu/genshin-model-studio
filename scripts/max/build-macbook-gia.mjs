@@ -16,6 +16,7 @@ const ROOT = new URL('../..', import.meta.url).pathname;
 const lod = parseFloat(arg('lod', '0.12'));
 const openAngle = parseFloat(arg('open', '100'));
 const color = arg('color', 'silver');
+const nameSuffix = arg('suffix', '');   // R81：同一几何的变体（如 -hi 高精度）需要不同的 model name，否则会互相覆盖交付件
 const screenOn = arg('screen', '1') !== '0';
 
 const logo = JSON.parse(readFileSync(ROOT + 'reference/macbook/logo-outline.json', 'utf8'));
@@ -42,7 +43,11 @@ const remap = new Int32Array(nv);
 const vertices = [];
 const cellKey = (a, b, c) => a + ',' + b + ',' + c;
 for (let i = 0; i < nv; i++) {
-  const [x, y, z] = rawVerts[i];
+  const [x0, y0, z0] = rawVerts[i];
+  // R81：格键与比较一律用**舍入后**的坐标（存进 vertices 的就是舍入值）。
+  // 旧版用未舍入值算格键，导致一对实际相距 0.2mm 的顶点可能落在相隔 2 格的箱里而漏焊
+  //（引擎 LOD 网格恰好命中一例，被门禁「存在未焊接顶点」捕获）。
+  const x = +x0.toFixed(6), y = +y0.toFixed(6), z = +z0.toFixed(6);
   const gx = Math.floor(x / TOL), gy = Math.floor(y / TOL), gz = Math.floor(z / TOL);
   let hit = -1;
   outer:
@@ -53,7 +58,8 @@ for (let i = 0; i < nv; i++) {
         if (!arr) continue;
         for (const j of arr) {
           const v = vertices[j];
-          if (Math.abs(v[0] - x) <= TOL && Math.abs(v[1] - y) <= TOL && Math.abs(v[2] - z) <= TOL) { hit = j; break outer; }
+          // 边界平局：dmax 恰等于 TOL 时浮点可能略大于 TOL（实测 14 对恰在 0.2000mm 未焊）
+          if (Math.abs(v[0] - x) <= TOL + 1e-9 && Math.abs(v[1] - y) <= TOL + 1e-9 && Math.abs(v[2] - z) <= TOL + 1e-9) { hit = j; break outer; }
         }
       }
     }
@@ -92,7 +98,7 @@ for (let t = 0; t < mesh.mat.length; t++) {
 }
 console.log('cleanup: verts', nv, '→', vertices.length, '| tris', mesh.mat.length, '→', faces.length / 3, '| dropped', dropped);
 
-const out = { name: `macbook-pro-14-${color}${openAngle > 1 ? '-open' : '-closed'}`, vertices, faces, colors };
+const out = { name: `macbook-pro-14-${color}${openAngle > 1 ? '-open' : '-closed'}${nameSuffix}`, vertices, faces, colors };
 mkdirSync(ROOT + 'delivery/macbook-gia', { recursive: true });
 const outPath = ROOT + `delivery/macbook-gia/${out.name}-mesh.json`;
 writeFileSync(outPath, JSON.stringify(out));

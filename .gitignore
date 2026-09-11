@@ -33,3 +33,6 @@ web/draw/v9/
 web/draw/v10/
 web/draw/v11/
 web/draw/r25/
+# MacBook .gia 交付：HI 档大件（可一条命令重生，不入库）
+delivery/macbook-gia/*-hi.gil
+delivery/macbook-gia/*-hi.structure.json
